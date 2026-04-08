@@ -80,6 +80,8 @@ class InstituteController extends Controller
             'status' => 'trial',
         ]);
 
+        
+
         Activity::log("New institute registered: {$institute->institute_name}");
 
         return redirect()->route('institutes.index')->with('success', 'Institute created successfully with 14-day free trial.');
