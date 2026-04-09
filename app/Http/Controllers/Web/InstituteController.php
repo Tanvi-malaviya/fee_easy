@@ -92,7 +92,17 @@ class InstituteController extends Controller
      */
     public function show(Institute $institute)
     {
-        // Show logic
+        $institute->load(['subscriptions' => function($q) {
+            $q->latest();
+        }, 'whatsappSettings']);
+
+        $stats = [
+            'students_count' => $institute->students()->count(),
+            'batches_count' => $institute->batches()->count(),
+            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first() ?? $institute->subscriptions()->where('status', 'trial')->first(),
+        ];
+
+        return view('institutes.show', compact('institute', 'stats'));
     }
 
     /**

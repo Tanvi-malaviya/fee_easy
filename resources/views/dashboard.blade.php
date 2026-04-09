@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-admin-layout title="Dashboard Overview">
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-gray-800 leading-tight tracking-tight">
             {{ __('Dashboard Overview') }}

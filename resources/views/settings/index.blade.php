@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-admin-layout title="System Settings">
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
