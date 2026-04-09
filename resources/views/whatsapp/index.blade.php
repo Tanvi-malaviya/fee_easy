@@ -1,28 +1,9 @@
 <x-admin-layout title="WhatsApp Hub">
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div>
-                <h2 class="font-bold text-2xl text-gray-800 leading-tight tracking-tight">
-                    {{ __('WhatsApp Hub') }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">Manage API credentials and notification connectivity for all
-                    institutes.</p>
-            </div>
-            <div class="mt-4 sm:mt-0">
-                <span
-                    class="inline-flex items-center px-4 py-2 border border-emerald-200 rounded-lg shadow-sm text-sm font-bold text-emerald-600 bg-emerald-50">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z">
-                        </path>
-                    </svg>
-                    Cloud API Ready
-                </span>
-            </div>
-        </div>
+
     </x-slot>
 
-    <div class="py-6" x-data="{}">
+    <div class="" x-data="{}">
         <div class="max-w-7xl mx-auto">
             <!-- Information Grid -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -48,7 +29,8 @@
                     <div class="ml-5">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Integrations</p>
                         <h3 class="text-3xl font-black text-gray-900 mt-1">
-                            {{ App\Models\InstituteWhatsappSetting::where('is_active', true)->count() }}</h3>
+                            {{ App\Models\InstituteWhatsappSetting::where('is_active', true)->count() }}
+                        </h3>
                     </div>
                 </div>
             </div>
@@ -125,61 +107,63 @@
                                                 </button>
                                             </form>
                                         </div>
-
-                                        <!-- Configuration Modal -->
                                         <x-modal name="edit-whatsapp-{{ $institute->id }}" :show="false" focusable>
                                             <form method="post" action="{{ route('whatsapp.update', $institute) }}"
-                                                class="p-6 text-left">
+                                                class="p-8 text-left">
                                                 @csrf @method('PATCH')
-                                                <h2 class="text-lg font-extrabold text-gray-900 border-b pb-4 mb-6">WhatsApp
-                                                    API Settings</h2>
-
-                                                <div class="mb-5">
-                                                    <x-input-label for="access_token" value="Meta Access Token (Permanent)"
-                                                        class="text-[10px] font-black uppercase" />
-                                                    <x-text-input id="access_token" name="access_token" type="password"
-                                                        class="mt-1 block w-full text-sm font-mono"
-                                                        value="{{ $institute->whatsappSettings->access_token ?? '' }}"
-                                                        placeholder="EAAW..." />
+                                                <div class="border-b border-gray-100 pb-5 mb-8">
+                                                    <h2 class="text-xl font-black text-gray-900">WhatsApp API Integration</h2>
+                                                    <p class="text-sm text-gray-500 mt-1">Configure Meta Cloud API credentials for {{ $institute->institute_name }}.</p>
                                                 </div>
 
-                                                <div class="grid grid-cols-2 gap-4 mb-5">
+                                                <div class="space-y-6">
                                                     <div>
-                                                        <x-input-label for="phone_number_id" value="Phone Number ID"
-                                                            class="text-[10px] font-black uppercase" />
-                                                        <x-text-input id="phone_number_id" name="phone_number_id"
-                                                            type="text"
-                                                            class="mt-1 block w-full text-sm font-mono bg-gray-50 border-gray-200"
-                                                            value="{{ $institute->whatsappSettings->phone_number_id ?? '' }}"
-                                                            placeholder="1098..." />
+                                                        <x-input-label for="access_token" value="Meta Access Token (Permanent)"
+                                                            class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2" />
+                                                        <x-text-input id="access_token" name="access_token" type="password"
+                                                            class="mt-1 block w-full py-3 px-4 text-base bg-gray-50/50 border-gray-100 rounded-2xl font-mono transition"
+                                                            value="{{ $institute->whatsappSettings->access_token ?? '' }}"
+                                                            placeholder="EAAW..." />
                                                     </div>
-                                                    <div>
-                                                        <x-input-label for="business_account_id" value="Business ID"
-                                                            class="text-[10px] font-black uppercase" />
-                                                        <x-text-input id="business_account_id" name="business_account_id"
-                                                            type="text"
-                                                            class="mt-1 block w-full text-sm font-mono bg-gray-50 border-gray-200"
-                                                            value="{{ $institute->whatsappSettings->business_account_id ?? '' }}"
-                                                            placeholder="153..." />
+
+                                                    <div class="grid grid-cols-2 gap-6">
+                                                        <div>
+                                                            <x-input-label for="phone_number_id" value="Phone Number ID"
+                                                                class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2" />
+                                                            <x-text-input id="phone_number_id" name="phone_number_id"
+                                                                type="text"
+                                                                class="mt-1 block w-full py-3 px-4 text-base bg-gray-50/50 border-gray-100 rounded-2xl font-mono transition"
+                                                                value="{{ $institute->whatsappSettings->phone_number_id ?? '' }}"
+                                                                placeholder="1098..." />
+                                                        </div>
+                                                        <div>
+                                                            <x-input-label for="business_account_id" value="Business ID"
+                                                                class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2" />
+                                                            <x-text-input id="business_account_id" name="business_account_id"
+                                                                type="text"
+                                                                class="mt-1 block w-full py-3 px-4 text-base bg-gray-50/50 border-gray-100 rounded-2xl font-mono transition"
+                                                                value="{{ $institute->whatsappSettings->business_account_id ?? '' }}"
+                                                                placeholder="153..." />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex items-center bg-emerald-50/50 p-5 rounded-[2rem] border border-emerald-100/50">
+                                                        <input type="checkbox" name="is_active"
+                                                            id="is_active_{{ $institute->id }}" value="1"
+                                                            class="w-5 h-5 rounded-lg border-emerald-200 text-emerald-600 shadow-sm focus:ring-emerald-500 transition cursor-pointer"
+                                                            {{ $institute->whatsappSettings && $institute->whatsappSettings->is_active ? 'checked' : '' }}>
+                                                        <label for="is_active_{{ $institute->id }}"
+                                                            class="ml-4 text-[11px] font-black text-emerald-800 uppercase tracking-widest cursor-pointer select-none">Enable Messaging Integration</label>
                                                     </div>
                                                 </div>
 
-                                                <div class="flex items-center mb-6 bg-gray-50 p-4 rounded-2xl">
-                                                    <input type="checkbox" name="is_active"
-                                                        id="is_active_{{ $institute->id }}" value="1"
-                                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                                                        {{ $institute->whatsappSettings && $institute->whatsappSettings->is_active ? 'checked' : '' }}>
-                                                    <label for="is_active_{{ $institute->id }}"
-                                                        class="ml-3 text-[10px] font-black text-gray-700 uppercase tracking-widest">Enable
-                                                        Messaging for this Institute</label>
-                                                </div>
-
-                                                <div class="flex justify-end pt-5 border-t gap-3">
+                                                <div class="flex justify-end pt-8 mt-8 border-t border-gray-100 gap-4">
                                                     <x-secondary-button x-on:click="$dispatch('close')"
-                                                        class="rounded-xl font-bold uppercase text-[10px]">Cancel</x-secondary-button>
+                                                        class="rounded-xl font-black uppercase text-[10px] py-2.5">Cancel</x-secondary-button>
                                                     <x-primary-button
-                                                        class="rounded-xl font-bold uppercase text-[10px]">Save & Secure
-                                                        Credentials</x-primary-button>
+                                                        class="rounded-xl font-black uppercase text-[10px] py-2.5 bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-600/20">
+                                                        Save Credentials
+                                                    </x-primary-button>
                                                 </div>
                                             </form>
                                         </x-modal>

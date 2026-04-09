@@ -221,10 +221,10 @@
 
             <!-- Main Scrollable Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 relative custom-scrollbar">
-                <div class="px-6 py-8 md:px-8 w-full max-w-7xl mx-auto">
+                <div class="px-3 py-3 md:px-3 w-full max-w-7xl mx-auto">
                     <!-- Page Header Slot -->
                     @if (isset($header))
-                        <div class="mb-8">
+                        <div class="mb-3">
                             {{ $header }}
                         </div>
                     @endif

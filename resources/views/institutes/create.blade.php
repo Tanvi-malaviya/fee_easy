@@ -18,10 +18,10 @@
             @csrf
             
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-8 border-b border-gray-100 bg-gray-50/50">
+                <!-- <div class="p-8 border-b border-gray-100 bg-gray-50/50">
                     <h3 class="text-lg font-semibold text-gray-900">Institute Profile</h3>
                     <p class="text-sm text-gray-500 mt-1">General details about the educational enterprise.</p>
-                </div>
+                </div> -->
                 
                 <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Institute Name -->

@@ -2,13 +2,13 @@
 
 
     <!-- Filters & Search -->
-    <div class="mt-6 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-        <form action="{{ route('institutes.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+    <div class="mt-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <form id="search-form" action="{{ route('institutes.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="flex-1 relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, institute, email or phone..." class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
+                <input type="text" id="search-input" name="search" value="{{ request('search') }}" autocomplete="off" placeholder="Search by name, institute, email or phone..." class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
             </div>
             <div class="w-full md:w-48">
                 <select name="status" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl bg-gray-50 transition">
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Table Section -->
-    <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden mt-6">
+    <div class="bg-white border border-gray-100 rounded-2xl shadow-sm mt-3">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead class="bg-gray-50/75">
@@ -49,7 +49,7 @@
                 <tbody class="bg-white divide-y divide-gray-100">
                     @forelse($institutes as $institute)
                         <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm overflow-hidden border border-gray-100 shadow-sm">
                                         @if($institute->logo)
@@ -66,31 +66,32 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900 font-medium whitespace-nowrap">{{ $institute->email }}</div>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 font-medium">{{ $institute->email }}</div>
                                 <div class="text-xs text-gray-500">{{ $institute->phone }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            </div>
+                            <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $institute->city ?? 'N/A' }}</div>
                                 <div class="text-xs text-gray-500">{{ $institute->state ?? '' }} {{ $institute->pincode ?? '' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-6 py-4">
                                 <div class="relative inline-block text-left" x-data="{ open: false }">
-                                    <button @click="open = !open" type="button" class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-md border transition cursor-pointer
-                                        @if($institute->status === 'active') bg-green-100 text-green-700 border-green-200 
-                                        @elseif($institute->status === 'suspended') bg-amber-100 text-amber-700 border-amber-200 
-                                        @elseif($institute->status === 'blocked') bg-red-100 text-red-700 border-red-200 
-                                        @else bg-gray-100 text-gray-700 border-gray-200 @endif">
+                                    <button @click="open = !open" type="button" class="px-3 py-1.5 min-w-[100px] inline-flex items-center justify-between text-xs leading-5 font-semibold rounded-lg border transition cursor-pointer
+                                        @if($institute->status === 'active') bg-green-50 text-green-700 border-green-200 hover:bg-green-100
+                                        @elseif($institute->status === 'suspended') bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100
+                                        @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-200 hover:bg-red-100
+                                        @else bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 @endif">
                                         {{ ucfirst($institute->status) }}
-                                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        <svg class="w-3.5 h-3.5 ml-2 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     </button>
                                     
-                                    <div x-show="open" @click.away="open = false" class="origin-top-right absolute z-50 mt-2 w-36 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
+                                    <div x-show="open" @click.away="open = false" 
+                                        class="absolute z-50 w-36 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none 
+                                        {{ $loop->last || $loop->remaining < 2 ? 'bottom-full mb-2 origin-bottom-right right-0' : 'mt-2 origin-top-right right-0' }}">
                                         <div class="py-1">
                                             <form action="{{ route('institutes.status', $institute) }}" method="POST">
                                                 @csrf @method('PATCH')
                                                 <input type="hidden" name="status" value="active">
-                                                <button type="submit" class="group flex items-center px-4 py-2 text-xs text-gray-700 hover:bg-green-50 hover:text-green-700 w-full text-left">Activate</button>
+                                                <button type="submit" class="group flex items-center px-4 py-2 text-xs text-gray-700 hover:bg-green-50 hover:text-green-700 w-full text-center">Activate</button>
                                             </form>
                                             <form action="{{ route('institutes.status', $institute) }}" method="POST">
                                                 @csrf @method('PATCH')
@@ -149,4 +150,29 @@
         </div>
         @endif
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchForm = document.getElementById('search-form');
+            let timeout = null;
+
+            if (searchInput) {
+                // To maintain focus and put cursor at the end
+                if (searchInput.value !== "") {
+                    searchInput.focus();
+                    const val = searchInput.value;
+                    searchInput.value = '';
+                    searchInput.value = val;
+                }
+
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        searchForm.submit();
+                    }, 500); // 500ms debounce
+                });
+            }
+        });
+    </script>
 </x-admin-layout>
