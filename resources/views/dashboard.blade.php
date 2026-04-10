@@ -1,15 +1,9 @@
 <x-admin-layout title="Dashboard Overview">
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="">
+        <div class="max-w-7xl mx-auto">
             
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 text-left">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 leading-tight tracking-tight">Dashboard Overview</h2>
-                    <p class="text-sm font-medium text-gray-500 mt-1 uppercase tracking-wider">System-wide performance metrics and Quick Actions</p>
-                </div>
-            </div>
+           
 
             <!-- Metrics Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -26,7 +20,7 @@
                 </div>
 
                 <!-- Active Subscriptions -->
-                <div class="p-6 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl shadow-lg border border-indigo-500 flex flex-col justify-between relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                <div class="p-6 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl shadow-lg border border-indigo-500 flex flex-col justify-between relative overflow-hidden group transition-all duration-300">
                     <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
                     <h3 class="text-indigo-100 text-[10px] font-semibold tracking-widest uppercase z-10">Active Subscriptions</h3>
                     <p class="text-4xl font-bold text-white mt-2 z-10">{{ $activeSubscriptions }}</p>

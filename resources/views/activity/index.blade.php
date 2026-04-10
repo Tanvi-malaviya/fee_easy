@@ -1,7 +1,7 @@
 <x-admin-layout title="Activity Monitoring">
 
     <div class="">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
             
        
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden min-h-[600px]">

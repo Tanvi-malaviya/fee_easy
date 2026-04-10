@@ -1,7 +1,7 @@
 <x-admin-layout title="System Settings">
 
     <div class="">
-        <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-8xl mx-auto">
             
        
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -67,7 +67,7 @@
                     </div>
 
                     <div class=" flex justify-end border-t border-gray-50">
-                        <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition transform ">
+                        <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition transform active:scale-95">
                             Save System Configuration
                         </button>
                     </div>

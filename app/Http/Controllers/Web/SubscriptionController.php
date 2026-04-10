@@ -22,7 +22,15 @@ class SubscriptionController extends Controller
         $institutes = Institute::where('status', 'active')->get();
         $plans = Plan::where('status', true)->get();
         
-        return view('subscriptions.index', compact('subscriptions', 'institutes', 'plans'));
+        $stats = [
+            'active_count' => Subscription::where('status', 'active')->count(),
+            'expiring_count' => Subscription::where('status', 'active')
+                ->where('end_date', '<=', now()->addDays(7))
+                ->count(),
+            'total_revenue' => Subscription::where('status', 'active')->sum('amount'),
+        ];
+        
+        return view('subscriptions.index', compact('subscriptions', 'institutes', 'plans', 'stats'));
     }
 
     /**

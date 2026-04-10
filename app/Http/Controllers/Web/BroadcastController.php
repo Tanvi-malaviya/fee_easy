@@ -36,8 +36,10 @@ class BroadcastController extends Controller
             'title' => 'required|string|max:200',
             'message' => 'required|string',
             'target' => 'required|in:all,active',
-            'channels' => 'required|array',
+            'channels' => 'nullable|array',
         ]);
+
+        $channels = $validated['channels'] ?? ['dashboard'];
 
         $query = Institute::query();
         if ($validated['target'] === 'active') {
@@ -49,7 +51,7 @@ class BroadcastController extends Controller
 
         foreach ($institutes as $institute) {
             // Channel 1: Dashboard Notification
-            if (in_array('dashboard', $request->channels)) {
+            if (in_array('dashboard', $channels)) {
                 Notification::create([
                     'user_type' => 'institute',
                     'user_id' => $institute->id,
@@ -60,7 +62,7 @@ class BroadcastController extends Controller
             }
 
             // Channel 2: WhatsApp (Mock for now, but uses Step 9 infrastructure)
-            if (in_array('whatsapp', $request->channels)) {
+            if (in_array('whatsapp', $channels)) {
                 $whatsapp = $institute->whatsappSettings;
                 if ($whatsapp && $whatsapp->is_active && $whatsapp->access_token) {
                     // In a real app, you'd trigger a job: SendWhatsAppBroadcast::dispatch($institute, $message);

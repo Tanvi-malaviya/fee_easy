@@ -1,71 +1,48 @@
 <x-admin-layout title="WhatsApp Hub">
 
     <div class="">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto ">
         
 
-            <!-- Information Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <!-- Platform Info -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center col-span-1 md:col-span-2 transition hover:shadow-md duration-300">
-                    <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <div class="ml-5">
-                        <h3 class="text-lg font-bold text-gray-900 leading-tight">Meta Official API</h3>
-                        <p class="text-[10px] font-semibold text-gray-400 mt-1 uppercase tracking-wider">Enterprise Messaging Engine</p>
-                    </div>
-                </div>
-
-                <!-- Active Stat -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center col-span-1 md:col-span-2 transition hover:shadow-md duration-300">
-                    <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    </div>
-                    <div class="ml-5">
-                        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Active Integrations</p>
-                        <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ App\Models\InstituteWhatsappSetting::where('is_active', true)->count() }}</h3>
-                    </div>
-                </div>
-            </div>
+        
 
             <!-- Management Table -->
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/75">
-                    <h2 class="text-lg font-bold text-gray-800">Institute Integration Status</h2>
+                    <h2 class="text-lg font-medium text-gray-800">Institute Integration Status</h2>
                     <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Credential Control</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">API Status</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Verified</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Integration</th>
-                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">API Status</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Verified</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Integration</th>
+                                <th class="px-2 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse($institutes as $institute)
                                 <tr class="hover:bg-gray-50/50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</div>
                                         <div class="text-xs text-gray-500 font-medium">{{ $institute->name }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         @if($institute->whatsappSettings && $institute->whatsappSettings->access_token)
                                             <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-green-50 text-green-700 border border-green-100">Credentials Set</span>
                                         @else
                                             <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-gray-50 text-gray-400 border border-gray-100">Not Configured</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         <div class="text-xs font-semibold text-gray-600">
                                             {{ $institute->whatsappSettings && $institute->whatsappSettings->last_verified_at ? $institute->whatsappSettings->last_verified_at->diffForHumans() : 'Never' }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="w-9 h-5 flex items-center {{ $institute->whatsappSettings && $institute->whatsappSettings->is_active ? 'bg-emerald-500' : 'bg-gray-300' }} rounded-full p-1 transition-colors duration-200">
                                                 <div class="bg-white w-3 h-3 rounded-full shadow-sm transform {{ $institute->whatsappSettings && $institute->whatsappSettings->is_active ? 'translate-x-4' : '' }} transition-transform duration-200"></div>
@@ -75,15 +52,15 @@
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <td class="px-2 py-2 whitespace-nowrap text-right">
                                         <div class="flex justify-end gap-2">
                                             <button @click="$dispatch('open-modal', 'edit-whatsapp-{{ $institute->id }}')"
-                                                class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider hover:bg-indigo-100 transition">
+                                                class="px-5 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-100 transition transform active:scale-95 shadow-sm shadow-indigo-100/50">
                                                 Configure
                                             </button>
                                             <form action="{{ route('whatsapp.verify', $institute) }}" method="POST" class="inline">
                                                 @csrf
-                                                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-100 transition">
+                                                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-100 transition transform active:scale-95 shadow-sm shadow-emerald-100/50">
                                                     Verify
                                                 </button>
                                             </form>
@@ -121,8 +98,8 @@
                                                 </div>
 
                                                 <div class="flex justify-end pt-8 mt-8 border-t border-gray-100 gap-3">
-                                                    <button type="button" x-on:click="$dispatch('close')" class="text-sm font-semibold text-gray-500">Cancel</button>
-                                                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition">Save Credentials</button>
+                                                    <button type="button" x-on:click="$dispatch('close')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-gray-700 transition">Cancel</button>
+                                                    <button type="submit" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition transform active:scale-95">Save Credentials</button>
                                                 </div>
                                             </form>
                                         </x-modal>

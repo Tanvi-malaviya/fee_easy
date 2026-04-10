@@ -1,22 +1,9 @@
 <x-admin-layout title="Revenue Analytics">
 
-    <div class="py-6" x-data="{ showModal: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="" x-data="{ showModal: false }">
+        <div class="max-w-7xl mx-auto ">
             
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">Revenue Overview</h2>
-                    <p class="text-sm font-medium text-gray-500 mt-1">Track platform earnings and subscription income.</p>
-                </div>
-                <div>
-                    <button @click="$dispatch('open-modal', 'record-payment')"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:bg-indigo-700 transition shadow-indigo-600/20 whitespace-nowrap">
-                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Record Manual Payment
-                    </button>
-                </div>
-            </div>
+            <!-- Standalone header removed for consistency -->
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -75,42 +62,50 @@
 
             <!-- Transaction History Card -->
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-50 bg-gray-50/75">
-                    <h2 class="text-lg font-bold text-gray-800">Transaction History</h2>
+                <div class="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center bg-gray-50/75 gap-4">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-800 leading-none">Transaction History</h2>
+                       
+                    </div>
+                    <button @click="$dispatch('open-modal', 'record-payment')"
+                        class="inline-flex items-center px-8 py-3 bg-indigo-600 border border-transparent rounded-xl shadow-lg text-xs font-bold text-white uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition transform active:scale-95 shadow-indigo-600/20 whitespace-nowrap">
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Record Manual Payment
+                    </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left divide-y divide-gray-100">
                         <thead>
                             <tr class="bg-gray-50/50">
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date / Time</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Gateway</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date / Time</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Gateway</th>
+                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Amount</th>
+                                <th class="px-2 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
                             @forelse($transactions as $payment)
                                 <tr class="hover:bg-gray-50/50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">{{ $payment->paid_at ? $payment->paid_at->format('d M, Y') : $payment->created_at->format('d M, Y') }}</div>
                                         <div class="text-[10px] text-gray-400 uppercase font-semibold">{{ $payment->created_at->format('H:i A') }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-gray-900">{{ $payment->subscription->institute->institute_name ?? 'N/A' }}</div>
+                                    <td class="px-2 py-2 whitespace-nowrap">
+                                        <div class="text-sm font-bold text-gray-900 leading-tight">{{ $payment->subscription->institute->institute_name ?? 'N/A' }}</div>
                                         <div class="text-xs text-gray-500">{{ $payment->subscription->institute->name ?? 'Deleted' }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-2 py-2 whitespace-nowrap">
                                         <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $payment->payment_gateway == 'razorpay' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-purple-50 text-purple-600 border border-purple-100' }}">
-                                            {{ $payment->payment_gateway }}
+                                            {{ $payment->payment_gateway ?? 'INTERNAL' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-emerald-600">₹{{ number_format($payment->amount, 2) }}</div>
-                                        <div class="text-[10px] font-mono text-gray-400">{{ $payment->transaction_id ?? '---' }}</div>
+                                    <td class="px-2 py-2 whitespace-nowrap text-right">
+                                        <div class="text-sm font-bold text-emerald-600">₹{{ number_format($payment->amount, 0) }}</div>
+                                        <div class="text-[10px] font-mono text-gray-400 italic">ID: {{ $payment->transaction_id ?? '---' }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-lg bg-green-50 text-green-700 border border-green-100">Success</span>
+                                    <td class="px-2 py-2 whitespace-nowrap text-right">
+                                        <span class="px-2.5 py-1 inline-flex text-[10px] font-bold rounded uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Success</span>
                                     </td>
                                 </tr>
                             @empty
@@ -167,10 +162,9 @@
             </div>
 
             <div class="mt-8 flex justify-end gap-3">
-                <button type="button" x-on:click="$dispatch('close')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition">Cancel</button>
-                <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-xl shadow-sm text-sm font-semibold hover:bg-indigo-700 transition shadow-indigo-600/20">Record Revenue</button>
+                <button type="button" x-on:click="$dispatch('close')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-gray-700 transition">Cancel</button>
+                <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition transform active:scale-95 shadow-indigo-600/20">Record Revenue</button>
             </div>
         </form>
     </x-modal>
 </x-admin-layout>
-x-admin-layout>
