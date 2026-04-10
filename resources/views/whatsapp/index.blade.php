@@ -60,7 +60,14 @@
                                             </button>
                                             <form action="{{ route('whatsapp.verify', $institute) }}" method="POST" class="inline">
                                                 @csrf
-                                                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-100 transition transform active:scale-95 shadow-sm shadow-emerald-100/50">
+                                                <button type="submit" 
+                                                    @if(!($institute->whatsappSettings && $institute->whatsappSettings->access_token && $institute->whatsappSettings->phone_number_id && $institute->whatsappSettings->business_account_id)) 
+                                                        disabled 
+                                                        title="Please configure credentials first"
+                                                        class="px-5 py-2 rounded-xl bg-gray-100 text-gray-400 text-[10px] font-bold uppercase tracking-widest cursor-not-allowed shadow-none"
+                                                    @else
+                                                        class="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-100 transition transform active:scale-95 shadow-sm shadow-emerald-100/50"
+                                                    @endif>
                                                     Verify
                                                 </button>
                                             </form>
@@ -77,17 +84,17 @@
                                                 <div class="space-y-6">
                                                     <div>
                                                         <x-input-label for="access_token" value="Meta Access Token" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                                        <x-text-input id="access_token" name="access_token" type="password" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->access_token ?? '' }}" placeholder="EAAW..." />
+                                                        <x-text-input id="access_token" name="access_token" type="password" required class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->access_token ?? '' }}" placeholder="EAAW..." />
                                                     </div>
 
                                                     <div class="grid grid-cols-2 gap-6">
                                                         <div>
                                                             <x-input-label for="phone_number_id" value="Phone Number ID" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                                            <x-text-input id="phone_number_id" name="phone_number_id" type="text" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->phone_number_id ?? '' }}" placeholder="1098..." />
+                                                            <x-text-input id="phone_number_id" name="phone_number_id" type="text" required class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->phone_number_id ?? '' }}" placeholder="1098..." />
                                                         </div>
                                                         <div>
                                                             <x-input-label for="business_account_id" value="Business ID" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                                            <x-text-input id="business_account_id" name="business_account_id" type="text" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->business_account_id ?? '' }}" placeholder="153..." />
+                                                            <x-text-input id="business_account_id" name="business_account_id" type="text" required class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono" value="{{ $institute->whatsappSettings->business_account_id ?? '' }}" placeholder="153..." />
                                                         </div>
                                                     </div>
 

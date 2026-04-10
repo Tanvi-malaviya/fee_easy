@@ -15,7 +15,7 @@
                         </div>
                         <div class="ml-5">
                             <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Today's Revenue</p>
-                            <h3 class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($dailyRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($dailyRevenue, 2, '.', ''))[1] }}</span></h3>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $currency }}{{ number_format($dailyRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($dailyRevenue, 2, '.', ''))[1] }}</span></h3>
                         </div>
                     </div>
                 </div>
@@ -28,7 +28,7 @@
                         </div>
                         <div class="ml-5">
                             <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">This Month ({{ now()->format('M') }})</p>
-                            <h3 class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($thisMonthRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($thisMonthRevenue, 2, '.', ''))[1] }}</span></h3>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $currency }}{{ number_format($thisMonthRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($thisMonthRevenue, 2, '.', ''))[1] }}</span></h3>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="ml-5">
                             <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">This Year ({{ now()->format('Y') }})</p>
-                            <h3 class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($thisYearRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($thisYearRevenue, 2, '.', ''))[1] }}</span></h3>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $currency }}{{ number_format($thisYearRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($thisYearRevenue, 2, '.', ''))[1] }}</span></h3>
                         </div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="ml-5">
                             <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Total Revenue</p>
-                            <h3 class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($totalRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($totalRevenue, 2, '.', ''))[1] }}</span></h3>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $currency }}{{ number_format($totalRevenue, 0) }}<span class="text-sm font-semibold text-gray-400">.{{ explode('.', number_format($totalRevenue, 2, '.', ''))[1] }}</span></h3>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                                         </span>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-right">
-                                        <div class="text-sm font-bold text-emerald-600">₹{{ number_format($payment->amount, 0) }}</div>
+                                        <div class="text-sm font-bold text-emerald-600">{{ $currency }}{{ number_format($payment->amount, 0) }}</div>
                                         <div class="text-[10px] font-mono text-gray-400 italic">ID: {{ $payment->transaction_id ?? '---' }}</div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-right">
@@ -146,7 +146,7 @@
 
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <x-input-label for="amount" value="Amount Paid (₹)" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                        <x-input-label for="amount" value="Amount Paid ({{ $currency }})" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                         <x-text-input id="amount" name="amount" type="number" step="0.01" class="mt-1 block w-full bg-gray-50 border-gray-200 rounded-xl py-2 px-3 text-sm" placeholder="e.g. 5000" required />
                     </div>
                     <div>

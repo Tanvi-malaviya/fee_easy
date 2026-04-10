@@ -22,7 +22,7 @@
                     </div>
 
                     <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700">Price ($) <span class="text-red-500">*</span></label>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price ({{ $currency }}) <span class="text-red-500">*</span></label>
                         <input type="number" step="0.01" name="price" id="price" value="{{ old('price', $plan->price) }}" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white">
                     </div>
 

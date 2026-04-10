@@ -33,7 +33,7 @@
                 <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
                     <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full opacity-50 group-hover:bg-green-100 transition-colors"></div>
                     <h3 class="text-gray-500 text-[10px] font-bold tracking-widest uppercase z-10">Total Revenue</h3>
-                    <p class="text-4xl font-bold text-emerald-600 mt-2 z-10">₹{{ number_format($totalRevenue, 0) }}</p>
+                    <p class="text-4xl font-bold text-emerald-600 mt-2 z-10">{{ $currency }}{{ number_format($totalRevenue, 0) }}</p>
                     <div class="mt-4 flex items-center text-xs font-semibold text-emerald-600 z-10">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                         <span>Growth Active</span>

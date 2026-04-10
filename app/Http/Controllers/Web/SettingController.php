@@ -14,7 +14,7 @@ class SettingController extends Controller
      */
     public function index()
     {
-        $settings = SystemSetting::all()->groupBy('group');
+        $settings = SystemSetting::pluck('value', 'key');
         return view('settings.index', compact('settings'));
     }
 
@@ -25,11 +25,13 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'settings' => 'required|array',
-            'settings.*' => 'nullable|string',
         ]);
 
-        foreach ($validated['settings'] as $key => $value) {
-            SystemSetting::set($key, $value);
+        foreach ($request->input('settings') as $key => $value) {
+            SystemSetting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value, 'group' => 'general']
+            );
         }
 
         Activity::log("Global system settings updated");

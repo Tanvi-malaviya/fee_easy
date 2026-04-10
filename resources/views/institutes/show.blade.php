@@ -112,7 +112,7 @@
                                             {{ \Carbon\Carbon::parse($sub->end_date)->format('d M, Y') }}
                                         </td>
                                         <td class="px-8 py-4 text-sm font-bold text-indigo-600">
-                                            ₹{{ number_format($sub->amount, 2) }}
+                                            {{ $currency }}{{ number_format($sub->amount, 2) }}
                                         </td>
                                         <td class="px-8 py-4 text-right">
                                             <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase

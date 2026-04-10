@@ -38,7 +38,7 @@
                                          <div class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-0.5">ID: #PLN-{{ $plan->id }}</div>
                                      </td>
                                      <td class="px-2 py-2 whitespace-nowrap text-center">
-                                         <div class="text-sm font-bold text-emerald-600">₹{{ number_format($plan->price, 0) }}</div>
+                                         <div class="text-sm font-bold text-emerald-600">{{ $currency }}{{ number_format($plan->price, 0) }}</div>
                                          <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{{ $plan->duration_days }} Days</div>
                                      </td>
                                      <td class="px-2 py-2 whitespace-nowrap text-center">

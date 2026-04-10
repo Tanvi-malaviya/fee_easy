@@ -143,7 +143,7 @@
             <div class="h-16 flex items-center justify-between px-6 border-b border-gray-800">
                 <span x-show="!sidebarCollapsed"
                     class="text-xl font-bold text-white tracking-wider flex items-center gap-2">
-                    ⚡ FeeEasy
+                    ⚡ {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
                 </span>
 
                 <!-- Desktop Collapse Button -->
@@ -153,7 +153,7 @@
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto w-full custom-scrollbar">
+            <nav class="flex-1 px-4 py-4 space-y-1 w-full overflow-y-hidden">
 
                 <!-- Core -->
                 <!-- <div x-show="!sidebarCollapsed" class="px-4 mt-4 mb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">

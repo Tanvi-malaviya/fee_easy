@@ -18,12 +18,12 @@
                             <div>
                                 <x-input-label for="site_name" value="Site Name" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 <x-text-input id="site_name" name="settings[site_name]" type="text" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm" 
-                                    value="{{ App\Models\SystemSetting::get('site_name') }}" placeholder="FeeEasy" />
+                                    value="{{ $settings['site_name'] ?? '' }}" placeholder="FeeEasy" />
                             </div>
                             <div>
                                 <x-input-label for="support_email" value="Support Email Address" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 <x-text-input id="support_email" name="settings[support_email]" type="email" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm" 
-                                    value="{{ App\Models\SystemSetting::get('support_email') }}" placeholder="support@feeeasy.com" />
+                                    value="{{ $settings['support_email'] ?? '' }}" placeholder="support@feeeasy.com" />
                             </div>
                         </div>
 
@@ -38,12 +38,12 @@
                             <div>
                                 <x-input-label for="currency_symbol" value="Primary Currency Symbol" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 <x-text-input id="currency_symbol" name="settings[currency_symbol]" type="text" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm" 
-                                    value="{{ App\Models\SystemSetting::get('currency_symbol', '₹') }}" placeholder="₹" />
+                                    value="{{ $settings['currency_symbol'] ?? '₹' }}" placeholder="₹" />
                             </div>
                             <div>
                                 <x-input-label for="default_trial_days" value="Global Default Trial (Days)" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 <x-text-input id="default_trial_days" name="settings[default_trial_days]" type="number" class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm" 
-                                    value="{{ App\Models\SystemSetting::get('default_trial_days', 14) }}" placeholder="14" />
+                                    value="{{ $settings['default_trial_days'] ?? 14 }}" placeholder="14" />
                             </div>
                         </div>
 
