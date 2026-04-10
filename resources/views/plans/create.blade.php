@@ -1,27 +1,20 @@
-<x-admin-layout>
-    <x-slot name="header">
-        <div class="flex items-center">
-            <a href="{{ route('plans.index') }}" class="text-indigo-600 hover:text-indigo-800 mr-4 transition">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            </a>
-            <div>
-                <h2 class="font-bold text-2xl text-gray-800 leading-tight tracking-tight">
-                    {{ __('Create New Plan') }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">Configure pricing packages and durations.</p>
-            </div>
-        </div>
-    </x-slot>
+<x-admin-layout title="Create New Plan">
 
-    <div class="mt-6 max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <form action="{{ route('plans.store') }}" method="POST">
             @csrf
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-8 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-lg font-semibold text-gray-900">Plan Details</h3>
+                <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-4">
+                    <a href="{{ route('plans.index') }}" class="p-2 bg-white rounded-xl shadow-sm border border-gray-100 text-gray-400 hover:text-indigo-600 transition transform active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </a>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 leading-none">Plan Details</h3>
+                        <p class="text-xs text-gray-500 font-medium mt-1">Configure pricing packages and durations</p>
+                    </div>
                 </div>
                 
-                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Plan Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="name" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="e.g. Basic Server">
@@ -52,8 +45,8 @@
                 </div>
 
                 <div class="bg-gray-50 px-8 py-5 border-t border-gray-200 flex justify-end gap-3 rounded-b-2xl">
-                    <a href="{{ route('plans.index') }}" class="px-6 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition shadow-sm bg-white">Cancel</a>
-                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition font-medium text-sm">Save Plan</button>
+                    <a href="{{ route('plans.index') }}" class="px-8 py-3 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:bg-gray-100 transition shadow-sm bg-white active:scale-95">Cancel</a>
+                    <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition font-bold text-xs uppercase tracking-widest active:scale-95">Save Plan</button>
                 </div>
             </div>
         </form>

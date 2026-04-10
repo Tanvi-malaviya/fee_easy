@@ -53,15 +53,18 @@ class InstituteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'institute_name' => 'nullable|string|max:255',
+            'institute_name' => 'required|string|max:255',
             'email' => 'required|email|unique:institutes,email|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
-            'status' => 'required|string',
+            'phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'pincode' => 'required|string|regex:/^[0-9]{6}$/',
+            'status' => 'required|string|in:active,inactive,suspended',
             'logo' => 'nullable|image|max:2048',
+        ], [
+            'phone.regex' => 'The phone number must be exactly 10 digits.',
+            'pincode.regex' => 'The pincode must be exactly 6 digits.',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -92,7 +95,17 @@ class InstituteController extends Controller
      */
     public function show(Institute $institute)
     {
-        // Show logic
+        $institute->load(['subscriptions' => function($q) {
+            $q->latest();
+        }, 'whatsappSettings']);
+
+        $stats = [
+            'students_count' => $institute->students()->count(),
+            'batches_count' => $institute->batches()->count(),
+            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first() ?? $institute->subscriptions()->where('status', 'trial')->first(),
+        ];
+
+        return view('institutes.show', compact('institute', 'stats'));
     }
 
     /**
@@ -110,15 +123,18 @@ class InstituteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'institute_name' => 'nullable|string|max:255',
+            'institute_name' => 'required|string|max:255',
             'email' => 'required|email|unique:institutes,email,' . $institute->id . '|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
-            'status' => 'required|string',
+            'phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'pincode' => 'required|string|regex:/^[0-9]{6}$/',
+            'status' => 'required|string|in:active,inactive,suspended',
             'logo' => 'nullable|image|max:2048',
+        ], [
+            'phone.regex' => 'The phone number must be exactly 10 digits.',
+            'pincode.regex' => 'The pincode must be exactly 6 digits.',
         ]);
 
         if ($request->hasFile('logo')) {
