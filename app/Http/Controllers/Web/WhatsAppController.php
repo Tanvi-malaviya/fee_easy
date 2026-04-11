@@ -25,14 +25,13 @@ class WhatsAppController extends Controller
     public function update(Request $request, Institute $institute)
     {
         $validated = $request->validate([
+            'phone_number' => 'nullable|regex:/^[0-9]{10}$/',
             'access_token' => 'nullable|string',
-            'phone_number_id' => 'nullable|string',
-            'business_account_id' => 'nullable|string',
-            'is_active' => 'boolean',
+            'business_account_id' => 'nullable|numeric',
         ]);
 
-        // Ensure is_active is boolean since checkbox might not send it if unchecked
-        $validated['is_active'] = $request->has('is_active');
+        // Automatically set is_active to true if credentials are provided
+        $validated['is_active'] = !empty($validated['access_token']) && !empty($validated['phone_number']);
 
         $institute->whatsappSettings()->updateOrCreate(
             ['institute_id' => $institute->id],
@@ -49,8 +48,8 @@ class WhatsAppController extends Controller
     {
         $settings = $institute->whatsappSettings;
 
-        if (!$settings || !$settings->access_token || !$settings->phone_number_id) {
-            return redirect()->back()->with('error', 'Incomplete credentials. Please provide Access Token and Phone Number ID.');
+        if (!$settings || !$settings->access_token || !$settings->phone_number) {
+            return redirect()->back()->with('error', 'Incomplete credentials. Please provide Access Token and WhatsApp Phone Number.');
         }
 
         // Mocking an API call

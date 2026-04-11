@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 
-                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Plan Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="name" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="e.g. Basic Server">
