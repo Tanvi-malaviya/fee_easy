@@ -1,25 +1,49 @@
 <x-admin-layout title="Create New Institute">
+    <!-- 🔥 Fix dropdown UI -->
+    <style>
+        .ss-content {
+            z-index: 9999 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .ss-search {
+            order: -1 !important; /* Force search to the top */
+            padding: 8px 10px !important;
+        }
+        .ss-list {
+            max-height: 200px !important;
+        }
+        .ss-main {
+            border-radius: 0.75rem !important;
+            border: 1px solid #d1d5db !important;
+            padding: 4px 6px !important;
+            background-color: #f9fafb !important;
+        }
+        .ss-option {
+            padding: 6px 10px !important;
+            font-size: 13px !important;
+        }
+    </style>
 
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-5xl mx-auto py-6">
+        <div class="flex items-center gap-4 mb-4">
+            <a href="{{ route('institutes.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to List
+            </a>
+        </div>
+
         <form action="{{ route('institutes.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-4">
-                    <a href="{{ route('institutes.index') }}" class="p-2 bg-white rounded-xl shadow-sm border border-gray-100 text-gray-400 hover:text-indigo-600 transition transform active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    </a>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 leading-none">Institute Profile</h3>
-                        <p class="text-xs text-gray-500 font-medium mt-1">General details about the educational enterprise</p>
-                    </div>
-                </div>
-                
-                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-visible">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Institute Name -->
                     <div>
                         <label for="institute_name" class="block text-sm font-medium text-gray-700">Institute Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="institute_name" id="institute_name" value="{{ old('institute_name') }}" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('institute_name') border-red-500 @enderror" placeholder="e.g. Acme Academy">
+                        <input type="text" name="institute_name" id="institute_name" value="{{ old('institute_name') }}" required 
+                            oninput="clearError(this)"
+                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('institute_name') border-red-500 @enderror" placeholder="e.g. Acme Academy">
                         @error('institute_name')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -28,7 +52,9 @@
                     <!-- Owner Name -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Owner Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('name') border-red-500 @enderror" placeholder="John Doe">
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" required 
+                            oninput="clearError(this)"
+                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('name') border-red-500 @enderror" placeholder="John Doe">
                         @error('name')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -37,7 +63,9 @@
                     <!-- Email Address -->
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Contact Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('email') border-red-500 @enderror" placeholder="contact@acme.edu">
+                        <input type="email" name="email" id="email" value="{{ old('email') }}" required 
+                            oninput="clearError(this)"
+                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('email') border-red-500 @enderror" placeholder="contact@acme.edu">
                         @error('email')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -46,7 +74,9 @@
                     <!-- Phone Number -->
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="+1 (555) 000-0000">
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required 
+                            oninput="clearError(this)"
+                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="+1 (555) 000-0000">
                         @error('phone')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -55,7 +85,21 @@
                     <!-- Logo Upload -->
                     <div>
                         <label for="logo" class="block text-sm font-medium text-gray-700">Institute Logo</label>
-                        <input type="file" name="logo" id="logo" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition @error('logo') border-red-500 @enderror">
+                        <input type="hidden" name="logo_base64" id="logo_base64" value="{{ old('logo_base64') }}">
+                        <div class="mt-1 flex items-center gap-4">
+                            <div class="flex-shrink-0">
+                                <div id="logo-preview" class="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                                     @if(old('logo_base64'))
+                                        <img src="{{ old('logo_base64') }}" class="w-full h-full object-cover">
+                                     @else
+                                        <span class="text-xl text-gray-300">🏢</span>
+                                     @endif
+                                </div>
+                            </div>
+                            <input type="file" name="logo" id="logo" accept="image/*" 
+                                onchange="previewImage(this)"
+                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition @error('logo') border-red-500 @enderror">
+                        </div>
                         @error('logo')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -65,7 +109,9 @@
                     <!-- Status -->
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
-                        <select name="status" id="status" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('status') border-red-500 @enderror">
+                        <select name="status" id="status" required 
+                            onchange="clearError(this)"
+                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('status') border-red-500 @enderror">
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             <option value="suspended" {{ old('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
@@ -82,10 +128,12 @@
                         <h3 class="text-lg font-semibold text-gray-900">Location Details</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label for="address" class="block text-sm font-medium text-gray-700">Full Address</label>
-                            <input type="text" name="address" id="address" value="{{ old('address') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('address') border-red-500 @enderror" placeholder="123 Education Lane">
+                            <input type="text" name="address" id="address" value="{{ old('address') }}" 
+                                oninput="clearError(this)"
+                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('address') border-red-500 @enderror" placeholder="123 Education Lane">
                             @error('address')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
@@ -93,17 +141,19 @@
                         
                         <div>
                             <label for="state" class="block text-sm font-medium text-gray-700">State / Province</label>
-                            <select name="state" id="state" class="mt-1 block w-full"></select>
+                            <select name="state" id="state" onchange="clearError(document.getElementById('state'))"></select>
                         </div>
 
                         <div>
                             <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                            <select name="city" id="city" class="mt-1 block w-full"></select>
+                            <select name="city" id="city" onchange="clearError(document.getElementById('city'))"></select>
                         </div>
 
                         <div>
                             <label for="pincode" class="block text-sm font-medium text-gray-700">Pin Code / Zip</label>
-                            <input type="text" name="pincode" id="pincode" value="{{ old('pincode') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('pincode') border-red-500 @enderror">
+                            <input type="text" name="pincode" id="pincode" value="{{ old('pincode') }}" 
+                                oninput="clearError(this)"
+                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('pincode') border-red-500 @enderror">
                             @error('pincode')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
@@ -111,7 +161,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 px-8 py-5 border-t border-gray-200 flex justify-end gap-3 rounded-b-2xl">
+                <div class="bg-gray-50 px-8 py-5 border-t border-gray-200 flex justify-end gap-3 rounded-b-3xl">
                     <a href="{{ route('institutes.index') }}" class="px-8 py-3 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:bg-gray-100 transition shadow-sm bg-white active:scale-95">
                         Cancel
                     </a>
@@ -122,71 +172,118 @@
             </div>
         </form>
     </div>
+
+    <!-- ✅ SlimSelect Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.css" rel="stylesheet"/>
     <script src="{{ asset('js/location_data.js') }}"></script>
+
     <script>
         let stateSelect;
         let citySelect;
 
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             if (typeof SlimSelect === 'undefined' || !window.indiaLocations) {
                 console.error('SlimSelect or Location data NOT loaded');
                 return;
             }
 
-            // Initialize State Select
-            const stateOptions = [{
-                text: 'Select State',
-                value: '',
-                placeholder: true
-            }, ...Object.keys(window.indiaLocations).sort().map(state => ({
-                text: state,
-                value: state
-            }))];
+            const oldState = "{{ old('state') }}";
+            const oldCity = "{{ old('city') }}";
 
+            // ✅ City Select Initialization
+            citySelect = new SlimSelect({
+                select: '#city',
+                contentLocation: document.body,
+                settings: {
+                    placeholderText: 'Select City',
+                    showSearch: false
+                },
+                data: [{ text: 'Select City', value: '' }]
+            });
+
+            // ✅ State Select Initialization
             stateSelect = new SlimSelect({
                 select: '#state',
-                data: stateOptions,
-                contentLocation: document.querySelector('body'),
+                contentLocation: document.body,
+                settings: {
+                    placeholderText: 'Select State',
+                    showSearch: false
+                },
+                data: [
+                    { text: 'Select State', value: '' },
+                    ...Object.keys(window.indiaLocations).sort().map(state => ({
+                        text: state,
+                        value: state
+                    }))
+                ],
                 events: {
                     afterChange: (newVal) => {
-                        updateCities(newVal[0].value);
+                        const state = newVal[0]?.value;
+                        updateCities(state);
+                        clearError(document.getElementById('state'));
                     }
                 }
             });
 
-            // Initialize City Select
-            citySelect = new SlimSelect({
-                select: '#city',
-                contentLocation: document.querySelector('body'),
-                data: [{
-                    text: 'Select a state first',
-                    value: '',
-                    placeholder: true
-                }]
-            });
+            // ✅ Handle Pre-filling old values
+            if (oldState) {
+                stateSelect.setSelected(oldState);
+                updateCities(oldState);
+                
+                if (oldCity) {
+                    setTimeout(() => {
+                        citySelect.setSelected(oldCity);
+                    }, 150);
+                }
+            }
         });
 
         function updateCities(stateName) {
             if (!stateName) {
-                citySelect.setData([{
-                    text: 'Select a state first',
-                    value: '',
-                    placeholder: true
-                }]);
+                citySelect.setData([{ text: 'Select City', value: '' }]);
                 return;
             }
 
             const cities = window.indiaLocations[stateName] || [];
-            const cityOptions = [{
-                text: 'Select City',
-                value: '',
-                placeholder: true
-            }, ...cities.sort().map(city => ({
-                text: city,
-                value: city
-            }))];
+            citySelect.setData([
+                { text: 'Select City', value: '' },
+                ...cities.map(city => ({
+                    text: city,
+                    value: city
+                }))
+            ]);
+        }
 
-            citySelect.setData(cityOptions);
+        function previewImage(input) {
+            const preview = document.getElementById('logo-preview');
+            const hidden = document.getElementById('logo_base64');
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    preview.innerHTML = `<img src="${base64}" class="w-full h-full object-cover">`;
+                    hidden.value = base64;
+                }
+                reader.readAsDataURL(file);
+            }
+            clearError(input);
+        }
+
+        function clearError(el) {
+            if (!el) return;
+            el.classList.remove('border-red-500');
+            const ssMain = el.nextElementSibling;
+            if (ssMain && ssMain.classList.contains('ss-main')) {
+                ssMain.style.borderColor = '#d1d5db';
+            }
+
+            const parent = el.closest('div');
+            const errorMsg = parent.querySelector('p.text-red-500');
+            if (errorMsg) {
+                errorMsg.classList.add('hidden');
+            }
         }
     </script>
 </x-admin-layout>

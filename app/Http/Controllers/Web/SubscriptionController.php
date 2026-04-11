@@ -16,18 +16,46 @@ class SubscriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = Subscription::with('institute')->latest()->paginate(10);
+        $query = Subscription::with('institute');
+
+        // Search Filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('institute', function ($q) use ($search) {
+                $q->where('institute_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        // Status Filter
+        if ($request->filled('status') && $request->status !== 'all') {
+            $status = $request->status;
+            if ($status === 'expired') {
+                $query->where('end_date', '<', now());
+            } else if ($status === 'active') {
+                $query->where('status', 'active')->where('end_date', '>=', now());
+            } else {
+                $query->where('status', '=', $status);
+            }
+        }
+
+        $subscriptions = $query->orderBy('end_date', 'asc')->paginate(10);
+
         $institutes = Institute::where('status', 'active')->get();
         $plans = Plan::where('status', true)->get();
         
+        $paginatedItems = collect($subscriptions->items());
+        
         $stats = [
-            'active_count' => Subscription::where('status', 'active')->count(),
-            'expiring_count' => Subscription::where('status', 'active')
-                ->where('end_date', '<=', now()->addDays(7))
+            'active_count' => $paginatedItems->where('status', 'active')->count(),
+            'expiring_count' => $paginatedItems->where('status', 'active')
+                ->filter(function($sub) {
+                    return \Carbon\Carbon::parse($sub->end_date)->lte(now()->addDays(7));
+                })
                 ->count(),
-            'total_revenue' => Subscription::where('status', 'active')->sum('amount'),
+            'total_revenue' => $paginatedItems->where('status', 'active')->sum('amount'),
         ];
         
         return view('subscriptions.index', compact('subscriptions', 'institutes', 'plans', 'stats'));

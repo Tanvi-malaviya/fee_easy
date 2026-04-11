@@ -11,6 +11,7 @@ class InstituteWhatsappSetting extends Model
 
     protected $fillable = [
         'institute_id',
+        'phone_number',
         'access_token',
         'phone_number_id',
         'business_account_id',

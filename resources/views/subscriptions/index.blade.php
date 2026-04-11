@@ -4,79 +4,73 @@
         <div class="max-w-7xl mx-auto">
         
 
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-xl bg-green-50 text-green-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <!-- Filters & Search -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                <form id="search-form" action="{{ route('subscriptions.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Subscriptions</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['active_count'] }}</p>
-                        </div>
+                        <input type="text" id="search-input" name="search" value="{{ request('search') }}" autocomplete="off"
+                            placeholder="Search by institute or owner name..." 
+                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
                     </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-xl bg-orange-50 text-orange-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Expiring Soon</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['expiring_count'] }}</p>
-                        </div>
+                    
+                    <div class="w-full md:w-48">
+                        <select name="status" onchange="this.form.submit()" 
+                            class="block w-full pl-3 pr-10 py-2.5 text-sm border-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-gray-50 transition font-medium text-gray-700 cursor-pointer">
+                            <option value="all">All Status</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="trial" {{ request('status') == 'trial' ? 'selected' : '' }}>Trial</option>
+                            <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
                     </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Estimated revenue</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($stats['total_revenue'], 0) }}</p>
-                        </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="$dispatch('open-modal', 'assign-plan')"
+                            class="inline-flex items-center px-6 py-2.5 border border-transparent rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition transform active:scale-95 whitespace-nowrap">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Assign New Plan
+                        </button>
+                        @if(request()->has('search') || request()->has('status'))
+                            <a href="{{ route('subscriptions.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
+                                Clear
+                            </a>
+                        @endif
                     </div>
-                </div>
+                </form>
             </div>
 
             <!-- Management Table -->
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center bg-gray-50/75 gap-4">
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-800 leading-none">Institute Subscriptions</h2>
-
-                    </div>
-                    <button @click="$dispatch('open-modal', 'assign-plan')"
-                        class="inline-flex items-center px-8 py-3 border border-transparent rounded-xl shadow-lg shadow-indigo-600/20 text-xs font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition transform active:scale-95 shadow-indigo-600/20 whitespace-nowrap">
-                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Assign New Plan
-                    </button>
-                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
-                                <th class="px-2 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
-                                <th class="px-2 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Plan</th>
-                                <th class="px-2 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Validity</th>
-                                <th class="px-2 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-2 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Plan</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Validity</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
                             @forelse($subscriptions as $subscription)
                                 <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900 leading-tight">{{ $subscription->institute->institute_name }}</div>
                                         <div class="text-xs text-gray-500 font-medium mt-0.5">{{ $subscription->institute->name }}</div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">{{ $subscription->plan_name }}</div>
-                                        <div class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-1">₹{{ number_format($subscription->amount, 0) }}</div>
+                                        <div class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-1">{{ $currency }}{{ number_format($subscription->amount, 0) }}</div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-col">
                                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Expires On</span>
                                             <span class="text-sm font-bold text-gray-900 mt-0.5">{{ \Carbon\Carbon::parse($subscription->end_date)->format('d M, Y') }}</span>
@@ -97,7 +91,7 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                          @php $status = trim(strtolower($subscription->status)); @endphp
                                          <span class="px-2 py-0.5 inline-flex text-[10px] font-bold rounded uppercase tracking-wider
                                              @if($status == 'active') bg-emerald-50 text-emerald-700 border border-emerald-100 
@@ -107,7 +101,7 @@
                                              {{ $status == 'trial' ? 'Trial' : $status }}
                                          </span>
                                      </td>
-                                     <td class="px-2 py-2 whitespace-nowrap text-right">
+                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                          <div class="flex justify-end items-center gap-1">
                                              @if($status == 'trial')
                                                  <button @click="$dispatch('open-modal', 'convert-trial-{{ $subscription->id }}')"
@@ -115,7 +109,7 @@
                                                      Paid
                                                  </button>
                                              @endif
- 
+
                                              @if($status == 'cancelled')
                                                  <form action="{{ route('subscriptions.activate', $subscription) }}" method="POST" class="inline">
                                                      @csrf @method('PATCH')
@@ -145,9 +139,9 @@
 
                                                 <div class="mt-8">
                                                     <x-input-label for="plan_id" value="Select Purchased Plan" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                                    <select name="plan_id" id="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition" required>
+                                                    <select name="plan_id" id="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat pr-10" required>
                                                         @foreach($plans as $plan)
-                                                            <option value="{{ $plan->id }}">{{ $plan->name }} (₹{{ number_format($plan->price, 0) }})</option>
+                                                            <option value="{{ $plan->id }}">{{ $plan->name }} ({{ $currency }}{{ number_format($plan->price, 0) }})</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -171,7 +165,7 @@
                                                         <x-text-input id="days" name="days" type="number" class="mt-1 block w-full py-3 px-4 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="e.g. 30" required />
                                                     </div>
                                                     <div>
-                                                        <x-input-label for="amount" value="Amount Received (₹)" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                                        <x-input-label for="amount" value="Amount Received ({{ $currency }})" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                                         <x-text-input id="amount" name="amount" type="number" step="0.01" class="mt-1 block w-full py-3 px-4 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="0.00" required />
                                                     </div>
                                                 </div>
@@ -186,7 +180,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-bold uppercase tracking-widest opacity-50">No subscriptions active</td>
+                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-bold uppercase tracking-widest opacity-50">No subscriptions found</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -195,10 +189,35 @@
                 
                 @if($subscriptions->hasPages())
                     <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-100">
-                        {{ $subscriptions->links() }}
+                        {{ $subscriptions->appends(request()->query())->links() }}
                     </div>
                 @endif
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchInput = document.getElementById('search-input');
+                    const searchForm = document.getElementById('search-form');
+                    let timeout = null;
+
+                    if (searchInput) {
+                        // To maintain focus and put cursor at the end
+                        if (searchInput.value !== "") {
+                            searchInput.focus();
+                            const val = searchInput.value;
+                            searchInput.value = '';
+                            searchInput.value = val;
+                        }
+
+                        searchInput.addEventListener('input', function() {
+                            clearTimeout(timeout);
+                            timeout = setTimeout(() => {
+                                searchForm.submit();
+                            }, 500); // 500ms debounce
+                        });
+                    }
+                });
+            </script>
         </div>
     </div>
 
@@ -212,7 +231,7 @@
             <div class="mt-8 space-y-6">
                 <div>
                     <x-input-label for="institute_id" value="Select Institute" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                    <select name="institute_id" id="institute_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition">
+                    <select name="institute_id" id="institute_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat pr-10">
                         @foreach($institutes as $institute)
                             <option value="{{ $institute->id }}">{{ $institute->institute_name }} ({{ $institute->name }})</option>
                         @endforeach
@@ -221,9 +240,9 @@
 
                 <div>
                     <x-input-label for="plan_id" value="Select Billing Plan" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                    <select name="plan_id" id="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition">
+                    <select name="plan_id" id="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm font-bold py-3 px-4 transition appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat pr-10">
                         @foreach($plans as $plan)
-                            <option value="{{ $plan->id }}">{{ $plan->name }} - ₹{{ number_format($plan->price, 0) }} ({{ $plan->duration_days }} days)</option>
+                            <option value="{{ $plan->id }}">{{ $plan->name }} - {{ $currency }}{{ number_format($plan->price, 0) }} ({{ $plan->duration_days }} days)</option>
                         @endforeach
                     </select>
                 </div>

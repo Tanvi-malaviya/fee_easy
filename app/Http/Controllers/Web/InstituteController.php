@@ -67,27 +67,24 @@ class InstituteController extends Controller
             'pincode.regex' => 'The pincode must be exactly 6 digits.',
         ]);
 
-        if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('institutes/logos', 'public');
-        }
+        $validated['logo'] = $this->handleLogo($request);
 
         $institute = Institute::create($validated);
+        $trialDays = \App\Models\SystemSetting::get('default_trial_days', 14);
 
-        // Create Default 14-day Trial Subscription
+        // Create Default Trial Subscription
         Subscription::create([
             'institute_id' => $institute->id,
             'plan_name' => 'Free Trial',
             'amount' => 0,
             'start_date' => now(),
-            'end_date' => now()->addDays(14),
+            'end_date' => now()->addDays($trialDays),
             'status' => 'trial',
         ]);
 
-        
-
         Activity::log("New institute registered: {$institute->institute_name}");
 
-        return redirect()->route('institutes.index')->with('success', 'Institute created successfully with 14-day free trial.');
+        return redirect()->route('institutes.index')->with('success', "Institute created successfully with {$trialDays}-day free trial.");
     }
 
     /**
@@ -130,19 +127,16 @@ class InstituteController extends Controller
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
-            'status' => 'required|string|in:active,inactive,suspended',
+            'status' => 'required|string|in:active,inactive,suspended,blocked',
             'logo' => 'nullable|image|max:2048',
         ], [
             'phone.regex' => 'The phone number must be exactly 10 digits.',
             'pincode.regex' => 'The pincode must be exactly 6 digits.',
         ]);
 
-        if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($institute->logo && \Storage::disk('public')->exists($institute->logo)) {
-                \Storage::disk('public')->delete($institute->logo);
-            }
-            $validated['logo'] = $request->file('logo')->store('institutes/logos', 'public');
+        $newLogo = $this->handleLogo($request, $institute->logo);
+        if ($newLogo) {
+            $validated['logo'] = $newLogo;
         }
 
         $institute->update($validated);
@@ -176,5 +170,53 @@ class InstituteController extends Controller
         Activity::log("Institute status changed to {$request->status} for: {$institute->institute_name}");
 
         return redirect()->back()->with('success', 'Institute status updated to ' . ucfirst($request->status));
+    }
+
+    /**
+     * Handle Logo Upload (Support for file and base64 fallback)
+     */
+    private function handleLogo(Request $request, $existingLogo = null)
+    {
+        // 1. Check for real file upload first
+        if ($request->hasFile('logo')) {
+            if ($existingLogo && \Storage::disk('public')->exists($existingLogo)) {
+                \Storage::disk('public')->delete($existingLogo);
+            }
+            return $request->file('logo')->store('institutes/logos', 'public');
+        }
+
+        // 2. Fallback to base64 persistence if file is missing (e.g. after validation error)
+        if ($request->has('logo_base64') && !empty($request->logo_base64)) {
+            try {
+                $base64Data = $request->logo_base64;
+                
+                // Extract image data
+                if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+                    $data = substr($base64Data, strpos($base64Data, ',') + 1);
+                    $type = strtolower($type[1]); // jpg, png, etc
+
+                    if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
+                        return $existingLogo;
+                    }
+
+                    $data = base64_decode($data);
+                    if ($data === false) return $existingLogo;
+
+                    // Delete old logo if replacing with base64 recovery
+                    if ($existingLogo && \Storage::disk('public')->exists($existingLogo)) {
+                        \Storage::disk('public')->delete($existingLogo);
+                    }
+
+                    $fileName = 'institutes/logos/' . uniqid() . '.' . $type;
+                    \Storage::disk('public')->put($fileName, $data);
+                    
+                    return $fileName;
+                }
+            } catch (\Exception $e) {
+                // Silently fail and return existing or null
+            }
+        }
+
+        return $existingLogo;
     }
 }

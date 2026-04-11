@@ -1,4 +1,15 @@
 <x-admin-layout title="Create New Plan">
+    <style>
+        /* Hide spin buttons for number inputs */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 
     <div class="max-w-7xl mx-auto">
         <form action="{{ route('plans.store') }}" method="POST">
@@ -14,30 +25,30 @@
                     </div>
                 </div>
                 
-                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Plan Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="name" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="e.g. Basic Server">
                     </div>
 
                     <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700">Price ($) <span class="text-red-500">*</span></label>
-                        <input type="number" step="0.01" name="price" id="price" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="99.99">
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price ({{ $currency }}) <span class="text-red-500">*</span></label>
+                        <input type="number" step="1" min="0" name="price" id="price" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="100">
                     </div>
 
                     <div>
                         <label for="duration_days" class="block text-sm font-medium text-gray-700">Duration (Days) <span class="text-red-500">*</span></label>
-                        <input type="number" name="duration_days" id="duration_days" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="365">
+                        <input type="number" name="duration_days" id="duration_days" min="1" max="365" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="365">
                     </div>
 
                     <div>
-                        <label for="trial_days" class="block text-sm font-medium text-gray-700">Trial Period (Days) <span class="text-red-500">*</span></label>
-                        <input type="number" name="trial_days" id="trial_days" value="14" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="14">
+                        <label for="trial_days" class="block text-sm font-medium text-gray-700">Trial Period (Days)</label>
+                        <input type="number" name="trial_days" id="trial_days" value="{{ $default_trial }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white" placeholder="{{ $default_trial }}">
                     </div>
 
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
-                        <select name="status" id="status" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white">
+                        <select name="status" id="status" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white">
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
                         </select>

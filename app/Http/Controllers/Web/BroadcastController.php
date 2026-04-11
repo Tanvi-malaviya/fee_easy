@@ -14,17 +14,35 @@ class BroadcastController extends Controller
     /**
      * Display the broadcast center.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get unique recent broadcasts (grouped by content)
-        $recentNotifications = Notification::where('type', 'system_broadcast')
-            ->select('title', 'message', 'created_at')
-            ->groupBy('title', 'message', 'created_at')
-            ->latest()
+        $totalInstitutes = Institute::count();
+        $subscribedInstitutes = Institute::whereHas('subscriptions', function ($query) {
+            $query->where('end_date', '>=', now())
+                  ->whereIn('status', ['active', 'trial']);
+        })->count();
+
+        $query = Notification::where('type', 'system_broadcast')
+            ->select('title', 'message', 'image', 'created_at')
+            ->groupBy('title', 'message', 'image', 'created_at');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('message', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $recentNotifications = $query->latest()
             ->take(10)
             ->get();
+
+        if ($request->ajax()) {
+            return view('broadcast.table_rows', compact('recentNotifications'))->render();
+        }
             
-        return view('broadcast.index', compact('recentNotifications'));
+        return view('broadcast.index', compact('recentNotifications', 'totalInstitutes', 'subscribedInstitutes'));
     }
 
     /**
@@ -35,15 +53,24 @@ class BroadcastController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:200',
             'message' => 'required|string',
-            'target' => 'required|in:all,active',
+            'target' => 'required|in:all,subscribed',
             'channels' => 'nullable|array',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('broadcasts', 'public');
+        }
 
         $channels = $validated['channels'] ?? ['dashboard'];
 
         $query = Institute::query();
-        if ($validated['target'] === 'active') {
-            $query->where('status', 'active');
+        if ($validated['target'] === 'subscribed') {
+            $query->whereHas('subscriptions', function ($query) {
+                $query->where('end_date', '>=', now())
+                      ->whereIn('status', ['active', 'trial']);
+            });
         }
 
         $institutes = $query->get();
@@ -57,6 +84,7 @@ class BroadcastController extends Controller
                     'user_id' => $institute->id,
                     'title' => $validated['title'],
                     'message' => $validated['message'],
+                    'image' => $imagePath,
                     'type' => 'system_broadcast',
                 ]);
             }
