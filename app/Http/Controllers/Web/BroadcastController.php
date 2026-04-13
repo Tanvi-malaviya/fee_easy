@@ -23,8 +23,8 @@ class BroadcastController extends Controller
         })->count();
 
         $query = Notification::where('type', 'system_broadcast')
-            ->select('title', 'message', 'image', 'created_at')
-            ->groupBy('title', 'message', 'image', 'created_at');
+            ->select('title', 'message', 'image', 'target', 'created_at')
+            ->groupBy('title', 'message', 'image', 'target', 'created_at');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -86,6 +86,7 @@ class BroadcastController extends Controller
                     'message' => $validated['message'],
                     'image' => $imagePath,
                     'type' => 'system_broadcast',
+                    'target' => $validated['target'],
                 ]);
             }
 

@@ -93,6 +93,7 @@ class SubscriptionController extends Controller
             SubscriptionPayment::create([
                 'subscription_id' => $subscription->id,
                 'amount' => $plan->price,
+                'payment_source' => 'admin',
                 'paid_at' => now(),
             ]);
         }
@@ -125,6 +126,7 @@ class SubscriptionController extends Controller
             SubscriptionPayment::create([
                 'subscription_id' => $subscription->id,
                 'amount' => $request->amount,
+                'payment_source' => 'admin',
                 'paid_at' => now(),
             ]);
         }
@@ -179,6 +181,7 @@ class SubscriptionController extends Controller
             SubscriptionPayment::create([
                 'subscription_id' => $subscription->id,
                 'amount' => $plan->price,
+                'payment_source' => 'admin',
                 'paid_at' => now(),
             ]);
         }
@@ -186,6 +189,32 @@ class SubscriptionController extends Controller
         Activity::log("Trial converted to paid plan: {$plan->name} for {$subscription->institute->institute_name}");
 
         return redirect()->back()->with('success', 'Trial converted to paid subscription.');
+    }
+
+    /**
+     * Change the plan of an existing subscription.
+     */
+    public function changePlan(Subscription $subscription, Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $plan = Plan::find($request->plan_id);
+        $endDate = now()->addDays($plan->duration_days);
+
+        $subscription->update([
+            'plan_id'    => $plan->id,
+            'plan_name'  => $plan->name,
+            'amount'     => $plan->price,
+            'start_date' => now(),
+            'end_date'   => $endDate,
+            'status'     => 'active',
+        ]);
+
+        Activity::log("Subscription plan changed to: {$plan->name} for {$subscription->institute->institute_name}");
+
+        return redirect()->back()->with('success', 'Subscription plan changed successfully.');
     }
 
     /**

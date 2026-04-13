@@ -18,10 +18,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Phase 1 Routes
     Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
+    Route::patch('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
     Route::patch('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
     Route::patch('subscriptions/{subscription}/cancel', [App\Http\Controllers\Web\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::patch('subscriptions/{subscription}/activate', [App\Http\Controllers\Web\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
     Route::patch('subscriptions/{subscription}/convert', [App\Http\Controllers\Web\SubscriptionController::class, 'convertToPaid'])->name('subscriptions.convert');
+    Route::patch('subscriptions/{subscription}/change-plan', [App\Http\Controllers\Web\SubscriptionController::class, 'changePlan'])->name('subscriptions.changePlan');
     Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
     Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
     Route::post('revenue/record', [App\Http\Controllers\Web\RevenueController::class, 'storeManualPayment'])->name('revenue.store_manual');

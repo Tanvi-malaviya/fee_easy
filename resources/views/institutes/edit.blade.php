@@ -27,7 +27,7 @@
 
     <div class="max-w-5xl mx-auto">
         <div class="flex items-center gap-4 mb-2">
-            <a href="{{ route('institutes.index') }}" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-100 min-w-[120px]">
+            <a href="{{ route('institutes.index') }}"  class="relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-100 min-w-[120px]">
                 <span class="flex items-center btn-content">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Back to List
@@ -262,7 +262,9 @@
                 contentLocation: document.body,
                 settings: {
                     placeholderText: 'Select City',
-                    showSearch: false
+                    showSearch: true,
+                    searchText: 'Search cities...',
+                    searchPlaceholder: 'Search cities...'
                 },
                 data: [{ text: 'Select City', value: '' }]
             });
@@ -273,7 +275,9 @@
                 contentLocation: document.body,
                 settings: {
                     placeholderText: 'Select State',
-                    showSearch: false
+                    showSearch: true,
+                    searchText: 'Search states...',
+                    searchPlaceholder: 'Search states...'
                 },
                 data: [
                     { text: 'Select State', value: '' },

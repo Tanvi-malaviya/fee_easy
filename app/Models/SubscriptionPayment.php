@@ -13,6 +13,7 @@ class SubscriptionPayment extends Model
         'subscription_id',
         'amount',
         'payment_gateway',
+        'payment_source',
         'transaction_id',
         'paid_at',
     ];

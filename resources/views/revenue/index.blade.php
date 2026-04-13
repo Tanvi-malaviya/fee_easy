@@ -6,7 +6,7 @@
             <!-- Standalone header removed for consistency -->
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-3">
                 <!-- Daily Revenue -->
                 <div
                     class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
@@ -99,12 +99,11 @@
             </div>
 
             <!-- Transaction History Card -->
-            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                <div
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden min-h-[400px]">
+                <!-- <div
                     class="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center bg-gray-50/75 gap-4">
                     <div>
                         <h2 class="text-lg font-medium text-gray-800 leading-none">Transaction History</h2>
-
                     </div>
                     <button @click="$dispatch('open-modal', 'record-payment')"
                         class="inline-flex items-center px-8 py-3 bg-indigo-600 border border-transparent rounded-xl shadow-lg text-xs font-bold text-white uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition transform active:scale-95 shadow-indigo-600/20 whitespace-nowrap">
@@ -114,62 +113,115 @@
                         </svg>
                         Record Manual Payment
                     </button>
+                </div> -->
+
+                <!-- Search & Filters -->
+                <div class="px-6 py-4 border-b border-gray-50 ">
+                    <form id="search-form" action="{{ route('revenue.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" name="search"
+                                placeholder="Search institute or owner..." 
+                                class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
+                            
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-1">
+                                <button type="submit" class="inline-flex items-center px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold uppercase rounded-lg transition shadow-sm tracking-wider no-loader">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full md:w-48">
+                            <select name="source" onchange="this.form.submit()" 
+                                class="block w-full pl-3 pr-10 py-2 text-sm border-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-gray-50 transition font-medium text-gray-700">
+                                <option value="all">All Sources</option>
+                                <option value="admin" {{ request('source') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="app" {{ request('source') == 'app' ? 'selected' : '' }}>App</option>
+                                <option value="web" {{ request('source') == 'web' ? 'selected' : '' }}>Web</option>
+                            </select>
+                        </div>
+
+                        <!-- <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition">
+                            Apply
+                        </button> -->
+                    </form>
                 </div>
-                <div class="overflow-x-auto">
+
+                <div class="overflow-x-auto relative">
+                    <!-- Table Loading Overlay -->
+                    <div id="table-loader" class="hidden absolute inset-0 bg-white/70 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full border-4 border-indigo-50"></div>
+                                <div class="absolute inset-0 w-12 h-12 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+                            </div>
+                            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] animate-pulse">Filtering Transactions...</span>
+                        </div>
+                    </div>
+
                     <table class="w-full text-left divide-y divide-gray-100">
                         <thead>
                             <tr class="bg-gray-50/50">
-                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date
-                                    / Time</th>
-                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    Institute</th>
-                                <th class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    Gateway</th>
-                                <th
-                                    class="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">
-                                    Amount</th>
-                                <th
-                                    class="px-2 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    Status</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date / Time</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Source</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Amount</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
                             @forelse($transactions as $payment)
                                 <tr class="hover:bg-gray-50/50 transition duration-150">
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">
                                             {{ $payment->paid_at ? $payment->paid_at->format('d M, Y') : $payment->created_at->format('d M, Y') }}
                                         </div>
                                         <div class="text-[10px] text-gray-400 uppercase font-semibold">
                                             {{ $payment->created_at->format('H:i A') }}</div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900 leading-tight">
                                             {{ $payment->subscription->institute->institute_name ?? 'N/A' }}</div>
                                         <div class="text-xs text-gray-500">
                                             {{ $payment->subscription->institute->name ?? 'Deleted' }}</div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap">
-                                        <span
-                                            class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $payment->payment_gateway == 'razorpay' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-purple-50 text-purple-600 border border-purple-100' }}">
-                                            {{ $payment->payment_gateway ?? 'INTERNAL' }}
-                                        </span>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex flex-col gap-1">
+                                            @php
+                                                $source = $payment->payment_source ?? 'admin';
+                                                $sourceClasses = [
+                                                    'admin' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                                                    'app' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                                    'web' => 'bg-purple-50 text-purple-600 border-purple-100',
+                                                ][$source] ?? 'bg-gray-50 text-gray-600 border-gray-100';
+                                            @endphp
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase border {{ $sourceClasses }} w-fit">
+                                                {{ $source }}
+                                            </span>
+                                            @if($payment->payment_gateway && $payment->payment_gateway != 'manual')
+                                                <span class="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+                                                    Via {{ $payment->payment_gateway }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-right">
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <div class="text-sm font-bold text-emerald-600">
                                             {{ $currency }}{{ number_format($payment->amount, 0) }}</div>
                                         <div class="text-[10px] font-mono text-gray-400 italic">ID:
                                             {{ $payment->transaction_id ?? '---' }}</div>
                                     </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-right">
-                                        <span
-                                            class="px-2.5 py-1 inline-flex text-[10px] font-bold rounded uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Success</span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <span class="px-2.5 py-1 inline-flex text-[10px] font-bold rounded uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Success</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">No transactions
-                                        recorded yet.</td>
+                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic font-medium">No transactions match your criteria.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -258,6 +310,25 @@
     </x-modal>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('search-form');
+            const tableLoader = document.getElementById('table-loader');
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', function() {
+                    tableLoader.classList.remove('hidden');
+                });
+            }
+
+            // Also trigger loader on source change
+            const sourceSelect = document.querySelector('select[name="source"]');
+            if (sourceSelect) {
+                sourceSelect.addEventListener('change', function() {
+                    tableLoader.classList.remove('hidden');
+                });
+            }
+        });
+
         function clearError(el) {
             if (!el) return;
             el.classList.remove('border-red-500');
