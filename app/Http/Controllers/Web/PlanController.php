@@ -12,9 +12,23 @@ class PlanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $plans = Plan::latest()->paginate(10);
+        $query = Plan::query();
+
+        // Search Filter
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Status Filter
+        if ($request->has('status') && !empty($request->status) && $request->status !== 'all') {
+            $status = $request->status === 'active' ? 1 : 0;
+            $query->where('status', $status);
+        }
+
+        $plans = $query->latest()->paginate(5);
         return view('plans.index', compact('plans'));
     }
 
@@ -84,5 +98,24 @@ class PlanController extends Controller
         $plan->delete();
         Activity::log("Subscription plan deleted: {$name}");
         return redirect()->route('plans.index')->with('success', 'Plan deleted successfully.');
+    }
+
+    /**
+     * Update the status of the plan.
+     */
+    public function updateStatus(Request $request, Plan $plan)
+    {
+        $request->validate([
+            'status' => 'required|boolean',
+        ]);
+
+        $plan->update([
+            'status' => $request->status
+        ]);
+
+        $statusText = $request->status ? 'Active' : 'Inactive';
+        Activity::log("Subscription plan status changed to {$statusText} for: {$plan->name}");
+
+        return redirect()->back()->with('success', 'Plan status updated to ' . $statusText);
     }
 }

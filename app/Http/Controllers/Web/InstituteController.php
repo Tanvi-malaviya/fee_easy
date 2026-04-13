@@ -61,6 +61,9 @@ class InstituteController extends Controller
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
             'status' => 'required|string|in:active,inactive,suspended',
+            'website' => 'nullable|url|max:255',
+            'youtube' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
         ], [
             'phone.regex' => 'The phone number must be exactly 10 digits.',
@@ -128,6 +131,9 @@ class InstituteController extends Controller
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
             'status' => 'required|string|in:active,inactive,suspended,blocked',
+            'website' => 'nullable|url|max:255',
+            'youtube' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
         ], [
             'phone.regex' => 'The phone number must be exactly 10 digits.',

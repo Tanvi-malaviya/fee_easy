@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin UI Routes
     Route::patch('institutes/{institute}/status', [InstituteController::class, 'updateStatus'])->name('institutes.status');
     Route::resource('institutes', InstituteController::class);
-    
+
     // Phase 1 Routes
     Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
     Route::patch('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
@@ -49,4 +49,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

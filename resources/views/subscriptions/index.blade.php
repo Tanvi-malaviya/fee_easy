@@ -8,9 +8,15 @@
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
                 <form id="search-form" action="{{ route('subscriptions.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
                     <div class="flex-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" id="search-icon">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center hidden" id="search-loader">
+                            <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </div>
                         <input type="text" id="search-input" name="search" value="{{ request('search') }}" autocomplete="off"
@@ -37,11 +43,11 @@
                             </svg>
                             Assign New Plan
                         </button>
-                        @if(request()->has('search') || request()->has('status'))
+                        <!-- @if(request()->has('search') || request()->has('status'))
                             <a href="{{ route('subscriptions.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
                                 Clear
                             </a>
-                        @endif
+                        @endif -->
                     </div>
                 </form>
             </div>
@@ -146,10 +152,18 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="mt-8 flex justify-end gap-3">
-                                                    <button type="button" x-on:click="$dispatch('close')" class="text-xs font-bold text-gray-400 uppercase tracking-widest px-4">Cancel</button>
-                                                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition">Confirm Payment</button>
-                                                </div>
+                                                    <div class="mt-8 flex justify-end gap-3">
+                                                        <button type="button" x-on:click="$dispatch('close')" class="text-xs font-bold text-gray-400 uppercase tracking-widest px-4">Cancel</button>
+                                                        <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition min-w-[150px]">
+                                                            <span class="btn-content">Confirm Payment</span>
+                                                            <span class="hidden btn-loader">
+                                                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                            </span>
+                                                        </button>
+                                                    </div>
                                             </form>
                                         </x-modal>
 
@@ -172,7 +186,15 @@
                                                 
                                                 <div class="mt-8 flex justify-end gap-3">
                                                     <button type="button" x-on:click="$dispatch('close')" class="text-xs font-bold text-gray-400 uppercase tracking-widest px-4">Cancel</button>
-                                                    <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition">Extend Validity</button>
+                                                    <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition min-w-[150px]">
+                                                        <span class="btn-content">Extend Validity</span>
+                                                        <span class="hidden btn-loader">
+                                                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             </form>
                                         </x-modal>
@@ -210,6 +232,10 @@
                         }
 
                         searchInput.addEventListener('input', function() {
+                            // Show loader, hide icon
+                            document.getElementById('search-icon').classList.add('hidden');
+                            document.getElementById('search-loader').classList.remove('hidden');
+
                             clearTimeout(timeout);
                             timeout = setTimeout(() => {
                                 searchForm.submit();
@@ -217,6 +243,13 @@
                         });
                     }
                 });
+                function showBtnLoader(btn) {
+                    btn.querySelector('.btn-content').classList.add('invisible');
+                    btn.querySelector('.btn-loader').classList.remove('hidden');
+                    btn.querySelector('.btn-loader').classList.add('absolute', 'flex', 'inset-0', 'items-center', 'justify-center');
+                    btn.classList.add('opacity-90', 'cursor-not-allowed');
+                    btn.style.pointerEvents = 'none';
+                }
             </script>
         </div>
     </div>
@@ -255,7 +288,15 @@
 
             <div class="mt-8 flex justify-end gap-3">
                 <button type="button" x-on:click="$dispatch('close')" class="text-xs font-bold text-gray-400 uppercase tracking-widest px-4">Cancel</button>
-                <button type="submit" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition">Activate Plan</button>
+                <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition min-w-[150px]">
+                    <span class="btn-content">Activate Plan</span>
+                    <span class="hidden btn-loader">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
             </div>
         </form>
     </x-modal>
