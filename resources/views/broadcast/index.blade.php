@@ -18,8 +18,7 @@
                 })
                 .finally(() => { this.loading = false; });
             }
-        }"
-        x-init="$watch('search', value => fetchResults())">
+        }">
         <div class="max-w-7xl mx-auto">
             <!-- Toast Notification Pop-up -->
             @if(session('success'))
@@ -58,26 +57,27 @@
             </div> -->
 
             <!-- Filters & Search -->
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-3">
+            <div class="mb-3">
                 <form action="{{ route('broadcast.index') }}" method="GET" class="flex flex-col md:flex-row gap-4" @submit.prevent="fetchResults()">
-                    <div class="flex-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg x-show="!loading" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <svg x-show="loading" class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <div class="flex-1 relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input type="text" x-model.debounce.400ms="search" placeholder="Search through recent broadcasts..." 
-                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition font-medium">
-                    </div>
-                    
-                    <div x-show="search.length > 0" class="flex items-center" style="display: none;">
-                        <button type="button" @click="search = ''; fetchResults()" class="text-xs font-bold text-red-600 uppercase tracking-widest hover:text-red-700 transition px-2">
-                            Clear Search
-                        </button>
+                        <input type="text" x-model="search" placeholder="Search through recent broadcasts..." 
+                            class="block w-full pl-10 pr-24 py-3 text-sm font-medium text-gray-900 bg-white border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-300 placeholder:text-gray-400">
+                        
+                        <div class="absolute inset-y-1.5 right-1.5 flex items-center gap-2">
+                            <button x-show="search.length > 0" type="button" 
+                                class="p-1.5 text-gray-400 hover:text-red-500 transition-colors" title="Clear">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                            <button type="submit" 
+                                class="inline-flex items-center px-4 py-1.5 bg-indigo-600 text-white rounded-xl font-medium text-[10px] uppercase tracking-widest hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/20 active:scale-95 no-loader">
+                                Search
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex items-center">
@@ -91,7 +91,17 @@
             </div>
 
             <!-- History Table -->
-            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div class="relative bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden mb-8">
+                <!-- Table Loading Overlay -->
+                <div x-show="loading" class="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300" style="display: none;">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="relative">
+                            <div class="w-12 h-12 rounded-full border-4 border-indigo-50"></div>
+                            <div class="absolute inset-0 w-12 h-12 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+                        </div>
+                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] animate-pulse">Loading...</span>
+                    </div>
+                </div>
                
                 <div class="overflow-x-auto">
                     <table class="w-full text-left divide-y divide-gray-100">
@@ -99,6 +109,7 @@
                             <tr class="bg-gray-50/50">
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Sent Date</th>
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Announcement Details</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">Audience</th>
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">Media</th>
                                 <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>

@@ -38,7 +38,7 @@
             </div>
 
             <div>
-                <span class="relative z-0 inline-flex gap-1.5 p-1 bg-gray-100/50 rounded-2xl">
+                <span class="relative z-0 inline-flex gap-1.5 p-1 rounded-2xl">
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())
                         <span aria-disabled="true" aria-label="{{ __('pagination.previous') }}">

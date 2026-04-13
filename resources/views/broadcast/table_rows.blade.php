@@ -10,6 +10,20 @@
                 <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $notification->message }}</p>
             </div>
         </td>
+        <td class="px-6 py-4 text-center whitespace-nowrap">
+            @php
+                $target = $notification->target ?? 'all';
+            @endphp
+            @if($target === 'subscribed')
+                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    Subscribed
+                </span>
+            @else
+                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.1em] bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    All
+                </span>
+            @endif
+        </td>
         <td class="px-6 py-4 text-center">
             @if($notification->image)
                 <div class="flex justify-center">

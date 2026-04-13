@@ -12,7 +12,7 @@ class RevenueController extends Controller
     /**
      * Display the revenue dashboard.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Daily Revenue (Today)
         $dailyRevenue = SubscriptionPayment::whereDate('paid_at', Carbon::today())->sum('amount');
@@ -28,13 +28,26 @@ class RevenueController extends Controller
         // Total Lifetime Revenue
         $totalRevenue = SubscriptionPayment::sum('amount');
 
-        // Recent Transactions
-        $transactions = SubscriptionPayment::with('subscription.institute')
-            ->orderBy('paid_at', 'desc')
-            ->paginate(15);
+        // Recent Transactions with filtering
+        $query = SubscriptionPayment::with('subscription.institute');
+
+        // Search Filter (Institute Name or Owner Name)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('subscription.institute', function ($q) use ($search) {
+                $q->where('institute_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        // Source Filter
+        if ($request->filled('source') && $request->source !== 'all') {
+            $query->where('payment_source', $request->source);
+        }
+
+        $transactions = $query->orderBy('paid_at', 'desc')->paginate(15);
 
         // Data for manual recording
-        // Now showing all active institutes to allow recording payments for anyone
         $institutes = \App\Models\Institute::where('status', 'active')
             ->orderBy('institute_name')
             ->get();
@@ -83,6 +96,7 @@ class RevenueController extends Controller
             'amount' => $request->amount,
             'transaction_id' => $request->transaction_id ?? 'MANUAL-' . strtoupper(uniqid()),
             'payment_gateway' => 'manual',
+            'payment_source' => 'admin',
             'paid_at' => $request->paid_at,
         ]);
 
