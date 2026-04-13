@@ -183,6 +183,22 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
+        /* --- Sidebar Navigation Refinement --- */
+        /* Specifically targeting sidebar links to prevent "bulky" active look */
+        nav a {
+            font-size: 13px !important;
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+            font-weight: 500 !important;
+        }
+
+        nav a.bg-indigo-600 {
+            font-weight: 500 !important;
+            margin-top: 10px !important;
+            margin-bottom: 8px !important;
+            /* Extra weight for active state */
+        }
+
         /* Standardize hover and active states for better feel */
         button:active,
         a.bg-indigo-600:active {

@@ -20,6 +20,9 @@ class Institute extends Model
         'city',
         'state',
         'pincode',
+        'website',
+        'youtube',
+        'instagram',
         'status',
     ];
 

@@ -58,7 +58,7 @@
             </div> -->
 
             <!-- Filters & Search -->
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-3">
                 <form action="{{ route('broadcast.index') }}" method="GET" class="flex flex-col md:flex-row gap-4" @submit.prevent="fetchResults()">
                     <div class="flex-1 relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -92,11 +92,7 @@
 
             <!-- History Table -->
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden mb-8">
-                <div class="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center bg-gray-50/75 gap-4">
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-800 leading-none">Broadcast History</h2>
-                    </div>
-                </div>
+               
                 <div class="overflow-x-auto">
                     <table class="w-full text-left divide-y divide-gray-100">
                         <thead>

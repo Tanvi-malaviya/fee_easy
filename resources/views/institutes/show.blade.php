@@ -109,6 +109,39 @@
                                     {{ $institute->pincode ?? 'N/A' }}</p>
                             </div>
                         </div>
+
+                        <!-- Social Links Row -->
+                        @if($institute->website || $institute->youtube || $institute->instagram)
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
+                            @if($institute->website)
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Website</label>
+                                <a href="{{ $institute->website }}" target="_blank" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-bold mt-1 group">
+                                    <span class="text-sm truncate max-w-[200px]">{{ preg_replace("(^https?://)", "", $institute->website) }}</span>
+                                    <svg class="w-3 h-3 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </div>
+                            @endif
+                            @if($institute->youtube)
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">YouTube</label>
+                                <a href="{{ $institute->youtube }}" target="_blank" class="flex items-center gap-2 text-red-600 hover:text-red-700 font-bold mt-1 group">
+                                    <span class="text-sm">Channel Profile</span>
+                                    <svg class="w-3 h-3 transform group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                </a>
+                            </div>
+                            @endif
+                            @if($institute->instagram)
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Instagram</label>
+                                <a href="{{ $institute->instagram }}" target="_blank" class="flex items-center gap-2 text-pink-600 hover:text-pink-700 font-bold mt-1 group">
+                                    <span class="text-sm">View Profile</span>
+                                    <svg class="w-3 h-3 transform group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.36.06 2.06.35 2.55.54.67.26 1.15.57 1.65 1.07.5.5.81.98 1.07 1.65.19.49.48 1.19.54 2.55.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.06 1.36-.35 2.06-.54 2.55-.26.67-.57 1.15-1.07 1.65-.5.5-.98.81-1.65 1.07-.49.19-1.19.48-2.55.54-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.36-.06-2.06-.35-2.55-.54-.67-.26-1.15-.57-1.65-1.07-.5-.5-.81-.98-1.07-1.65-.19-.49-.48-1.19-.54-2.55C2.12 15.584 2.11 15.204 2.11 12s.012-3.584.07-4.85c.06-1.36.35-2.06.54-2.55.26-.67.57-1.15 1.07-1.65.5-.5.98-.81 1.65-1.07.49-.19 1.19-.48 2.55-.54 1.266-.058 1.646-.07 4.85-.07M12 0C8.74 0 8.332.015 7.052.074c-1.27.058-2.144.26-2.903.556-.783.304-1.448.711-2.11 1.372-.66.66-1.068 1.325-1.372 2.11-.296.758-.498 1.632-.556 2.903C.015 8.332 0 8.74 0 12s.015 3.668.074 4.948c.058 1.27.26 2.144.556 2.903.304.783.711 1.448 1.372 2.11.66.66 1.325 1.068 2.11 1.372.758.296 1.632.498 2.903.556 1.28.059 1.688.074 4.948.074s3.668-.015 4.948-.074c1.27-.058 2.144-.26 2.903-.556.783-.304 1.448-.711 2.11-1.372.66-.66 1.068-1.325 1.372-2.11.296-.758.498-1.632.556-2.903.059-1.28.074-1.688.074-4.948s-.015-3.668-.074-4.948c-.058-1.27-.26-2.144-.556-2.903-.304-.783-.711-1.448-1.372-2.11-.66-.66-1.325-1.068-2.11-1.372-.758-.296-1.632-.498-2.903-.556C15.668.015 15.26 0 12 0m0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8m6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881"/></svg>
+                                </a>
+                            </div>
+                            @endif
+                        </div>
+                        @endif
                     </div>
                 </div>
 

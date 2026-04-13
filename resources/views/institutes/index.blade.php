@@ -1,11 +1,17 @@
 <x-admin-layout title="Institutes Management">
     <!-- Filters & Search -->
-    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-3">
         <form id="search-form" action="{{ route('institutes.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="flex-1 relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" id="search-icon">
                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center hidden" id="search-loader">
+                    <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                 </div>
                 <input type="text" id="search-input" name="search" value="{{ request('search') }}" autocomplete="off"
@@ -25,24 +31,32 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('institutes.create') }}" 
-                    class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition shadow-indigo-600/20 whitespace-nowrap">
-                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Create New Institute
+                <a href="{{ route('institutes.create') }}" id="create-btn" onclick="showBtnLoader(this)"
+                    class="relative inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition shadow-indigo-600/20 whitespace-nowrap min-w-[170px]">
+                    <span class="flex items-center btn-content">
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Create New Institute
+                    </span>
+                    <span class="hidden btn-loader">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
                 </a>
-                @if(request()->has('search') || request()->has('status'))
+                <!-- @if(request()->has('search') || request()->has('status'))
                     <a href="{{ route('institutes.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
                         Clear Filters
                     </a>
-                @endif
+                @endif -->
             </div>
         </form>
     </div>
 
     <!-- Table Section -->
-    <div class="bg-white border border-gray-100 rounded-3xl shadow-sm">
+    <div class="bg-white border border-gray-100 rounded-2xl shadow-sm">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead class="bg-gray-50/75">
@@ -84,12 +98,12 @@
                                 <button 
                                     type="button" 
                                     onclick="togglePortalMenu(event, {{ $institute->id }}, '{{ $institute->status }}')"
-                                    class="status-btn-{{ $institute->id }} px-3 py-1.5 min-w-[100px] inline-flex items-center justify-between text-xs leading-5 font-semibold rounded-lg border transition cursor-pointer
-                                    @if($institute->status === 'active') bg-green-50 text-green-700 border-green-200 hover:bg-green-100
-                                    @elseif($institute->status === 'suspended') bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100
-                                    @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-200 hover:bg-red-100
-                                    @else bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 @endif">
-                                    {{ ucfirst($institute->status) }}
+                                    class="status-btn-{{ $institute->id }} px-2 py-0.5 inline-flex items-center justify-between text-[7px] font-black uppercase tracking-[0.15em] rounded border transition cursor-pointer
+                                    @if($institute->status === 'active') bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
+                                    @elseif($institute->status === 'suspended') bg-amber-50 text-amber-700 border-amber-100/50 hover:bg-amber-100
+                                    @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100
+                                    @else bg-gray-50 text-gray-700 border-gray-100/50 hover:bg-gray-100 @endif">
+                                    {{ $institute->status }}
                                     <svg class="w-3.5 h-3.5 ml-2 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
@@ -112,7 +126,7 @@
                                     </a>
                                     <form action="{{ route('institutes.destroy', $institute) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this institute?');">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 transition-colors p-1.5 bg-red-50 rounded-lg" title="Delete">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 transition-colors p-1.5 bg-red-50 rounded-lg no-loader" title="Delete">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
@@ -140,7 +154,7 @@
     </div>
 
     <!-- Global Portal Dropdown -->
-    <div id="status-portal-menu" class="hidden fixed z-[9999] w-36 rounded-xl shadow-2xl bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
+    <div id="status-portal-menu" class="hidden fixed z-[9999] w-32 rounded-xl shadow-2xl bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
         <div class="py-1" id="portal-menu-content">
             <!-- Content will be injected via JS -->
         </div>
@@ -162,6 +176,10 @@
                 }
 
                 searchInput.addEventListener('input', function() {
+                    // Show loader, hide icon
+                    document.getElementById('search-icon').classList.add('hidden');
+                    document.getElementById('search-loader').classList.remove('hidden');
+                    
                     clearTimeout(timeout);
                     timeout = setTimeout(() => {
                         searchForm.submit();
@@ -210,7 +228,7 @@
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="_method" value="PATCH">
                         <input type="hidden" name="status" value="${s.value}">
-                        <button type="submit" class="group flex items-center px-4 py-2 text-xs text-gray-700 w-full text-left transition ${s.color}">
+                        <button type="submit" class="group flex items-center px-4 py-1.5 text-[8.5px] font-bold uppercase tracking-widest text-gray-700 w-full text-left transition ${s.color}">
                             ${s.label}
                         </button>
                     </form>
@@ -234,6 +252,14 @@
 
             menu.style.left = (rect.left + window.scrollX) + 'px';
             menu.classList.remove('hidden');
+        }
+
+        function showBtnLoader(btn) {
+            btn.querySelector('.btn-content').classList.add('invisible');
+            btn.querySelector('.btn-loader').classList.remove('hidden');
+            btn.querySelector('.btn-loader').classList.add('absolute', 'flex', 'inset-0', 'items-center', 'justify-center');
+            btn.classList.add('opacity-90', 'cursor-not-allowed');
+            btn.style.pointerEvents = 'none';
         }
     </script>
 </x-admin-layout>
