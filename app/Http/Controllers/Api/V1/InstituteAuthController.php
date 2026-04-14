@@ -1,19 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Institute;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
+class InstituteAuthController extends Controller
 {
-    /**
-     * Handle mobile login and return Sanctum token.
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -21,30 +16,27 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $institute = Institute::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $institute || ! Hash::check($request->password, $institute->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'The provided credentials are incorrect.',
+                'message' => 'Invalid credentials.',
             ], 401);
         }
 
-        $token = $user->createToken('mobile_app')->plainTextToken;
+        $token = $institute->createToken('institute_token')->plainTextToken;
 
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => [
                 'token' => $token,
-                'user' => $user->only(['id', 'name', 'email']),
+                'institute' => $institute->only(['id', 'name', 'email', 'institute_name']),
             ],
         ]);
     }
 
-    /**
-     * Revoke the current token.
-     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -55,16 +47,12 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Return the authenticated user profile.
-     */
     public function profile(Request $request)
     {
         return response()->json([
             'status' => 'success',
             'data' => [
-                'user' => $request->user()->only(['id', 'name', 'email']),
-                // You can add more user-related data here (e.g., roles/permissions if using Spatie)
+                'institute' => $request->user(),
             ],
         ]);
     }

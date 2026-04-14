@@ -1,0 +1,131 @@
+### variables
+@baseUrl = http://localhost/fee_easy/public/api/v1
+@adminToken = YOUR_ADMIN_TOKEN
+@instituteToken = YOUR_INSTITUTE_TOKEN
+@studentToken = YOUR_STUDENT_TOKEN
+@parentToken = YOUR_PARENT_TOKEN
+
+### ------------------------------------------------------------
+### 1. ADMIN AUTHENTICATION
+### ------------------------------------------------------------
+
+# Login
+POST {{baseUrl}}/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "admin@feeeasy.com",
+    "password": "password"
+}
+
+### Profile
+GET {{baseUrl}}/auth/profile
+Accept: application/json
+Authorization: Bearer {{adminToken}}
+
+
+### ------------------------------------------------------------
+### 2. INSTITUTE AUTHENTICATION
+### ------------------------------------------------------------
+
+# Login
+POST {{baseUrl}}/institute/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "darshan@gmail.com",
+    "password": "password"
+}
+
+### Profile
+GET {{baseUrl}}/institute/profile
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+
+### ------------------------------------------------------------
+### 3. STUDENT AUTHENTICATION
+### ------------------------------------------------------------
+
+# Login
+POST {{baseUrl}}/student/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "tanvi@gmail.com",
+    "password": "password"
+}
+
+### Profile
+GET {{baseUrl}}/student/profile
+Accept: application/json
+Authorization: Bearer {{studentToken}}
+
+
+### ------------------------------------------------------------
+### 4. PARENT AUTHENTICATION
+### ------------------------------------------------------------
+
+# Login
+POST {{baseUrl}}/parent/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "parent@example.com",
+    "password": "password"
+}
+
+### Profile
+GET {{baseUrl}}/parent/profile
+Accept: application/json
+Authorization: Bearer {{parentToken}}
+
+
+### ------------------------------------------------------------
+### 5. INSTITUTE STUDENT CRUD (Requires Institute Token)
+### ------------------------------------------------------------
+
+# List Students
+GET {{baseUrl}}/institute/students
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+# Create Student
+POST {{baseUrl}}/institute/students
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{instituteToken}}
+
+{
+    "name": "New Student",
+    "email": "newstudent@example.com",
+    "password": "password123",
+    "standard": "10th",
+    "phone": "1234567890"
+}
+
+# Get Single Student (Replace {id})
+@studentId = 1
+GET {{baseUrl}}/institute/students/{{studentId}}
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+# Update Student
+PUT {{baseUrl}}/institute/students/{{studentId}}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{instituteToken}}
+
+{
+    "name": "Updated Name",
+    "status": 1
+}
+
+# Delete Student
+DELETE {{baseUrl}}/institute/students/{{studentId}}
+Accept: application/json
+Authorization: Bearer {{instituteToken}}

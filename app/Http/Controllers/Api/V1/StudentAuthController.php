@@ -1,19 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
+class StudentAuthController extends Controller
 {
-    /**
-     * Handle mobile login and return Sanctum token.
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -21,30 +16,27 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $student = Student::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $student || ! Hash::check($request->password, $student->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'The provided credentials are incorrect.',
+                'message' => 'Invalid credentials.',
             ], 401);
         }
 
-        $token = $user->createToken('mobile_app')->plainTextToken;
+        $token = $student->createToken('student_token')->plainTextToken;
 
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => [
                 'token' => $token,
-                'user' => $user->only(['id', 'name', 'email']),
+                'student' => $student->only(['id', 'name', 'email', 'standard']),
             ],
         ]);
     }
 
-    /**
-     * Revoke the current token.
-     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -55,16 +47,12 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Return the authenticated user profile.
-     */
     public function profile(Request $request)
     {
         return response()->json([
             'status' => 'success',
             'data' => [
-                'user' => $request->user()->only(['id', 'name', 'email']),
-                // You can add more user-related data here (e.g., roles/permissions if using Spatie)
+                'student' => $request->user()->load(['institute', 'batch']),
             ],
         ]);
     }
