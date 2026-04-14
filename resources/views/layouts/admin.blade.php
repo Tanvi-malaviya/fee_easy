@@ -269,7 +269,7 @@
                 
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 overflow-hidden">
                     <div class="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg shadow-indigo-500/10 border border-gray-800 shrink-0">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="w-full h-full object-contain">
+                        <img src="{{ url('assets/images/logo.png') }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
                     <div x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0 -translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col">
                         <span class="text-sm font-black text-white tracking-tight leading-none uppercase">{{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}</span>

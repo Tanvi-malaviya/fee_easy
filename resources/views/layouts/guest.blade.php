@@ -6,92 +6,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'FeeEasy') }}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,900&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .auth-bg {
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.03),
+                0 10px 10px -5px rgba(0, 0, 0, 0.02),
+                0 0 0 1px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-standard {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              padding: 2px;
+        }
+
+        .input-standard:focus {
+            transform: translateY(-1px);
+          }
+    </style>
 </head>
 
-<body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-        <div>
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </div>
-
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-            {{ $slot }}
-        </div>
-    </div>
-</body>
-
-</html>
-Experience the future of fee management and administrative control with our premium authorized portal.
-</p>
-</div>
-</div>
-
-<div class="relative z-10">
-    <div class="flex items-center gap-4">
-        <div class="flex -space-x-2">
-            <div class="w-8 h-8 rounded-full border-2 border-gray-900 bg-indigo-500"></div>
-            <div class="w-8 h-8 rounded-full border-2 border-gray-900 bg-emerald-500"></div>
-            <div class="w-8 h-8 rounded-full border-2 border-gray-900 bg-amber-500"></div>
-        </div>
-        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Trusted by 500+ Institutions</p>
-    </div>
-</div>
-</div>
-
-<!-- Mobile Branding (Only visible on small screens) -->
-<div class="md:hidden bg-gray-900 p-8 flex items-center justify-between border-b border-gray-800">
-    <span class="text-2xl font-black text-white tracking-tighter uppercase">
-        ⚡ {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
-    </span>
-</div>
-
-<!-- Right Pane: Authentication Form -->
-<div class="flex-1 flex flex-col items-center justify-center p-8 lg:p-12 bg-white overflow-y-auto">
-    <div class="w-full max-w-[420px] animate-in fade-in slide-in-from-bottom-4 duration-700">
-        {{ $slot }}
-
-        <div class="mt-12 text-center md:text-left">
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
-                &copy; {{ date('Y') }} {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }} &bull; Secure
-                Administrative Gateway
-            </p>
-        </div>
-    </div>
-</div>
-
-</div>
-</body>
-
-</html> background: radial-gradient(circle at 20% 20%, rgba(66, 133, 244, 0.4) 0%, transparent 40%),
-radial-gradient(circle at 80% 80%, rgba(26, 75, 140, 0.5) 0%, transparent 40%);
-filter: blur(80px);
-z-index: 0;
-}
-.auth-card {
-width: 100%;
-max-width: 400px;
-position: relative;
-z-index: 10;
-padding: 2rem;
-}
-</style>
-</head>
-
-<body class="antialiased text-white">
+<body class="font-sans text-gray-900 antialiased bg-slate-50">
     <div class="auth-bg">
-        <div class="auth-card">
-            {{ $slot }}
+        <div class="auth-card p-10 sm:p-12">
+            <!-- Branding Header -->
+            <div class="flex flex-col items-center mb-10 text-center">
+                <a href="/" class="flex flex-col items-center gap-4 group transition-transform hover:scale-105 active:scale-95">
+                    <div class="w-16 h-16 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-2xl shadow-indigo-500/20 border border-gray-100 shrink-0">
+                        <x-application-logo class="w-full h-full object-contain" />
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none uppercase">
+                            {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
+                        </h1>
+                        <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.4em] mt-2 translate-x-[0.2em]">
+                            Management System
+                        </p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Page Slot (Forms) -->
+            <div class="w-full">
+                {{ $slot }}
+            </div>
+
+            <!-- Footer Branding -->
+            <!-- <div class="mt-12 pt-8 border-t border-gray-50 flex flex-col items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure Administrative Gateway</span>
+                </div>
+                <p class="text-[9px] text-gray-300 font-bold uppercase tracking-[0.15em]">
+                    &copy; {{ date('Y') }} {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
+                </p>
+            </div> -->
         </div>
+
+        <!-- Support Link -->
+        <!-- <p class="mt-8 text-xs text-gray-400 font-medium tracking-wide">
+            Need assistance? <a href="#" class="text-indigo-600 hover:text-indigo-700 font-bold underline underline-offset-4 decoration-indigo-200">Contact Support</a>
+        </p> -->
     </div>
 </body>
 
