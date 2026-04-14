@@ -1,95 +1,23 @@
-### variables
-@baseUrl = http://localhost/fee_easy/public/api/v1
-@adminToken = YOUR_ADMIN_TOKEN
-@instituteToken = YOUR_INSTITUTE_TOKEN
-@studentToken = YOUR_STUDENT_TOKEN
-@parentToken = YOUR_PARENT_TOKEN
+@baseUrl = http://127.0.0.1:8000/api/v1
+@instituteToken = YOUR_INSTITUTE_TOKEN_HERE
 
 ### ------------------------------------------------------------
-### 1. ADMIN AUTHENTICATION
+### 1. INSTITUTE AUTH
 ### ------------------------------------------------------------
-
-# Login
-POST {{baseUrl}}/auth/login
-Accept: application/json
-Content-Type: application/json
-
-{
-    "email": "admin@feeeasy.com",
-    "password": "password"
-}
-
-### Profile
-GET {{baseUrl}}/auth/profile
-Accept: application/json
-Authorization: Bearer {{adminToken}}
-
-
-### ------------------------------------------------------------
-### 2. INSTITUTE AUTHENTICATION
-### ------------------------------------------------------------
-
 # Login
 POST {{baseUrl}}/institute/login
 Accept: application/json
 Content-Type: application/json
 
 {
-    "email": "darshan@gmail.com",
+    "email": "institute@example.com",
     "password": "password"
 }
 
-### Profile
-GET {{baseUrl}}/institute/profile
-Accept: application/json
-Authorization: Bearer {{instituteToken}}
-
-
 ### ------------------------------------------------------------
-### 3. STUDENT AUTHENTICATION
+### 3. INSTITUTE STUDENTS (Requires Institute Token)
 ### ------------------------------------------------------------
-
-# Login
-POST {{baseUrl}}/student/login
-Accept: application/json
-Content-Type: application/json
-
-{
-    "email": "tanvi@gmail.com",
-    "password": "password"
-}
-
-### Profile
-GET {{baseUrl}}/student/profile
-Accept: application/json
-Authorization: Bearer {{studentToken}}
-
-
-### ------------------------------------------------------------
-### 4. PARENT AUTHENTICATION
-### ------------------------------------------------------------
-
-# Login
-POST {{baseUrl}}/parent/login
-Accept: application/json
-Content-Type: application/json
-
-{
-    "email": "parent@example.com",
-    "password": "password"
-}
-
-### Profile
-GET {{baseUrl}}/parent/profile
-Accept: application/json
-Authorization: Bearer {{parentToken}}
-
-
-### ------------------------------------------------------------
-### 5. INSTITUTE STUDENT CRUD (Requires Institute Token)
-### ------------------------------------------------------------
-
-# List Students
+# List Students (Paginated)
 GET {{baseUrl}}/institute/students
 Accept: application/json
 Authorization: Bearer {{instituteToken}}
@@ -101,31 +29,103 @@ Content-Type: application/json
 Authorization: Bearer {{instituteToken}}
 
 {
-    "name": "New Student",
-    "email": "newstudent@example.com",
-    "password": "password123",
-    "standard": "10th",
-    "phone": "1234567890"
+    "name": "Tanvi Malaviya",
+    "email": "tanvi@example.com",
+    "password": "password",
+    "phone": "9876543210",
+    "address": "Rajkot, Gujarat",
+    "batch_id": 1
 }
 
-# Get Single Student (Replace {id})
-@studentId = 1
-GET {{baseUrl}}/institute/students/{{studentId}}
+### ------------------------------------------------------------
+### 4. INSTITUTE BATCHES (Requires Institute Token)
+### ------------------------------------------------------------
+# List Batches
+GET {{baseUrl}}/institute/batches
 Accept: application/json
 Authorization: Bearer {{instituteToken}}
 
-# Update Student
-PUT {{baseUrl}}/institute/students/{{studentId}}
+# Create Batch
+POST {{baseUrl}}/institute/batches
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{instituteToken}}
 
 {
-    "name": "Updated Name",
-    "status": 1
+    "batch_name": "Morning Batch A",
+    "batch_time": "08:00 AM - 10:00 AM"
 }
 
-# Delete Student
-DELETE {{baseUrl}}/institute/students/{{studentId}}
+### ------------------------------------------------------------
+### 7. INSTITUTE FEES & PAYMENTS
+### ------------------------------------------------------------
+# Assign Fee
+POST {{baseUrl}}/institute/fees
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{instituteToken}}
+
+{
+    "student_id": 1,
+    "total_amount": 5000,
+    "month": "April",
+    "year": 2026
+}
+
+# Collect Payment (Flattened Response)
+POST {{baseUrl}}/institute/payments
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{instituteToken}}
+
+{
+    "fee_id": 1,
+    "amount": 2000,
+    "payment_method": "Cash",
+    "transaction_id": "REC12345"
+}
+
+### ------------------------------------------------------------
+### 9. RECEIPTS
+### ------------------------------------------------------------
+# List Student Receipts
+GET {{baseUrl}}/institute/receipts/1
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+# Download Receipt (In Postman, use "Send and Download")
+GET {{baseUrl}}/institute/receipt/1/download
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+### ------------------------------------------------------------
+### 10. ATTENDANCE
+### ------------------------------------------------------------
+# Bulk Mark Attendance
+POST {{baseUrl}}/institute/attendance
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{instituteToken}}
+
+{
+    "batch_id": 1,
+    "date": "2024-04-14",
+    "attendance": [
+        {"student_id": 1, "status": "present"},
+        {"student_id": 2, "status": "absent"},
+        {"student_id": 3, "status": "late"}
+    ]
+}
+
+# Get Attendance Records
+GET {{baseUrl}}/institute/attendance?date=2024-04-14&batch_id=1
+Accept: application/json
+Authorization: Bearer {{instituteToken}}
+
+### ------------------------------------------------------------
+### 8. PAGINATION TESTING
+### ------------------------------------------------------------
+# Test Page 2
+GET {{baseUrl}}/institute/students?page=2
 Accept: application/json
 Authorization: Bearer {{instituteToken}}

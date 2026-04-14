@@ -30,10 +30,10 @@ class StudentAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
-            'data' => [
-                'token' => $token,
-                'student' => $student->only(['id', 'name', 'email', 'standard']),
-            ],
+            'data' => array_merge(
+                ['token' => $token],
+                $student->toArray()
+            )
         ]);
     }
 
@@ -51,9 +51,7 @@ class StudentAuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'student' => $request->user()->load(['institute', 'batch']),
-            ],
+            'data' => $request->user()->load(['institute', 'batch'])
         ]);
     }
 }

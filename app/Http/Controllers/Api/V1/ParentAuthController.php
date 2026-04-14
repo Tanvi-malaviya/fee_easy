@@ -30,10 +30,10 @@ class ParentAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
-            'data' => [
-                'token' => $token,
-                'parent' => $parent->only(['id', 'name', 'email', 'relation']),
-            ],
+            'data' => array_merge(
+                ['token' => $token],
+                $parent->toArray()
+            )
         ]);
     }
 
@@ -51,9 +51,7 @@ class ParentAuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'parent' => $request->user()->load('students'),
-            ],
+            'data' => $request->user()->load('students')
         ]);
     }
 }

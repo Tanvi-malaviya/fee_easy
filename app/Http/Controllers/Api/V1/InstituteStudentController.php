@@ -14,12 +14,16 @@ class InstituteStudentController extends Controller
      */
     public function index(Request $request)
     {
-        $students = Student::where('institute_id', $request->user()->id)->get();
+        $paginator = Student::where('institute_id', $request->user()->id)->paginate(10);
 
         return response()->json([
             'status' => 'success',
             'data' => [
-                'students' => $students
+                'items' => $paginator->items(),
+                'total' => $paginator->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
             ]
         ]);
     }
@@ -54,9 +58,7 @@ class InstituteStudentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Student created successfully',
-            'data' => [
-                'student' => $student
-            ]
+            'data' => $student
         ], 201);
     }
 
@@ -76,9 +78,7 @@ class InstituteStudentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'student' => $student
-            ]
+            'data' => $student
         ]);
     }
 
@@ -118,9 +118,7 @@ class InstituteStudentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Student updated successfully',
-            'data' => [
-                'student' => $student
-            ]
+            'data' => $student
         ]);
     }
 

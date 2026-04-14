@@ -30,10 +30,10 @@ class InstituteAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
-            'data' => [
-                'token' => $token,
-                'institute' => $institute->only(['id', 'name', 'email', 'institute_name']),
-            ],
+            'data' => array_merge(
+                ['token' => $token],
+                $institute->toArray()
+            )
         ]);
     }
 
@@ -51,9 +51,7 @@ class InstituteAuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'institute' => $request->user(),
-            ],
+            'data' => $request->user()
         ]);
     }
 }
