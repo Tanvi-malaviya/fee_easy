@@ -18,6 +18,21 @@ use App\Http\Controllers\Api\V1\InstituteFeeController;
 use App\Http\Controllers\Api\V1\InstitutePaymentController;
 use App\Http\Controllers\Api\V1\InstituteReceiptController;
 use App\Http\Controllers\Api\V1\InstituteAttendanceController;
+use App\Http\Controllers\Api\V1\InstituteDailyUpdateController;
+use App\Http\Controllers\Api\V1\InstituteHomeworkController;
+use App\Http\Controllers\Api\V1\InstituteNotificationController;
+use App\Http\Controllers\Api\V1\InstituteWhatsappSettingController;
+use App\Http\Controllers\Api\V1\InstituteReportController;
+use App\Http\Controllers\Api\V1\InstituteSubscriptionController;
+use App\Http\Controllers\Api\V1\StudentProfileController;
+use App\Http\Controllers\Api\V1\StudentDashboardController;
+use App\Http\Controllers\Api\V1\StudentFeesController;
+use App\Http\Controllers\Api\V1\StudentReceiptsController;
+use App\Http\Controllers\Api\V1\StudentAttendanceController;
+use App\Http\Controllers\Api\V1\StudentDailyUpdateController;
+use App\Http\Controllers\Api\V1\StudentHomeworkController;
+use App\Http\Controllers\Api\V1\StudentReportController;
+use App\Http\Controllers\Api\V1\StudentNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +58,28 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteAuthController::class, 'profile']);
-            
+            Route::post('/logo/upload', [InstituteAuthController::class, 'uploadLogo']);
+
+            Route::post('/daily-updates', [InstituteDailyUpdateController::class, 'store']);
+            Route::get('/daily-updates', [InstituteDailyUpdateController::class, 'index']);
+
+            Route::post('/homeworks', [InstituteHomeworkController::class, 'store']);
+            Route::get('/homeworks', [InstituteHomeworkController::class, 'index']);
+
+            Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
+            Route::get('/notifications', [InstituteNotificationController::class, 'index']);
+
+            Route::get('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'show']);
+            Route::post('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'store']);
+            Route::put('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'update']);
+
+            Route::get('/reports/dashboard', [InstituteReportController::class, 'dashboard']);
+            Route::get('/reports/income', [InstituteReportController::class, 'income']);
+            Route::get('/reports/fees', [InstituteReportController::class, 'fees']);
+
+            Route::get('/subscription', [InstituteSubscriptionController::class, 'show']);
+            Route::post('/subscription/renew', [InstituteSubscriptionController::class, 'renew']);
+
             // Student Management
             Route::prefix('students')->group(function () {
                 Route::get('/', [InstituteStudentController::class, 'index']);
@@ -91,7 +127,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [StudentAuthController::class, 'login']);
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [StudentAuthController::class, 'logout']);
-            Route::get('/profile', [StudentAuthController::class, 'profile']);
+            Route::get('/profile', [StudentProfileController::class, 'show']);
+            Route::get('/dashboard', [StudentDashboardController::class, 'index']);
+            Route::get('/fees', [StudentFeesController::class, 'index']);
+            Route::get('/receipts', [StudentReceiptsController::class, 'index']);
+            Route::get('/attendance', [StudentAttendanceController::class, 'index']);
+            Route::get('/daily-updates', [StudentDailyUpdateController::class, 'index']);
+            Route::get('/homeworks', [StudentHomeworkController::class, 'index']);
+            Route::get('/report', [StudentReportController::class, 'index']);
+            Route::get('/notifications', [StudentNotificationController::class, 'index']);
         });
     });
 
