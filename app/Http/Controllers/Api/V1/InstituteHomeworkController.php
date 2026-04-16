@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\Homework;
+use App\Models\Institute;
 use Illuminate\Http\Request;
 
 class InstituteHomeworkController extends Controller
 {
     public function index(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $homeworks = $request->user()
             ->homeworks()
             ->with('batch')
@@ -25,6 +30,10 @@ class InstituteHomeworkController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'batch_id' => 'required|integer|exists:batches,id',
             'title' => 'required|string|max:255',

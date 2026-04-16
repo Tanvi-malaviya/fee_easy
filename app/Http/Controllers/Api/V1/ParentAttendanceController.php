@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\Student;
+use App\Models\StudentParent;
 use Illuminate\Http\Request;
 
-class StudentAttendanceController extends Controller
+class ParentAttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Student)) {
+        if (!$request->user() || !($request->user() instanceof StudentParent)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $attendance = Attendance::where('student_id', $request->user()->id)
-            ->with('batch')
+        $studentIds = $request->user()->students()->pluck('id');
+
+        $attendance = Attendance::whereIn('student_id', $studentIds)
+            ->with(['batch', 'student:id,name'])
             ->orderByDesc('date')
             ->get();
 
@@ -24,8 +26,6 @@ class StudentAttendanceController extends Controller
         $absentCount = $attendance->where('status', 'absent')->count();
         $leaveCount = $attendance->where('status', 'leave')->count();
         $totalDays = $attendance->count();
-
-        $attendanceRate = $totalDays > 0 ? round(($presentCount / $totalDays) * 100, 2) : 0;
 
         return response()->json([
             'status' => 'success',
@@ -35,7 +35,7 @@ class StudentAttendanceController extends Controller
                     'present' => $presentCount,
                     'absent' => $absentCount,
                     'leave' => $leaveCount,
-                    'attendance_rate' => $attendanceRate,
+                    'attendance_rate' => $totalDays > 0 ? round(($presentCount / $totalDays) * 100, 2) : 0,
                 ],
                 'records' => $attendance,
             ],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Institute;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,10 @@ class InstituteStudentController extends Controller
      */
     public function index(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $paginator = Student::where('institute_id', $request->user()->id)->paginate(10);
 
         return response()->json([
@@ -33,6 +38,10 @@ class InstituteStudentController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:students,email',
@@ -67,6 +76,10 @@ class InstituteStudentController extends Controller
      */
     public function show(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $student = Student::where('institute_id', $request->user()->id)->find($id);
 
         if (!$student) {
@@ -87,6 +100,10 @@ class InstituteStudentController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $student = Student::where('institute_id', $request->user()->id)->find($id);
 
         if (!$student) {
@@ -127,6 +144,10 @@ class InstituteStudentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $student = Student::where('institute_id', $request->user()->id)->find($id);
 
         if (!$student) {

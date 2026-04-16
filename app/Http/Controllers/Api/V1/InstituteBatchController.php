@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\Institute;
 use Illuminate\Http\Request;
 
 class InstituteBatchController extends Controller
@@ -13,6 +14,10 @@ class InstituteBatchController extends Controller
      */
     public function index(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $paginator = Batch::where('institute_id', $request->user()->id)->paginate(10);
 
         return response()->json([
@@ -32,6 +37,10 @@ class InstituteBatchController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
@@ -59,6 +68,10 @@ class InstituteBatchController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $batch = Batch::where('institute_id', $request->user()->id)->find($id);
 
         if (!$batch) {
@@ -89,6 +102,10 @@ class InstituteBatchController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $batch = Batch::where('institute_id', $request->user()->id)->find($id);
 
         if (!$batch) {

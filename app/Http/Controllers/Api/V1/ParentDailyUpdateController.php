@@ -4,20 +4,20 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\DailyUpdate;
-use App\Models\Student;
+use App\Models\StudentParent;
 use Illuminate\Http\Request;
 
-class StudentDailyUpdateController extends Controller
+class ParentDailyUpdateController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Student)) {
+        if (!$request->user() || !($request->user() instanceof StudentParent)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $student = $request->user();
+        $batchIds = $request->user()->students()->pluck('batch_id')->filter()->unique();
 
-        $dailyUpdates = DailyUpdate::where('batch_id', $student->batch_id)
+        $dailyUpdates = DailyUpdate::whereIn('batch_id', $batchIds)
             ->orderByDesc('date')
             ->get();
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
+use App\Models\Institute;
 use Illuminate\Http\Request;
 
 class InstituteFeeController extends Controller
@@ -13,6 +14,10 @@ class InstituteFeeController extends Controller
      */
     public function index(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $paginator = Fee::where('institute_id', $request->user()->id)
             ->with('student:id,name,email')
             ->paginate(10);
@@ -34,6 +39,10 @@ class InstituteFeeController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'total_amount' => 'required|numeric|min:0',
@@ -64,6 +73,10 @@ class InstituteFeeController extends Controller
      */
     public function getStudentFees(Request $request, $student_id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $fees = Fee::where('institute_id', $request->user()->id)
             ->where('student_id', $student_id)
             ->get();

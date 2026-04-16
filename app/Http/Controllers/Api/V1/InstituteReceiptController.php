@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Institute;
 use App\Models\Receipt;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -15,6 +16,10 @@ class InstituteReceiptController extends Controller
      */
     public function getStudentReceipts(Request $request, $student_id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $receipts = Receipt::whereHas('payment', function ($query) use ($request, $student_id) {
                 $query->where('student_id', $student_id)
                       ->whereHas('fee', function ($q) use ($request) {
@@ -36,6 +41,10 @@ class InstituteReceiptController extends Controller
      */
     public function downloadReceipt(Request $request, $id)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $receipt = Receipt::with(['payment.fee', 'payment.student', 'payment.fee.institute'])->find($id);
 
         if (!$receipt || $receipt->payment->fee->institute_id !== $request->user()->id) {

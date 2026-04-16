@@ -39,6 +39,10 @@ class ParentAuthController extends Controller
 
     public function logout(Request $request)
     {
+        if (!$request->user()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -49,6 +53,10 @@ class ParentAuthController extends Controller
 
     public function profile(Request $request)
     {
+        if (!$request->user()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $request->user()->load('students')

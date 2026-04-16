@@ -33,6 +33,15 @@ use App\Http\Controllers\Api\V1\StudentDailyUpdateController;
 use App\Http\Controllers\Api\V1\StudentHomeworkController;
 use App\Http\Controllers\Api\V1\StudentReportController;
 use App\Http\Controllers\Api\V1\StudentNotificationController;
+use App\Http\Controllers\Api\V1\ParentDashboardController;
+use App\Http\Controllers\Api\V1\ParentFeesController;
+use App\Http\Controllers\Api\V1\ParentPaymentController;
+use App\Http\Controllers\Api\V1\ParentReceiptsController;
+use App\Http\Controllers\Api\V1\ParentAttendanceController;
+use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
+use App\Http\Controllers\Api\V1\ParentHomeworkController;
+use App\Http\Controllers\Api\V1\ParentReportController;
+use App\Http\Controllers\Api\V1\ParentNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +154,16 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [ParentAuthController::class, 'logout']);
             Route::get('/profile', [ParentAuthController::class, 'profile']);
+            Route::get('/profil', [ParentAuthController::class, 'profile']);
+            Route::get('/dashboard', [ParentDashboardController::class, 'index']);
+            Route::get('/fees', [ParentFeesController::class, 'index']);
+            Route::post('/pay-fee', [ParentPaymentController::class, 'store']);
+            Route::get('/receipts', [ParentReceiptsController::class, 'index']);
+            Route::get('/attendance', [ParentAttendanceController::class, 'index']);
+            Route::get('/daily-updates', [ParentDailyUpdateController::class, 'index']);
+            Route::get('/homeworks', [ParentHomeworkController::class, 'index']);
+            Route::get('/report', [ParentReportController::class, 'index']);
+            Route::get('/notifications', [ParentNotificationController::class, 'index']);
         });
     });
 

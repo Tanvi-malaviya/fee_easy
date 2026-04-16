@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
+use App\Models\Institute;
 use App\Models\SubscriptionPayment;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,10 @@ class InstituteReportController extends Controller
 {
     public function dashboard(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $institute = $request->user();
 
         $totalRevenue = SubscriptionPayment::whereHas('subscription', function ($query) use ($institute) {
@@ -36,6 +41,10 @@ class InstituteReportController extends Controller
 
     public function income(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $payments = SubscriptionPayment::whereHas('subscription', function ($query) use ($request) {
             $query->where('institute_id', $request->user()->id);
         })->orderByDesc('paid_at')->get();
@@ -54,6 +63,10 @@ class InstituteReportController extends Controller
 
     public function fees(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $fees = Fee::where('institute_id', $request->user()->id)
             ->orderByDesc('created_at')
             ->get();

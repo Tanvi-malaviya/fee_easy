@@ -40,6 +40,10 @@ class InstituteAuthController extends Controller
 
     public function logout(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -50,6 +54,10 @@ class InstituteAuthController extends Controller
 
     public function profile(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $request->user()
@@ -58,6 +66,10 @@ class InstituteAuthController extends Controller
 
     public function uploadLogo(Request $request)
     {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'logo' => 'required|image|max:2048',
         ]);

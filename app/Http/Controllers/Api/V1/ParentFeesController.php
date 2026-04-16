@@ -4,18 +4,22 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
-use App\Models\Student;
+use App\Models\StudentParent;
 use Illuminate\Http\Request;
 
-class StudentFeesController extends Controller
+class ParentFeesController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Student)) {
+        if (!$request->user() || !($request->user() instanceof StudentParent)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $fees = Fee::where('student_id', $request->user()->id)
+        $parent = $request->user();
+        $studentIds = $parent->students()->pluck('id');
+
+        $fees = Fee::with('student:id,name,batch_id')
+            ->whereIn('student_id', $studentIds)
             ->orderByDesc('created_at')
             ->get();
 

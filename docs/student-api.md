@@ -311,6 +311,16 @@ Success response:
       "type": "alert",
       "is_read": true,
       "created_at": "2026-04-14T09:30:00"
+    },
+    {
+      "id": 3,
+      "user_type": "student",
+      "user_id": 1,
+      "title": "Homework Submission Reminder",
+      "message": "Submit your math homework by 2026-04-18.",
+      "type": "reminder",
+      "is_read": false,
+      "created_at": "2026-04-16T08:45:00"
     }
   ]
 }
