@@ -189,14 +189,14 @@
             font-size: 13px !important;
             padding-top: 6px !important;
             padding-bottom: 6px !important;
-            font-weight: 500 !important;
+            font-weight: 400 !important;
         }
 
         nav a.bg-indigo-600 {
-            font-weight: 500 !important;
+            font-weight: 400 !important;
             margin-top: 10px !important;
             margin-bottom: 8px !important;
-            /* Extra weight for active state */
+            /* Keep active state visible without heavier font */
         }
 
         /* Standardize hover and active states for better feel */

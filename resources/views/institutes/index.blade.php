@@ -132,13 +132,13 @@
                             <td class="px-6 py-3">
                                 <button type="button"
                                     onclick="togglePortalMenu(event, {{ $institute->id }}, '{{ $institute->status }}')"
-                                    class="status-btn-{{ $institute->id }} px-2 py-0.5 inline-flex items-center justify-between text-[7px] font-black uppercase tracking-[0.15em] rounded border transition cursor-pointer
+                                    class="status-btn-{{ $institute->id }} no-loader px-2 py-0.5 inline-flex items-center justify-between text-[8.5px] font-bold uppercase tracking-widest leading-none rounded border transition cursor-pointer
                                         @if($institute->status === 'active') bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
                                         @elseif($institute->status === 'suspended') bg-amber-50 text-amber-700 border-amber-100/50 hover:bg-amber-100
                                         @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100
                                         @else bg-gray-50 text-gray-700 border-gray-100/50 hover:bg-gray-100 @endif">
                                     {{ $institute->status }}
-                                    <svg class="w-3.5 h-3.5 ml-2 opacity-60" fill="none" stroke="currentColor"
+                                    <svg class="w-3 h-3 ml-2 opacity-60" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7"></path>

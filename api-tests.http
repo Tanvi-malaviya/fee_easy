@@ -1,0 +1,117 @@
+@baseUrl = http://localhost/api/v1
+
+### -------------------------------------------------------------
+### INSTITUTE API TESTS
+### -------------------------------------------------------------
+@instituteEmail = institute@test.com
+@institutePassword = password123
+
+# @name InstituteLogin
+POST {{baseUrl}}/institute/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{instituteEmail}}",
+    "password": "{{institutePassword}}"
+}
+
+###
+@instituteToken = {{InstituteLogin.response.body.data.token}}
+
+# Institute Profile
+GET {{baseUrl}}/institute/profile
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Institute Students
+GET {{baseUrl}}/institute/students
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Institute Batches
+GET {{baseUrl}}/institute/batches
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Institute Call for Today's Updates
+GET {{baseUrl}}/institute/daily-updates
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+
+### -------------------------------------------------------------
+### STUDENT API TESTS
+### -------------------------------------------------------------
+@studentEmail = student@test.com
+@studentPassword = password123
+
+# @name StudentLogin
+POST {{baseUrl}}/student/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{studentEmail}}",
+    "password": "{{studentPassword}}"
+}
+
+###
+@studentToken = {{StudentLogin.response.body.data.token}}
+
+# Student Dashboard (Profile & Summary)
+GET {{baseUrl}}/student/dashboard
+Authorization: Bearer {{studentToken}}
+Accept: application/json
+
+###
+# Student Fees
+GET {{baseUrl}}/student/fees
+Authorization: Bearer {{studentToken}}
+Accept: application/json
+
+###
+# Student Attendance
+GET {{baseUrl}}/student/attendance
+Authorization: Bearer {{studentToken}}
+Accept: application/json
+
+
+### -------------------------------------------------------------
+### PARENT API TESTS
+### -------------------------------------------------------------
+@parentEmail = parent@test.com
+@parentPassword = password123
+
+# @name ParentLogin
+POST {{baseUrl}}/parent/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{parentEmail}}",
+    "password": "{{parentPassword}}"
+}
+
+###
+@parentToken = {{ParentLogin.response.body.data.token}}
+
+# Parent Dashboard
+GET {{baseUrl}}/parent/dashboard
+Authorization: Bearer {{parentToken}}
+Accept: application/json
+
+###
+# Parent Views Child's Daily Updates
+GET {{baseUrl}}/parent/daily-updates
+Authorization: Bearer {{parentToken}}
+Accept: application/json
+
+###
+# Parent Views Child's Homework
+GET {{baseUrl}}/parent/homeworks
+Authorization: Bearer {{parentToken}}
+Accept: application/json
