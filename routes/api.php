@@ -174,6 +174,22 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('subscriptions', SubscriptionController::class)->except(['destroy']);
         Route::get('/payments', [PaymentController::class, 'index']);
         Route::post('/notifications', [NotificationController::class, 'store']);
+
+        // Chat Routes
+        Route::prefix('chat')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list']);
+            Route::get('/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages']);
+            Route::post('/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'destroy']);
+        });
+
+        // Community Routes
+        Route::prefix('community')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\Api\V1\CommunityController::class, 'list']);
+            Route::get('/members', [\App\Http\Controllers\Api\V1\CommunityController::class, 'members']);
+            Route::get('/messages', [\App\Http\Controllers\Api\V1\CommunityController::class, 'messages']);
+            Route::post('/send', [\App\Http\Controllers\Api\V1\CommunityController::class, 'send']);
+        });
     });
 
 });

@@ -115,3 +115,77 @@ Accept: application/json
 GET {{baseUrl}}/parent/homeworks
 Authorization: Bearer {{parentToken}}
 Accept: application/json
+
+### -------------------------------------------------------------
+### CHAT API TESTS (Use either Institute or Parent token)
+### -------------------------------------------------------------
+
+# Institute Send Message to Parent
+POST {{baseUrl}}/chat/send
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "receiver_id": 1,
+    "message": "Hello Parent, how is your child doing?",
+    "type": "text"
+}
+
+###
+# List All Chats (Institute)
+GET {{baseUrl}}/chat/list
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Get Chat History with Specific Parent (User ID = 1)
+GET {{baseUrl}}/chat/messages/1
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Parent Replies to Institute (Institute ID = 1)
+POST {{baseUrl}}/chat/send
+Authorization: Bearer {{parentToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "receiver_id": 1,
+    "message": "Hello Sir, my child is doing great, thank you!",
+    "type": "text"
+}
+
+### -------------------------------------------------------------
+### COMMUNITY API TESTS
+### -------------------------------------------------------------
+
+# List my communities
+GET {{baseUrl}}/community/list
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# View members in my city community
+GET {{baseUrl}}/community/members
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Get messages for my community
+GET {{baseUrl}}/community/messages
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Send a message to the community
+POST {{baseUrl}}/community/send
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "message": "Hello to everyone in my city!",
+    "type": "text"
+}
