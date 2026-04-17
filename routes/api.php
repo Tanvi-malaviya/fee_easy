@@ -154,7 +154,6 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [ParentAuthController::class, 'logout']);
             Route::get('/profile', [ParentAuthController::class, 'profile']);
-            Route::get('/profil', [ParentAuthController::class, 'profile']);
             Route::get('/dashboard', [ParentDashboardController::class, 'index']);
             Route::get('/fees', [ParentFeesController::class, 'index']);
             Route::post('/pay-fee', [ParentPaymentController::class, 'store']);
