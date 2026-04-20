@@ -189,3 +189,209 @@ Accept: application/json
     "message": "Hello to everyone in my city!",
     "type": "text"
 }
+
+### -------------------------------------------------------------
+### INSTITUTE PRIVATE NOTES API TESTS
+### -------------------------------------------------------------
+
+# Create a private note for a student (Requires an active student ID)
+POST {{baseUrl}}/institute/notes
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "notable_type": "student",
+    "notable_id": 1,
+    "content": "Ravi is struggling with Algebra equations. Give extra homework next week."
+}
+
+###
+# Create a private note for a Batch (Requires an active batch ID)
+POST {{baseUrl}}/institute/notes
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "notable_type": "batch",
+    "notable_id": 1,
+    "content": "Afternoon English Batch: Need to collect textbook fees on Friday."
+}
+
+###
+# List all private notes for my institute
+GET {{baseUrl}}/institute/notes
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+### -------------------------------------------------------------
+### TEACHER MANAGEMENT & ATTENDANCE API TESTS
+### -------------------------------------------------------------
+
+# List all Teachers
+GET {{baseUrl}}/institute/teachers
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Add a Teacher
+POST {{baseUrl}}/institute/teachers
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Nidhi Shah",
+    "phone": "9898989898",
+    "email": "nidhi.shah@test.com",
+    "subject": "Mathematics",
+    "designation": "Senior Tutor",
+    "salary": 15000,
+    "join_date": "2026-04-01",
+    "status": "active"
+}
+
+###
+# Mark Attendance (Bulk)
+POST {{baseUrl}}/institute/teachers/attendance
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "date": "2026-04-20",
+    "attendances": [
+        {
+            "teacher_id": 1,
+            "status": "Present",
+            "remarks": "On time"
+        }
+    ]
+}
+
+###
+# Get Daily Attendance
+GET {{baseUrl}}/institute/teachers/attendance?date=2026-04-20
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Monthly Attendance Report
+GET {{baseUrl}}/institute/teachers/attendance/report?month=4&year=2026
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+### -------------------------------------------------------------
+### INSTITUTE EXPENSES API TESTS
+### -------------------------------------------------------------
+
+# Create an Expense Category
+POST {{baseUrl}}/institute/expenses/categories
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Stationery & Printing"
+}
+
+###
+# List Expense Categories
+GET {{baseUrl}}/institute/expenses/categories
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Add an Expense
+POST {{baseUrl}}/institute/expenses
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "expense_category_id": 1,
+    "amount": 1250.50,
+    "date": "2026-04-20",
+    "description": "Printed 500 exam papers"
+}
+
+###
+# List Expenses
+GET {{baseUrl}}/institute/expenses
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Expense Report by Category
+GET {{baseUrl}}/institute/expenses/report?start_date=2026-04-01&end_date=2026-04-30
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# List private notes specific to a single student
+GET {{baseUrl}}/institute/notes?notable_type=student&notable_id=1
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+### -------------------------------------------------------------
+### LEADS MANAGEMENT API TESTS
+### -------------------------------------------------------------
+
+# Add a New Lead
+POST {{baseUrl}}/institute/leads
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Arjun Patel",
+    "phone": "9988776655",
+    "email": "arjun.patel@example.com",
+    "course_interest": "JEE Mains Preparation",
+    "notes": "Strong in Physics, needs help in Organic Chemistry."
+}
+
+###
+# List Leads (Paginated)
+GET {{baseUrl}}/institute/leads?page=1
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Update Lead Status
+PUT {{baseUrl}}/institute/leads/1
+Authorization: Bearer {{instituteToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "status": "Contacted",
+    "notes": "Called on 20th April, scheduling a demo class."
+}
+
+### -------------------------------------------------------------
+### BIRTHDAYS & ID CARDS API TESTS
+### -------------------------------------------------------------
+
+# Get Upcoming Birthdays
+GET {{baseUrl}}/institute/birthdays
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Get Student ID Card Data
+GET {{baseUrl}}/institute/students/1/id-card
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Publicly Verify Student ID (Requires ID Hash from the card response)
+POST {{baseUrl}}/public/verify-id
+Content-Type: application/json
+Accept: application/json
+
+{
+    "hash": "REPLACE_WITH_ACTUAL_HASH_FROM_IDCARD_API"
+}
+

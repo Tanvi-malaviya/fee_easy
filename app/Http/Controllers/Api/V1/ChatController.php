@@ -53,10 +53,33 @@ class ChatController extends Controller
 
         $message->load('sender', 'receiver');
 
+        $formattedMessage = [
+            'id' => $message->id,
+            'sender_id' => $message->sender_id,
+            'receiver_id' => $message->receiver_id,
+            'message' => $message->message,
+            'type' => $message->type,
+            'attachment' => $message->attachment,
+            'created_at' => $message->created_at,
+            'updated_at' => $message->updated_at,
+            'sender' => $message->sender ? [
+                'id' => $message->sender->id,
+                'name' => $message->sender->name,
+                'logo' => $message->sender->logo ?? null,
+                'type' => class_basename($message->sender_type)
+            ] : null,
+            'receiver' => $message->receiver ? [
+                'id' => $message->receiver->id,
+                'name' => $message->receiver->name,
+                'logo' => $message->receiver->logo ?? null,
+                'type' => class_basename($message->receiver_type)
+            ] : null
+        ];
+
         return response()->json([
             'status' => 'success',
             'message' => 'Message sent successfully',
-            'data' => $message
+            'data' => $formattedMessage
         ], 201);
     }
 
@@ -92,20 +115,24 @@ class ChatController extends Controller
                 $other_id = $msg->receiver_id;
                 $other_type = class_basename($msg->receiver_type);
                 $other_name = $msg->receiver ? $msg->receiver->name : 'Unknown';
+                $other_logo = $msg->receiver ? ($msg->receiver->logo ?? null) : null;
             } else {
                 $key = $msg->sender_type . '_' . $msg->sender_id;
                 $other_id = $msg->sender_id;
                 $other_type = class_basename($msg->sender_type);
                 $other_name = $msg->sender ? $msg->sender->name : 'Unknown';
+                $other_logo = $msg->sender ? ($msg->sender->logo ?? null) : null;
             }
 
             if (!isset($conversations[$key])) {
                 $conversations[$key] = [
                     'my_id' => $user->id,
                     'my_name' => $user->name ?? 'Unknown',
+                    'my_logo' => $user->logo ?? null,
                     'my_type' => class_basename($userClass),
                     'user_id' => $other_id,
                     'user_name' => $other_name,
+                    'user_logo' => $other_logo,
                     'user_type' => $other_type,
                     'latest_message' => $msg->message,
                     'type' => $msg->type,
@@ -167,9 +194,34 @@ class ChatController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
+        $formattedMessages = $messages->map(function ($msg) {
+            return [
+                'id' => $msg->id,
+                'sender_id' => $msg->sender_id,
+                'receiver_id' => $msg->receiver_id,
+                'message' => $msg->message,
+                'type' => $msg->type,
+                'attachment' => $msg->attachment,
+                'created_at' => $msg->created_at,
+                'updated_at' => $msg->updated_at,
+                'sender' => $msg->sender ? [
+                    'id' => $msg->sender->id,
+                    'name' => $msg->sender->name,
+                    'logo' => $msg->sender->logo ?? null,
+                    'type' => class_basename($msg->sender_type)
+                ] : null,
+                'receiver' => $msg->receiver ? [
+                    'id' => $msg->receiver->id,
+                    'name' => $msg->receiver->name,
+                    'logo' => $msg->receiver->logo ?? null,
+                    'type' => class_basename($msg->receiver_type)
+                ] : null
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
-            'data' => $messages
+            'data' => $formattedMessages
         ]);
     }
     

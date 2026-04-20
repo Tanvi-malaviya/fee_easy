@@ -7,6 +7,8 @@ use App\Models\Institute;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class InstituteStudentController extends Controller
 {
@@ -19,7 +21,10 @@ class InstituteStudentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $paginator = Student::where('institute_id', $request->user()->id)->paginate(10);
+        $paginator = Student::where('institute_id', $request->user()->id)
+            ->with('batch')
+            ->orderBy('name', 'asc')
+            ->paginate(15);
 
         return response()->json([
             'status' => 'success',
@@ -47,9 +52,10 @@ class InstituteStudentController extends Controller
             'email' => 'required|email|unique:students,email',
             'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:6',
-            'batch_id' => 'nullable|integer',
+            'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'school_name' => 'nullable|string',
+            'dob' => 'nullable|date',
         ]);
 
         $student = Student::create([
@@ -57,11 +63,13 @@ class InstituteStudentController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'institute_id' => $request->user()->id, // Automatically assign the institute
+            'institute_id' => $request->user()->id,
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
             'school_name' => $request->school_name,
+            'dob' => $request->dob,
             'status' => 1,
+            'id_hash' => Str::random(32), // Unique secure hash for ID card
         ]);
 
         return response()->json([
@@ -80,7 +88,7 @@ class InstituteStudentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $student = Student::where('institute_id', $request->user()->id)->find($id);
+        $student = Student::where('institute_id', $request->user()->id)->with('batch')->find($id);
 
         if (!$student) {
             return response()->json([
@@ -118,13 +126,14 @@ class InstituteStudentController extends Controller
             'email' => 'sometimes|required|email|unique:students,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:6',
-            'batch_id' => 'nullable|integer',
+            'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'school_name' => 'nullable|string',
+            'dob' => 'nullable|date',
             'status' => 'sometimes|integer',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'school_name', 'status']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'school_name', 'status', 'dob']);
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
@@ -136,6 +145,82 @@ class InstituteStudentController extends Controller
             'status' => 'success',
             'message' => 'Student updated successfully',
             'data' => $student
+        ]);
+    }
+
+    /**
+     * Get upcoming birthdays.
+     */
+    public function birthdays(Request $request)
+    {
+        $institute = $request->user();
+        $today = Carbon::today();
+        
+        // Find students whose birthday (month and day) is after today or in the current month
+        $students = Student::where('institute_id', $institute->id)
+            ->whereNotNull('dob')
+            ->get()
+            ->filter(function ($student) use ($today) {
+                $dob = Carbon::parse($student->dob);
+                $birthdayThisYear = $dob->copy()->year($today->year);
+                
+                // If birthday already passed this year, look at next year
+                if ($birthdayThisYear->isPast() && !$birthdayThisYear->isToday()) {
+                    $birthdayThisYear->addYear();
+                }
+
+                // Show birthdays in next 30 days
+                return $birthdayThisYear->diffInDays($today) <= 30;
+            })
+            ->sortBy(function ($student) use ($today) {
+                $dob = Carbon::parse($student->dob);
+                $birthdayThisYear = $dob->copy()->year($today->year);
+                if ($birthdayThisYear->isPast() && !$birthdayThisYear->isToday()) {
+                    $birthdayThisYear->addYear();
+                }
+                return $birthdayThisYear->timestamp;
+            })
+            ->values();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $students
+        ]);
+    }
+
+    /**
+     * Get Digital ID Card Data.
+     */
+    public function idCard(Request $request, $id)
+    {
+        $institute = $request->user();
+        $student = Student::where('institute_id', $institute->id)
+            ->with(['batch', 'institute:id,institute_name,logo,address,city,phone'])
+            ->findOrFail($id);
+
+        // Generate a data string for the QR code
+        $qrPayload = json_encode([
+            'type' => 'student_id_verification',
+            'hash' => $student->id_hash,
+            'name' => $student->name,
+            'institute' => $student->institute->institute_name
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'student' => [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'phone' => $student->phone,
+                    'standard' => $student->standard,
+                    'dob' => $student->dob,
+                    'batch' => $student->batch ? $student->batch->name : 'N/A',
+                ],
+                'institute' => $student->institute,
+                'qr_payload' => $qrPayload,
+                'verification_hash' => $student->id_hash
+            ]
         ]);
     }
 

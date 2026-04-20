@@ -76,4 +76,34 @@ class Institute extends Authenticatable
     {
         return $this->hasMany(Homework::class);
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class);
+    }
+
+    public function teacherAttendances()
+    {
+        return $this->hasMany(TeacherAttendance::class);
+    }
+
+    public function expenseCategories()
+    {
+        return $this->hasMany(ExpenseCategory::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
 }

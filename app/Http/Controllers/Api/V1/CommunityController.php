@@ -108,7 +108,25 @@ class CommunityController extends Controller
         $messages = CommunityMessage::with('sender')
             ->where('city_name', $city)
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'city_name' => $msg->city_name,
+                    'sender_id' => $msg->sender_id,
+                    'message' => $msg->message,
+                    'type' => $msg->type,
+                    'attachment' => $msg->attachment,
+                    'created_at' => $msg->created_at,
+                    'updated_at' => $msg->updated_at,
+                    'sender' => $msg->sender ? [
+                        'id' => $msg->sender->id,
+                        'name' => $msg->sender->name,
+                        'logo' => $msg->sender->logo ?? null,
+                        'type' => class_basename($msg->sender_type)
+                    ] : null
+                ];
+            });
 
         return response()->json([
             'status' => 'success',
@@ -147,10 +165,27 @@ class CommunityController extends Controller
 
         $message->load('sender');
 
+        $formattedMessage = [
+            'id' => $message->id,
+            'city_name' => $message->city_name,
+            'sender_id' => $message->sender_id,
+            'message' => $message->message,
+            'type' => $message->type,
+            'attachment' => $message->attachment,
+            'created_at' => $message->created_at,
+            'updated_at' => $message->updated_at,
+            'sender' => $message->sender ? [
+                'id' => $message->sender->id,
+                'name' => $message->sender->name,
+                'logo' => $message->sender->logo ?? null,
+                'type' => class_basename($message->sender_type)
+            ] : null
+        ];
+
         return response()->json([
             'status' => 'success',
             'message' => 'Message broadcasted successfully to ' . $city . ' community.',
-            'data' => $message
+            'data' => $formattedMessage
         ], 201);
     }
 }

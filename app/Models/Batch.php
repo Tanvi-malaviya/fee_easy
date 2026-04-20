@@ -41,4 +41,9 @@ class Batch extends Model
     {
         return $this->hasMany(Homework::class);
     }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
+    }
 }
