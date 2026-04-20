@@ -42,6 +42,11 @@ use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
+use App\Http\Controllers\Api\V1\InstituteNoteController;
+use App\Http\Controllers\Api\V1\InstituteTeacherController;
+use App\Http\Controllers\Api\V1\InstituteExpenseController;
+use App\Http\Controllers\Api\V1\InstituteLeadController;
+use App\Http\Controllers\Api\V1\PublicVerificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +82,49 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
+            
+            // Notes routes
+            Route::prefix('notes')->group(function () {
+                Route::get('/', [InstituteNoteController::class, 'index']);
+                Route::post('/', [InstituteNoteController::class, 'store']);
+                Route::put('/{id}', [InstituteNoteController::class, 'update']);
+                Route::delete('/{id}', [InstituteNoteController::class, 'destroy']);
+            });
+
+            // Teacher Management & Attendance
+            Route::prefix('teachers')->group(function () {
+                Route::get('/', [InstituteTeacherController::class, 'index']);
+                Route::post('/', [InstituteTeacherController::class, 'store']);
+                Route::put('/{id}', [InstituteTeacherController::class, 'update']);
+                Route::delete('/{id}', [InstituteTeacherController::class, 'destroy']);
+                
+                Route::get('/attendance/report', [InstituteTeacherController::class, 'attendanceReport']);
+                Route::get('/attendance', [InstituteTeacherController::class, 'getAttendance']);
+                Route::post('/attendance', [InstituteTeacherController::class, 'markAttendance']);
+            });
+
+            // Institute Expense
+            Route::prefix('expenses')->group(function () {
+                Route::get('/report', [InstituteExpenseController::class, 'report']);
+                Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
+                Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);
+                
+                Route::get('/', [InstituteExpenseController::class, 'index']);
+                Route::post('/', [InstituteExpenseController::class, 'store']);
+                Route::put('/{id}', [InstituteExpenseController::class, 'update']);
+                Route::delete('/{id}', [InstituteExpenseController::class, 'destroy']);
+            });
+
+            // Leads Management
+            Route::prefix('leads')->group(function () {
+                Route::get('/', [InstituteLeadController::class, 'index']);
+                Route::post('/', [InstituteLeadController::class, 'store']);
+                Route::put('/{id}', [InstituteLeadController::class, 'update']);
+                Route::delete('/{id}', [InstituteLeadController::class, 'destroy']);
+            });
+
+            // Birthdays
+            Route::get('/birthdays', [InstituteStudentController::class, 'birthdays']);
 
             Route::get('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'show']);
             Route::post('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'store']);
@@ -96,6 +144,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}', [InstituteStudentController::class, 'show']);
                 Route::put('/{id}', [InstituteStudentController::class, 'update']);
                 Route::delete('/{id}', [InstituteStudentController::class, 'destroy']);
+                Route::get('/{id}/id-card', [InstituteStudentController::class, 'idCard']);
             });
 
             // Batch Management
@@ -174,6 +223,24 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('subscriptions', SubscriptionController::class)->except(['destroy']);
         Route::get('/payments', [PaymentController::class, 'index']);
         Route::post('/notifications', [NotificationController::class, 'store']);
+
+        // Chat Routes
+        Route::prefix('chat')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list']);
+            Route::get('/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages']);
+            Route::post('/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'destroy']);
+        });
+
+        // Community Routes
+        Route::prefix('community')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\Api\V1\CommunityController::class, 'list']);
+            Route::get('/members', [\App\Http\Controllers\Api\V1\CommunityController::class, 'members']);
+            Route::get('/messages', [\App\Http\Controllers\Api\V1\CommunityController::class, 'messages']);
+            Route::post('/send', [\App\Http\Controllers\Api\V1\CommunityController::class, 'send']);
+        });
     });
 
+    // Public Student ID Verification
+    Route::post('/public/verify-id', [PublicVerificationController::class, 'verifyID']);
 });

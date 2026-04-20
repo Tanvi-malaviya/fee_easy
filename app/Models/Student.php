@@ -21,7 +21,9 @@ class Student extends Authenticatable
         'batch_id',
         'standard',
         'school_name',
+        'dob',
         'status',
+        'id_hash',
     ];
 
     protected $hidden = [
@@ -61,5 +63,10 @@ class Student extends Authenticatable
     public function homeworkSubmissions()
     {
         return $this->hasMany(HomeworkSubmission::class);
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
     }
 }
