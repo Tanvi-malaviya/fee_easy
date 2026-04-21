@@ -23,7 +23,7 @@ class InstituteAttendanceController extends Controller
             'batch_id' => 'nullable|exists:batches,id'
         ]);
 
-        $query = Attendance::with('student:id,name')
+        $query = Attendance::with(['student:id,name', 'batch:id,name'])
             ->where('date', $request->date)
             ->whereHas('batch', function($q) use ($request) {
                 $q->where('institute_id', $request->user()->id);

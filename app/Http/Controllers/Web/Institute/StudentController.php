@@ -135,4 +135,71 @@ class StudentController extends Controller
 
         return redirect()->back()->with('success', 'Student has been removed from the registry.');
     }
+
+    /**
+     * Export students based on format and filters.
+     */
+    public function export(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+        $query = $institute->students()->with('batch');
+
+        // Apply Filters (same logic as API)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('batch_id')) {
+            $query->where('batch_id', $request->batch_id);
+        }
+
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        $students = $query->orderBy('name', 'asc')->get();
+        $format = $request->get('format', 'pdf');
+
+        if ($format === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.export.students', [
+                'students' => $students,
+                'institute' => $institute,
+                'date' => Carbon::now()->format('d M, Y'),
+                'batch' => $request->filled('batch_id') ? \App\Models\Batch::find($request->batch_id) : null
+            ]);
+            
+            return $pdf->download('Student_Registry_' . Carbon::now()->format('YmdHis') . '.pdf');
+        } else {
+            // CSV / Excel Format
+            $filename = 'Student_Export_' . Carbon::now()->format('YmdHis') . '.csv';
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=\"$filename\"",
+            ];
+
+            $callback = function() use ($students) {
+                $file = fopen('php://output', 'w');
+                fputcsv($file, ['Name', 'Email', 'Phone', 'Batch', 'Standard', 'Status']);
+
+                foreach ($students as $student) {
+                    fputcsv($file, [
+                        $student->name,
+                        $student->email,
+                        $student->phone,
+                        $student->batch ? $student->batch->name : 'N/A',
+                        $student->standard,
+                        $student->status == 1 ? 'Active' : 'Inactive'
+                    ]);
+                }
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        }
+    }
 }

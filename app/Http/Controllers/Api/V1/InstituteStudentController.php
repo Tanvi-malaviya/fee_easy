@@ -17,21 +17,46 @@ class InstituteStudentController extends Controller
      */
     public function index(Request $request)
     {
+        \Log::debug('API Request User:', ['user' => $request->user(), 'guards' => config('sanctum.guard')]);
         if (!$request->user() || !($request->user() instanceof Institute)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $query = Student::where('institute_id', $request->user()->id)
-            ->with('batch')
-            ->orderBy('name', 'asc');
+            ->with('batch');
 
-        if ($request->has('batch_id')) {
+        // Search Filter (Name, Email, Phone)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Batch Filter
+        if ($request->filled('batch_id')) {
             $query->where('batch_id', $request->batch_id);
         }
 
-        // If batch_id is provided, we usually want all students for attendance marking, 
-        // otherwise default to pagination of 15.
-        if ($request->has('batch_id') && !$request->has('page')) {
+        // Status Filter
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Standard Filter
+        if ($request->filled('standard')) {
+            $query->where('standard', 'like', "%{$request->standard}%");
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        // If batch_id/filters are provided but no page, we might want all for some views,
+        // but for the Student Registry we usually want pagination.
+        // We'll keep the existing logic for attendance compatibility but prioritize pagination.
+        
+        if ($request->has('batch_id') && !$request->has('page') && !$request->has('search')) {
             $students = $query->get();
             return response()->json([
                 'status' => 'success',

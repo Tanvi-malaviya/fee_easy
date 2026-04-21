@@ -65,6 +65,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
         
         // Management Pages
+        Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
         Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
         Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
         Route::patch('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
@@ -76,6 +77,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
         // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
         Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
         Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
+        Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
         Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
         Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
         Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
