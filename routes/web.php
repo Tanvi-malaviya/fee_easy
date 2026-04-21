@@ -51,4 +51,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Institute Web Panel Routes
+Route::prefix('institute')->name('institute.')->group(function () {
+    // Guest Routes
+    Route::middleware('guest:institute')->group(function () {
+        Route::get('/login', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'login']);
+    });
+
+    // Authenticated Routes
+    Route::middleware('auth:institute')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
+        
+        // Management Pages
+        Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
+        Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
+        Route::patch('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
+        Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
+
+        Route::get('/teachers', function () { return view('institute.teachers.index'); })->name('teachers.index');
+
+
+        // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
+        Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
+        Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
+        Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
+        Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
+        Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
+
+    });
+});
+
 require __DIR__ . '/auth.php';

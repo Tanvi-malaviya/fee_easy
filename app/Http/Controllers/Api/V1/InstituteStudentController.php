@@ -21,10 +21,31 @@ class InstituteStudentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $paginator = Student::where('institute_id', $request->user()->id)
+        $query = Student::where('institute_id', $request->user()->id)
             ->with('batch')
-            ->orderBy('name', 'asc')
-            ->paginate(15);
+            ->orderBy('name', 'asc');
+
+        if ($request->has('batch_id')) {
+            $query->where('batch_id', $request->batch_id);
+        }
+
+        // If batch_id is provided, we usually want all students for attendance marking, 
+        // otherwise default to pagination of 15.
+        if ($request->has('batch_id') && !$request->has('page')) {
+            $students = $query->get();
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'items' => $students,
+                    'total' => $students->count(),
+                    'current_page' => 1,
+                    'last_page' => 1,
+                    'per_page' => $students->count(),
+                ]
+            ]);
+        }
+
+        $paginator = $query->paginate(15);
 
         return response()->json([
             'status' => 'success',
@@ -54,7 +75,6 @@ class InstituteStudentController extends Controller
             'password' => 'required|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'school_name' => 'nullable|string',
             'dob' => 'nullable|date',
         ]);
 
@@ -66,7 +86,6 @@ class InstituteStudentController extends Controller
             'institute_id' => $request->user()->id,
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
-            'school_name' => $request->school_name,
             'dob' => $request->dob,
             'status' => 1,
             'id_hash' => Str::random(32), // Unique secure hash for ID card
@@ -128,12 +147,11 @@ class InstituteStudentController extends Controller
             'password' => 'nullable|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'school_name' => 'nullable|string',
             'dob' => 'nullable|date',
             'status' => 'sometimes|integer',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'school_name', 'status', 'dob']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob']);
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
