@@ -20,7 +20,6 @@ class Student extends Authenticatable
         'parent_id',
         'batch_id',
         'standard',
-        'school_name',
         'dob',
         'status',
         'id_hash',
