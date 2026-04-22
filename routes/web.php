@@ -64,11 +64,14 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
         
-        // Management Pages
+        // Student Management
         Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
+        Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
+        Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');
+        Route::get('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'show'])->name('students.show');
         Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
         Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
-        Route::patch('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
+        Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
         Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
 
         Route::get('/teachers', function () { return view('institute.teachers.index'); })->name('teachers.index');
@@ -76,6 +79,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
         // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
         Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
+        Route::get('/batches/{id}', function($id) { return view('institute.batches.show', compact('id')); })->name('batches.show');
         Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
         Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
         Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');

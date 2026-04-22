@@ -21,6 +21,8 @@ class Student extends Authenticatable
         'batch_id',
         'standard',
         'dob',
+        'guardian_name',
+        'monthly_fee',
         'status',
         'id_hash',
     ];

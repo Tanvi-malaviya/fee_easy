@@ -40,6 +40,14 @@ class InstituteStudentController extends Controller
             $query->where('batch_id', $request->batch_id);
         }
 
+        // Filter out students already in this batch
+        if ($request->filled('not_in_batch_id')) {
+            $query->where(function($q) use ($request) {
+                $q->where('batch_id', '!=', $request->not_in_batch_id)
+                  ->orWhereNull('batch_id');
+            });
+        }
+
         // Status Filter
         if ($request->has('status') && $request->status !== '') {
             $query->where('status', $request->status);
@@ -101,6 +109,8 @@ class InstituteStudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
         ]);
 
         $student = Student::create([
@@ -112,6 +122,8 @@ class InstituteStudentController extends Controller
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
             'dob' => $request->dob,
+            'guardian_name' => $request->guardian_name,
+            'monthly_fee' => $request->monthly_fee,
             'status' => 1,
             'id_hash' => Str::random(32), // Unique secure hash for ID card
         ]);
@@ -173,10 +185,12 @@ class InstituteStudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
             'status' => 'sometimes|integer',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob', 'guardian_name', 'monthly_fee']);
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);

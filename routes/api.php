@@ -151,6 +151,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('batches')->group(function () {
                 Route::get('/', [InstituteBatchController::class, 'index']);
                 Route::post('/', [InstituteBatchController::class, 'store']);
+                Route::get('/{id}', [InstituteBatchController::class, 'show']);
                 Route::put('/{id}', [InstituteBatchController::class, 'update']);
                 Route::delete('/{id}', [InstituteBatchController::class, 'destroy']);
             });

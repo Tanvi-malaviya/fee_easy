@@ -51,6 +51,46 @@ class StudentController extends Controller
     }
 
     /**
+     * Show the form for creating a new student.
+     */
+    public function create()
+    {
+        $institute = Auth::guard('institute')->user();
+        $batches = $institute->batches()->get();
+        return view('institute.students.create', compact('batches'));
+    }
+
+    /**
+     * Show the form for editing the specified student.
+     */
+    public function edit(Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) abort(403);
+        
+        $batches = $institute->batches()->get();
+        return view('institute.students.edit', compact('student', 'batches'));
+    }
+
+    /**
+     * Display the specified student profile.
+     */
+    public function show(Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) abort(403);
+
+        $student->load(['batch', 'fees']);
+        
+        // Calculate balance (Difference between total assigned fees and total paid amount)
+        $totalAssigned = $student->fees->sum('total_amount');
+        $totalPaid = $student->fees->sum('paid_amount');
+        $balance = $totalAssigned - $totalPaid;
+
+        return view('institute.students.show', compact('student', 'balance'));
+    }
+
+    /**
      * Store a newly created student.
      */
     public function store(Request $request)
@@ -65,6 +105,8 @@ class StudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
         ]);
 
         $student = Student::create([
@@ -76,6 +118,8 @@ class StudentController extends Controller
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
             'dob' => $request->dob,
+            'guardian_name' => $request->guardian_name,
+            'monthly_fee' => $request->monthly_fee,
             'status' => 1,
             'id_hash' => Str::random(32),
         ]);
@@ -84,7 +128,7 @@ class StudentController extends Controller
             return response()->json(['message' => 'Student added successfully!', 'student' => $student]);
         }
 
-        return redirect()->back()->with('success', 'Student added successfully to the registry.');
+        return redirect()->route('institute.students.index')->with('success', 'Student added successfully to the registry.');
     }
 
     /**
@@ -103,9 +147,12 @@ class StudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
+            'status' => 'required|integer',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob', 'guardian_name', 'monthly_fee', 'status']);
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -116,7 +163,7 @@ class StudentController extends Controller
             return response()->json(['message' => 'Student details updated successfully!', 'student' => $student]);
         }
 
-        return redirect()->back()->with('success', 'Student details updated successfully.');
+        return redirect()->route('institute.students.index')->with('success', 'Student details updated successfully.');
     }
 
     /**
