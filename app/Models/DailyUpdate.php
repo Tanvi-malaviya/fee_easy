@@ -15,6 +15,11 @@ class DailyUpdate extends Model
         'topic',
         'description',
         'date',
+        'category',
+        'target_type',
+        'standard',
+        'attachment',
+        'recipient',
     ];
 
     public function batch()

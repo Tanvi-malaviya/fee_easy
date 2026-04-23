@@ -76,7 +76,7 @@
                         <input type="text" name="subject" id="field-subject" required placeholder="Math" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                     </div>
                     <div class="space-y-1.5">
-                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Monthly Fees</label>
+                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1"> Fees</label>
                         <input type="number" name="fees" id="field-fees" placeholder="0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                     </div>
                 </div>
@@ -119,6 +119,22 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div id="delete-batch-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
+    <div onclick="closeDeleteModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
+    <div class="bg-white w-full max-w-[320px] rounded-[2rem] shadow-2xl relative z-10 overflow-hidden p-6 text-center animate-in fade-in zoom-in duration-200">
+        <div class="h-14 w-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        </div>
+        <h3 class="text-lg font-black text-slate-800 leading-tight">Delete Batch?</h3>
+        <p class="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed">Are you sure you want to delete <span id="delete-batch-name" class="text-rose-500 font-black">this batch</span>? This action cannot be undone.</p>
+        
+        <div class="flex items-center gap-3 mt-6">
+            <button onclick="closeDeleteModal()" class="flex-1 py-3 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+            <button id="confirm-delete-batch-btn" class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-200 active:scale-95 transition-all">Delete</button>
         </div>
     </div>
 </div>
@@ -193,8 +209,28 @@
         }
     }
 
-    async function deleteBatch(id) {
-        if (!confirm('Are you sure you want to delete this batch?')) return;
+    let pendingBatchToDelete = null;
+
+    function deleteBatch(id, name) {
+        pendingBatchToDelete = { id: id, name: name };
+        document.getElementById('delete-batch-name').innerText = name;
+        document.getElementById('delete-batch-modal').classList.remove('hidden');
+        document.getElementById('confirm-delete-batch-btn').onclick = executeDeleteBatch;
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('delete-batch-modal').classList.add('hidden');
+        pendingBatchToDelete = null;
+    }
+
+    async function executeDeleteBatch() {
+        if (!pendingBatchToDelete) return;
+        const { id, name } = pendingBatchToDelete;
+        const btn = document.getElementById('confirm-delete-batch-btn');
+        const originalText = btn.innerText;
+
+        btn.disabled = true;
+        btn.innerHTML = `<div class="flex items-center justify-center"><span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span></div>`;
 
         try {
             const response = await fetch(`${API_URL}/${id}`, {
@@ -207,10 +243,14 @@
             const result = await response.json();
             if (result.status === 'success') {
                 showToast(result.message, 'success');
+                closeDeleteModal();
                 fetchBatches();
             }
         } catch (error) {
             showToast('Delete failed', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalText;
         }
     }
 
@@ -267,7 +307,7 @@
                         <button onclick='openEditModal(${JSON.stringify(batch).replace(/'/g, "&apos;")})' class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Batch">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         </button>
-                        <button onclick="deleteBatch(${batch.id})" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete Batch">
+                        <button onclick="deleteBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete Batch">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>

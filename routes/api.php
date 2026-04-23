@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InstituteController;
-use App\Http\Controllers\Api\PlanController;
+use App\Http\Controllers\Api\V1\PlanController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\NotificationController;
@@ -46,6 +46,7 @@ use App\Http\Controllers\Api\V1\InstituteNoteController;
 use App\Http\Controllers\Api\V1\InstituteTeacherController;
 use App\Http\Controllers\Api\V1\InstituteExpenseController;
 use App\Http\Controllers\Api\V1\InstituteLeadController;
+use App\Http\Controllers\Api\V1\InstituteProfileController;
 use App\Http\Controllers\Api\V1\PublicVerificationController;
 
 /*
@@ -71,8 +72,9 @@ Route::prefix('v1')->group(function () {
         
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
-            Route::get('/profile', [InstituteAuthController::class, 'profile']);
-            Route::post('/logo/upload', [InstituteAuthController::class, 'uploadLogo']);
+            Route::get('/profile', [InstituteProfileController::class, 'show']);
+            Route::post('/profile/update', [InstituteProfileController::class, 'update']);
+            Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo
 
             Route::post('/daily-updates', [InstituteDailyUpdateController::class, 'store']);
             Route::get('/daily-updates', [InstituteDailyUpdateController::class, 'index']);
@@ -83,6 +85,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
             
+            // Plan and Subscription routes
+            Route::get('/plans', [PlanController::class, 'index']);
+            Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
+            Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
+
             // Notes routes
             Route::prefix('notes')->group(function () {
                 Route::get('/', [InstituteNoteController::class, 'index']);

@@ -85,6 +85,10 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
         Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
         Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
+        Route::get('/profile', function() { return view('institute.profile.index'); })->name('profile.index');
+        Route::get('/plans', function() { return view('institute.plans.index'); })->name('plans.index');
+        Route::get('/whatsapp-settings', function() { return view('institute.whatsapp.index'); })->name('whatsapp.setup');
+        Route::post('/profile/password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'updatePassword'])->name('profile.password.update');
 
     });
 });

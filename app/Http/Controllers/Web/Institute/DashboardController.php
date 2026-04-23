@@ -43,6 +43,9 @@ class DashboardController extends Controller
         $stats['pending_fees_formatted'] = number_format($stats['pending_fees']);
         $stats['total_fees_formatted'] = number_format($stats['total_fees']);
 
-        return view('institute.dashboard', compact('stats', 'institute'));
+        $recent_batches = $institute->batches()->latest()->limit(5)->get();
+        $recent_students = $institute->students()->latest()->limit(5)->get();
+
+        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students'));
     }
 }

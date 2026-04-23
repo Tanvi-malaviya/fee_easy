@@ -10,6 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 class Student extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    
+    protected $appends = ['profile_image_url'];
 
     protected $fillable = [
         'name',
@@ -25,6 +27,7 @@ class Student extends Authenticatable
         'monthly_fee',
         'status',
         'id_hash',
+        'profile_image',
     ];
 
     protected $hidden = [
@@ -69,5 +72,13 @@ class Student extends Authenticatable
     public function notes()
     {
         return $this->morphMany(Note::class, 'notable');
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_image) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->url($this->profile_image);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
 }

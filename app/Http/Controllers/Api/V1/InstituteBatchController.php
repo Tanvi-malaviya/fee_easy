@@ -18,16 +18,24 @@ class InstituteBatchController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $paginator = Batch::where('institute_id', $request->user()->id)->paginate(10);
+        $batches = Batch::where('institute_id', $request->user()->id)
+            ->withCount('students')
+            ->get();
+
+        // Calculate total paid for each batch
+        foreach ($batches as $batch) {
+            $studentIds = \App\Models\Student::where('batch_id', $batch->id)->pluck('id');
+            $batch->total_paid = \App\Models\Fee::whereIn('student_id', $studentIds)->sum('paid_amount');
+        }
 
         return response()->json([
             'status' => 'success',
             'data' => [
-                'items' => $paginator->items(),
-                'total' => $paginator->total(),
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
+                'items' => $batches,
+                'total' => $batches->count(),
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => $batches->count(),
             ]
         ]);
     }

@@ -66,6 +66,13 @@ class InstituteStudentController extends Controller
         
         if ($request->has('batch_id') && !$request->has('page') && !$request->has('search')) {
             $students = $query->get();
+            
+            // Append totals for reports
+            foreach ($students as $student) {
+                $student->total_paid = \App\Models\Fee::where('student_id', $student->id)->sum('paid_amount');
+                $student->total_due = ($student->monthly_fee ?? 0) - $student->total_paid;
+            }
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -111,7 +118,13 @@ class InstituteStudentController extends Controller
             'dob' => 'nullable|date',
             'guardian_name' => 'nullable|string|max:255',
             'monthly_fee' => 'nullable|numeric|min:0',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
+
+        $profileImagePath = null;
+        if ($request->hasFile('profile_image')) {
+            $profileImagePath = $request->file('profile_image')->store('students', 'public');
+        }
 
         $student = Student::create([
             'name' => $request->name,
@@ -124,6 +137,7 @@ class InstituteStudentController extends Controller
             'dob' => $request->dob,
             'guardian_name' => $request->guardian_name,
             'monthly_fee' => $request->monthly_fee,
+            'profile_image' => $profileImagePath,
             'status' => 1,
             'id_hash' => Str::random(32), // Unique secure hash for ID card
         ]);
@@ -188,12 +202,21 @@ class InstituteStudentController extends Controller
             'guardian_name' => 'nullable|string|max:255',
             'monthly_fee' => 'nullable|numeric|min:0',
             'status' => 'sometimes|integer',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
 
         $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob', 'guardian_name', 'monthly_fee']);
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($student->profile_image && \Storage::disk('public')->exists($student->profile_image)) {
+                \Storage::disk('public')->delete($student->profile_image);
+            }
+            $data['profile_image'] = $request->file('profile_image')->store('students', 'public');
         }
 
         $student->update($data);

@@ -53,4 +53,24 @@ class InstituteAuthController extends Controller
 
         return redirect()->route('institute.login');
     }
+    /**
+     * Update the institute administrator's password.
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password:institute'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user = Auth::guard('institute')->user();
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password updated successfully'
+        ]);
+    }
 }

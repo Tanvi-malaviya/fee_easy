@@ -69,7 +69,7 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Monthly Fee</p>
+                        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest"> Fee</p>
                         <h3 id="stat-monthly-fee" class="text-xl font-black text-slate-800">₹--</h3>
                     </div>
                 </div>
@@ -98,163 +98,92 @@
         <!-- Enrollment Modal -->
         <div id="enroll-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
             <div onclick="closeEnrollModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-            <div
-                class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 max-h-[90vh] flex flex-col">
-                <div class="p-6 border-b border-slate-100 flex-shrink-0">
+            <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 max-h-[90vh] flex flex-col">
+                
+                <!-- Header with Actions -->
+                <div class="p-6 border-b border-slate-100 flex-shrink-0 bg-white relative z-20">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Enroll Students</h2>
-                            <p class="text-sm text-slate-400 mt-1">Select scholars to assign to <span id="target-batch-name"
-                                    class="text-blue-600 font-bold">this batch</span>.</p>
+                            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight leading-none">Assign Students</h2>
+                            <p class="text-[11px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Assigning to <span id="target-batch-name" class="text-blue-600">this batch</span></p>
                         </div>
-                        <button onclick="closeEnrollModal()"
-                            class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button onclick="closeEnrollModal()" class="px-4 py-2 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+                            <button id="confirm-enroll-btn" onclick="confirmEnrollment()" disabled
+                                class="px-6 py-2.5 bg-blue-900 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-blue-900/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale">
+                                Enroll Selected
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="p-6 border-b border-slate-100 flex-shrink-0">
-                    <div class="relative">
+                <!-- Search Section -->
+                <div class="p-6 border-b border-slate-50 flex-shrink-0 bg-slate-50/30">
+                    <div class="relative group">
                         <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <input type="text" id="enroll-search" onkeyup="searchEnrollableStudents()"
+                            onfocus="document.getElementById('enrollable-dropdown').classList.remove('hidden')"
                             placeholder="Search available scholars by name or phone..."
-                            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                    </div>
-                </div>
-
-                <div class="flex-1 overflow-y-auto">
-                    <div class="p-6">
-                        <div id="enrollable-list" class="space-y-2">
-                            <!-- Populated via AJAX -->
-                            <div class="py-10 text-center text-slate-400 font-medium italic text-[12px]">
-                                Start typing to find available scholars...
+                            class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-[13px] font-bold outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-300 transition-all shadow-sm">
+                        
+                        <!-- Floating Dropdown -->
+                        <div id="enrollable-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-[50] hidden max-h-64 overflow-y-auto custom-scrollbar animate-in slide-in-from-top-2 duration-200">
+                            <div id="enrollable-list" class="p-2 space-y-1">
+                                <div class="py-6 text-center text-slate-400 font-medium italic text-[11px]">Start typing to find scholars...</div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="p-6 border-t border-slate-100 flex items-center justify-between flex-shrink-0 bg-slate-50/50">
-                    <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><span
-                            id="selected-count">0</span> Scholars Selected</p>
-                    <div class="flex gap-3">
-                        <button onclick="closeEnrollModal()"
-                            class="px-6 py-2.5 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
-                        <button id="confirm-enroll-btn" onclick="confirmEnrollment()" disabled
-                            class="px-6 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-[12px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:scale-100">
-                            Enroll Selected
-                        </button>
+                    <!-- Selected Chips -->
+                    <div id="selected-chips" class="mt-4 flex flex-wrap gap-2 min-h-[40px] p-2 bg-white/50 border border-dashed border-slate-200 rounded-xl">
+                        <!-- Chips populated via JS -->
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-@push('modals')
-    <div id="student-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden">
-        <div onclick="closeStudentModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-        <div
-            class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="pt-6 px-8 pb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 tracking-tight">New Student Registration</h2>
-                        <p id="modal-subtitle" class="text-sm text-slate-400 mt-1">Enroll a new scholar into the academic registry.</p>
-                    </div>
-                    <button onclick="closeStudentModal()"
-                        class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <!-- Preview Area -->
+                <div id="enrollment-overview-section" class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white overflow-hidden">
+                    <div class="h-16 w-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-4 border border-blue-100/50">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                    </button>
+                    </div>
+                    <h3 class="text-slate-800 font-bold text-sm">Enrollment Overview</h3>
+                    <p class="text-slate-400 text-[11px] mt-1.5 max-w-[220px]">Pick scholars to assign to this batch. You can customize fees for each student.</p>
                 </div>
 
-                <form id="student-form" onsubmit="handleSave(event)" class="space-y-6">
-                    <input type="hidden" id="student-id" name="id">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                            <input type="text" name="name" id="field-name" required placeholder="John Doe"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                            <input type="email" name="email" id="field-email" required placeholder="john@example.com"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label id="label-password" class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Password</label>
-                            <input type="password" name="password" id="field-password" placeholder="••••••••"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                            <input type="text" name="phone" id="field-phone" placeholder="+123 456 7890"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Assigned Batch</label>
-                            <select name="batch_id" id="field-batch"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none appearance-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                                <option value="">No Batch Assigned</option>
-                                @foreach(\App\Models\Batch::where('institute_id', auth()->guard('institute')->id())->get() as $batch)
-                                    <option value="{{ $batch->id }}">{{ $batch->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Standard</label>
-                            <input type="text" name="standard" id="field-standard" placeholder="e.g. 10th Grade"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
-                            <input type="date" name="dob" id="field-dob"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Guardian Name</label>
-                            <input type="text" name="guardian_name" id="field-guardian_name" placeholder="Mr. Richard Roe"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Monthly Fee (₹)</label>
-                            <input type="number" name="fees" id="field-fees" placeholder="0"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Account Status</label>
-                            <select name="status" id="field-status"
-                                class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none appearance-none focus:ring-4 focus:ring-blue-500/5 transition-all">
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
+                <!-- Minimal Footer -->
+                <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-center bg-slate-50/30 flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></div>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest"><span id="selected-count" class="text-blue-600">0</span> Scholars Ready</span>
                     </div>
-
-                    <div class="pt-6 border-t border-slate-50 flex items-center justify-end space-x-4">
-                        <button type="button" onclick="closeStudentModal()"
-                            class="px-8 py-3.5 text-[13px] font-bold text-slate-400">Cancel</button>
-                        <button type="submit" id="submit-btn"
-                            class="px-10 py-3.5 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-lg hover:scale-[1.02] transition-transform flex items-center">
-                            <span id="btn-text">Confirm Registration</span>
-                            <span id="btn-loader"
-                                class="hidden h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-3"></span>
-                        </button>
-                    </div>
-                </form>
+                </div>
+            </div>
+        </div>
+            </div>
+        <!-- Unenroll Confirmation Modal -->
+        <div id="unenroll-modal" class="fixed inset-0 z-[130] flex items-center justify-center hidden">
+            <div onclick="closeUnenrollModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
+            <div class="bg-white w-full max-w-[320px] rounded-[2rem] shadow-2xl relative z-10 overflow-hidden p-6 text-center animate-in fade-in zoom-in duration-200">
+                <div class="h-14 w-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </div>
+                <h3 class="text-lg font-black text-slate-800 leading-tight">Remove Scholar?</h3>
+                <p class="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed">Are you sure you want to remove <span id="unenroll-student-name" class="text-rose-500">this student</span> from the batch?</p>
+                
+                <div class="flex items-center gap-3 mt-6">
+                    <button onclick="closeUnenrollModal()" class="flex-1 py-3 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+                    <button id="confirm-unenroll-btn" class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-200 active:scale-95 transition-all">Remove</button>
+                </div>
             </div>
         </div>
     </div>
-@endpush
+
+
 
     <script>
         const BATCH_ID = "{{ $id }}";
@@ -264,6 +193,8 @@
         let allStudents = [];
         let selectedStudentIds = new Set();
         let enrollableStudents = [];
+        let BATCH_FEES = 0;
+        let studentFees = new Map();
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchBatchData();
@@ -283,8 +214,9 @@
                     document.getElementById('batch-schedule-text').innerText = `${batch.start_time || '--:--'} — ${batch.end_time || '--:--'}`;
                     
                     // Populate Stats
+                    BATCH_FEES = batch.fees || 0;
                     document.getElementById('stat-students-count').innerText = batch.students_count || '0';
-                    document.getElementById('stat-monthly-fee').innerText = `₹${batch.fees || '0'}`;
+                    document.getElementById('stat-monthly-fee').innerText = `₹${BATCH_FEES}`;
                     document.getElementById('stat-total-paid').innerText = `₹${batch.total_paid || '0'}`;
                     
                     // Populate Description
@@ -347,6 +279,12 @@
                 if (result.status === 'success') {
                     // Filter out students who already have a batch assigned
                     enrollableStudents = result.data.items.filter(student => !student.batch_id);
+                    
+                    // Initialize studentFees Map with default batch fee
+                    enrollableStudents.forEach(s => {
+                        if(!studentFees.has(s.id)) studentFees.set(s.id, BATCH_FEES);
+                    });
+
                     renderEnrollableList(enrollableStudents);
                 }
             } catch (error) {
@@ -358,147 +296,47 @@
             const container = document.getElementById('enrollable-list');
             const query = document.getElementById('enroll-search').value.trim();
 
-            if (students.length === 0 && query) {
-                // Show create new student option
-                container.innerHTML = `
-                    <div onclick="showCreateStudentForm('${query}')" class="flex items-center p-4 border border-dashed border-blue-300 rounded-xl cursor-pointer hover:bg-blue-50 transition-all group bg-blue-50/30">
-                        <div class="h-10 w-10 rounded-lg bg-blue-100 border-2 border-blue-300 flex items-center justify-center text-blue-600 mr-4 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-blue-700">Create New Scholar</p>
-                            <p class="text-[10px] font-medium text-blue-600 uppercase tracking-widest">Name: ${query}</p>
-                        </div>
-                        <svg class="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                    </div>
-                `;
-                return;
-            }
-
             if (students.length === 0) {
-                container.innerHTML = `<p class="py-10 text-center text-slate-400 font-medium italic text-[12px]">No unassigned scholars found. All available students are already enrolled in batches.</p>`;
+                container.innerHTML = `<p class="py-10 text-center text-slate-400 font-medium italic text-[12px]">No unassigned scholars found.</p>`;
                 return;
             }
 
-            let html = students.map(student => `
-                    <div onclick="toggleStudentSelection(${student.id})" class="flex items-center p-3 border border-slate-100 rounded-lg cursor-pointer hover:bg-slate-50 transition-all group ${selectedStudentIds.has(student.id) ? 'bg-blue-50/50 border-blue-200' : ''}">
-                        <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center font-bold text-slate-400 mr-3 group-hover:border-blue-200 transition-all shrink-0 text-sm">
-                            ${student.name.substring(0, 1).toUpperCase()}
+            let html = students.map(student => {
+                const isSelected = selectedStudentIds.has(student.id);
+                return `
+                <div onclick="toggleStudentSelection(${student.id})" 
+                    class="flex items-center p-3 rounded-xl cursor-pointer transition-all duration-200 group ${isSelected ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-2 ring-blue-100' : 'hover:bg-slate-50 border border-transparent'}">
+                    <div class="h-9 w-9 rounded-lg ${isSelected ? 'bg-white/20 border-white/30' : 'bg-white border-slate-200'} border flex items-center justify-center font-bold ${isSelected ? 'text-white' : 'text-slate-400'} mr-4 group-hover:scale-105 transition-transform shrink-0 text-sm">
+                        ${student.name.substring(0, 1).toUpperCase()}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <p class="text-[13px] font-bold truncate ${isSelected ? 'text-white' : 'text-slate-700'}">${student.name}</p>
+                            <div class="flex items-center gap-1.5 ml-2">
+                                <span class="text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-slate-400'}">₹</span>
+                                <input type="number" 
+                                    value="${studentFees.get(student.id) || BATCH_FEES}" 
+                                    onchange="studentFees.set(${student.id}, this.value)"
+                                    onclick="event.stopPropagation()"
+                                    class="w-16 px-2 py-1 ${isSelected ? 'bg-blue-700/50 text-white border-blue-400/30' : 'bg-slate-50 text-blue-600 border-blue-100'} border rounded-lg text-[11px] font-black outline-none focus:ring-2 focus:ring-white/20 transition-all">
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-slate-700 truncate">${student.name}</p>
-                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-widest">Unassigned</p>
-                        </div>
-                        <div class="h-5 w-5 border-2 border-slate-200 rounded-full flex items-center justify-center transition-all shrink-0 ${selectedStudentIds.has(student.id) ? 'border-blue-500 bg-blue-500' : ''}">
-                            <svg class="w-3 h-3 text-white ${selectedStudentIds.has(student.id) ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        <div class="flex items-center gap-2">
+                            <p class="text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-blue-100/80' : 'text-slate-400'}">${student.phone || 'NO PHONE'}</p>
+                            <span class="h-1 w-1 rounded-full ${isSelected ? 'bg-blue-100/40' : 'bg-slate-200'}"></span>
+                            <p class="text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-blue-100/80' : 'text-slate-400'}">READY</p>
                         </div>
                     </div>
-                `).join('');
-
-            // If there's a query and results exist, also show create option
-            if (query) {
-                html += `
-                    <div class="pt-2 mt-2 border-t border-slate-100">
-                        <div onclick="showCreateStudentForm('${query}')" class="flex items-center p-3 border border-dashed border-blue-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-all group bg-blue-50/30">
-                            <div class="h-9 w-9 rounded-lg bg-blue-100 border-2 border-blue-300 flex items-center justify-center text-blue-600 mr-3 group-hover:scale-110 transition-transform">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-blue-700">Create New Scholar</p>
-                                <p class="text-[9px] font-medium text-blue-600 uppercase tracking-widest">Name: ${query}</p>
-                            </div>
-                            <svg class="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                        </div>
+                    <div class="ml-4 h-6 w-6 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-white text-blue-600 scale-110 shadow-sm' : 'border-2 border-slate-200'}">
+                        <svg class="w-3.5 h-3.5 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                     </div>
-                `;
-            }
-
+                </div>
+            `;}).join('');
             container.innerHTML = html;
         }
 
-        function showCreateStudentForm(name) {
-            document.getElementById('student-form').reset();
-            document.getElementById('student-id').value = '';
-            document.getElementById('modal-title').innerText = 'New Student Registration';
-            document.getElementById('modal-subtitle').innerText = 'Enroll a new scholar into the academic registry.';
-            
-            document.getElementById('field-name').value = name;
-            document.getElementById('field-batch').value = BATCH_ID;
-            
-            document.getElementById('field-password').required = true;
-            document.getElementById('label-password').innerText = 'Password';
-            document.getElementById('field-email').disabled = false;
-            document.getElementById('btn-text').innerText = 'Confirm Registration';
-
-            showModal();
-        }
-
-        async function handleSave(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const id = formData.get('id');
-            const isEdit = id && id !== '';
-
-            const url = isEdit ? `/api/v1/institute/students/${id}` : `/api/v1/institute/students`;
-            const jsonData = Object.fromEntries(formData.entries());
-            if (isEdit) jsonData['_method'] = 'PUT';
-
-            toggleSubmitLoading(true);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN
-                    },
-                    body: JSON.stringify(jsonData)
-                });
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    showToast(result.message, 'success');
-                    closeStudentModal();
-                    
-                    fetchStudents(); // Refresh main list
-                    if (!document.getElementById('enroll-modal').classList.contains('hidden')) {
-                        searchEnrollableStudents(); // Refresh enrollment search if open
-                    }
-                } else {
-                    if (result.errors) {
-                        Object.values(result.errors).forEach(err => showToast(err[0], 'error'));
-                    } else {
-                        showToast(result.message || 'Error saving data', 'error');
-                    }
-                }
-            } catch (error) {
-                showToast('Network error, please try again', 'error');
-            } finally {
-                toggleSubmitLoading(false);
-            }
-        }
-
-        function showModal() {
-            document.getElementById('student-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeStudentModal() {
-            document.getElementById('student-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
         function toggleSubmitLoading(show) {
-            const btn = document.getElementById('submit-btn');
-            const loader = document.getElementById('btn-loader');
-            const text = document.getElementById('btn-text');
-            
-            if (btn) btn.disabled = show;
-            if (loader) loader.classList.toggle('hidden', !show);
-            if (text) text.classList.toggle('opacity-50', show);
+            // Unused but keeping helper if needed
         }
 
         function toggleStudentSelection(id) {
@@ -515,12 +353,65 @@
             const count = selectedStudentIds.size;
             document.getElementById('selected-count').innerText = count;
             document.getElementById('confirm-enroll-btn').disabled = count === 0;
+            
+            // Hide overview if students are selected
+            const overview = document.getElementById('enrollment-overview-section');
+            if (count > 0) {
+                overview.classList.add('hidden');
+            } else {
+                overview.classList.remove('hidden');
+            }
+            
+            renderSelectedChips();
         }
+
+        function renderSelectedChips() {
+            const container = document.getElementById('selected-chips');
+            if (selectedStudentIds.size === 0) {
+                container.innerHTML = '<div class="flex items-center text-slate-400 gap-2"><svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 01-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="text-[11px] font-bold uppercase tracking-wider opacity-60">No scholars selected yet</span></div>';
+                return;
+            }
+
+            let html = '';
+            selectedStudentIds.forEach(id => {
+                const student = enrollableStudents.find(s => s.id == id) || allStudents.find(s => s.id == id);
+                if (student) {
+                    html += `
+                        <div class="flex items-center bg-white border border-blue-100 text-slate-700 pl-3 pr-1 py-1.5 rounded-xl text-[11px] font-bold shadow-sm hover:shadow-md hover:border-blue-200 transition-all animate-in zoom-in duration-200 group/chip">
+                            <div class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mr-2.5 text-[10px] font-black group-hover/chip:scale-110 transition-transform">
+                                ${student.name.substring(0, 1).toUpperCase()}
+                            </div>
+                            <span class="max-w-[80px] truncate">${student.name}</span>
+                            <div class="ml-2 flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100 group-hover/chip:border-blue-200 group-hover/chip:bg-blue-50 transition-colors mr-1">
+                                <span class="text-[9px] text-slate-400 font-bold">₹</span>
+                                <input type="number" 
+                                    value="${studentFees.get(id) || BATCH_FEES}" 
+                                    onchange="studentFees.set(${id}, this.value)"
+                                    class="w-12 bg-transparent text-[10px] text-blue-600 font-black outline-none border-none p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            </div>
+                            <button onclick="toggleStudentSelection(${id})" class="h-6 w-6 rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center transition-all ml-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('enrollable-dropdown');
+            const searchInput = document.getElementById('enroll-search');
+            if (!dropdown.contains(e.target) && e.target !== searchInput) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         async function confirmEnrollment() {
             const btn = document.getElementById('confirm-enroll-btn');
             btn.disabled = true;
-            btn.innerHTML = `<span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>`;
+            btn.innerHTML = `<div class="flex items-center justify-center"><span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span></div>`;
 
             try {
                 const promises = Array.from(selectedStudentIds).map(id =>
@@ -533,7 +424,8 @@
                         },
                         body: JSON.stringify({
                             _method: 'PUT',
-                            batch_id: BATCH_ID
+                            batch_id: BATCH_ID,
+                            monthly_fee: studentFees.get(id) || BATCH_FEES
                         })
                     })
                 );
@@ -568,31 +460,46 @@
             }
 
             container.innerHTML = students.map(student => {
-                const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                 return `
-                        <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group animate-in zoom-in-95 duration-300 relative">
-                            <div class="flex items-center mb-3">
-                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-sm tracking-tighter mr-4 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
-                                    ${initials}
+                        <div class="group relative bg-white rounded-2xl border border-slate-100 p-2.5 hover:border-blue-200 transition-all duration-300 animate-in zoom-in-95 flex flex-col cursor-pointer"
+                             onclick="window.location.href='/institute/students/${student.id}'">
+                            
+                            <!-- Profile Image -->
+                            <div class="h-14 w-14 rounded-xl bg-slate-100 p-0.5 border border-slate-200 mb-2 overflow-hidden mx-auto group-hover:scale-105 transition-transform">
+                                <img src="${student.profile_image_url || '/assets/images/default-avatar.png'}" 
+                                     class="w-full h-full object-cover rounded-lg"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=f1f5f9&color=64748b&bold=true'">
+                            </div>
+
+                            <!-- Name & ID -->
+                            <h4 class="text-[13px] font-black text-slate-800 text-center truncate px-1 leading-tight">${student.name}</h4>
+                            <span class="text-[8px] font-black text-slate-400 text-center uppercase tracking-widest mt-0.5">ID: ST-${String(student.id).padStart(3, '0')}</span>
+
+                            <!-- Remove Button -->
+                            <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" 
+                                    class="absolute -top-2 -right-2 h-7 w-7 bg-white border border-rose-100 rounded-full flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white hover:scale-110 shadow-sm transition-all opacity-0 group-hover:opacity-100 z-10">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+
+                            <!-- Details Grid -->
+                            <div class="grid grid-cols-2 gap-1.5 text-center my-3">
+                                <div class="bg-slate-50/50 border border-slate-100 rounded-lg py-1.5 group-hover:bg-blue-50/50 group-hover:border-blue-100 transition-colors">
+                                    <span class="text-slate-700 font-black block text-[10px]">${student.standard || 'N/A'}</span>
+                                    <span class="text-slate-400 text-[7px] font-bold uppercase tracking-tighter">Grade</span>
                                 </div>
-                                <div class="overflow-hidden">
-                                    <h4 class="text-[14px] font-black text-[#1f2937] leading-tight break-words">${student.name}</h4>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: ST-0${student.id}</p>
+                                <div class="bg-slate-50/50 border border-slate-100 rounded-lg py-1.5 group-hover:bg-blue-50/50 group-hover:border-blue-100 transition-colors">
+                                    <span class="text-blue-600 font-black block text-[10px]">₹${student.fees || student.monthly_fee || '0'}</span>
+                                    <span class="text-slate-400 text-[7px] font-bold uppercase tracking-tighter">Fee</span>
                                 </div>
                             </div>
 
-                            <div class="space-y-2.5 pt-2 border-t border-slate-50">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Phone</span>
-                                    <span class="text-[11px] font-bold text-slate-700">${student.phone || 'N/A'}</span>
+                            <!-- Phone Info -->
+                            <div class="mt-auto pt-2 border-t border-slate-50 flex items-center justify-center gap-1.5">
+                                <div class="h-4 w-4 rounded-md bg-slate-50 flex items-center justify-center text-slate-400">
+                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Standard</span>
-                                    <span class="text-[11px] font-bold text-slate-700">${student.standard || 'N/A'}</span>
-                                </div>
+                                <span class="text-[9px] font-bold text-slate-500">${student.phone || 'NO PHONE'}</span>
                             </div>
-
-                          
                         </div>
                     `;
             }).join('');
@@ -602,6 +509,61 @@
             const query = document.getElementById('student-search').value.toLowerCase();
             const filtered = allStudents.filter(s => s.name.toLowerCase().includes(query) || (s.phone && s.phone.includes(query)));
             renderStudents(filtered);
+        }
+
+        let pendingStudentToRemove = null;
+
+        function removeFromBatch(studentId, name) {
+            pendingStudentToRemove = { id: studentId, name: name };
+            document.getElementById('unenroll-student-name').innerText = name;
+            document.getElementById('unenroll-modal').classList.remove('hidden');
+            
+            // Set up the confirm button action
+            document.getElementById('confirm-unenroll-btn').onclick = executeUnenroll;
+        }
+
+        function closeUnenrollModal() {
+            document.getElementById('unenroll-modal').classList.add('hidden');
+            pendingStudentToRemove = null;
+        }
+
+        async function executeUnenroll() {
+            if (!pendingStudentToRemove) return;
+            
+            const { id, name } = pendingStudentToRemove;
+            const btn = document.getElementById('confirm-unenroll-btn');
+            const originalText = btn.innerText;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<div class="flex items-center justify-center"><span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span></div>`;
+
+            try {
+                const response = await fetch(`/api/v1/institute/students/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        _method: 'PUT',
+                        batch_id: null
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showToast(`${name} removed from batch`, 'success');
+                    closeUnenrollModal();
+                    fetchBatchData(); // Update stats
+                    fetchStudents();  // Update list
+                }
+            } catch (error) {
+                showToast('Failed to remove student', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         }
 
         function showToast(message, type = 'success') {
