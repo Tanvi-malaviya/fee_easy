@@ -80,7 +80,7 @@ class InstituteFeeController extends Controller
                     'fee_id' => $fee->id,
                     'student_id' => $request->student_id,
                     'amount' => $paidAmount,
-                    'payment_method' => 'Cash',
+                    'payment_method' => $request->input('payment_method', 'Cash'),
                     'paid_at' => now(),
                 ]);
             }
@@ -122,5 +122,35 @@ class InstituteFeeController extends Controller
             'status' => 'success',
             'data' => $fees
         ]);
+    }
+    /**
+     * Export current month's fees as PDF.
+     */
+    public function export(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $institute = $request->user();
+        $month = now()->format('F');
+        $year = now()->format('Y');
+
+        $fees = Fee::where('institute_id', $institute->id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->with('student:id,name')
+            ->latest()
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.fees.report_pdf', [
+            'institute' => $institute,
+            'fees' => $fees,
+            'month' => $month,
+            'year' => $year
+        ]);
+
+        $filename = "Fee_Report_{$month}_{$year}.pdf";
+        return $pdf->download($filename);
     }
 }

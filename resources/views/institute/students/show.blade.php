@@ -5,8 +5,8 @@
         <!-- Header Section -->
         <div class="mb-3">
             <div class="flex items-center gap-3 mb-4 mt-2">
-                <a href="{{ url()->previous() }}"
-                    class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm group">
+                <a href="{{ route('institute.students.index') }}" onclick="if(document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
+               class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm group">
                     <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />

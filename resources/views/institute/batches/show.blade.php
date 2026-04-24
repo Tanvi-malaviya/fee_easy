@@ -11,7 +11,7 @@
             <div
                 class=" py-5 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/20">
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('institute.batches.index') }}"
+                    <a href="{{ route('institute.batches.index') }}" onclick="if(document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
                         class="h-10 w-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all shadow-sm group">
                         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -51,6 +51,15 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
+                    <!-- Mark Attendance Button -->
+                    <a href="{{ route('institute.attendance.create') }}?batch_id={{ $id }}"
+                        class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-bold text-[10px] border border-blue-100 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center uppercase tracking-widest group">
+                        <svg class="w-3.5 h-3.5 mr-1.5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2-2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Mark Attendance
+                    </a>
+
                     <button onclick="openEnrollModal()"
                         class="px-4 py-2 bg-[#1e3a8a] text-white rounded-xl font-bold text-[10px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform flex items-center uppercase tracking-widest">
                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

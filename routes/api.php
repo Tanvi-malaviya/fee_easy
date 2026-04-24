@@ -89,6 +89,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/plans', [PlanController::class, 'index']);
             Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
+            Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 
             // Notes routes
             Route::prefix('notes')->group(function () {
@@ -165,6 +166,7 @@ Route::prefix('v1')->group(function () {
 
             // Fees Management
             Route::prefix('fees')->group(function () {
+                Route::get('/export', [InstituteFeeController::class, 'export']);
                 Route::get('/', [InstituteFeeController::class, 'index']);
                 Route::post('/', [InstituteFeeController::class, 'store']);
                 Route::get('/{student_id}', [InstituteFeeController::class, 'getStudentFees']);

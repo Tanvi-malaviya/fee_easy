@@ -24,12 +24,65 @@
         <div id="plans-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 hidden">
             <!-- Plans will be injected here -->
         </div>
+
+        <!-- Recent Billing History Section -->
+        <div class="mt-6">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800 leading-tight">Recent Billing History</h2>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Track your previous transactions and subscription statuses</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[1rem] border border-slate-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50/50">
+                            <tr>
+                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subscription Plan</th>
+                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Amount Paid</th>
+                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
+                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billing-history-container">
+                            <tr>
+                                <td colspan="4" class="px-8 py-20 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="h-8 w-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading history...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div id="billing-pagination" class="px-8 py-5 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between hidden">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Showing page <span id="current-page-num" class="text-slate-600">1</span> of <span id="total-pages-num" class="text-slate-600">1</span>
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeBillingPage('prev')" id="prev-page-btn" class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 hover:text-blue-600 hover:border-blue-600/20 transition-all disabled:opacity-30 disabled:pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button onclick="changeBillingPage('next')" id="next-page-btn" class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 hover:text-blue-600 hover:border-blue-600/20 transition-all disabled:opacity-30 disabled:pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', fetchPlans);
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPlans();
+        fetchBillingHistory();
+    });
 
     async function fetchPlans() {
         const loader = document.getElementById('plans-loader');
@@ -45,7 +98,7 @@
                 container.innerHTML = '';
                 result.data.forEach(plan => {
                     const card = document.createElement('div');
-                    card.className = 'bg-white p-8 rounded-2xl border border-slate-100 hover:border-blue-600/30 transition-all group/pitem relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300';
+                    card.className = 'bg-white p-6 rounded-2xl border border-slate-100 hover:border-blue-600/30 transition-all group/pitem relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300';
                     card.innerHTML = `
                         <div class="absolute -right-8 -bottom-8 h-32 w-32 bg-blue-600/5 rounded-full group-hover/pitem:scale-150 transition-transform duration-700"></div>
                         <div class="relative z-10">
@@ -183,6 +236,101 @@
             alert(error.message || 'Something went wrong.');
             btn.disabled = false;
             btn.innerText = originalText;
+        }
+    }
+
+    let currentBillingPage = 1;
+    let totalBillingPages = 1;
+
+    async function fetchBillingHistory(page = 1) {
+        const container = document.getElementById('billing-history-container');
+        const pagination = document.getElementById('billing-pagination');
+        
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const response = await fetch(`/api/v1/institute/subscriptions/history?page=${page}`, { headers });
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                container.innerHTML = '';
+                
+                if (result.data.length === 0) {
+                    container.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-8 py-20 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-4">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <p class="text-sm font-black text-slate-400 uppercase tracking-widest">No billing history found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    pagination.classList.add('hidden');
+                    return;
+                }
+                
+                // Update Pagination Controls
+                currentBillingPage = result.meta.current_page;
+                totalBillingPages = result.meta.last_page;
+                
+                document.getElementById('current-page-num').innerText = currentBillingPage;
+                document.getElementById('total-pages-num').innerText = totalBillingPages;
+                document.getElementById('prev-page-btn').disabled = currentBillingPage === 1;
+                document.getElementById('next-page-btn').disabled = currentBillingPage === totalBillingPages;
+                
+                if (totalBillingPages > 1) pagination.classList.remove('hidden');
+                else pagination.classList.add('hidden');
+
+                result.data.forEach(item => {
+                    const statusColors = {
+                        'active': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                        'success': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                        'pending': 'bg-amber-50 text-amber-600 border-amber-100',
+                        'failed': 'bg-rose-50 text-rose-600 border-rose-100'
+                    };
+                    const statusColor = statusColors[item.status.toLowerCase()] || 'bg-slate-50 text-slate-600 border-slate-100';
+                    
+                    const date = new Date(item.created_at);
+                    const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                    container.innerHTML += `
+                        <tr class="group hover:bg-slate-50/50 transition-colors">
+                            <td class="px-8 py-5 border-t border-slate-50">
+                                <p class="text-sm font-black text-slate-700">${item.plan_name}</p>
+                            </td>
+                            <td class="px-8 py-5 border-t border-slate-50">
+                                <p class="text-sm font-black text-slate-700">₹${parseFloat(item.amount).toLocaleString()}</p>
+                            </td>
+                            <td class="px-8 py-5 border-t border-slate-50">
+                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusColor}">
+                                    ${item.status}
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 border-t border-slate-50">
+                                <p class="text-sm font-bold text-slate-700">${formattedDate}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${formattedTime}</p>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (error) {
+            console.error('Billing History Error:', error);
+            container.innerHTML = '<tr><td colspan="4" class="px-8 py-20 text-center text-rose-500 font-bold">Failed to load history.</td></tr>';
+        }
+    }
+
+    function changeBillingPage(direction) {
+        if (direction === 'next' && currentBillingPage < totalBillingPages) {
+            fetchBillingHistory(currentBillingPage + 1);
+        } else if (direction === 'prev' && currentBillingPage > 1) {
+            fetchBillingHistory(currentBillingPage - 1);
         }
     }
 </script>

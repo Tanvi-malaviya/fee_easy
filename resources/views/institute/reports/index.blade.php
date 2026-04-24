@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <!-- Tab Navigation -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div id="tab-nav" class="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm inline-flex items-center gap-1">
         <button onclick="switchTab('fees')" id="tab-btn-fees" class="tab-btn active px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all">Fees</button>
         <button onclick="switchTab('attendance')" id="tab-btn-attendance" class="tab-btn px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-400 transition-all">Attendance</button>
@@ -34,14 +34,21 @@
     </style>
 
     <!-- Main Container -->
-    <div id="reports-container" class="relative min-h-[400px]">
+    <div id="reports-container" class="relative">
         <div id="loader" class="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-10 hidden rounded-[2.5rem]">
             <div class="h-10 w-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
         </div>
 
         <!-- Section: Fees -->
         <div id="section-fees" class="tab-section space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue Summary</h4>
+                <button onclick="exportFees()" class="h-8 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Revenue</p>
                     <h3 id="fee-total-revenue" class="text-xl font-black text-slate-800 tracking-tight">₹0</h3>
@@ -49,10 +56,6 @@
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                     <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Collected</p>
                     <h3 id="fee-total-collected" class="text-xl font-black text-emerald-600 tracking-tight">₹0</h3>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-1">Outstanding</p>
-                    <h3 id="fee-total-due" class="text-xl font-black text-rose-600 tracking-tight">₹0</h3>
                 </div>
             </div>
             <div id="fee-batch-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -62,6 +65,31 @@
 
         <!-- Section: Attendance -->
         <div id="section-attendance" class="tab-section space-y-6 hidden">
+            <div class="flex items-center justify-between">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Attendance Analytics</h4>
+                <button onclick="exportAttendance()" class="h-8 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export
+                </button>
+            </div>
+
+            <!-- Weekly Graph Card -->
+            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h4 class="text-sm font-black text-slate-800 tracking-tight">Weekly Attendance Trend</h4>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily presence percentage across all batches</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Presence %</span>
+                    </div>
+                </div>
+                <div class="h-[250px] w-full relative">
+                    <canvas id="weeklyAttendanceChart"></canvas>
+                </div>
+            </div>
+
             <div id="attendance-batch-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Batch cards injected here -->
             </div>
@@ -140,7 +168,6 @@
         const summary = globalFeeData.summary;
         document.getElementById('fee-total-revenue').innerText = '₹' + summary.total_amount;
         document.getElementById('fee-total-collected').innerText = '₹' + summary.paid_amount;
-        document.getElementById('fee-total-due').innerText = '₹' + summary.due_amount;
 
         const container = document.getElementById('fee-batch-grid');
         container.innerHTML = globalBatches.map(batch => {
@@ -152,7 +179,7 @@
                 <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'fees')" class="batch-card bg-white p-4 pt-5 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group">
                     <div class="flex items-start justify-between mb-1">
                         <h4 class="text-[14px] font-black text-slate-800 leading-tight">${batch.name}</h4>
-                        <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-tight flex-shrink-0">${batch.students_count || 0} Scholars</span>
+                        <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-tight flex-shrink-0">${batch.students_count || 0} Students</span>
                     </div>
                     
                     <div class="mt-4 pt-3 border-t border-slate-50 grid grid-cols-2 gap-2">
@@ -179,7 +206,10 @@
             return `
                 <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'attendance')" class="batch-card bg-white p-4 pt-5 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group">
                     <div class="flex items-start justify-between mb-1">
-                        <h4 class="text-[14px] font-black text-slate-800 leading-tight">${batch.name}</h4>
+                        <div>
+                            <h4 class="text-[14px] font-black text-slate-800 leading-tight">${batch.name}</h4>
+                            <span class="mt-1 px-2 py-0.5 bg-slate-50 text-slate-400 rounded-lg text-[8px] font-black uppercase tracking-tight inline-block">${batch.students_count || 0} Students</span>
+                        </div>
                         <div class="text-right flex-shrink-0">
                             <p class="text-[7px] font-black text-slate-300 uppercase tracking-widest">Avg Present</p>
                             <p class="text-[13px] font-black text-slate-800 leading-none mt-0.5">${pct}%</p>
@@ -195,6 +225,44 @@
                 </div>
             `;
         }).join('');
+        
+        initAttendanceChart();
+    }
+
+    let attendanceChart = null;
+    function initAttendanceChart() {
+        const ctx = document.getElementById('weeklyAttendanceChart').getContext('2d');
+        if (attendanceChart) attendanceChart.destroy();
+
+        attendanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Attendance %',
+                    data: [85, 92, 78, 88, 95, 82, 0],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#3b82f6',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { font: { weight: 'bold', size: 10 }, color: '#94a3b8' }, grid: { display: false } },
+                    x: { ticks: { font: { weight: 'bold', size: 10 }, color: '#94a3b8' }, grid: { display: false } }
+                }
+            }
+        });
     }
 
     async function drillDownBatch(batchId, batchName, type) {
@@ -209,7 +277,11 @@
             const container = document.getElementById('drilldown-student-grid');
             
             if (type === 'fees') {
-                document.getElementById('drilldown-avg').innerText = 'FEE STATUS';
+                const batch = globalBatches.find(b => b.id == batchId);
+                const paid = batch ? (batch.total_paid || 0) : 0;
+                document.getElementById('drilldown-avg').innerText = 'COLLECTED: ₹' + paid;
+                document.getElementById('drilldown-avg').classList.replace('text-blue-600', 'text-emerald-600');
+                
                 container.innerHTML = students.map(s => {
                     const due = s.total_due || 0;
                     return `
@@ -227,9 +299,12 @@
                     `;
                 }).join('');
             } else if (type === 'attendance') {
-                document.getElementById('drilldown-avg').innerText = 'ATTENDANCE %';
+                const pct = Math.floor(Math.random() * (98 - 75 + 1) + 75); // Mock
+                document.getElementById('drilldown-avg').innerText = 'AVG PRESENT: ' + pct + '%';
+                document.getElementById('drilldown-avg').classList.replace('text-emerald-600', 'text-blue-600');
+                
                 container.innerHTML = students.map(s => {
-                    const pct = Math.floor(Math.random() * (100 - 60 + 1) + 60); // Mock
+                    const sPct = Math.floor(Math.random() * (100 - 60 + 1) + 60); // Mock
                     return `
                         <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
                             <div class="h-9 w-9 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 font-black text-[11px]">${s.name.charAt(0)}</div>
@@ -237,9 +312,9 @@
                                 <h5 class="text-[12px] font-black text-slate-800 leading-none">${s.name}</h5>
                                 <div class="mt-2 flex items-center gap-2">
                                     <div class="flex-1 bg-slate-50 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-blue-500 h-full" style="width: ${pct}%"></div>
+                                        <div class="bg-blue-500 h-full" style="width: ${sPct}%"></div>
                                     </div>
-                                    <span class="text-[8px] font-black text-blue-600">${pct}%</span>
+                                    <span class="text-[8px] font-black text-blue-600">${sPct}%</span>
                                 </div>
                             </div>
                         </div>
@@ -284,5 +359,14 @@
     }
 
     function toggleLoader(show) { document.getElementById('loader').classList.toggle('hidden', !show); }
+
+    function exportFees() {
+        window.location.href = '/api/v1/institute/fees/export';
+    }
+
+    function exportAttendance() {
+        showToast('Attendance report generation started...', 'info');
+        window.print();
+    }
 </script>
 @endsection

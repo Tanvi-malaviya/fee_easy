@@ -155,7 +155,7 @@
                                 <div>
                                     <h4 class="text-sm font-black text-slate-800 tracking-tight">{{ $batch->name }}</h4>
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                        {{ $batch->time }} • {{ $batch->students_count ?? $batch->students()->count() }}
+                                        {{ $batch->start_time ? $batch->start_time : '--:--' }} - {{ $batch->end_time ? $batch->end_time : '--:--' }} • {{ $batch->students_count ?? $batch->students()->count() }}
                                         Students</p>
                                 </div>
                             </div>
@@ -188,11 +188,12 @@
                             class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100/50 hover:border-emerald-600/20 hover:bg-white hover:shadow-xl hover:shadow-emerald-900/5 transition-all group">
                             <div class="flex items-center gap-4">
                                 <div
-                                    class="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 border border-slate-100 shadow-sm group-hover:scale-110 transition-transform">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
+                                    class="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 border border-slate-100 shadow-sm group-hover:scale-110 transition-transform overflow-hidden">
+                                    @if($student->profile_image)
+                                        <img src="{{ asset('storage/' . $student->profile_image) }}" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=f0fdf4&color=10b981&bold=true" class="w-full h-full object-cover">
+                                    @endif
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-black text-slate-800 tracking-tight">{{ $student->name }}</h4>

@@ -192,4 +192,21 @@ class InstituteSubscriptionController extends Controller
             ], 400);
         }
     }
+
+    public function history(Request $request)
+    {
+        $subscriptions = $request->user()->subscriptions()
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $subscriptions->items(),
+            'meta' => [
+                'current_page' => $subscriptions->currentPage(),
+                'last_page' => $subscriptions->lastPage(),
+                'total' => $subscriptions->total(),
+            ]
+        ]);
+    }
 }

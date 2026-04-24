@@ -14,7 +14,7 @@
         
         <div class="flex flex-wrap items-center gap-6">
             <!-- Total Collected Stat (Repositioned) -->
-            <div class="flex items-center gap-4 bg-emerald-50/50 px-6 py-3 rounded-2xl border border-emerald-100">
+            <div class="relative flex items-center gap-4 bg-emerald-50/50 px-6 py-3 rounded-2xl border border-emerald-100">
                 <div class="h-10 w-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
@@ -22,6 +22,13 @@
                     <p id="stat-label" class="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest leading-none mb-1.5">Collection</p>
                     <h3 id="stat-paid" class="text-xl font-black text-slate-800">₹0</h3>
                 </div>
+
+                <!-- Subtle Download Button -->
+                <button onclick="downloadFeeHistory()" class="absolute -top-2 -right-2 h-7 w-7 bg-white border border-emerald-100 rounded-full flex items-center justify-center text-emerald-500 hover:bg-emerald-500 hover:text-white shadow-sm transition-all group/dl" title="Download Report">
+                    <svg class="w-3.5 h-3.5 group-hover/dl:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </button>
             </div>
 
             <button onclick="openFeeModal()" class="px-8 py-4 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-xl shadow-blue-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
@@ -95,7 +102,13 @@
                         <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <input type="text" id="student-search-input" placeholder="Search by name or student ID..." autocomplete="off" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        <input type="text" id="student-search-input" placeholder="Search by name or student ID..." autocomplete="off" class="w-full pl-11 pr-24 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        
+                        <!-- Change Button -->
+                        <button type="button" id="clear-student-btn" onclick="clearStudentSelection()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-white border border-slate-200 text-[10px] font-black text-slate-400 rounded-lg hover:text-blue-600 hover:border-blue-200 transition-all uppercase tracking-widest">
+                            Change
+                        </button>
+
                         <input type="hidden" name="student_id" id="selected-student-id" required>
                         
                         <!-- Search Results Dropdown -->
@@ -110,9 +123,24 @@
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
                     <input type="date" name="fee_date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
                 </div>
-                <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Total Fee Amount</label>
-                    <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Total Fee Amount</label>
+                        <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
+                        <div class="flex items-center gap-2 p-1 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <label class="flex-1 cursor-pointer group">
+                                <input type="radio" name="payment_method" value="Cash" checked class="peer sr-only">
+                                <div class="py-2 text-center text-[11px] font-black text-slate-400 rounded-xl transition-all peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm">CASH</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer group">
+                                <input type="radio" name="payment_method" value="Online" class="peer sr-only">
+                                <div class="py-2 text-center text-[11px] font-black text-slate-400 rounded-xl transition-all peer-checked:bg-white peer-checked:text-blue-600 peer-checked:shadow-sm">ONLINE</div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pt-4 border-t border-slate-50 flex items-center justify-end space-x-4">
@@ -199,7 +227,17 @@
     function selectStudent(id, name, studentId) {
         document.getElementById('selected-student-id').value = id;
         document.getElementById('student-search-input').value = `${name} (${studentId})`;
+        document.getElementById('student-search-input').readOnly = true;
         document.getElementById('student-dropdown').classList.add('hidden');
+        document.getElementById('clear-student-btn').classList.remove('hidden');
+    }
+
+    function clearStudentSelection() {
+        document.getElementById('selected-student-id').value = '';
+        document.getElementById('student-search-input').value = '';
+        document.getElementById('student-search-input').readOnly = false;
+        document.getElementById('clear-student-btn').classList.add('hidden');
+        document.getElementById('student-search-input').focus();
     }
 
     async function fetchStudents() {
@@ -218,8 +256,7 @@
     function openFeeModal() { 
         document.getElementById('fee-modal').classList.remove('hidden');
         document.getElementById('fee-form').reset();
-        document.getElementById('student-search-input').value = '';
-        document.getElementById('selected-student-id').value = '';
+        clearStudentSelection();
     }
 
     async function loadAllFees(page = 1) {
@@ -340,6 +377,15 @@
         }
         else showToast(res.message, 'error');
     });
+
+    async function downloadFeeHistory() {
+        try {
+            window.location.href = "/api/v1/institute/fees/export";
+            showToast('Preparing your download...', 'success');
+        } catch (e) {
+            showToast('Download failed', 'error');
+        }
+    }
 
     function closeFeeModal() { document.getElementById('fee-modal').classList.add('hidden'); }
     function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
