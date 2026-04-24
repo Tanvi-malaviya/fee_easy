@@ -70,6 +70,7 @@
                         <select name="recipient" id="recipient-select" onchange="handleTargetChange()" required class="w-full px-3 py-2.5 bg-blue-50/50 border border-blue-100 rounded-xl text-xs font-bold text-blue-700 outline-none focus:ring-2 focus:ring-blue-500/20">
                             <option value="students">Students</option>
                             <option value="parents">Parents</option>
+                            <option value="both">Both (Students & Parents)</option>
                         </select>
                     </div>
                     
@@ -215,7 +216,7 @@
         const allPlaceholder = document.getElementById('all-students-placeholder');
         const placeholderText = document.getElementById('placeholder-text');
         
-        // Handle Students vs Parents
+        // Handle Students vs Parents vs Both
         if (recipient === 'parents') {
             audienceCont.style.opacity = '0.3';
             audienceCont.style.pointerEvents = 'none';
@@ -223,6 +224,14 @@
             standardCont.classList.add('hidden');
             allPlaceholder.classList.remove('hidden');
             placeholderText.innerText = "Broadcasting to all Parents";
+        } else if (recipient === 'both') {
+            audienceCont.style.opacity = '1';
+            audienceCont.style.pointerEvents = 'auto';
+            
+            batchCont.classList.toggle('hidden', type !== 'batch');
+            standardCont.classList.toggle('hidden', type !== 'standard');
+            allPlaceholder.classList.toggle('hidden', type !== 'all');
+            placeholderText.innerText = "Broadcasting to both Students & Parents";
         } else {
             audienceCont.style.opacity = '1';
             audienceCont.style.pointerEvents = 'auto';
@@ -234,7 +243,7 @@
             placeholderText.innerText = "Broadcasting to all Students";
         }
         
-        document.getElementById('modal-batch-select').required = (recipient === 'students' && type === 'batch');
+        document.getElementById('modal-batch-select').required = ((recipient === 'students' || recipient === 'both') && type === 'batch');
     }
 
     async function fetchBatches() {
@@ -295,7 +304,7 @@
                         <span class="px-1 py-0.5 bg-${color}-50 text-${color}-600 rounded text-[7px] font-black uppercase tracking-wider shrink-0">${update.category || 'Update'}</span>
                     </div>
                     <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em] block">
-                        Target: ${update.target_type === 'all' ? 'Everyone' : (update.batch ? update.batch.name : (update.standard ? update.standard + ' Standard' : 'Unknown'))}
+                        Recipient: <span class="text-blue-600 font-black">${update.recipient === 'both' ? 'Both' : update.recipient}</span> • Target: ${update.target_type === 'all' ? 'Everyone' : (update.batch ? update.batch.name : (update.standard ? update.standard + ' Standard' : 'Unknown'))}
                     </span>
                 </div>
 

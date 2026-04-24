@@ -27,7 +27,7 @@
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                     <input type="text" name="name" required value="{{ old('name', $student->name) }}" placeholder="John Doe"
-                        class="w-full px-3 py-2    bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('name') border-rose-500 @enderror">
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('name') border-rose-500 @enderror">
                     @error('name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
@@ -35,80 +35,62 @@
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                     <input type="email" name="email" required value="{{ old('email', $student->email) }}" placeholder="john@example.com"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('email') border-rose-500 @enderror">
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('email') border-rose-500 @enderror">
                     @error('email') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Phone -->
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                    <input type="text" name="phone" value="{{ old('phone', $student->phone) }}" placeholder="+123 456 7890"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('phone') border-rose-500 @enderror">
+                    <input type="text" name="phone" required value="{{ old('phone', $student->phone) }}" placeholder="+91 00000 00000"
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('phone') border-rose-500 @enderror">
                     @error('phone') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Password -->
-                <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Change Password (Optional)</label>
-                    <input type="password" name="password" placeholder="••••••••"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('password') border-rose-500 @enderror">
-                    @error('password') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Guardian Name -->
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Guardian Name</label>
-                    <input type="text" name="guardian_name" value="{{ old('guardian_name', $student->guardian_name) }}" placeholder="Mr. Richard Roe"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('guardian_name') border-rose-500 @enderror">
+                    <input type="text" name="guardian_name" required value="{{ old('guardian_name', $student->guardian_name) }}" placeholder="Mr. Richard Roe"
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('guardian_name') border-rose-500 @enderror">
                     @error('guardian_name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Date of Birth -->
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
-                    <input type="date" name="dob" value="{{ old('dob', $student->dob) }}"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('dob') border-rose-500 @enderror">
+                    <input type="date" name="dob" required value="{{ old('dob', $student->dob) }}"
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('dob') border-rose-500 @enderror">
                     @error('dob') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
-
-
 
                 <!-- Standard -->
                 <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Standard</label>
-                    <input type="text" name="standard" value="{{ old('standard', $student->standard) }}" placeholder="e.g. 10th Grade"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('standard') border-rose-500 @enderror">
+                    <input type="text" name="standard" required value="{{ old('standard', $student->standard) }}" placeholder="e.g. 10th Grade"
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('standard') border-rose-500 @enderror">
                     @error('standard') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>
 
-
-
                 <!-- Status -->
-                <div class="space-y-2">
+                <!-- <div class="space-y-2">
                     <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Account Status</label>
-                    <select name="status"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none appearance-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('status') border-rose-500 @enderror">
+                    <select name="status" required
+                        class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none appearance-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('status') border-rose-500 @enderror">
                         <option value="1" {{ old('status', $student->status) == 1 ? 'selected' : '' }}>Active</option>
                         <option value="0" {{ old('status', $student->status) == 0 ? 'selected' : '' }}>Inactive</option>
                     </select>
                     @error('status') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                </div>
+                </div> -->
 
                 <!-- Profile Image -->
                 <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Profile Image</label>
+                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Profile Image (Optional)</label>
                     <div class="flex items-center gap-4">
                         @if($student->profile_image)
-                            <img src="{{ asset('storage/' . $student->profile_image) }}" alt="{{ $student->name }}" class="h-12 w-12 rounded-xl object-cover border border-slate-200">
-                        @else
-                            <div class="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
+                            <img src="{{ asset('storage/' . $student->profile_image) }}" alt="{{ $student->name }}" class="h-10 w-10 rounded-2xl object-cover border border-slate-200">
                         @endif
                         <input type="file" name="profile_image" accept="image/*"
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('profile_image') border-rose-500 @enderror">
+                            class="w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('profile_image') border-rose-500 @enderror">
                     </div>
                     @error('profile_image') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                 </div>

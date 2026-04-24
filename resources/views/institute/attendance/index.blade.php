@@ -1,24 +1,19 @@
 @extends('layouts.institute')
 
 @section('content')
-    <!-- Full Screen Loader -->
-    <div id="fullscreen-loader" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white rounded-3xl p-10 shadow-2xl flex flex-col items-center">
-            <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-            <p class="mt-5 text-slate-600 font-semibold text-sm">Loading attendance records...</p>
-        </div>
-    </div>
-
     <div class="space-y-6 max-w-[1600px] mx-auto pb-10">
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
+
         <!-- Page Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-[#111827] tracking-tight">Attendance History</h1>
                 <!-- <p class="text-sm text-slate-500 mt-1 font-medium">Review and manage past attendance records.</p> -->
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center bg-white rounded-2xl shadow-sm border border-slate-100 p-1 cursor-pointer hover:border-blue-200 transition-all group"
+            <div class="flex items-center gap-2">
+                <div class="flex items-center bg-white rounded-xl shadow-sm border border-slate-100 p-1 cursor-pointer hover:border-blue-200 transition-all group"
                     onclick="document.getElementById('history-date-picker').showPicker()">
                     <div class="px-5 py-2.5 flex items-center">
                         <svg class="w-4 h-4 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,21 +58,38 @@
                 </div> -->
 
         <!-- History Log Cards -->
-        <div class="space-y-4">
+        <div class="space-y-3">
             <div class="flex items-center justify-between px-2">
                 <h3 class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Recent Records Log</h3>
             </div>
 
-            <div id="history-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Cards will be loaded via JS -->
-                <div class="col-span-full flex items-center justify-center py-20">
-                    <p class="text-slate-400 font-medium">Loading history records...</p>
+            <div id="history-container" class="relative min-h-[250px]">
+                <!-- Common Loader -->
+                <div id="loading-spinner"
+                    class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center transition-all duration-300">
+                    <div class="flex flex-col items-center">
+                        <div class="h-12 w-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                        <span class="mt-4 text-sm font-bold text-slate-500 tracking-wide uppercase">Refining Results...</span>
+                    </div>
+                </div>
+
+                <div id="history-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Cards will be loaded via JS -->
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination-container" class="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
+                    <!-- Pagination generated via JS -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        let allRecords = [];
+        let currentPage = 1;
+        const perPage = 6;
+
         document.addEventListener('DOMContentLoaded', () => {
             fetchHistory();
         });
@@ -87,7 +99,6 @@
             try {
                 const date = selectedDate || document.getElementById('history-date-picker').value;
 
-                // Update UI display date
                 if (selectedDate) {
                     const options = { month: 'short', day: 'numeric', year: 'numeric' };
                     document.getElementById('display-date').innerText = new Date(selectedDate).toLocaleDateString('en-US', options).toUpperCase();
@@ -99,8 +110,10 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    renderHistory(result.data);
-                    updateHistoryStats(result.data);
+                    allRecords = result.data;
+                    currentPage = 1;
+                    renderHistory();
+                    updateHistoryStats(allRecords);
                 }
             } catch (error) {
                 console.error('History Fetch Error:', error);
@@ -109,17 +122,12 @@
             }
         }
 
-        function renderHistory(records) {
+        function renderHistory() {
             const container = document.getElementById('history-cards-container');
-
-            if (records.length === 0) {
-                container.innerHTML = `<div class="col-span-full flex items-center justify-center py-20 text-center"><p class="text-slate-400 font-medium italic">No attendance records found for today. Get started by marking a new session!</p></div>`;
-                return;
-            }
-
+            
             // Grouping records by batch
             const batchGroups = {};
-            records.forEach(rec => {
+            allRecords.forEach(rec => {
                 if (!batchGroups[rec.batch_id]) {
                     batchGroups[rec.batch_id] = {
                         name: rec.batch?.name || 'Unknown Batch',
@@ -136,11 +144,25 @@
                 else if (rec.status === 'late') batchGroups[rec.batch_id].late++;
             });
 
-            container.innerHTML = Object.values(batchGroups).map(batch => {
+            const batches = Object.values(batchGroups);
+            
+            if (batches.length === 0) {
+                container.innerHTML = `<div class="col-span-full flex items-center justify-center py-20 text-center"><p class="text-slate-400 font-medium italic">No attendance records found for today.</p></div>`;
+                document.getElementById('pagination-container').innerHTML = '';
+                return;
+            }
+
+            // Pagination logic
+            const total = batches.length;
+            const lastPage = Math.ceil(total / perPage);
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const paginatedBatches = batches.slice(start, end);
+
+            container.innerHTML = paginatedBatches.map(batch => {
                 const percentage = Math.round((batch.present / batch.total) * 100);
                 return `
-                    <div class="bg-gradient-to-br from-white to-slate-50/30 rounded-2xl shadow-md border border-slate-100 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
-                        <!-- Card Header -->
+                    <div class="bg-gradient-to-br from-white to-slate-50/30 rounded-2xl shadow-md border border-slate-100 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300 animate-in fade-in zoom-in-95">
                         <div class="bg-gradient-to-r from-blue-50 to-indigo-50/30 p-4 border-b border-slate-100">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-center space-x-2.5">
@@ -150,26 +172,21 @@
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date & Session</p>
                                         <h4 class="text-[14px] font-black text-slate-900">${new Date(batch.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</h4>
-                                        <span class="text-[9px] font-bold text-slate-500">Morning Session</span>
+                                        <span class="text-[9px] font-bold text-slate-500">Regular Session</span>
                                     </div>
                                 </div>
                                 <span class="inline-flex px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-bold rounded-full uppercase tracking-widest flex-shrink-0">Completed</span>
                             </div>
                         </div>
 
-                        <!-- Card Body -->
                         <div class="p-4 space-y-3.5">
-                            <!-- Batch Info -->
                             <div class="pb-3.5 border-b border-slate-100">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Batch Information</p>
                                 <h3 class="text-[14px] font-black text-slate-800">${batch.name}</h3>
                             </div>
 
-                            <!-- Attendance Summary -->
                             <div class="space-y-3">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Attendance Summary</p>
                                 <div class="space-y-2.5">
-                                    <!-- Present Count -->
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-1.5">
                                             <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
@@ -178,17 +195,10 @@
                                         <span class="text-sm font-black text-emerald-600">${batch.present}/${batch.total}</span>
                                     </div>
 
-                                    <!-- Progress Bar -->
-                                    <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                    <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-300" style="width: ${percentage}%"></div>
                                     </div>
 
-                                    <!-- Percentage -->
-                                    <div class="text-right">
-                                        <span class="text-[9px] font-bold text-slate-500">${percentage}% Attendance</span>
-                                    </div>
-
-                                    <!-- Absent Count -->
                                     <div class="flex items-center justify-between pt-2 border-t border-slate-50">
                                         <div class="flex items-center space-x-1.5">
                                             <div class="h-2 w-2 rounded-full bg-rose-500"></div>
@@ -200,31 +210,82 @@
                             </div>
                         </div>
 
-                        <!-- Card Footer -->
                         <div class="px-4 py-3 bg-slate-50/50 border-t border-slate-100 flex justify-end">
-                            <a href="{{ route('institute.attendance.create') }}" class="inline-flex items-center px-3.5 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-7-4l7-7m0 0v5m0-5h-5"/></svg>
-                                Edit
+                            <a href="{{ route('institute.attendance.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl text-[11px] font-bold hover:bg-blue-700 transition-all shadow-md hover:scale-105">
+                                <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-7-4l7-7m0 0v5m0-5h-5"/></svg>
+                                Update Records
                             </a>
                         </div>
                     </div>
                 `;
             }).join('');
+
+            renderPagination(total, lastPage);
         }
 
-        function updateHistoryStats(records) {
-            const batchIds = new Set(records.map(r => r.batch_id));
-            document.getElementById('stat-today-marked').innerText = batchIds.size;
+        function renderPagination(total, lastPage) {
+            const container = document.getElementById('pagination-container');
+            if (lastPage <= 1) {
+                container.innerHTML = '';
+                return;
+            }
 
-            if (records.length > 0) {
-                const present = records.filter(r => r.status === 'present').length;
-                const avg = Math.round((present / records.length) * 100);
-                document.getElementById('stat-avg-present').innerText = avg + '%';
+            let html = `
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                    Showing <span class="text-slate-700">${Math.min(currentPage * perPage, total)}</span> of <span class="text-slate-700">${total}</span> records
+                </p>
+                <div class="flex items-center space-x-2">
+            `;
+
+            // Prev Button
+            html += `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
+                    class="h-9 px-4 rounded-xl border border-slate-100 text-[11px] font-black uppercase tracking-widest transition-all ${currentPage === 1 ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-200'}">
+                    Prev
+                </button>
+            `;
+
+            // Page Numbers
+            for (let i = 1; i <= lastPage; i++) {
+                if (i === 1 || i === lastPage || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `
+                        <button onclick="changePage(${i})" 
+                            class="h-9 w-9 rounded-xl text-[11px] font-black transition-all ${i === currentPage ? 'bg-[#1e3a8a] text-white shadow-lg shadow-blue-900/20' : 'text-slate-600 bg-white border border-slate-100 hover:bg-slate-50'}">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="text-slate-300">...</span>`;
+                }
+            }
+
+            // Next Button
+            html += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === lastPage ? 'disabled' : ''} 
+                    class="h-9 px-4 rounded-xl border border-slate-100 text-[11px] font-black uppercase tracking-widest transition-all ${currentPage === lastPage ? 'text-slate-300 bg-slate-50 cursor-not-allowed' : 'text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-200'}">
+                    Next
+                </button>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderHistory();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleLoader(show) {
+            const spinner = document.getElementById('loading-spinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+                spinner.classList.add('flex');
+            } else {
+                spinner.classList.add('hidden');
+                spinner.classList.remove('flex');
             }
         }
 
-        function toggleLoader(show) { 
-            document.getElementById('fullscreen-loader').classList.toggle('hidden', !show); 
-        }
     </script>
 @endsection

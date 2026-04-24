@@ -36,8 +36,8 @@ class InstituteDailyUpdateController extends Controller
 
         $request->validate([
             'category' => 'required|string',
-            'recipient' => 'required|string|in:students,parents',
-            'target_type' => 'required_if:recipient,students|string|in:all,batch,standard',
+            'recipient' => 'required|string|in:students,parents,both',
+            'target_type' => 'required_if:recipient,students|required_if:recipient,both|string|in:all,batch,standard',
             'batch_id' => 'required_if:target_type,batch|nullable|exists:batches,id',
             'standard' => 'required_if:target_type,standard|nullable|string',
             'topic' => 'required|string|max:255',
@@ -54,9 +54,9 @@ class InstituteDailyUpdateController extends Controller
         $update = DailyUpdate::create([
             'institute_id' => $request->user()->id,
             'recipient' => $request->recipient,
-            'batch_id' => ($request->recipient === 'students' && $request->target_type === 'batch') ? $request->batch_id : null,
-            'target_type' => $request->recipient === 'students' ? $request->target_type : 'all',
-            'standard' => ($request->recipient === 'students' && $request->target_type === 'standard') ? $request->standard : null,
+            'batch_id' => (($request->recipient === 'students' || $request->recipient === 'both') && $request->target_type === 'batch') ? $request->batch_id : null,
+            'target_type' => ($request->recipient === 'students' || $request->recipient === 'both') ? $request->target_type : 'all',
+            'standard' => (($request->recipient === 'students' || $request->recipient === 'both') && $request->target_type === 'standard') ? $request->standard : null,
             'category' => $request->category,
             'topic' => $request->topic,
             'description' => $request->description,

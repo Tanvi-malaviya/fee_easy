@@ -16,8 +16,15 @@ class StudentDailyUpdateController extends Controller
         }
 
         $student = $request->user();
+        $instituteId = $student->institute_id;
 
-        $dailyUpdates = DailyUpdate::where('batch_id', $student->batch_id)
+        $dailyUpdates = DailyUpdate::where('institute_id', $instituteId)
+            ->whereIn('recipient', ['students', 'both'])
+            ->where(function($q) use ($student) {
+                $q->where('target_type', 'all')
+                  ->orWhere('batch_id', $student->batch_id)
+                  ->orWhere('standard', $student->standard);
+            })
             ->orderByDesc('date')
             ->get();
 

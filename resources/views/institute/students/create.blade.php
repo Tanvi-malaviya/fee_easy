@@ -26,8 +26,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Name -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Full
-                            Name</label>
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                         <input type="text" name="name" required value="{{ old('name') }}" placeholder="John Doe"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('name') border-rose-500 @enderror">
                         @error('name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
@@ -35,68 +34,61 @@
 
                     <!-- Email -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Email
-                            Address</label>
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                         <input type="email" name="email" required value="{{ old('email') }}" placeholder="john@example.com"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('email') border-rose-500 @enderror">
-                        @error('email') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                        @error('email') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Phone -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Phone
-                            Number</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+123 456 7890"
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                        <input type="text" name="phone" required value="{{ old('phone') }}" placeholder="+91 00000 00000"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('phone') border-rose-500 @enderror">
-                        @error('phone') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                        @error('phone') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
-
-                    <!-- Password field removed as requested -->
 
                     <!-- Guardian Name -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Guardian
-                            Name</label>
-                        <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
-                            placeholder="Mr. Richard Roe"
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Guardian Name</label>
+                        <input type="text" name="guardian_name" required value="{{ old('guardian_name') }}" placeholder="Mr. Richard Roe"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('guardian_name') border-rose-500 @enderror">
-                        @error('guardian_name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                        @error('guardian_name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Date of Birth -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Date of
-                            Birth</label>
-                        <input type="date" name="dob" value="{{ old('dob') }}"
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Date of Birth</label>
+                        <input type="date" name="dob" required value="{{ old('dob') }}"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('dob') border-rose-500 @enderror">
                         @error('dob') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
-
-
                     <!-- Standard -->
                     <div class="space-y-2">
-                        <label
-                            class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Standard</label>
-                        <input type="text" name="standard" value="{{ old('standard') }}" placeholder="e.g. 10th Grade"
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Standard</label>
+                        <input type="text" name="standard" required value="{{ old('standard') }}" placeholder="e.g. 10th Grade"
                             class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('standard') border-rose-500 @enderror">
-                        @error('standard') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                        @error('standard') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
-
+                    <!-- Status -->
+                    <!-- <div class="space-y-2">
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Account Status</label>
+                        <select name="status" required
+                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none appearance-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('status') border-rose-500 @enderror">
+                            <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                        @error('status') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                    </div> -->
 
                     <!-- Profile Image -->
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Profile
-                            Image</label>
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Profile Image (Optional)</label>
                         <input type="file" name="profile_image" accept="image/*"
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('profile_image') border-rose-500 @enderror">
-                        @error('profile_image') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                            class="w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('profile_image') border-rose-500 @enderror">
+                        @error('profile_image') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 

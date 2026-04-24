@@ -136,7 +136,7 @@
                         $active = !$isPlaceholder && request()->routeIs($item['route']); 
                     @endphp
                     <a href="{{ $isPlaceholder ? $item['route'] : route($item['route']) }}" 
-                       class="group flex items-center px-4 py-2.5 text-[14px] font-bold transition-all rounded-2xl {{ $active ? 'bg-white text-[#1e3a8a] shadow-sm' : 'text-slate-500 hover:text-slate-800' }}">
+                       class="group flex items-center px-4 py-2.5 text-[14px] font-bold transition-all rounded-xl {{ $active ? 'bg-white text-[#1e3a8a] shadow-sm' : 'text-slate-500 hover:text-slate-800' }}">
                         <svg class="w-5 h-5 mr-3 transition-colors {{ $active ? 'text-[#1e3a8a]' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/></svg>
                         {{ $item['label'] }}
                     </a>
@@ -153,8 +153,8 @@
             </div> -->
             <!-- Profile Section -->
             <div class="mt-auto pt-6 border-t border-slate-200/60">
-                <div class="flex items-center p-3 bg-white/50 rounded-2xl border border-white/60 shadow-sm backdrop-blur-sm group hover:bg-white hover:shadow-md transition-all duration-300">
-                    <div class="h-10 w-10 rounded-xl bg-slate-200 border border-slate-200 overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                <div class="flex items-center p-3 bg-white/50 rounded-xl border border-white/60 shadow-sm backdrop-blur-sm group hover:bg-white hover:shadow-md transition-all duration-300">
+                    <div class="h-10 w-10 rounded-lg bg-slate-200 border border-slate-200 overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('institute')->user()->name) }}&background=1e3a8a&color=fff" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
@@ -199,6 +199,60 @@
         closeBtn?.addEventListener('click', toggle);
         overlay?.addEventListener('click', toggle);
     </script>
+    <!-- Standardized Loading Backdrop -->
+    <div id="global-loader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/60 backdrop-blur-[2px] hidden transition-all duration-300">
+        <div class="flex flex-col items-center">
+            <div class="h-12 w-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+            <span class="mt-4 text-sm font-bold text-slate-500 tracking-wide uppercase">Refining Results...</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function toggleLoader(show) {
+            const loader = document.getElementById('global-loader');
+            if (show) {
+                loader.classList.remove('hidden');
+                loader.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
     @stack('modals')
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] space-y-3 pointer-events-none"></div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+            const icon = type === 'success' 
+                ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl shadow-slate-900/10 flex items-center gap-3 animate-in slide-in-from-right duration-300 pointer-events-auto cursor-pointer`;
+            toast.innerHTML = `
+                <div class="h-8 w-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
+                    ${icon}
+                </div>
+                <p class="text-[13px] font-black uppercase tracking-widest">${message}</p>
+            `;
+
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

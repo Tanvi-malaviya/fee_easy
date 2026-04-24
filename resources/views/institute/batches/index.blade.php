@@ -1,20 +1,16 @@
 @extends('layouts.institute')
 
 @section('content')
-<div class="space-y-6 max-w-[1600px] mx-auto pb-10">
+<div class="space-y-1 max-w-[1600px] mx-auto pb-10">
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
     <!-- Batches Table Container -->
     <div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 overflow-hidden">
         <!-- Unified Header Toolbar -->
-        <div class="px-8 py-6 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/20">
+        <div class="px-5 py-3 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/20">
             <div>
                 <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">Batch Management</h1>
-                <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Available Cohorts</span>
-                    <div id="loading-spinner" class="hidden h-3 w-3 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-                </div>
             </div>
             
             <button onclick="openBatchModal()" class="px-6 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-[11px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform flex items-center uppercase tracking-widest">
@@ -23,22 +19,33 @@
             </button>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest border-b border-slate-50">
-                        <th class="px-6 py-4">Batch ID & Name</th>
-                        <th class="px-6 py-4">Subject</th>
-                        <!-- <th class="px-6 py-4">Description</th> -->
-                        <th class="px-6 py-4">Schedule</th>
-                        <th class="px-6 py-4">Status</th>
-                        <th class="px-6 py-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="batch-table-body" class="divide-y divide-slate-50">
-                    <!-- Data populated via AJAX -->
-                </tbody>
-            </table>
+        <div id="table-container" class="relative min-h-[250px]">
+            <!-- Standard Backdrop Loader -->
+            <div id="loading-spinner"
+                class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center transition-all duration-300">
+                <div class="flex flex-col items-center">
+                    <div class="h-12 w-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                    <span class="mt-4 text-sm font-bold text-slate-500 tracking-wide uppercase">Refining Results...</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest border-b border-slate-50">
+                            <th class="px-6 py-4">Batch ID & Name</th>
+                            <th class="px-6 py-4">Subject</th>
+                            <!-- <th class="px-6 py-4">Description</th> -->
+                            <th class="px-6 py-4">Schedule</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batch-table-body" class="divide-y divide-slate-50">
+                        <!-- Data populated via AJAX -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Pagination -->
@@ -270,7 +277,7 @@
                         </div>
                         <div class="flex flex-col">
                             <h4 class="text-[13px] font-extrabold text-slate-800 leading-tight">${batch.name}</h4>
-                            <span class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest leading-none">Cohort Ref</span>
+                           
                         </div>
                     </div>
                 </td>
@@ -301,13 +308,13 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                     <div class="flex items-center justify-end space-x-1">
-                        <a href="/institute/batches/${batch.id}" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="View Details">
+                        <a href="/institute/batches/${batch.id}" class="p-2 text-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="View Details">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                         </a>
-                        <button onclick='openEditModal(${JSON.stringify(batch).replace(/'/g, "&apos;")})' class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Batch">
+                        <button onclick='openEditModal(${JSON.stringify(batch).replace(/'/g, "&apos;")})' class="p-2 text-blue-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Batch">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         </button>
-                        <button onclick="deleteBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete Batch">
+                        <button onclick="deleteBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}')" class="p-2 text-rose-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete Batch">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>
@@ -372,7 +379,16 @@
 
     function showModal() { document.getElementById('batch-modal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
     function closeBatchModal() { document.getElementById('batch-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
-    function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
+    function toggleLoader(show) {
+        const spinner = document.getElementById('loading-spinner');
+        if (show) {
+            spinner.classList.remove('hidden');
+            spinner.classList.add('flex');
+        } else {
+            spinner.classList.add('hidden');
+            spinner.classList.remove('flex');
+        }
+    }
     function toggleSubmitLoading(show) {
         document.getElementById('btn-loader').classList.toggle('hidden', !show);
         document.getElementById('submit-btn').disabled = show;

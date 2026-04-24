@@ -57,39 +57,48 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::middleware('guest:institute')->group(function () {
         Route::get('/login', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'login']);
+        Route::get('/register', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showRegister'])->name('register');
+        Route::post('/register', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'register']);
     });
 
     // Authenticated Routes
+    Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
+
     Route::middleware('auth:institute')->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
-        Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
-        
-        // Student Management
-        Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
-        Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
-        Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');
-        Route::get('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'show'])->name('students.show');
-        Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
-        Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
-        Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
-        Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
+        Route::get('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showVerifyOtp'])->name('verify-otp');
+        Route::post('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'verifyOtp']);
 
-        Route::get('/teachers', function () { return view('institute.teachers.index'); })->name('teachers.index');
-
-
-        // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
-        Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
-        Route::get('/batches/{id}', function($id) { return view('institute.batches.show', compact('id')); })->name('batches.show');
-        Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
-        Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
-        Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
-        Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
-        Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
         Route::get('/profile', function() { return view('institute.profile.index'); })->name('profile.index');
-        Route::get('/plans', function() { return view('institute.plans.index'); })->name('plans.index');
-        Route::get('/whatsapp-settings', function() { return view('institute.whatsapp.index'); })->name('whatsapp.setup');
-        Route::post('/profile/password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'updatePassword'])->name('profile.password.update');
 
+        Route::middleware('profile_complete')->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
+            
+            // Student Management
+            Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
+            Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
+            Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');
+            Route::get('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'show'])->name('students.show');
+            Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
+            Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
+            Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
+            Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
+
+            Route::get('/teachers', function () { return view('institute.teachers.index'); })->name('teachers.index');
+
+
+            // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
+            Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
+            Route::get('/batches/{id}', function($id) { return view('institute.batches.show', compact('id')); })->name('batches.show');
+            Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
+            Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
+            Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
+            Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
+            Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
+            Route::get('/plans', function() { return view('institute.plans.index'); })->name('plans.index');
+            Route::get('/whatsapp-settings', function() { return view('institute.whatsapp.index'); })->name('whatsapp.setup');
+        });
+
+        Route::post('/profile/password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'updatePassword'])->name('profile.password.update');
     });
 });
 
