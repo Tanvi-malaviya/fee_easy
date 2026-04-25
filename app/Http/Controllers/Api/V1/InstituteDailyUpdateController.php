@@ -19,7 +19,7 @@ class InstituteDailyUpdateController extends Controller
         $updates = $request->user()
             ->dailyUpdates()
             ->with('batch')
-            ->orderByDesc('date')
+            ->latest()
             ->get();
 
         return response()->json([
@@ -35,36 +35,39 @@ class InstituteDailyUpdateController extends Controller
         }
 
         $request->validate([
-            'batch_id' => 'required|integer|exists:batches,id',
+            'category' => 'required|string',
+            'recipient' => 'required|string|in:students,parents,both',
+            'target_type' => 'required_if:recipient,students|required_if:recipient,both|string|in:all,batch,standard',
+            'batch_id' => 'required_if:target_type,batch|nullable|exists:batches,id',
+            'standard' => 'required_if:target_type,standard|nullable|string',
             'topic' => 'required|string|max:255',
             'description' => 'required|string',
-            'date' => 'required|date',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // Max 5MB
         ]);
 
-        $institute = $request->user();
-        $batch = Batch::where('id', $request->batch_id)
-            ->where('institute_id', $institute->id)
-            ->first();
-
-        if (! $batch) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Batch not found for this institute.',
-            ], 404);
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $path = $request->file('attachment')->store('updates', 'public');
+            $attachmentPath = asset('storage/' . $path);
         }
 
         $update = DailyUpdate::create([
-            'batch_id' => $batch->id,
-            'institute_id' => $institute->id,
+            'institute_id' => $request->user()->id,
+            'recipient' => $request->recipient,
+            'batch_id' => (($request->recipient === 'students' || $request->recipient === 'both') && $request->target_type === 'batch') ? $request->batch_id : null,
+            'target_type' => ($request->recipient === 'students' || $request->recipient === 'both') ? $request->target_type : 'all',
+            'standard' => (($request->recipient === 'students' || $request->recipient === 'both') && $request->target_type === 'standard') ? $request->standard : null,
+            'category' => $request->category,
             'topic' => $request->topic,
             'description' => $request->description,
-            'date' => $request->date,
+            'attachment' => $attachmentPath,
+            'date' => now()->toDateString(),
         ]);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Daily update created successfully.',
-            'data' => $update,
+            'message' => 'Update published successfully.',
+            'data' => $update->load('batch'),
         ], 201);
     }
 }

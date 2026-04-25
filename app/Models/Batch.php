@@ -13,8 +13,15 @@ class Batch extends Model
         'institute_id',
         'name',
         'subject',
+        'description',
+        'fees',
         'start_time',
         'end_time',
+        'days',
+    ];
+
+    protected $casts = [
+        'days' => 'array',
     ];
 
     public function institute()

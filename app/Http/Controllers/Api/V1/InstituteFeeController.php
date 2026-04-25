@@ -20,7 +20,13 @@ class InstituteFeeController extends Controller
 
         $paginator = Fee::where('institute_id', $request->user()->id)
             ->with('student:id,name,email')
+            ->latest()
             ->paginate(10);
+
+        $currentMonthTotal = Fee::where('institute_id', $request->user()->id)
+            ->where('month', now()->format('F'))
+            ->where('year', now()->format('Y'))
+            ->sum('paid_amount');
 
         return response()->json([
             'status' => 'success',
@@ -30,6 +36,7 @@ class InstituteFeeController extends Controller
                 'current_page' => $paginator->currentPage(),
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
+                'current_month_total' => $currentMonthTotal,
             ]
         ]);
     }
@@ -50,22 +57,52 @@ class InstituteFeeController extends Controller
             'year' => 'required|integer',
         ]);
 
-        $fee = Fee::create([
-            'institute_id' => $request->user()->id,
-            'student_id' => $request->student_id,
-            'total_amount' => $request->total_amount,
-            'paid_amount' => 0,
-            'due_amount' => $request->total_amount,
-            'status' => 'Unpaid', // Default status
-            'month' => $request->month,
-            'year' => $request->year,
-        ]);
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            $paidAmount = $request->input('paid_amount', 0);
+            $totalAmount = $request->total_amount;
+            $dueAmount = $totalAmount - $paidAmount;
+            $status = $dueAmount <= 0 ? 'Paid' : ($paidAmount > 0 ? 'Partial' : 'Unpaid');
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Fee record created successfully',
-            'data' => $fee
-        ], 201);
+            $fee = Fee::create([
+                'institute_id' => $request->user()->id,
+                'student_id' => $request->student_id,
+                'total_amount' => $totalAmount,
+                'paid_amount' => $paidAmount,
+                'due_amount' => $dueAmount,
+                'status' => $status,
+                'month' => $request->month,
+                'year' => $request->year,
+            ]);
+
+            if ($paidAmount > 0) {
+                \App\Models\Payment::create([
+                    'fee_id' => $fee->id,
+                    'student_id' => $request->student_id,
+                    'amount' => $paidAmount,
+                    'payment_method' => $request->input('payment_method', 'Cash'),
+                    'paid_at' => now(),
+                ]);
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+            
+            // Load student relation for the frontend
+            $fee->load('student:id,name');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Fee record created and collected successfully',
+                'data' => $fee
+            ], 201);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create record: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -85,5 +122,35 @@ class InstituteFeeController extends Controller
             'status' => 'success',
             'data' => $fees
         ]);
+    }
+    /**
+     * Export current month's fees as PDF.
+     */
+    public function export(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $institute = $request->user();
+        $month = now()->format('F');
+        $year = now()->format('Y');
+
+        $fees = Fee::where('institute_id', $institute->id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->with('student:id,name')
+            ->latest()
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.fees.report_pdf', [
+            'institute' => $institute,
+            'fees' => $fees,
+            'month' => $month,
+            'year' => $year
+        ]);
+
+        $filename = "Fee_Report_{$month}_{$year}.pdf";
+        return $pdf->download($filename);
     }
 }

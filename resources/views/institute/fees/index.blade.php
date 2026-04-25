@@ -1,71 +1,80 @@
 @extends('layouts.institute')
 
 @section('content')
-<div class="space-y-6 max-w-[1600px] mx-auto pb-10">
+<div class="space-y-2 max-w-[1600px] mx-auto pb-5">
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <!-- Page Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div>
+    <!-- Page Header & Stats -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-white p-5 rounded-[1rem] border border-slate-100 shadow-sm">
+        <div class="flex-1">
             <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Fee Management</h1>
-            <p class="text-sm text-slate-400 mt-2 font-medium">Track student payments, dues, and financial records.</p>
+            <p class="text-sm text-slate-400 mt-1 font-medium">Overview of all student payments and financial records.</p>
         </div>
-        <div class="flex items-center gap-4">
-            <select id="student-search" onchange="loadStudentFees()" class="px-5 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 transition-all min-w-[250px]">
-                <option value="">Search Student...</option>
-                <!-- Students loaded vs JS -->
-            </select>
-            <button onclick="openFeeModal()" class="px-6 py-3 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform">
-                + Create Fee Record
+        
+        <div class="flex flex-wrap items-center gap-6">
+            <!-- Total Collected Stat (Repositioned) -->
+            <div class="relative flex items-center gap-4 bg-emerald-50/50 px-6 py-3 rounded-2xl border border-emerald-100">
+                <div class="h-10 w-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <p id="stat-label" class="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest leading-none mb-1.5">Collection</p>
+                    <h3 id="stat-paid" class="text-xl font-black text-slate-800">₹0</h3>
+                </div>
+
+                <!-- Subtle Download Button -->
+                <button onclick="downloadFeeHistory()" class="absolute -top-2 -right-2 h-7 w-7 bg-white border border-emerald-100 rounded-full flex items-center justify-center text-emerald-500 hover:bg-emerald-500 hover:text-white shadow-sm transition-all group/dl" title="Download Report">
+                    <svg class="w-3.5 h-3.5 group-hover/dl:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </button>
+            </div>
+
+            <button onclick="openFeeModal()" class="px-8 py-4 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-xl shadow-blue-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+                Create Fee Record
             </button>
         </div>
     </div>
 
-    <!-- Stats Row (Dynamic) -->
-    <div id="fee-stats-row" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center space-x-4">
-            <div class="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Paid So Far</p>
-                <h3 id="stat-paid" class="text-2xl font-extrabold text-slate-800 tracking-tight">₹0</h3>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center space-x-4">
-            <div class="h-12 w-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Outstanding Due</p>
-                <h3 id="stat-due" class="text-2xl font-extrabold text-slate-800 tracking-tight text-rose-600">₹0</h3>
-            </div>
-        </div>
-    </div>
-
     <!-- Fee Records Table -->
-    <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-        <div class="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
-            <h3 class="text-sm font-extrabold text-slate-700 uppercase tracking-widest">Fee Log</h3>
-            <div id="loading-spinner" class="hidden h-5 w-5 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-        </div>
+    <div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 overflow-hidden mt-4">
+        <div class="relative min-h-[300px]">
+            <!-- Centered Loading Spinner Overlay -->
+            <div id="loading-spinner" class="hidden absolute inset-0 z-30 bg-white/70 backdrop-blur-[2px] flex items-center justify-center transition-all duration-300">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="relative">
+                        <div class="h-12 w-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 h-12 w-12 border-4 border-blue-600/20 rounded-full"></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">Syncing Data</p>
+                </div>
+            </div>
 
-        <div class="overflow-x-auto min-h-[200px]">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest border-b border-slate-50">
-                        <th class="px-8 py-5">Month / Period</th>
-                        <th class="px-8 py-5">Total Amount</th>
-                        <th class="px-8 py-5">Due Amount</th>
-                        <th class="px-8 py-5">Status</th>
-                        <th class="px-8 py-5 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="fee-table-body" class="divide-y divide-slate-50">
-                    <tr><td colspan="5" class="px-8 py-20 text-center text-slate-400 font-medium italic">Please search for a student to view financial records.</td></tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest border-b border-slate-50 bg-slate-50/30">
+                            <th class="px-5 py-4">Student</th>
+                            <th class="px-5 py-4">Date</th>
+                            <th class="px-5 py-4">Total Amount</th>
+                            <th class="px-5 py-4 text-right">Amount Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fee-table-body" class="divide-y divide-slate-50">
+                        <tr><td colspan="4" class="px-5 py-20 text-center text-slate-400 font-medium italic">Loading records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="p-8 border-t border-slate-50 flex items-center justify-between bg-slate-50/10">
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Showing <span id="current-range" class="text-slate-700">0-0</span> of <span id="total-records" class="text-slate-700">0</span> records</p>
+            <div class="flex items-center gap-2">
+                <button id="prev-page" onclick="changePage(-1)" class="h-10 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Previous</button>
+                <div id="page-numbers" class="flex items-center gap-1"></div>
+                <button id="next-page" onclick="changePage(1)" class="h-10 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Next</button>
+            </div>
         </div>
     </div>
 </div>
@@ -73,9 +82,9 @@
 <!-- Create Fee Modal -->
 <div id="fee-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
     <div onclick="closeFeeModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-    <div class="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-10">
-            <div class="flex items-center justify-between mb-8">
+    <div class="bg-white w-full max-w-xl rounded-[1rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
                 <div>
                     <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Create Fee Record</h2>
                     <p class="text-sm text-slate-400 mt-1">Generate a new monthly fee invoice for the student.</p>
@@ -85,194 +94,300 @@
                 </button>
             </div>
 
-            <form id="fee-form" class="space-y-5">
+            <form id="fee-form" class="space-y-3">
+                <!-- Searchable Student Selection -->
+                <div class="space-y-2 relative">
+                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Select Scholar</label>
+                    <div class="relative group" id="student-search-container">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="student-search-input" placeholder="Search by name or student ID..." autocomplete="off" class="w-full pl-11 pr-24 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        
+                        <!-- Change Button -->
+                        <button type="button" id="clear-student-btn" onclick="clearStudentSelection()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-white border border-slate-200 text-[10px] font-black text-slate-400 rounded-lg hover:text-blue-600 hover:border-blue-200 transition-all uppercase tracking-widest">
+                            Change
+                        </button>
+
+                        <input type="hidden" name="student_id" id="selected-student-id" required>
+                        
+                        <!-- Search Results Dropdown -->
+                        <div id="student-dropdown" class="hidden absolute left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 max-h-[250px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div id="student-options-list" class="p-2 space-y-1">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
+                    <input type="date" name="fee_date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Month</label>
-                        <select name="month" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
-                            <option value="January">January</option><option value="February">February</option>
-                            <option value="March">March</option><option value="April">April</option>
-                            <option value="May">May</option><option value="June">June</option>
-                            <option value="July">July</option><option value="August">August</option>
-                            <option value="September">September</option><option value="October">October</option>
-                            <option value="November">November</option><option value="December">December</option>
-                        </select>
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Total Fee Amount</label>
+                        <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Year</label>
-                        <input type="number" name="year" value="{{ date('Y') }}" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
+                        <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
+                        <div class="flex items-center gap-2 p-1 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <label class="flex-1 cursor-pointer group">
+                                <input type="radio" name="payment_method" value="Cash" checked class="peer sr-only">
+                                <div class="py-2 text-center text-[11px] font-black text-slate-400 rounded-xl transition-all peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm">CASH</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer group">
+                                <input type="radio" name="payment_method" value="Online" class="peer sr-only">
+                                <div class="py-2 text-center text-[11px] font-black text-slate-400 rounded-xl transition-all peer-checked:bg-white peer-checked:text-blue-600 peer-checked:shadow-sm">ONLINE</div>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Total Fee Amount</label>
-                    <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
-                </div>
 
-                <div class="pt-6 border-t border-slate-50 flex items-center justify-end space-x-4">
-                    <button type="button" onclick="closeFeeModal()" class="px-8 py-3.5 text-[13px] font-bold text-slate-400">Cancel</button>
-                    <button type="submit" class="px-10 py-3.5 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-lg flex items-center">
-                        Confirm Record
+                <div class="pt-4 border-t border-slate-50 flex items-center justify-end space-x-4">
+                    <button type="button" onclick="closeFeeModal()" class="px-8 py-2.5 text-[13px] font-bold text-slate-400">Cancel</button>
+                    <button type="submit" class="px-10 py-2.5 bg-emerald-600 text-white rounded-2xl font-bold text-[13px] shadow-lg flex items-center">
+                        Create & Collect Fee
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<!-- Record Payment Modal -->
-<div id="payment-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
-    <div onclick="closePaymentModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-    <div class="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-10">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Record Payment</h2>
-                    <p class="text-sm text-slate-400 mt-1">Update student balance for <span id="payment-month-label" class="text-blue-600 font-bold">...</span></p>
-                </div>
-                <button onclick="closePaymentModal()" class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <form id="payment-form" class="space-y-5">
-                <input type="hidden" name="fee_id" id="payment-fee-id">
-                <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Payment Amount</label>
-                    <input type="number" name="amount" id="payment-amount" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Method</label>
-                    <select name="payment_method" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none">
-                        <option value="Cash">Cash</option><option value="UPI">UPI</option>
-                        <option value="Bank Transfer">Bank Transfer</option><option value="Cheque">Cheque</option>
-                    </select>
-                </div>
-
-                <div class="pt-6 border-t border-slate-50 flex items-center justify-end space-x-4">
-                    <button type="button" onclick="closePaymentModal()" class="px-8 py-3.5 text-[13px] font-bold text-slate-400">Cancel</button>
-                    <button type="submit" class="px-10 py-3.5 bg-emerald-600 text-white rounded-2xl font-bold text-[13px] shadow-lg flex items-center">
-                        Verify Payment
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
     const CSRF_TOKEN = "{{ csrf_token() }}";
     
-    document.addEventListener('DOMContentLoaded', () => fetchStudents());
+    let currentPage = 1;
+    let totalPages = 1;
+
+    let allStudents = [];
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchStudents();
+        loadAllFees(1);
+        setupStudentSearch();
+    });
+
+    function setupStudentSearch() {
+        const input = document.getElementById('student-search-input');
+        const dropdown = document.getElementById('student-dropdown');
+        const list = document.getElementById('student-options-list');
+        const hiddenInput = document.getElementById('selected-student-id');
+
+        input.addEventListener('focus', () => {
+            if (input.value.trim() !== '' || allStudents.length > 0) {
+                renderStudentOptions(input.value);
+                dropdown.classList.remove('hidden');
+            }
+        });
+
+        input.addEventListener('input', (e) => {
+            renderStudentOptions(e.target.value);
+            dropdown.classList.remove('hidden');
+            hiddenInput.value = ''; // Clear selection on type
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('student-search-container').contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    }
+
+    function renderStudentOptions(query = '') {
+        const list = document.getElementById('student-options-list');
+        const filtered = allStudents.filter(s => 
+            s.name.toLowerCase().includes(query.toLowerCase()) || 
+            (s.student_id && s.student_id.toLowerCase().includes(query.toLowerCase()))
+        );
+
+        if (filtered.length === 0) {
+            list.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 italic">No scholars found matching "${query}"</div>`;
+            return;
+        }
+
+        list.innerHTML = filtered.map(s => {
+            const displayId = s.student_id || `STU-${String(s.id).padStart(4, '0')}`;
+            return `
+            <div onclick="selectStudent('${s.id}', '${s.name}', '${displayId}')" class="flex items-center justify-between p-3 hover:bg-blue-50 rounded-xl cursor-pointer transition-colors group">
+                <div class="flex items-center gap-3">
+                    <div class="h-8 w-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-black group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        ${s.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-700">${s.name}</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${displayId}</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function selectStudent(id, name, studentId) {
+        document.getElementById('selected-student-id').value = id;
+        document.getElementById('student-search-input').value = `${name} (${studentId})`;
+        document.getElementById('student-search-input').readOnly = true;
+        document.getElementById('student-dropdown').classList.add('hidden');
+        document.getElementById('clear-student-btn').classList.remove('hidden');
+    }
+
+    function clearStudentSelection() {
+        document.getElementById('selected-student-id').value = '';
+        document.getElementById('student-search-input').value = '';
+        document.getElementById('student-search-input').readOnly = false;
+        document.getElementById('clear-student-btn').classList.add('hidden');
+        document.getElementById('student-search-input').focus();
+    }
 
     async function fetchStudents() {
         try {
             const resp = await fetch("/api/v1/institute/students", { headers: { 'Accept': 'application/json' } });
             const res = await resp.json();
             if (res.status === 'success') {
-                const sel = document.getElementById('student-search');
-                res.data.items.forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = s.id;
-                    opt.innerText = `${s.name} (STU-${String(s.id).padStart(4, '0')})`;
-                    sel.appendChild(opt);
-                });
+                allStudents = res.data.items || res.data;
             }
-        } catch (e) { showToast('Sync error', 'error'); }
+        } catch (e) { 
+            console.error(e);
+            showToast('Failed to sync scholar list', 'error'); 
+        }
     }
 
-    async function loadStudentFees() {
-        const id = document.getElementById('student-search').value;
-        if (!id) return;
+    function openFeeModal() { 
+        document.getElementById('fee-modal').classList.remove('hidden');
+        document.getElementById('fee-form').reset();
+        clearStudentSelection();
+    }
 
+    async function loadAllFees(page = 1) {
+        currentPage = page;
         toggleLoader(true);
         try {
-            const resp = await fetch(`/api/v1/institute/fees/${id}`, { headers: { 'Accept': 'application/json' } });
+            const resp = await fetch(`/api/v1/institute/fees?page=${page}`, { headers: { 'Accept': 'application/json' } });
             const res = await resp.json();
             if (res.status === 'success') {
-                renderFees(res.data);
+                renderFees(res.data.items);
                 updateStats(res.data);
+                updatePagination(res.data);
             }
         } catch (e) { showToast('Load error', 'error'); }
         finally { toggleLoader(false); }
     }
 
+    function changePage(delta) {
+        const next = currentPage + delta;
+        if (next >= 1 && next <= totalPages) {
+            loadAllFees(next);
+        }
+    }
+
+    function updatePagination(data) {
+        totalPages = data.last_page;
+        document.getElementById('total-records').innerText = data.total;
+        
+        const start = (data.current_page - 1) * data.per_page + 1;
+        const end = Math.min(data.current_page * data.per_page, data.total);
+        document.getElementById('current-range').innerText = data.total > 0 ? `${start}-${end}` : '0-0';
+
+        document.getElementById('prev-page').disabled = data.current_page === 1;
+        document.getElementById('next-page').disabled = data.current_page === data.last_page;
+
+        const container = document.getElementById('page-numbers');
+        let html = '';
+        
+        // Show all page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const isCurrent = i === data.current_page;
+            html += `
+                <button onclick="loadAllFees(${i})" 
+                    class="h-10 w-10 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${isCurrent ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100 border border-transparent'}">
+                    ${i}
+                </button>
+            `;
+        }
+        container.innerHTML = html;
+    }
+
     function renderFees(fees) {
         const container = document.getElementById('fee-table-body');
         if (fees.length === 0) {
-            container.innerHTML = `<tr><td colspan="5" class="px-8 py-20 text-center text-slate-400 font-medium italic">No fee records found for this student.</td></tr>`;
+            container.innerHTML = `<tr><td colspan="4" class="px-8 py-20 text-center text-slate-400 font-medium italic">No fee records found.</td></tr>`;
             return;
         }
 
-        container.innerHTML = fees.map(fee => `
+        container.innerHTML = fees.map(fee => {
+            const name = fee.student?.name || 'Unknown';
+            const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            
+            return `
             <tr class="hover:bg-slate-50/40 transition-all">
-                <td class="px-8 py-6">
-                    <div class="flex flex-col">
-                        <span class="text-[13px] font-extrabold text-slate-800">${fee.month} ${fee.year}</span>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 italic">Monthly Cycle</span>
+                <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-black">
+                            ${initials || 'S'}
+                        </div>
+                        <span class="text-[13px] font-bold text-slate-700">${name}</span>
                     </div>
                 </td>
-                <td class="px-8 py-6 font-bold text-slate-600">₹${fee.total_amount}</td>
-                <td class="px-8 py-6 font-bold text-rose-500">₹${fee.due_amount}</td>
-                <td class="px-8 py-6">
-                    <span class="px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest ${fee.status === 'Paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">${fee.status}</span>
+                <td class="px-5 py-3">
+                    <div class="flex flex-col">
+                        <span class="text-[13px] font-bold text-slate-700">${new Date(fee.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 italic">Payment Date</span>
+                    </div>
                 </td>
-                <td class="px-8 py-6 text-right">
-                    ${fee.status !== 'Paid' ? `<button onclick='openPaymentModal(${JSON.stringify(fee)})' class="px-5 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition-all">Collect Fee</button>` : `<span class="text-emerald-500 font-bold text-xs flex items-center justify-end"><svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> Settled</span>`}
-                </td>
+                <td class="px-5 py-3 font-bold text-slate-600">₹${fee.total_amount}</td>
+                <td class="px-5 py-3 font-bold text-emerald-600 text-right">₹${fee.paid_amount}</td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
     }
 
-    function updateStats(fees) {
-        let paid = 0, due = 0;
-        fees.forEach(f => { paid += parseFloat(f.paid_amount); due += parseFloat(f.due_amount); });
-        document.getElementById('stat-paid').innerText = `₹${paid}`;
-        document.getElementById('stat-due').innerText = `₹${due}`;
-        document.getElementById('fee-stats-row').classList.remove('hidden');
+    function updateStats(data) {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const currentMonth = monthNames[new Date().getMonth()];
+        
+        document.getElementById('stat-label').innerText = `${currentMonth} Collection`;
+        document.getElementById('stat-paid').innerText = `₹${Math.round(data.current_month_total || 0)}`;
     }
 
     // Modal Handling & Submissions
     document.getElementById('fee-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const f = new FormData(e.target);
-        const id = document.getElementById('student-search').value;
-        f.append('student_id', id);
+        const data = Object.fromEntries(f.entries());
+        
+        // Smart Date Extraction for Backend Compatibility
+        const dateObj = new Date(data.fee_date);
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        data.month = monthNames[dateObj.getMonth()];
+        data.year = dateObj.getFullYear();
+        data.paid_amount = data.total_amount;
 
         const resp = await fetch("/api/v1/institute/fees", {
             method: 'POST',
             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-            body: JSON.stringify(Object.fromEntries(f.entries()))
+            body: JSON.stringify(data)
         });
         const res = await resp.json();
-        if (res.status === 'success') { showToast(res.message); closeFeeModal(); loadStudentFees(); }
+        if (res.status === 'success') { 
+            showToast(res.message); 
+            closeFeeModal(); 
+            loadAllFees(); 
+        }
         else showToast(res.message, 'error');
     });
 
-    document.getElementById('payment-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const f = new FormData(e.target);
-        const resp = await fetch("/api/v1/institute/payments", {
-            method: 'POST',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-            body: JSON.stringify(Object.fromEntries(f.entries()))
-        });
-        const res = await resp.json();
-        if (res.status === 'success') { showToast(res.message); closePaymentModal(); loadStudentFees(); }
-        else showToast(res.message, 'error');
-    });
-
-    function openFeeModal() { 
-        if(!document.getElementById('student-search').value) return showToast('Select student first', 'error');
-        document.getElementById('fee-modal').classList.remove('hidden'); 
+    async function downloadFeeHistory() {
+        try {
+            window.location.href = "/api/v1/institute/fees/export";
+            showToast('Preparing your download...', 'success');
+        } catch (e) {
+            showToast('Download failed', 'error');
+        }
     }
+
     function closeFeeModal() { document.getElementById('fee-modal').classList.add('hidden'); }
-    function openPaymentModal(fee) {
-        document.getElementById('payment-fee-id').value = fee.id;
-        document.getElementById('payment-amount').value = fee.due_amount;
-        document.getElementById('payment-month-label').innerText = `${fee.month} ${fee.year}`;
-        document.getElementById('payment-modal').classList.remove('hidden');
-    }
-    function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); }
     function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
     function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');

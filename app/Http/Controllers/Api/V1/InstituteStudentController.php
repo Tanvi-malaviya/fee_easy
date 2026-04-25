@@ -17,22 +17,62 @@ class InstituteStudentController extends Controller
      */
     public function index(Request $request)
     {
+        \Log::debug('API Request User:', ['user' => $request->user(), 'guards' => config('sanctum.guard')]);
         if (!$request->user() || !($request->user() instanceof Institute)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $query = Student::where('institute_id', $request->user()->id)
-            ->with('batch')
-            ->orderBy('name', 'asc');
+            ->with('batch');
 
-        if ($request->has('batch_id')) {
+        // Search Filter (Name, Email, Phone)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Batch Filter
+        if ($request->filled('batch_id')) {
             $query->where('batch_id', $request->batch_id);
         }
 
-        // If batch_id is provided, we usually want all students for attendance marking, 
-        // otherwise default to pagination of 15.
-        if ($request->has('batch_id') && !$request->has('page')) {
+        // Filter out students already in this batch
+        if ($request->filled('not_in_batch_id')) {
+            $query->where(function($q) use ($request) {
+                $q->where('batch_id', '!=', $request->not_in_batch_id)
+                  ->orWhereNull('batch_id');
+            });
+        }
+
+        // Status Filter
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Standard Filter
+        if ($request->filled('standard')) {
+            $query->where('standard', 'like', "%{$request->standard}%");
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        // If batch_id/filters are provided but no page, we might want all for some views,
+        // but for the Student Registry we usually want pagination.
+        // We'll keep the existing logic for attendance compatibility but prioritize pagination.
+        
+        if ($request->has('batch_id') && !$request->has('page') && !$request->has('search')) {
             $students = $query->get();
+            
+            // Append totals for reports
+            foreach ($students as $student) {
+                $student->total_paid = \App\Models\Fee::where('student_id', $student->id)->sum('paid_amount');
+                $student->total_due = ($student->monthly_fee ?? 0) - $student->total_paid;
+            }
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -76,7 +116,15 @@ class InstituteStudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
+
+        $profileImagePath = null;
+        if ($request->hasFile('profile_image')) {
+            $profileImagePath = $request->file('profile_image')->store('students', 'public');
+        }
 
         $student = Student::create([
             'name' => $request->name,
@@ -87,6 +135,9 @@ class InstituteStudentController extends Controller
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
             'dob' => $request->dob,
+            'guardian_name' => $request->guardian_name,
+            'monthly_fee' => $request->monthly_fee,
+            'profile_image' => $profileImagePath,
             'status' => 1,
             'id_hash' => Str::random(32), // Unique secure hash for ID card
         ]);
@@ -148,13 +199,24 @@ class InstituteStudentController extends Controller
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
+            'guardian_name' => 'nullable|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0',
             'status' => 'sometimes|integer',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'status', 'dob', 'guardian_name', 'monthly_fee']);
         
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($student->profile_image && \Storage::disk('public')->exists($student->profile_image)) {
+                \Storage::disk('public')->delete($student->profile_image);
+            }
+            $data['profile_image'] = $request->file('profile_image')->store('students', 'public');
         }
 
         $student->update($data);

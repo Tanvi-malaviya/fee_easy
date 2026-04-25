@@ -15,9 +15,18 @@ class ParentDailyUpdateController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batchIds = $request->user()->students()->pluck('batch_id')->filter()->unique();
+        $parent = $request->user();
+        $batchIds = $parent->students()->pluck('batch_id')->filter()->unique();
+        $standards = $parent->students()->pluck('standard')->filter()->unique();
+        $instituteIds = $parent->students()->pluck('institute_id')->unique();
 
-        $dailyUpdates = DailyUpdate::whereIn('batch_id', $batchIds)
+        $dailyUpdates = DailyUpdate::whereIn('institute_id', $instituteIds)
+            ->whereIn('recipient', ['parents', 'both'])
+            ->where(function($q) use ($batchIds, $standards) {
+                $q->where('target_type', 'all')
+                  ->orWhereIn('batch_id', $batchIds)
+                  ->orWhereIn('standard', $standards);
+            })
             ->orderByDesc('date')
             ->get();
 

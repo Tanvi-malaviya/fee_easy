@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class Institute extends Authenticatable
 {
@@ -19,13 +20,18 @@ class Institute extends Authenticatable
         'institute_name',
         'logo',
         'address',
+        'address_line_2',
         'city',
         'state',
+        'country',
         'pincode',
         'website',
         'youtube',
         'instagram',
         'status',
+        'otp',
+        'otp_expires_at',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -35,7 +41,25 @@ class Institute extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'otp_expires_at' => 'datetime',
+        'email_verified_at' => 'datetime',
     ];
+
+    protected $appends = ['logo_url'];
+
+    public function isProfileComplete()
+    {
+        return !empty($this->phone) && 
+               !empty($this->address) && 
+               !empty($this->city) && 
+               !empty($this->state) && 
+               !empty($this->pincode);
+    }
+
+    public function getLogoUrlAttribute()
+    {
+        return $this->logo ? url(Storage::url($this->logo)) : null;
+    }
 
     public function subscriptions()
     {
