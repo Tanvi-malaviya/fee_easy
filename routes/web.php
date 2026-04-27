@@ -89,6 +89,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
             // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
             Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
             Route::get('/batches/{id}', function($id) { return view('institute.batches.show', compact('id')); })->name('batches.show');
+            Route::get('/batches/{id}/students', function($id) { return view('institute.batches.students', compact('id')); })->name('batches.students');
+            Route::get('/batches/{id}/homework', function($id) { return view('institute.batches.homework', compact('id')); })->name('batches.homework');
+            Route::get('/batches/{id}/attendance-history', function($id) { return view('institute.batches.attendance', compact('id')); })->name('batches.attendance');
+            Route::get('/batches/{id}/resources', function($id) { return view('institute.batches.resources', compact('id')); })->name('batches.resources');
+
             Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
             Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
             Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');

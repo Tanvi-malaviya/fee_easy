@@ -10,7 +10,7 @@
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Student Registry</h1>
                 <!-- <p class="text-sm text-slate-400 mt-2 font-medium">Cohort overview for <span
-                                    class="text-[#102048] font-bold">{{ $institute->institute_name }}</span>.</p> -->
+                                            class="text-[#102048] font-bold">{{ $institute->institute_name }}</span>.</p> -->
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="openExportModal()"
@@ -300,53 +300,53 @@
 
             if (students.length === 0) {
                 container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-12 text-slate-400">
-                                <svg class="w-10 h-10 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                <p class="font-bold uppercase tracking-widest text-[8px]">No students found</p>
-                            </div>`;
+                                        <svg class="w-10 h-10 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                        <p class="font-bold uppercase tracking-widest text-[8px]">No students found</p>
+                                    </div>`;
                 return;
             }
 
             container.innerHTML = students.map(student => `
-                            <div class="group relative bg-white rounded-xl border border-slate-200 p-2 hover:shadow-md hover:border-blue-300 transition-all duration-200 animate-in fade-in zoom-in-95 flex flex-col cursor-pointer"
-                                 onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
+                                    <div class="group relative bg-white rounded-xl border border-slate-200 p-2 hover:shadow-md hover:border-blue-300 transition-all duration-200 animate-in fade-in zoom-in-95 flex flex-col cursor-pointer"
+                                         onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
 
-                                <!-- Status Indicator -->
+                                        <!-- Status Indicator -->
 
 
-                                <!-- Profile Image -->
-                                <div class="h-12 w-12 rounded-lg bg-slate-100 p-0.5 border border-slate-200 mb-2 overflow-hidden mx-auto">
-                                    <img src="${student.profile_image_url}" class="w-full h-full object-cover rounded-md">
-                                </div>
+                                        <!-- Profile Image -->
+                                        <div class="h-12 w-12 rounded-lg bg-slate-100 p-0.5 border border-slate-200 mb-2 overflow-hidden mx-auto">
+                                            <img src="${student.profile_image_url}" class="w-full h-full object-cover rounded-md">
+                                        </div>
 
-                                <!-- Name -->
-                                <h4 class="text-[15px] font-bold text-slate-800 text-center truncate px-1">${student.name}</h4>
-                                <span class="text-[11px] font-semibold text-slate-400 text-center uppercase">ID: ${String(student.id).padStart(4, '0')}</span>
+                                        <!-- Name -->
+                                        <h4 class="text-[15px] font-bold text-slate-800 text-center truncate px-1">${student.name}</h4>
+                                        <span class="text-[11px] font-semibold text-slate-400 text-center uppercase">ID: ${String(student.id).padStart(4, '0')}</span>
 
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-2 gap-1 text-center my-2 text-[8px]">
-                                    <div class="bg-slate-50 rounded-lg py-1">
-                                        <span class="text-slate-500 font-bold block">${student.standard || 'N/A'}</span>
-                                        <span class="text-slate-400 text-[7px]">Grade</span>
+                                        <!-- Details Grid -->
+                                        <div class="grid grid-cols-2 gap-1 text-center my-2 text-[8px]">
+                                            <div class="bg-slate-50 rounded-lg py-1">
+                                                <span class="text-slate-500 font-bold block">${student.standard || 'N/A'}</span>
+                                                <span class="text-slate-400 text-[7px]">Grade</span>
+                                            </div>
+                                            <div class="bg-slate-50 rounded-lg py-1">
+                                                <span class="text-slate-500 font-bold block">${student.batch ? student.batch.name.substring(0, 8) : '--'}</span>
+                                                <span class="text-slate-400 text-[7px]">Batch</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="mt-auto flex items-center gap-1 pt-2 border-t border-slate-50">
+                                            <a href="/institute/students/${student.id}/edit" class="action-btn flex-1 h-7 bg-slate-50 text-blue-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg flex items-center justify-center transition-all border border-slate-100" title="Edit">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                <span class="ml-1 text-[8px] font-bold uppercase">Edit</span>
+                                            </a>
+                                            <button onclick="event.stopPropagation(); openDeleteModal(${student.id})" class="action-btn flex-1 h-7 bg-slate-50 text-rose-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg flex items-center justify-center transition-all border border-slate-100" title="Delete">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                <span class="ml-1 text-[8px] font-bold uppercase">Delete</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="bg-slate-50 rounded-lg py-1">
-                                        <span class="text-slate-500 font-bold block">${student.batch ? student.batch.name.substring(0, 8) : '--'}</span>
-                                        <span class="text-slate-400 text-[7px]">Batch</span>
-                                    </div>
-                                </div>
-
-                                <!-- Action Buttons -->
-                                <div class="mt-auto flex items-center gap-1 pt-2 border-t border-slate-50">
-                                    <a href="/institute/students/${student.id}/edit" class="action-btn flex-1 h-7 bg-slate-50 text-blue-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg flex items-center justify-center transition-all border border-slate-100" title="Edit">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                        <span class="ml-1 text-[8px] font-bold uppercase">Edit</span>
-                                    </a>
-                                    <button onclick="event.stopPropagation(); openDeleteModal(${student.id})" class="action-btn flex-1 h-7 bg-slate-50 text-rose-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg flex items-center justify-center transition-all border border-slate-100" title="Delete">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        <span class="ml-1 text-[8px] font-bold uppercase">Delete</span>
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('');
+                                `).join('');
         }
 
         function renderPagination(data) {
@@ -402,9 +402,9 @@
 
             toast.className = `bg-${color}-50 border border-${color}-200 text-${color}-600 px-6 py-4 rounded-2xl shadow-xl flex items-center animate-in slide-in-from-right-10 duration-300`;
             toast.innerHTML = `
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span class="text-sm font-bold">${message}</span>
-                        `;
+                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="text-sm font-bold">${message}</span>
+                                `;
 
             container.appendChild(toast);
             setTimeout(() => {

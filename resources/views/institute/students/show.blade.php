@@ -5,8 +5,9 @@
         <!-- Header Section -->
         <div class="mb-3">
             <div class="flex items-center gap-3 mb-4 mt-2">
-                <a href="{{ route('institute.students.index') }}" onclick="if(document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
-               class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm group">
+                <a href="{{ route('institute.students.index') }}"
+                    onclick="if(document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
+                    class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm group">
                     <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -49,12 +50,14 @@
             <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200">
                 <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wide">Status</p>
                 <p class="text-2xl font-black {{ $student->status == 1 ? 'text-emerald-900' : 'text-rose-900' }} mt-1">
-                    {{ $student->status == 1 ? 'Active' : 'Inactive' }}</p>
+                    {{ $student->status == 1 ? 'Active' : 'Inactive' }}
+                </p>
             </div>
             <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
                 <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Batch</p>
                 <p class="text-xl font-black text-amber-900 mt-1 truncate">
-                    {{ $student->batch ? $student->batch->name : 'None' }}</p>
+                    {{ $student->batch ? $student->batch->name : 'None' }}
+                </p>
             </div>
             <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
                 <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wide"> Fee</p>
@@ -130,8 +133,8 @@
                         </div>
 
                         <!-- <button class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[12px] shadow-lg transition-all active:scale-95 uppercase tracking-wide">
-                            View Receipts →
-                        </button> -->
+                                View Receipts →
+                            </button> -->
                     </div>
                 </div>
             </div>
@@ -151,7 +154,8 @@
                         <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                             <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Current Batch</p>
                             <p class="text-lg font-black text-slate-800 mt-2">
-                                {{ $student->batch ? $student->batch->name : 'N/A' }}</p>
+                                {{ $student->batch ? $student->batch->name : 'N/A' }}
+                            </p>
                         </div>
                         <div class="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
                             <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wide">Admission Date</p>
@@ -196,7 +200,8 @@
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Date of Birth</p>
                             <p class="text-base font-bold text-slate-700 mt-1">
-                                {{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('F d, Y') : '—' }}</p>
+                                {{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('F d, Y') : '—' }}
+                            </p>
                         </div>
                     </div>
                 </div>
