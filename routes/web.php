@@ -68,11 +68,12 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::get('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showVerifyOtp'])->name('verify-otp');
         Route::post('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'verifyOtp']);
 
-        Route::get('/profile', function() { return view('institute.profile.index'); })->name('profile.index');
+        Route::get('/profile', function () {
+            return view('institute.profile.index'); })->name('profile.index');
 
         Route::middleware('profile_complete')->group(function () {
             Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
-            
+
             // Student Management
             Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
             Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
@@ -83,24 +84,38 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
             Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
 
-            Route::get('/teachers', function () { return view('institute.teachers.index'); })->name('teachers.index');
+            Route::get('/teachers', function () {
+                return view('institute.teachers.index'); })->name('teachers.index');
 
 
             // Shell Routes for API-Driven Pages (Uses V1 API Controllers)
-            Route::get('/batches', function() { return view('institute.batches.index'); })->name('batches.index');
-            Route::get('/batches/{id}', function($id) { return view('institute.batches.show', compact('id')); })->name('batches.show');
-            Route::get('/batches/{id}/students', function($id) { return view('institute.batches.students', compact('id')); })->name('batches.students');
-            Route::get('/batches/{id}/homework', function($id) { return view('institute.batches.homework', compact('id')); })->name('batches.homework');
-            Route::get('/batches/{id}/attendance-history', function($id) { return view('institute.batches.attendance', compact('id')); })->name('batches.attendance');
-            Route::get('/batches/{id}/resources', function($id) { return view('institute.batches.resources', compact('id')); })->name('batches.resources');
+            Route::get('/batches', function () {
+                return view('institute.batches.index'); })->name('batches.index');
+            Route::get('/batches/{id}', function ($id) {
+                return view('institute.batches.show', compact('id')); })->name('batches.show');
+            Route::get('/batches/{id}/students', function ($id) {
+                return view('institute.batches.students', compact('id')); })->name('batches.students');
+            Route::get('/batches/{id}/homework', function ($id) {
+                return view('institute.batches.homework', compact('id')); })->name('batches.homework');
+            Route::get('/batches/{id}/attendance-history', function ($id) {
+                return view('institute.batches.attendance', compact('id')); })->name('batches.attendance');
+            Route::get('/batches/{id}/resources', function ($id) {
+                return view('institute.batches.resources', compact('id')); })->name('batches.resources');
 
-            Route::get('/attendance', function() { return view('institute.attendance.index'); })->name('attendance.index');
-            Route::get('/attendance/mark', function() { return view('institute.attendance.create'); })->name('attendance.create');
-            Route::get('/fees', function() { return view('institute.fees.index'); })->name('fees.index');
-            Route::get('/reports', function() { return view('institute.reports.index'); })->name('reports.index');
-            Route::get('/updates', function() { return view('institute.updates.index'); })->name('updates.index');
-            Route::get('/plans', function() { return view('institute.plans.index'); })->name('plans.index');
-            Route::get('/whatsapp-settings', function() { return view('institute.whatsapp.index'); })->name('whatsapp.setup');
+            Route::get('/attendance', function () {
+                return view('institute.attendance.index'); })->name('attendance.index');
+            Route::get('/attendance/mark', function () {
+                return view('institute.attendance.create'); })->name('attendance.create');
+            Route::get('/fees', function () {
+                return view('institute.fees.index'); })->name('fees.index');
+            Route::get('/reports', function () {
+                return view('institute.reports.index'); })->name('reports.index');
+            Route::get('/updates', function () {
+                return view('institute.updates.index'); })->name('updates.index');
+            Route::get('/plans', function () {
+                return view('institute.plans.index'); })->name('plans.index');
+            Route::get('/whatsapp-settings', function () {
+                return view('institute.whatsapp.index'); })->name('whatsapp.setup');
         });
 
         Route::post('/profile/password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'updatePassword'])->name('profile.password.update');

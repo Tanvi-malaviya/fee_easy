@@ -1,0 +1,6 @@
+2026-04-27 14:08:38 - URI: /api/v1/institute/daily-updates - Method: POST
+2026-04-27 14:08:48 - URI: /api/v1/storage/updates/tITROLtrB36UZj9G0rVbok9skdX09GlxBvDR53m4.jpg - Method: GET
+2026-04-27 14:09:16 - URI: /institute/students - Method: GET
+2026-04-27 14:09:18 - URI: /institute/updates - Method: GET
+2026-04-27 14:09:20 - URI: /api/v1/institute/batches - Method: GET
+2026-04-27 14:09:21 - URI: /api/v1/institute/daily-updates - Method: GET

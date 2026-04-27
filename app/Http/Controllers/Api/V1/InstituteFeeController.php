@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Fee;
 use App\Models\Institute;
 use Illuminate\Http\Request;
+use App\Enums\Month;
+use App\Enums\Year;
+use Illuminate\Validation\Rules\Enum;
 
 class InstituteFeeController extends Controller
 {
@@ -53,23 +56,24 @@ class InstituteFeeController extends Controller
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'total_amount' => 'required|numeric|min:0',
-            'month' => 'required|string',
-            'year' => 'required|integer',
+            'month' => ['required', new Enum(Month::class)],
+            'year' => ['required', new Enum(Year::class)],
+            'status' => 'nullable|string|in:Paid,Partial,Unpaid',
         ]);
 
         \Illuminate\Support\Facades\DB::beginTransaction();
         try {
             $paidAmount = $request->input('paid_amount', 0);
             $totalAmount = $request->total_amount;
-            $dueAmount = $totalAmount - $paidAmount;
-            $status = $dueAmount <= 0 ? 'Paid' : ($paidAmount > 0 ? 'Partial' : 'Unpaid');
+            
+            // Auto-calculate status unless explicitly provided and valid
+            $status = $request->input('status') ?: ($totalAmount - $paidAmount <= 0 ? 'Paid' : ($paidAmount > 0 ? 'Partial' : 'Unpaid'));
 
             $fee = Fee::create([
                 'institute_id' => $request->user()->id,
                 'student_id' => $request->student_id,
                 'total_amount' => $totalAmount,
                 'paid_amount' => $paidAmount,
-                'due_amount' => $dueAmount,
                 'status' => $status,
                 'month' => $request->month,
                 'year' => $request->year,
@@ -124,7 +128,7 @@ class InstituteFeeController extends Controller
         ]);
     }
     /**
-     * Export current month's fees as PDF.
+     * Export fee records as PDF with optional filters.
      */
     public function export(Request $request)
     {
@@ -133,24 +137,39 @@ class InstituteFeeController extends Controller
         }
 
         $institute = $request->user();
-        $month = now()->format('F');
-        $year = now()->format('Y');
+        
+        $query = Fee::where('institute_id', $institute->id)
+            ->with('student:id,name');
 
-        $fees = Fee::where('institute_id', $institute->id)
-            ->where('month', $month)
-            ->where('year', $year)
-            ->with('student:id,name')
-            ->latest()
-            ->get();
+        // Apply Filters
+        if ($request->filled('month')) {
+            $query->where('month', $request->month);
+        }
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+        if ($request->filled('student_id')) {
+            $query->where('student_id', $request->student_id);
+        }
+        if ($request->filled('batch_id')) {
+            $query->whereHas('student', function($q) use ($request) {
+                $q->where('batch_id', $request->batch_id);
+            });
+        }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.fees.report_pdf', [
+        $fees = $query->latest()->get();
+
+        $data = [
             'institute' => $institute,
             'fees' => $fees,
-            'month' => $month,
-            'year' => $year
-        ]);
+            'month' => $request->input('month', 'All'),
+            'year' => $request->input('year', 'All'),
+            'student' => $request->filled('student_id') ? \App\Models\Student::find($request->student_id)->name : 'All',
+        ];
 
-        $filename = "Fee_Report_{$month}_{$year}.pdf";
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.fees.report_pdf', $data);
+
+        $filename = "Fee_Report_" . now()->format('Y-m-d_His') . ".pdf";
         return $pdf->download($filename);
     }
 }

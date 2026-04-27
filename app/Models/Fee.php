@@ -14,7 +14,6 @@ class Fee extends Model
         'institute_id',
         'total_amount',
         'paid_amount',
-        'due_amount',
         'status',
         'month',
         'year',

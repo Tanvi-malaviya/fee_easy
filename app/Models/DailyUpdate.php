@@ -12,7 +12,7 @@ class DailyUpdate extends Model
     protected $fillable = [
         'batch_id',
         'institute_id',
-        'topic',
+        'student_id',
         'description',
         'date',
         'category',
@@ -21,6 +21,11 @@ class DailyUpdate extends Model
         'attachment',
         'recipient',
     ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 
     public function batch()
     {

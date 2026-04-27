@@ -114,6 +114,12 @@ class StudentController extends Controller
             'guardian_name' => 'required|string|max:255',
             'monthly_fee' => 'nullable|numeric|min:0',
             'profile_image' => 'nullable|image|max:2048',
+            'address_line_1' => 'nullable|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'pincode' => 'nullable|string|max:10',
         ]);
 
         // Generate a random password since the field is removed from UI
@@ -138,6 +144,12 @@ class StudentController extends Controller
             'profile_image' => $profileImagePath,
             'status' => 1,
             'id_hash' => Str::random(32),
+            'address_line_1' => $request->address_line_1,
+            'address_line_2' => $request->address_line_2,
+            'city' => $request->city,
+            'state' => $request->state,
+            'country' => $request->country,
+            'pincode' => $request->pincode,
         ]);
 
         // Send password to student via email
@@ -176,11 +188,17 @@ class StudentController extends Controller
             'dob' => 'required|date',
             'guardian_name' => 'required|string|max:255',
             'monthly_fee' => 'nullable|numeric|min:0',
-            'status' => 'required|integer',
+            'status' => 'nullable|integer',
             'profile_image' => 'nullable|image|max:2048',
+            'address_line_1' => 'nullable|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'pincode' => 'nullable|string|max:10',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob', 'guardian_name', 'monthly_fee', 'status']);
+        $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob', 'guardian_name', 'monthly_fee', 'status', 'address_line_1', 'address_line_2', 'city', 'state', 'country', 'pincode']);
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }

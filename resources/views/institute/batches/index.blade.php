@@ -1,18 +1,18 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="max-w-[1600px] mx-auto pb-10">
+    <div class="max-w-[1600px] mx-auto ">
 
         <!-- MAIN LIST VIEW -->
         <div id="list-view" class="space-y-4 animate-in fade-in duration-500">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
+                <div class="pt-5">
                     <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Batch Management</h1>
                     <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">Manage academic cohorts &
                         enrollment status.</p>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 pt-5">
                     <div
                         class="bg-white px-5 py-3 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
                         <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Batches</p>

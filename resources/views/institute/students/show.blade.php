@@ -1,259 +1,238 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="max-w-7xl mx-auto pb-20">
-        <!-- Header Section -->
-        <div class="mb-3">
-            <div class="flex items-center gap-3 mb-4 mt-2">
-                <a href="{{ route('institute.students.index') }}"
-                    onclick="if(document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
-                    class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm group">
-                    <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+<div class="max-w-6xl mx-auto">
+    <!-- Breadcrumb & Actions -->
+    <div class="flex items-center justify-between mb-3 pt-4">
+        <a href="{{ route('institute.students.index') }}" class="flex items-center text-slate-400 hover:text-slate-600 font-bold text-sm transition-all group">
+            <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Back to Students
+        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('institute.students.edit', $student->id) }}" class="px-6 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg font-medium text-sm hover:bg-slate-50 transition-all flex items-center shadow-sm">
+                <svg class="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                Edit Student
+            </a>
+            <button onclick="openDeleteModal()" class="px-6 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg font-medium text-sm hover:bg-rose-50 hover:text-rose-600 transition-all flex items-center shadow-sm">
+                <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Delete Student
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <!-- Profile Header Card (2/3) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm p-5 h-full">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="relative">
+                    <div class="h-24 w-24 rounded-xl bg-slate-50 overflow-hidden border-2 border-white shadow-md">
+                        <img src="{{ $student->profile_image_url }}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-1 -left-1 bg-emerald-500 text-white px-2 py-0.5 rounded-lg text-[9px] font-medium uppercase tracking-widest border-2 border-white shadow-sm">
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            {{ $student->status == 1 ? 'Enrolled' : 'Inactive' }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-3xl font-semibold text-slate-800 tracking-tight">{{ $student->name }}</h1>
+                    <p class="text-sm text-slate-400 mt-1">Student ID: <span class="text-slate-500 font-medium">TU-2024-0892</span></p>
+                    
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-5">
+                        <div class="bg-slate-50 rounded-xl px-5 py-3 border border-slate-100 min-w-[110px]">
+                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Grade</p>
+                            <p class="text-base font-semibold text-slate-800">{{ $student->standard ?: '12' }}</p>
+                        </div>
+                        <div class="bg-emerald-50/30 rounded-xl px-5 py-3 border border-emerald-100 min-w-[110px]">
+                            <p class="text-[9px] font-medium text-emerald-600/50 uppercase tracking-widest mb-1">Payment Status</p>
+                            <p class="text-base font-semibold text-emerald-700">{{ $balance > 0 ? 'Partial Dues' : 'Full Paid' }}</p>
+                        </div>
+                        <div class="bg-blue-50/30 rounded-xl px-4 py-3 border border-blue-100 min-w-[110px]">
+                            <p class="text-[9px] font-medium text-blue-600/50 uppercase tracking-widest mb-1">Attendance</p>
+                            <p class="text-base font-semibold text-blue-600">94%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Balance Card (1/3) -->
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-100 shadow-sm p-5 relative overflow-hidden flex flex-col h-full">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -mr-8 -mt-8"></div>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <h2 class="text-lg font-medium text-slate-800 tracking-tight">Fee Balance</h2>
+            </div>
+
+            <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p class="text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Total Outstanding</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-semibold text-slate-800 tracking-tighter">₹{{ number_format($balance) }}</span>
+                    <span class="text-[9px] font-medium text-slate-400">/ ₹{{ number_format($student->monthly_fee * 12) }} Total</span>
+                </div>
+            </div>
+
+            <div class="space-y-2 mb-4 flex-1">
+                <div class="flex justify-between text-xs">
+                    <span class="font-medium text-slate-400">Tuition Fees</span>
+                    <span class="font-bold text-slate-700">₹{{ number_format($student->monthly_fee) }}</span>
+                </div>
+            </div>
+
+            <button class="w-full py-2.5 bg-[#ff6600] text-white rounded-lg font-bold text-sm shadow-xl shadow-orange-900/10 hover:translate-y-[-2px] transition-all flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                View Receipts
+            </button>
+        </div>
+    </div>
+
+    <!-- Academic & Contact Information (Full Width) -->
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 mb-4">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-1.5 h-5 bg-blue-600 rounded-full"></div>
+            <h2 class="text-xl font-semibold text-slate-800 tracking-tight">Academic & Contact Information</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
+            <div>
+                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Batch Name</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->batch ? $student->batch->name : 'Science Stream - Section B' }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Date of Admission</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->created_at->format('M d, Y') }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Guardian Name</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->guardian_name ?: 'Mr. Rajesh Malhotra' }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Phone Number</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">+91 {{ $student->phone }}</p>
+            </div>
+            <div class="lg:col-span-4 pt-4 border-t border-slate-50">
+                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Residential Address</p>
+                <p class="text-base font-medium text-slate-700 leading-relaxed max-w-3xl">
+                    {{ $student->address_line_1 }}@if($student->address_line_2), {{ $student->address_line_2 }} @endif, 
+                    {{ $student->city }}@if($student->state), {{ $student->state }} @endif @if($student->pincode) - {{ $student->pincode }} @endif
+                </p>
+            </div>
+        </div>
+    </div>
+
+            <!-- Quick Stats -->
+            <!-- <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <h2 class="text-lg font-medium text-slate-800 tracking-tight">Quick Stats</h2>
+                </div>
+
+                <div class="space-y-6 mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="h-9 w-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center border border-slate-100">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest">Overall GPA</span>
+                                <span class="text-xs font-medium text-slate-700">8.4 / 10</span>
+                            </div>
+                            <div class="h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                                <div class="h-full bg-emerald-500 rounded-full" style="width: 84%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="h-9 w-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center border border-slate-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest">Assignments Done</span>
+                                <span class="text-xs font-medium text-slate-700">18 / 20</span>
+                            </div>
+                            <div class="h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                                <div class="h-full bg-blue-500 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-full py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-medium text-[13px] hover:bg-slate-50 transition-all shadow-sm">
+                    Detailed Progress Report
+                </button>
+            </div> -->
+        </div>
+    </div>
+
+   
+  
+</div>
+
+<!-- Delete Modal -->
+<div id="delete-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden px-4">
+    <div onclick="closeDeleteModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <!-- Top Accent Border -->
+        <div class="h-1 bg-rose-600 w-full"></div>
+        
+        <div class="p-6">
+            <div class="flex items-start gap-4 mb-5">
+                <div class="h-10 w-10 bg-rose-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
-                </a>
+                </div>
                 <div>
-                    <h1 class="text-4xl font-black text-slate-900 tracking-tight">{{ $student->name }}</h1>
-                    <p class="text-sm text-slate-500 mt-1 font-medium">Student ID: <span
-                            class="font-bold text-slate-700">STU-{{ str_pad($student->id, 4, '0', STR_PAD_LEFT) }}</span>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Student?</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Are you sure you want to permanently remove <span class="font-bold text-slate-800">{{ $student->name }}</span>? This action cannot be undone and will erase all academic and financial history.
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('institute.students.edit', $student->id) }}"
-                    class="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold text-[12px] shadow-md hover:bg-blue-700 transition-all flex items-center gap-2 uppercase tracking-wide">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    Edit
-                </a>
-                <button onclick="openDeleteModal({{ $student->id }})"
-                    class="px-5 py-2 bg-rose-600 text-white rounded-lg font-bold text-[12px] shadow-md hover:bg-rose-700 transition-all flex items-center gap-2 uppercase tracking-wide">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
+            <div class="flex items-center gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 border-2 border-teal-600 text-teal-600 rounded-xl font-semibold text-sm hover:bg-teal-50 transition-all text-center">
+                    Cancel
                 </button>
-            </div>
-        </div>
-
-        <!-- Quick Stats Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Standard</p>
-                <p class="text-2xl font-black text-blue-900 mt-1">{{ $student->standard ?: 'N/A' }}</p>
-            </div>
-            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200">
-                <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wide">Status</p>
-                <p class="text-2xl font-black {{ $student->status == 1 ? 'text-emerald-900' : 'text-rose-900' }} mt-1">
-                    {{ $student->status == 1 ? 'Active' : 'Inactive' }}
-                </p>
-            </div>
-            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
-                <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Batch</p>
-                <p class="text-xl font-black text-amber-900 mt-1 truncate">
-                    {{ $student->batch ? $student->batch->name : 'None' }}
-                </p>
-            </div>
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
-                <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wide"> Fee</p>
-                <p class="text-xl font-black text-purple-900 mt-1">₹{{ number_format($student->monthly_fee, 0) }}</p>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
-            <!-- Sidebar Column -->
-            <div class="lg:col-span-1 space-y-2">
-                <!-- Student Profile Card -->
-                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-md">
-                    <div class="h-24 bg-gradient-to-r from-blue-600 to-blue-700"></div>
-
-                    <div class="px-6 py-8 text-center -mt-12 relative">
-                        <div class="relative inline-block mb-4">
-                            <div
-                                class="h-24 w-24 rounded-xl bg-slate-100 border-4 border-white p-1 shadow-lg mx-auto overflow-hidden">
-                                @if($student->profile_image)
-                                    <img src="{{ asset('storage/' . $student->profile_image) }}" alt="{{ $student->name }}"
-                                        class="w-full h-full object-cover rounded-lg">
-                                @else
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=1e3a8a&color=fff&size=256&bold=true"
-                                        class="w-full h-full object-cover rounded-lg">
-                                @endif
-                            </div>
-                            <div
-                                class="absolute -bottom-2 -right-2 h-6 w-6 {{ $student->status == 1 ? 'bg-emerald-500' : 'bg-rose-500' }} border-4 border-white rounded-full shadow-md">
-                            </div>
-                        </div>
-
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4 mb-1">Joined On</p>
-                        <p class="text-sm font-bold text-slate-600">{{ $student->created_at->format('M d, Y') }}</p>
-                    </div>
-                </div>
-
-                <!-- Fee Balance Card -->
-                <div
-                    class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 shadow-xl border border-slate-700 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full -mr-20 -mt-20"></div>
-
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-6">
-                            <h4 class="text-white/70 text-[11px] font-black uppercase tracking-widest">Fee Balance</h4>
-                            <div class="h-10 w-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-300">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="mb-8">
-                            <span
-                                class="text-5xl font-black text-white tracking-tighter">₹{{ number_format($balance, 2) }}</span>
-                            <p class="text-white/50 text-[10px] font-bold mt-2 uppercase tracking-wide">Current Outstanding
-                            </p>
-                            @if($balance <= 0)
-                                <div
-                                    class="mt-4 inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/50 px-3 py-1.5 rounded-lg">
-                                    <span class="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                                    <span class="text-[10px] font-black text-emerald-300 uppercase tracking-widest">All Dues
-                                        Cleared</span>
-                                </div>
-                            @else
-                                <div
-                                    class="mt-4 inline-flex items-center gap-2 bg-rose-500/20 border border-rose-400/50 px-3 py-1.5 rounded-lg">
-                                    <span class="h-2 w-2 bg-rose-400 rounded-full animate-pulse"></span>
-                                    <span class="text-[10px] font-black text-rose-300 uppercase tracking-widest">Payment
-                                        Pending</span>
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- <button class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[12px] shadow-lg transition-all active:scale-95 uppercase tracking-wide">
-                                View Receipts →
-                            </button> -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content Column -->
-            <div class="lg:col-span-2 space-y-2">
-                <!-- Academic Info Card -->
-                <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-md">
-                    <div class="flex items-center gap-4 pb-6 border-b border-slate-200 mb-6">
-                        <div
-                            class="h-12 w-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold text-lg">
-                            📚</div>
-                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Academic Records</h3>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Current Batch</p>
-                            <p class="text-lg font-black text-slate-800 mt-2">
-                                {{ $student->batch ? $student->batch->name : 'N/A' }}
-                            </p>
-                        </div>
-                        <div class="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-                            <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wide">Admission Date</p>
-                            <p class="text-lg font-black text-slate-800 mt-2">{{ $student->created_at->format('M d, Y') }}
-                            </p>
-                        </div>
-                        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200 col-span-2">
-                            <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wide"> Fee</p>
-                            <div class="flex items-center gap-3 mt-2">
-                                <span
-                                    class="text-3xl font-black text-slate-800">₹{{ number_format($student->monthly_fee, 0) }}</span>
-                                <!-- <span class="text-[10px] font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded uppercase">Monthly</span> -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Personal Info Card -->
-                <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-md">
-                    <div class="flex items-center gap-4 pb-6 border-b border-slate-200 mb-6">
-                        <div
-                            class="h-12 w-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-bold text-lg">
-                            👤</div>
-                        <h3 class="text-xl font-black text-slate-800 tracking-tight">Personal Information</h3>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Guardian Name</p>
-                                <p class="text-base font-bold text-slate-700 mt-1">{{ $student->guardian_name ?: '—' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Phone</p>
-                                <p class="text-base font-bold text-slate-700 mt-1">{{ $student->phone ?: '—' }}</p>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Email Address</p>
-                            <p class="text-base font-bold text-blue-600 mt-1">{{ $student->email }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Date of Birth</p>
-                            <p class="text-base font-bold text-slate-700 mt-1">
-                                {{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('F d, Y') : '—' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden px-4">
-        <div onclick="closeDeleteModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-        <div
-            class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden pt-10 px-10 pb-10 text-center animate-in fade-in zoom-in duration-300">
-            <div class="h-24 w-24 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-8">
-                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-            </div>
-            <h3 class="text-2xl font-black text-slate-800 tracking-tight mb-3">Delete Student Profile?</h3>
-            <p class="text-[15px] text-slate-400 font-medium mb-10 px-6">This action cannot be undone. All academic records,
-                attendance history, and fee receipts for <span class="text-slate-800 font-bold">{{ $student->name }}</span>
-                will be permanently removed.</p>
-            <div class="flex items-center gap-4">
-                <button onclick="closeDeleteModal()"
-                    class="flex-1 py-4 text-[13px] font-black text-slate-500 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors uppercase tracking-widest">Cancel</button>
-                <form id="delete-form" action="{{ route('institute.students.destroy', $student->id) }}" method="POST"
-                    class="flex-1">
+                <form id="delete-form" action="{{ route('institute.students.destroy', $student->id) }}" method="POST" class="flex-1">
                     @csrf
                     @method('DELETE')
-                    <button type="submit"
-                        class="w-full py-4 text-[13px] font-black text-white bg-rose-500 rounded-2xl shadow-lg shadow-rose-200 active:scale-95 transition-transform uppercase tracking-widest">Confirm
-                        Delete</button>
+                    <button type="submit" class="w-full py-2.5 bg-[#be1e1e] text-white rounded-xl font-semibold text-sm shadow-lg shadow-rose-900/10 hover:bg-rose-800 transition-all">
+                        Yes, Delete Student
+                    </button>
                 </form>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function openDeleteModal(id) {
-            document.getElementById('delete-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
+<script>
+    function openDeleteModal() {
+        document.getElementById('delete-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDeleteModal() {
+        document.getElementById('delete-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+</script>
 
-        document.getElementById('delete-form').onsubmit = function () {
-            const btn = this.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = `<div class="flex items-center justify-center"><span class="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span></div>`;
-        };
-    </script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;600;700;800;900&display=swap');
+    
+    :root {
+        --font-outfit: 'Outfit', sans-serif;
+    }
+
+    body {
+        font-family: var(--font-outfit);
+        background-color: #f8fafc;
+    }
+</style>
 @endsection
