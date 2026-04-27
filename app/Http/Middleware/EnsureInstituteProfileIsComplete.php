@@ -17,7 +17,7 @@ class EnsureInstituteProfileIsComplete
     {
         if (auth('institute')->check()) {
             $user = auth('institute')->user();
-            
+
             // Skip check if the user is already on the profile page
             if ($request->routeIs('institute.profile.index')) {
                 return $next($request);

@@ -28,11 +28,18 @@ class Student extends Authenticatable
         'status',
         'id_hash',
         'profile_image',
+        'address_line_1',
+        'address_line_2',
+        'city',
+        'state',
+        'country',
+        'pincode',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'profile_image',
     ];
 
     protected $casts = [

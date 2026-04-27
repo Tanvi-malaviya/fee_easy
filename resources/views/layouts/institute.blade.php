@@ -138,7 +138,7 @@
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="mt-20 px-4 md:px-6 py-6 min-h-[calc(100vh-80px)]">
+    <main class="mt-16 px-4 md:px-6 py-2 min-h-[calc(100vh-80px)]">
         @yield('content')
     </main>
 

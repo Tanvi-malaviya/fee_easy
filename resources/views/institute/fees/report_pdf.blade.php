@@ -48,7 +48,6 @@
                 <th>Student Name</th>
                 <th>Total Fee</th>
                 <th>Paid Amount</th>
-                <th>Due Amount</th>
             </tr>
         </thead>
         <tbody>
@@ -59,7 +58,6 @@
                 <td>{{ $fee->student->name ?? 'N/A' }}</td>
                 <td>₹{{ number_format($fee->total_amount, 2) }}</td>
                 <td style="color: #059669; font-weight: bold;">₹{{ number_format($fee->paid_amount, 2) }}</td>
-                <td style="color: #dc2626;">₹{{ number_format($fee->due_amount, 2) }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -67,7 +65,6 @@
             <tr class="total-row">
                 <td colspan="4" style="text-align: right;">GRAND TOTAL:</td>
                 <td>₹{{ number_format($fees->sum('paid_amount'), 2) }}</td>
-                <td>₹{{ number_format($fees->sum('due_amount'), 2) }}</td>
             </tr>
         </tfoot>
     </table>
