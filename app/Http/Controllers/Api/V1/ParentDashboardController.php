@@ -25,7 +25,7 @@ class ParentDashboardController extends Controller
 
         $totalFees = $fees->sum('total_amount');
         $paidFees = $fees->sum('paid_amount');
-        $dueFees = $fees->sum('due_amount');
+        $dueFees = $totalFees - $paidFees;
 
         $presentCount = $attendance->where('status', 'present')->count();
         $totalRecords = $attendance->count();

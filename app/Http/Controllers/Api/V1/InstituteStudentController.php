@@ -129,7 +129,7 @@ class InstituteStudentController extends Controller
 
         $profileImagePath = null;
         $file = $request->file('profile_image_url');
-        
+
         // Robust check for any uploaded file if 'profile_image_url' key is missing
         if (!$file && count($request->allFiles()) > 0) {
             $file = array_values($request->allFiles())[0];

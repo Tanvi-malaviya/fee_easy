@@ -22,7 +22,7 @@ class ParentReportController extends Controller
 
         $totalFees = Fee::whereIn('student_id', $studentIds)->sum('total_amount');
         $paidFees = Fee::whereIn('student_id', $studentIds)->sum('paid_amount');
-        $dueFees = Fee::whereIn('student_id', $studentIds)->sum('due_amount');
+        $dueFees = $totalFees - $paidFees;
 
         $attendanceCount = Attendance::whereIn('student_id', $studentIds)->count();
         $presentCount = Attendance::whereIn('student_id', $studentIds)

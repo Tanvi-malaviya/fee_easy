@@ -31,13 +31,17 @@ class InstituteWhatsappSettingController extends Controller
     protected function saveSettings(Request $request)
     {
         $validated = $request->validate([
-            'phone_number' => 'required|string|regex:/^[0-9]{10,15}$/',
-            'access_token' => 'required|string',
-            'phone_number_id' => 'nullable|string|max:255',
-            'business_account_id' => 'nullable|string|max:255',
+            'phone_number' => 'required|numeric|digits_between:10,15',
+            'access_token' => 'required|string|min:20',
+            'phone_number_id' => 'required|string|max:100',
+            'business_account_id' => 'required|string|max:100',
+            'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = ! empty($validated['access_token']) && ! empty($validated['phone_number']);
+        if (!isset($validated['is_active'])) {
+            $validated['is_active'] = true;
+        }
+        
         $validated['last_verified_at'] = now();
 
         $settings = InstituteWhatsappSetting::updateOrCreate([

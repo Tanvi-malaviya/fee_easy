@@ -16,7 +16,7 @@ class InstituteProfileController extends Controller
     {
         $institute = $request->user();
         $subscription = $institute->subscriptions()->latest()->first();
-        
+
         return response()->json([
             'status' => 'success',
             'data' => $institute,
@@ -46,9 +46,16 @@ class InstituteProfileController extends Controller
         ]);
 
         $data = $request->only([
-            'institute_name', 'name', 'email', 'phone', 
-            'address', 'address_line_2', 'city', 'state', 
-            'country', 'pincode'
+            'institute_name',
+            'name',
+            'email',
+            'phone',
+            'address',
+            'address_line_2',
+            'city',
+            'state',
+            'country',
+            'pincode'
         ]);
 
         if ($request->hasFile('logo')) {
