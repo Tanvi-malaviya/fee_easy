@@ -194,6 +194,13 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [InstituteAttendanceController::class, 'index']);
                 Route::post('/', [InstituteAttendanceController::class, 'store']);
             });
+
+            // Resources Management
+            Route::prefix('resources')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'store']);
+                Route::delete('/{id}', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'destroy']);
+            });
         });
     });
 

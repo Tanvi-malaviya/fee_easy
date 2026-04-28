@@ -22,9 +22,11 @@ class InstituteDailyUpdateController extends Controller
 
         $updates = $request->user()
             ->dailyUpdates()
-            ->with(['batch', 'student'])
+            ->with(['batch.students'])
             ->latest()
             ->get();
+
+        $updates->each->makeHidden(['standard', 'student_id', 'student']);
 
         return response()->json([
             'status' => 'success',
@@ -45,14 +47,19 @@ class InstituteDailyUpdateController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
+        if ($request->recipient === 'parents' && !$request->has('target_type')) {
+            $request->merge(['target_type' => 'all']);
+        }
+
 
         $request->validate([
             'category' => ['required', new Enum(UpdateCategory::class)],
             'recipient' => ['required', new Enum(UpdateRecipient::class)],
             'target_type' => ['required', new Enum(UpdateTargetType::class)],
             'batch_id' => 'required_if:target_type,batch|nullable|exists:batches,id',
-            'student_id' => 'required_if:target_type,all|nullable|exists:students,id',
+            'student_id' => 'nullable|exists:students,id',
             'standard' => 'required_if:target_type,standard|nullable|string',
+            'topic' => 'nullable|string|max:255',
             'description' => 'required|string',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // Max 5MB
         ]);
@@ -78,6 +85,7 @@ class InstituteDailyUpdateController extends Controller
             'standard' => $request->target_type === UpdateTargetType::STANDARD->value ? $request->standard : null,
             'student_id' => $request->student_id,
             'category' => $request->category,
+            'topic' => $request->topic,
             'description' => $request->description,
             'attachment' => $attachmentPath,
             'date' => now()->toDateString(),
@@ -86,7 +94,7 @@ class InstituteDailyUpdateController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Update published successfully.',
-            'data' => $update->load(['batch', 'student']),
+            'data' => $update->load(['batch.students'])->makeHidden(['standard', 'student_id', 'student']),
         ], 201);
     }
 }
