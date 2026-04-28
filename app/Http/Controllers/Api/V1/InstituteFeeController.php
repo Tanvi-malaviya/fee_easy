@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Fee;
 use App\Models\Institute;
 use Illuminate\Http\Request;
-use App\Enums\Month;
-use App\Enums\Year;
-use Illuminate\Validation\Rules\Enum;
 
 class InstituteFeeController extends Controller
 {
@@ -22,13 +19,13 @@ class InstituteFeeController extends Controller
         }
 
         $paginator = Fee::where('institute_id', $request->user()->id)
-            ->with('student:id,name,email')
+            ->with(['student:id,name,email', 'payments'])
             ->latest()
             ->paginate(10);
 
         $currentMonthTotal = Fee::where('institute_id', $request->user()->id)
-            ->where('month', now()->format('F'))
-            ->where('year', now()->format('Y'))
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
             ->sum('paid_amount');
 
         return response()->json([
@@ -56,9 +53,9 @@ class InstituteFeeController extends Controller
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'total_amount' => 'required|numeric|min:0',
-            'month' => ['required', new Enum(Month::class)],
-            'year' => ['required', new Enum(Year::class)],
+            'date' => 'required|date',
             'status' => 'nullable|string|in:Paid,Partial,Unpaid',
+            'payment_method' => 'nullable|string|in:Cash,Online',
         ]);
 
         \Illuminate\Support\Facades\DB::beginTransaction();
@@ -75,8 +72,7 @@ class InstituteFeeController extends Controller
                 'total_amount' => $totalAmount,
                 'paid_amount' => $paidAmount,
                 'status' => $status,
-                'month' => $request->month,
-                'year' => $request->year,
+                'date' => $request->date,
             ]);
 
             if ($paidAmount > 0) {
@@ -91,8 +87,8 @@ class InstituteFeeController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
             
-            // Load student relation for the frontend
-            $fee->load('student:id,name');
+            // Load student and payments relations for the frontend
+            $fee->load(['student:id,name', 'payments']);
 
             return response()->json([
                 'status' => 'success',
@@ -142,11 +138,8 @@ class InstituteFeeController extends Controller
             ->with('student:id,name');
 
         // Apply Filters
-        if ($request->filled('month')) {
-            $query->where('month', $request->month);
-        }
-        if ($request->filled('year')) {
-            $query->where('year', $request->year);
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->date);
         }
         if ($request->filled('student_id')) {
             $query->where('student_id', $request->student_id);
@@ -162,8 +155,7 @@ class InstituteFeeController extends Controller
         $data = [
             'institute' => $institute,
             'fees' => $fees,
-            'month' => $request->input('month', 'All'),
-            'year' => $request->input('year', 'All'),
+            'date' => $request->input('date', 'All'),
             'student' => $request->filled('student_id') ? \App\Models\Student::find($request->student_id)->name : 'All',
         ];
 

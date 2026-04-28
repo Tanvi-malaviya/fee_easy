@@ -3,25 +3,13 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-[1400px] mx-auto pb-10 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto ">
         <!-- Breadcrumb & Header -->
-        <div class="mb-10">
-            <nav class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
-                <a href="{{ route('institute.batches.index') }}" class="hover:text-blue-600 transition-colors">Batches</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
-                </svg>
-                <a href="{{ route('institute.batches.show', $id) }}" id="breadcrumb-batch-name"
-                    class="hover:text-blue-600 transition-colors">Loading...</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
-                </svg>
-                <span class="text-slate-600">Homework</span>
-            </nav>
+        <div class="mb-5">
 
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 class="text-4xl font-bold text-slate-900 tracking-tight mb-2">Batch Homework</h1>
+                    <h1 class="text-4xl font-medium pt-5 text-slate-900 tracking-tight mb-1">Batch Homework</h1>
                     <p class="text-sm font-semibold text-slate-400">Centralized assignment tracking and submission management.</p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -34,7 +22,7 @@
                         </svg>
                     </div>
                     <button onclick="openAddHomeworkModal()"
-                        class="px-6 py-3.5 bg-orange-600 text-white rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-orange-700 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-600/20">
+                        class="px-6 py-3.5 bg-primary2 text-white rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-orange-700 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-600/20">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
@@ -44,14 +32,8 @@
             </div>
         </div>
 
-        <!-- Category Filters -->
-        <div id="batch-filters" class="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-            <button onclick="selectCategory('All')" class="category-btn active px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all">All Batches</button>
-            <!-- Batches populated via JS -->
-        </div>
-
         <!-- Homework Grid -->
-        <div id="homework-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="homework-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <!-- Loading State -->
             <div class="col-span-full py-32 text-center">
                 <div class="inline-block h-10 w-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
@@ -61,49 +43,139 @@
     </div>
 
     <!-- ADD HOMEWORK MODAL -->
-    <div id="add-homework-modal" class="fixed inset-0 z-[150] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-            <div class="p-10">
-                <div class="flex items-center justify-between mb-10">
-                    <div>
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tight">New Assignment</h2>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2">Publish a task to <span id="modal-batch-name" class="text-blue-600">this batch</span></p>
+    <div id="add-homework-modal" class="fixed inset-0 z-[150] bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 font-sans">
+        <div class="bg-white w-full max-w-[900px] max-h-[95vh] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-slate-100 flex items-start justify-between">
+                <div>
+                    <h2 class="text-[22px] font-bold text-slate-900 tracking-tight">Create New Homework</h2>
+                    <p class="text-[13px] font-medium text-slate-400 mt-1">Fill in the details to broadcast an assignment to your batches.</p>
+                </div>
+                <button type="button" onclick="closeAddHomeworkModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <form id="homework-form" onsubmit="handleHomeworkSubmit(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="px-8 py-8 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-x-12 gap-y-8 overflow-y-auto custom-scrollbar">
+                    
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <!-- Subject Title -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Subject Title</label>
+                            <input type="text" name="title" required placeholder="e.g. Advanced Calculus - Differential Equations" 
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all">
+                        </div>
+
+                        <!-- Instruction Details -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Instruction Details</label>
+                            <textarea name="description" rows="5" required placeholder="Outline the learning objectives and step-by-step instructions for the students..." 
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all resize-none"></textarea>
+                            <p class="text-[11px] italic text-slate-400 mt-2">Rich text editing is enabled. Use markdown for better formatting.</p>
+                        </div>
+
+                        <!-- Resource Materials -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Resource Materials</label>
+                            
+                            <input type="file" name="attachment" id="homework-attachment" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" onchange="handleFileSelect(event)">
+                            
+                            <div id="dropzone" onclick="document.getElementById('homework-attachment').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" class="border-2 border-dashed border-slate-200 rounded-xl p-8 flex flex-col items-center justify-center bg-slate-50/50 group hover:bg-slate-50 hover:border-[#ff6600]/30 transition-all cursor-pointer">
+                                <div class="h-10 w-10 bg-orange-100 rounded-lg flex items-center justify-center text-[#ff6600] mb-3 group-hover:scale-110 transition-transform">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 13v4h-2v-4H8l4-4 4 4h-3zm-3-6V3.5L18.5 9H10z"/></svg>
+                                </div>
+                                <p class="text-[14px] font-semibold text-slate-800">Drag and drop your files here</p>
+                                <p class="text-[13px] text-slate-500 mt-1">or <span class="text-[#ff6600] underline decoration-[#ff6600]/30 underline-offset-4">browse computer</span></p>
+                                <p class="text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-widest">Max Size: 10MB</p>
+                            </div>
+                            
+                            <!-- File Attachment Preview (Hidden by default) -->
+                            <div id="file-preview" class="hidden mt-3 items-center justify-between p-3 bg-white border border-slate-200 rounded-xl">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <div class="h-10 w-10 bg-rose-50 rounded-lg flex items-center justify-center text-rose-500 shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 9h1.5m1.5 0H12m-1.5 3h1.5m-1.5 3H12"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p id="file-name" class="text-[13px] font-bold text-slate-800 truncate"></p>
+                                        <p id="file-size" class="text-[11px] font-medium text-slate-400"></p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="removeAttachment()" class="text-slate-400 hover:text-rose-500 p-2 shrink-0 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="closeAddHomeworkModal()" class="h-12 w-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Due Date -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Due Date</label>
+                            <input type="date" name="due_date" required 
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all">
+                        </div>
+
+                        <!-- Priority Level -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Priority Level</label>
+                            <div class="relative">
+                                <select class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all appearance-none cursor-pointer">
+                                    <option>Normal Priority</option>
+                                    <option>High Priority</option>
+                                    <option>Low Priority</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Batch Assignment -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Batch Assignment</label>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 text-orange-600 text-[12px] font-bold rounded-full border border-orange-100">
+                                    <span id="modal-batch-badge">Loading...</span>
+                                    <button type="button" class="hover:text-orange-800">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </span>
+                            </div>
+                            <button type="button" class="text-[13px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                Add Batch
+                            </button>
+                        </div>
+
+                        <!-- Pro Tip -->
+                        <div class="bg-teal-50/50 border border-teal-100 rounded-xl p-5 mt-4">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Pro Tip</span>
+                            </div>
+                            <p class="text-[13px] text-center font-medium text-teal-700/80 leading-relaxed">Students receive real-time notifications via the Tuoora app once broadcasted.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <form id="homework-form" onsubmit="handleHomeworkSubmit(event)" class="space-y-6">
-                    <div>
-                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Assignment Title</label>
-                        <input type="text" name="title" required placeholder="e.g. Advanced Calculus - Pset 04" 
-                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[15px] font-bold outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 focus:bg-white transition-all">
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Instructions & Description</label>
-                        <textarea name="description" rows="4" required placeholder="Detail the submission requirements..." 
-                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[15px] font-bold outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 focus:bg-white transition-all resize-none"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Deadline Date</label>
-                        <input type="date" name="due_date" required 
-                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[15px] font-bold outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 focus:bg-white transition-all">
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" id="submit-btn" class="w-full py-5 bg-blue-900 text-white rounded-[1.5rem] font-black text-sm shadow-xl shadow-blue-900/20 hover:scale-[1.02] active:scale-95 transition-all">Publish Assignment</button>
-                    </div>
-                </form>
-            </div>
+                <!-- Footer -->
+                <div class="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4 mt-auto shrink-0">
+                    <button type="button" onclick="closeAddHomeworkModal()" class="px-6 py-2.5 text-[14px] font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
+                    <button type="submit" id="submit-btn" class="px-6 py-2.5 bg-[#ff6600] text-white rounded-xl text-[14px] font-bold shadow-sm hover:bg-[#e65c00] transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        Broadcast Homework
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <style>
-        .category-btn { @apply bg-white text-slate-400 border border-slate-100 shadow-sm; }
-        .category-btn.active { @apply bg-orange-100 text-orange-700 border-orange-200 shadow-orange-100; }
+
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -129,9 +201,8 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     currentBatch = result.data;
-                    document.getElementById('breadcrumb-batch-name').innerText = currentBatch.name;
-                    document.getElementById('modal-batch-name').innerText = currentBatch.name;
-                    renderBatchFilters([currentBatch]);
+
+                    document.getElementById('modal-batch-badge').innerText = currentBatch.name;
                 }
             } catch (error) {
                 showToast('Failed to load batch info', 'error');
@@ -151,21 +222,12 @@
             }
         }
 
-        function renderBatchFilters(batches) {
-            const container = document.getElementById('batch-filters');
-            // Keep "All Batches" and add current batch
-            container.innerHTML = `
-                <button onclick="selectCategory('All')" class="category-btn active px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all">All Assignments</button>
-                <button onclick="selectCategory('${currentBatch.name}')" class="category-btn px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all">${currentBatch.name}</button>
-            `;
-        }
-
         function renderHomeworks(homeworks) {
             const container = document.getElementById('homework-grid');
             if (homeworks.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full py-20 text-center flex flex-col items-center">
-                        <div class="h-24 w-24 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-200 mb-6 border border-slate-100">
+                    <div class="col-span-full py-10 text-center flex flex-col items-center">
+                        <div class="h-24 w-24 bg-slate-50 rounded-[1rem] flex items-center justify-center text-slate-200 mb-6 border border-slate-100">
                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         </div>
                         <h3 class="text-xl font-black text-slate-800 mb-2">No Assignments Yet</h3>
@@ -196,37 +258,32 @@
                 const randomIcon = icons[hw.id % icons.length];
 
                 return `
-                    <div class="group bg-white rounded-[2.5rem] border border-slate-50 p-8 hover:shadow-2xl hover:shadow-slate-200/50 hover:border-blue-100 transition-all duration-500 relative">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-800 group-hover:scale-110 transition-transform duration-500">
-                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
+                    <div class="group bg-white rounded-3xl border border-slate-200 p-6 hover:shadow-xl hover:shadow-slate-200/50 hover:border-blue-100 transition-all duration-300 relative cursor-pointer" onclick="window.location.href='/institute/batches/${BATCH_ID}/homework/${hw.id}'">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
                             </div>
-                            <span class="px-4 py-1.5 ${isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'} rounded-full text-[9px] font-black uppercase tracking-widest border ${isActive ? 'border-emerald-100' : 'border-slate-100'}">
+                            <span class="px-2.5 py-1 ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} rounded-md text-[9px] font-bold uppercase tracking-wider">
                                 ${isActive ? 'Active' : 'Closed'}
                             </span>
                         </div>
 
-                        <h4 class="text-lg font-black text-slate-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors">${hw.title}</h4>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">${currentBatch.name} • Section A</p>
+                        <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-1 truncate" title="${hw.title}">${hw.title}</h4>
+                        <p class="text-[11px] font-medium text-slate-500 mb-6 truncate">${currentBatch.name}</p>
 
-                        <div class="mt-8 pt-8 border-t border-slate-50 space-y-6">
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <div class="text-left">
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Due Date</p>
-                                    <p class="text-[13px] font-black text-slate-800">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[10px] font-black ${isActive ? 'text-orange-500' : 'text-slate-400'} uppercase tracking-tight">${isActive ? diffDays + ' Days Left' : 'Completed'}</p>
-                                </div>
+                                <p class="text-[11px] font-medium text-slate-500">Due: <span class="font-bold text-slate-800">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></p>
+                                <p class="text-[9px] font-bold ${isActive ? 'text-[#ff6600]' : 'text-slate-800'} uppercase tracking-tight">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
                             </div>
 
                             <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Submissions</p>
-                                    <p class="text-[11px] font-black text-slate-900">${submissions}/${total}</p>
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-[11px] font-medium text-slate-500">Submissions</p>
+                                    <p class="text-[11px] font-bold text-slate-800">${submissions}/${total}</p>
                                 </div>
-                                <div class="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
-                                    <div class="h-full ${isActive ? 'bg-orange-500' : 'bg-slate-300'} rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
+                                <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full ${isActive ? 'bg-[#ff6600]' : 'bg-[#006b74]'} rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -241,13 +298,6 @@
             renderHomeworks(filtered);
         }
 
-        function selectCategory(cat) {
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.includes(cat));
-            });
-            // Filter logic can be extended here if multiple batches were shown
-        }
-
         function openAddHomeworkModal() {
             document.getElementById('add-homework-modal').classList.replace('hidden', 'flex');
             document.body.style.overflow = 'hidden';
@@ -256,13 +306,56 @@
         function closeAddHomeworkModal() {
             document.getElementById('add-homework-modal').classList.replace('flex', 'hidden');
             document.body.style.overflow = 'auto';
+            document.getElementById('homework-form').reset();
+            removeAttachment();
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            updateFilePreview(file);
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                document.getElementById('homework-attachment').files = e.dataTransfer.files;
+                updateFilePreview(file);
+            }
+            document.getElementById('dropzone').classList.remove('border-[#ff6600]', 'bg-slate-50');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropzone').classList.add('border-[#ff6600]', 'bg-slate-50');
+        }
+
+        function updateFilePreview(file) {
+            if (!file) return;
+            const dropzone = document.getElementById('dropzone');
+            const preview = document.getElementById('file-preview');
+            const nameEl = document.getElementById('file-name');
+            const sizeEl = document.getElementById('file-size');
+
+            dropzone.classList.add('hidden');
+            preview.classList.replace('hidden', 'flex');
+
+            nameEl.innerText = file.name;
+            sizeEl.innerText = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function removeAttachment() {
+            document.getElementById('homework-attachment').value = '';
+            document.getElementById('dropzone').classList.remove('hidden');
+            document.getElementById('file-preview').classList.replace('flex', 'hidden');
         }
 
         async function handleHomeworkSubmit(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.batch_id = BATCH_ID;
+            formData.append('batch_id', BATCH_ID);
 
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
@@ -271,8 +364,8 @@
             try {
                 const response = await fetch(API_HOMEWORKS_URL, {
                     method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-                    body: JSON.stringify(data)
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    body: formData
                 });
                 const result = await response.json();
                 if (result.status === 'success') {

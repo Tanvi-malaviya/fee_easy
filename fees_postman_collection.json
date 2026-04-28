@@ -1,0 +1,144 @@
+{
+    "info": {
+        "name": "Fee Easy - Fees Module API",
+        "description": "Postman Collection for testing the updated Fee module with date and enum fields.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get All Fees",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/institute/fees?date=2026-04-28",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "institute",
+                        "fees"
+                    ],
+                    "query": [
+                        {
+                            "key": "date",
+                            "value": "2026-04-28",
+                            "description": "Filter by specific date"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Student Fees",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/institute/fees/35",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "institute",
+                        "fees",
+                        "35"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Create Fee Record",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"student_id\": 35,\n    \"total_amount\": 2000,\n    \"paid_amount\": 2000,\n    \"date\": \"2026-04-28\",\n    \"payment_method\": \"Online\",\n    \"status\": \"Paid\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/v1/institute/fees",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "institute",
+                        "fees"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Export Fee Report",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/pdf"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/institute/fees/export?date=2026-04-28",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "institute",
+                        "fees",
+                        "export"
+                    ],
+                    "query": [
+                        {
+                            "key": "date",
+                            "value": "2026-04-28"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "44|Rzgzu2bIysXXOIoyHKCYK4foZox3baBTqcXJK9s01f691275",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000"
+        }
+    ]
+}

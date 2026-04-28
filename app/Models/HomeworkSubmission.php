@@ -13,6 +13,7 @@ class HomeworkSubmission extends Model
         'homework_id',
         'student_id',
         'status',
+        'score',
         'submitted_at',
     ];
 

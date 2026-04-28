@@ -379,9 +379,20 @@
                 }
 
                 container.innerHTML = students.map(student => {
-                    // Mock performance for design purposes
-                    const performance = 70 + Math.floor(Math.random() * 25);
-                    const isPaid = Math.random() > 0.3; // Mock fee status for design
+                    // Real performance based on average homework score (out of 10)
+                    const avgScore = student.homework_submissions_avg_score ? parseFloat(student.homework_submissions_avg_score) : 0;
+                    const performance = Math.round((avgScore / 10) * 100);
+                    // Real fee status based on backend data
+                    let feeStatusText = 'Pending';
+                    let feeStatusColor = 'rose';
+
+                    if (!student.monthly_fee || student.monthly_fee == 0) {
+                        feeStatusText = 'No Fee';
+                        feeStatusColor = 'slate';
+                    } else if (student.total_due <= 0) {
+                        feeStatusText = 'Paid';
+                        feeStatusColor = 'emerald';
+                    }
 
                     return `
                             <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
@@ -419,8 +430,8 @@
 
                                         <div class="flex items-center justify-between border-slate-50">
                                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
-                                            <span class="px-2 py-0.5 ${isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} text-[8px] font-black rounded-md uppercase tracking-tight">
-                                                ${isPaid ? 'Paid' : 'Pending'}
+                                            <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
+                                                ${feeStatusText}
                                             </span>
                                         </div>
                                     </div>
