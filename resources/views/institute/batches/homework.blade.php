@@ -244,10 +244,9 @@
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 const isActive = diffDays >= 0;
                 
-                // Mock submissions for UI demonstration
-                const submissions = Math.floor(Math.random() * 20) + 10;
-                const total = 50;
-                const progress = (submissions / total) * 100;
+                const submissions = hw.submissions_count || 0;
+                const total = (hw.batch && hw.batch.students_count) ? hw.batch.students_count : 0;
+                const progress = total > 0 ? (submissions / total) * 100 : 0;
 
                 const icons = [
                     '<path d="M9 7h6m0 10H9m3-10v10M9 7h6" />', // Sum

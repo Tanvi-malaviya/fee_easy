@@ -79,7 +79,7 @@
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Performance</p>
-                    <h3 class="text-lg font-bold text-orange-500 leading-none">Distinction</h3>
+                    <h3 id="stat-performance" class="text-lg font-bold text-orange-500 leading-none">Distinction</h3>
                 </div>
             </div>
         </div>
@@ -329,6 +329,7 @@
                 if (result.status === 'success' && result.data && Array.isArray(result.data.items)) {
                     allStudents = result.data.items;
                     renderStudents(allStudents);
+                    updateBatchPerformance(allStudents);
                 }
             } catch (error) {
                 showToast('Failed to load students', 'error');
@@ -521,6 +522,39 @@
             }
         }
 
+        function updateBatchPerformance(students) {
+            const performanceStat = document.getElementById('stat-performance');
+            if (!performanceStat) return;
+
+            let total = 0;
+            let count = 0;
+            
+            students.forEach(s => {
+                if (s.homework_submissions_avg_score !== null && s.homework_submissions_avg_score !== undefined) {
+                    total += parseFloat(s.homework_submissions_avg_score) * 10;
+                    count++;
+                }
+            });
+
+            if (count === 0) {
+                performanceStat.innerText = 'N/A';
+                performanceStat.className = 'text-lg font-bold text-slate-400 leading-none';
+                return;
+            }
+
+            const avg = Math.round(total / count);
+            let text = '';
+            let color = '';
+
+            if (avg >= 85) { text = 'Distinction'; color = 'text-emerald-500'; }
+            else if (avg >= 70) { text = 'Good'; color = 'text-blue-500'; }
+            else if (avg >= 50) { text = 'Average'; color = 'text-orange-500'; }
+            else { text = 'Needs Focus'; color = 'text-rose-500'; }
+
+            performanceStat.innerText = `${avg}% - ${text}`;
+            performanceStat.className = `text-lg font-bold ${color} leading-none`;
+        }
+
         function renderStudents(students) {
             const container = document.getElementById('student-grid');
             if (students.length === 0) {
@@ -533,7 +567,13 @@
                 return;
             }
             container.innerHTML = students.map(student => {
-                const performance = 60 + (student.id % 40); // Deterministic performance based on ID
+                const rawScore = student.homework_submissions_avg_score ? parseFloat(student.homework_submissions_avg_score) : 0;
+                const performance = Math.round(rawScore * 10);
+                
+                let perfColor = 'emerald';
+                if (performance === 0) perfColor = 'slate';
+                else if (performance < 50) perfColor = 'rose';
+                else if (performance < 75) perfColor = 'orange';
 
                 // Real fee status based on backend data
                 let feeStatusText = 'Pending';
@@ -574,10 +614,10 @@
                                             <div>
                                                 <div class="flex items-left justify-between mb-1.5">
                                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
-                                                    <span class="text-[9px] font-black text-emerald-500 uppercase tracking-wider">${performance}%</span>
+                                                    <span class="text-[9px] font-black text-${perfColor}-500 uppercase tracking-wider">${performance > 0 ? performance + '%' : 'N/A'}</span>
                                                 </div>
                                                 <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+                                                    <div class="h-full bg-${perfColor}-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
                                                 </div>
                                             </div>
 

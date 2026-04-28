@@ -19,7 +19,12 @@ class InstituteHomeworkController extends Controller
 
         $homeworks = $request->user()
             ->homeworks()
-            ->with('batch')
+            ->with(['batch' => function($q) {
+                $q->withCount('students');
+            }])
+            ->withCount(['submissions' => function($q) {
+                $q->whereIn('status', ['Submitted', 'Late', 'Pending']);
+            }])
             ->orderByDesc('due_date')
             ->get();
 

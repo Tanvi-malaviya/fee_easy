@@ -20,6 +20,7 @@ class DailyUpdate extends Model
         'standard',
         'attachment',
         'recipient',
+        'topic',
     ];
 
     public function student()
