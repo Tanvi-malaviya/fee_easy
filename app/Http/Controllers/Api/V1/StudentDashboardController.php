@@ -30,7 +30,7 @@ class StudentDashboardController extends Controller
 
         $totalFees = Fee::where('student_id', $student->id)->sum('total_amount');
         $paidFees = Fee::where('student_id', $student->id)->sum('paid_amount');
-        $dueFees = Fee::where('student_id', $student->id)->sum('due_amount');
+        $dueFees = $totalFees - $paidFees;
 
         return response()->json([
             'status' => 'success',

@@ -23,7 +23,7 @@ class DashboardController extends Controller
         })->sum('amount');
 
         $totalFees = \App\Models\Fee::where('institute_id', $institute->id)->sum('total_amount');
-        $dueFees = \App\Models\Fee::where('institute_id', $institute->id)->sum('due_amount');
+        $dueFees = \App\Models\Fee::where('institute_id', $institute->id)->sum(\DB::raw('total_amount - paid_amount'));
         
         $stats = [
             'total_students' => $institute->students()->count(),

@@ -68,8 +68,11 @@ Route::prefix('v1')->group(function () {
 
     // Institute Routes
     Route::prefix('institute')->group(function () {
+        Route::post('/register', [InstituteAuthController::class, 'register']);
+        Route::post('/verify-otp', [InstituteAuthController::class, 'verifyOtp']);
+        Route::post('/resend-otp', [InstituteAuthController::class, 'resendOtp']);
         Route::post('/login', [InstituteAuthController::class, 'login']);
-        
+
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteProfileController::class, 'show']);
@@ -84,7 +87,7 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
-            
+
             // Plan and Subscription routes
             Route::get('/plans', [PlanController::class, 'index']);
             Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
@@ -105,7 +108,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [InstituteTeacherController::class, 'store']);
                 Route::put('/{id}', [InstituteTeacherController::class, 'update']);
                 Route::delete('/{id}', [InstituteTeacherController::class, 'destroy']);
-                
+
                 Route::get('/attendance/report', [InstituteTeacherController::class, 'attendanceReport']);
                 Route::get('/attendance', [InstituteTeacherController::class, 'getAttendance']);
                 Route::post('/attendance', [InstituteTeacherController::class, 'markAttendance']);
@@ -116,7 +119,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
                 Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);
-                
+
                 Route::get('/', [InstituteExpenseController::class, 'index']);
                 Route::post('/', [InstituteExpenseController::class, 'store']);
                 Route::put('/{id}', [InstituteExpenseController::class, 'update']);
@@ -139,8 +142,10 @@ Route::prefix('v1')->group(function () {
             Route::put('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'update']);
 
             Route::get('/reports/dashboard', [InstituteReportController::class, 'dashboard']);
-            Route::get('/reports/income', [InstituteReportController::class, 'income']);
-            Route::get('/reports/fees', [InstituteReportController::class, 'fees']);
+            Route::get('/reports/fee', [InstituteReportController::class, 'feeReport']);
+            Route::get('/reports/fee/export', [InstituteReportController::class, 'exportFeeReport']);
+            Route::get('/reports/attendance', [InstituteReportController::class, 'attendanceReport']);
+            Route::get('/reports/attendance/export', [InstituteReportController::class, 'exportAttendanceReport']);
 
             Route::get('/subscription', [InstituteSubscriptionController::class, 'show']);
             Route::post('/subscription/renew', [InstituteSubscriptionController::class, 'renew']);

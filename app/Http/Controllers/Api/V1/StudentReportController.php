@@ -20,7 +20,7 @@ class StudentReportController extends Controller
 
         $totalFees = Fee::where('student_id', $student->id)->sum('total_amount');
         $paidFees = Fee::where('student_id', $student->id)->sum('paid_amount');
-        $dueFees = Fee::where('student_id', $student->id)->sum('due_amount');
+        $dueFees = $totalFees - $paidFees;
 
         $attendanceCount = Attendance::where('student_id', $student->id)->count();
         $presentCount = Attendance::where('student_id', $student->id)

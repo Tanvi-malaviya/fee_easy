@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -39,7 +40,7 @@ class StudentController extends Controller
             'monthly_revenue' => Payment::whereIn('student_id', $institute->students()->pluck('id'))
                 ->where('created_at', '>=', $startOfMonth)
                 ->sum('amount'),
-            'pending_fees' => $institute->fees()->where('status', '!=', 'Paid')->sum('due_amount'),
+            'pending_fees' => $institute->fees()->where('status', '!=', 'Paid')->sum(DB::raw('total_amount - paid_amount')),
             'today_attendance' => Student::where('institute_id', $institute->id)
                 ->whereHas('attendance', function($q) use ($today) {
                     $q->where('date', $today)->where('status', 'Present');

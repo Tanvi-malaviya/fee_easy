@@ -22,7 +22,7 @@ class StudentFeesController extends Controller
         $summary = [
             'total_fees' => $fees->sum('total_amount'),
             'paid_fees' => $fees->sum('paid_amount'),
-            'due_fees' => $fees->sum('due_amount'),
+            'due_fees' => $fees->sum('total_amount') - $fees->sum('paid_amount'),
         ];
 
         return response()->json([

@@ -62,169 +62,159 @@
             </div>
         </div>
 
-        <!-- MANAGE BATCH VIEW -->
-        <div id="form-view" class="hidden animate-in slide-in-from-bottom-4 duration-500">
-            <form id="batch-form">
-                <input type="hidden" id="batch-id" name="id">
-
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 id="form-title" class="text-2xl font-bold text-slate-800 tracking-tight">Manage Batch</h1>
-                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">Configure academic
-                            batch details, schedule, and capacity.</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button type="button" onclick="toggleFormView(false)"
-                            class="h-11 px-6 border-2 border-primary text-primary rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-orange-50 transition-all">Cancel</button>
-                        <button type="submit" id="submit-btn"
-                            class="h-11 px-6 bg-primary text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform flex items-center gap-3">
-                            <span id="btn-text">Save Batch</span>
-                            <span id="btn-loader"
-                                class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        <!-- MANAGE BATCH MODAL -->
+        <div id="form-modal" class="fixed inset-0 z-[100] hidden">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="toggleFormView(false)"></div>
+            
+            <!-- Modal Content -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] max-h-[95vh] overflow-y-auto scrollbar-hide">
+                <style>
+                    .scrollbar-hide::-webkit-scrollbar { display: none; }
+                    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+                </style>
+                <div class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                    <!-- Header -->
+                    <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
+                        <div>
+                            <h1 id="form-title" class="text-lg font-bold text-slate-800 tracking-tight">Manage Batch</h1>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Configure details, schedule, and capacity.</p>
+                        </div>
+                        <button type="button" onclick="toggleFormView(false)" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Combined Info & Schedule Card -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-white p-6 rounded-[1rem] border border-slate-100 shadow-sm space-y-6">
-                            <!-- Info Section -->
-                            <div class="space-y-4">
-                                <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
-                                    <div
-                                        class="h-8 w-8 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-base font-bold text-slate-800 tracking-tight">General Information</h3>
+                    <form id="batch-form" class="px-6 py-4 space-y-3">
+                        <input type="hidden" id="batch-id" name="id">
+
+                        <!-- General Information -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 text-primary">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <h3 class="text-[9px] font-bold uppercase tracking-widest">General Information</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Name</label>
+                                    <input type="text" name="name" id="field-name" required placeholder="e.g. Maths 2024-A"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div class="space-y-1.5">
-                                        <label
-                                            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch
-                                            Name</label>
-                                        <input type="text" name="name" id="field-name" required
-                                            placeholder="e.g. Maths 2024"
-                                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    </div>
-                                    <div class="space-y-1.5">
-                                        <label
-                                            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                                        <input type="text" name="subject" id="field-subject" required
-                                            placeholder="Select Subject"
-                                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    </div>
-                                    <div class="space-y-1.5">
-                                        <label
-                                            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
-                                            (₹)</label>
-                                        <input type="number" name="fees" id="field-fees" placeholder="0"
-                                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    </div>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch
-                                        Description</label>
-                                    <textarea name="description" id="field-description" rows="2"
-                                        placeholder="Brief details about this cohort..."
-                                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all resize-none"></textarea>
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
+                                    <input type="text" name="subject" id="field-subject" required placeholder="Select Subject"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
-
-                            <!-- Schedule Section -->
-                            <div class="space-y-4 pt-4 border-t border-slate-50">
-                                <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
-                                    <div
-                                        class="h-8 w-8 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-base font-bold text-slate-800 tracking-tight">Schedule & Timing</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees (₹)</label>
+                                    <input type="number" name="fees" id="field-fees" placeholder="0"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-1.5">
-                                        <label
-                                            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
-                                            Time</label>
-                                        <input type="time" name="start_time" id="field-start"
-                                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    </div>
-                                    <div class="space-y-1.5">
-                                        <label
-                                            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
-                                            Time</label>
-                                        <input type="time" name="end_time" id="field-end"
-                                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    </div>
-                                </div>
-                                <div class="space-y-3">
-                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days
-                                        of the week</label>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
-                                            <label class="relative cursor-pointer group">
-                                                <input type="checkbox" name="days[]" value="{{ substr($day, 0, 3) }}"
-                                                    class="peer sr-only day-checkbox">
-                                                <div
-                                                    class="px-4 py-2 bg-white border border-slate-100 rounded-xl text-[11px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
-                                                    {{ $day }}
-                                                </div>
-                                            </label>
-                                        @endforeach
-                                    </div>
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Description</label>
+                                    <input type="text" name="description" id="field-description" placeholder="Brief details..."
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Capacity & Visual -->
-                    <div class="space-y-6">
-                        <div class="bg-white p-6 rounded-[1rem] border border-slate-100 shadow-sm space-y-4">
-                            <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
-                                <div class="h-8 w-8 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857" />
-                                    </svg>
+                        <!-- Schedule Section -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 text-primary pt-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <h3 class="text-[9px] font-bold uppercase tracking-widest">Schedule & Timing</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start Time</label>
+                                    <input type="time" name="start_time" id="field-start"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
-                                <h3 class="text-base font-bold text-slate-800 tracking-tight">Capacity</h3>
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End Time</label>
+                                    <input type="time" name="end_time" id="field-end"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                </div>
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Maximum
-                                    Students</label>
-                                <div class="flex items-center gap-3">
-                                    <input type="number" name="max_capacity" id="field-capacity" placeholder="30"
-                                        class="flex-1 px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                    <span
-                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seats</span>
+                                <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                                        <label class="relative cursor-pointer group">
+                                            <input type="checkbox" name="days[]" value="{{ $day }}" class="peer sr-only day-checkbox">
+                                            <div class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
+                                                {{ $day }}
+                                            </div>
+                                        </label>
+                                    @endforeach
                                 </div>
-                            </div>
-                            <div class="p-4 bg-secondary/5 rounded-xl border border-secondary/10">
-                                <p class="text-[10px] font-bold text-slate-500 leading-relaxed">
-                                    <span class="text-secondary font-bold uppercase tracking-widest mr-1">Pro Tip:</span>
-                                    25-35 capacity is recommended for high-engagement.
-                                </p>
                             </div>
                         </div>
 
-                        <div class="relative rounded-[1rem] overflow-hidden shadow-lg h-[200px]">
-                            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
-                                class="w-full h-full object-cover">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex flex-col justify-end p-5">
-                                <p class="text-white text-[11px] font-bold italic leading-tight">
-                                    "Education is the most powerful weapon which you can use to change the world."
-                                </p>
+                        <!-- Capacity Section -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 text-primary pt-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857"/></svg>
+                                <h3 class="text-[9px] font-bold uppercase tracking-widest">Capacity</h3>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-32 space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Max Seats</label>
+                                    <input type="number" name="max_capacity" id="field-capacity" placeholder="30"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                </div>
+                                <div class="flex-1 p-2 bg-secondary/5 rounded-lg border border-secondary/10 flex items-center gap-2">
+                                    <svg class="w-3 h-3 text-secondary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                    <p class="text-[8px] font-bold text-slate-500 leading-tight">
+                                        <span class="text-secondary uppercase mr-1">Tip:</span> 25-35 seats recommended.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
+                            <button type="button" onclick="toggleFormView(false)"
+                                class="h-9 px-6 border border-slate-200 text-slate-500 rounded-lg font-bold text-[9px] uppercase tracking-widest hover:bg-slate-50 transition-all">Cancel</button>
+                            <button type="submit" id="submit-btn"
+                                class="h-9 px-6 bg-primary2 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform flex items-center gap-2">
+                                <span id="btn-text">Save Batch</span>
+                                <span id="btn-loader" class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- DELETE CONFIRMATION MODAL -->
+        <div id="delete-modal" class="fixed inset-0 z-[120] hidden">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="toggleDeleteModal(false)"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
+                <div class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-rose-500 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                    <div class="p-8">
+                        <div class="flex gap-4">
+                            <div class="h-12 w-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Batch?</h3>
+                                <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want to permanently remove <span id="delete-batch-name" class="font-bold text-slate-800"></span>? This action cannot be undone and will erase all academic and financial history.</p>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" onclick="toggleDeleteModal(false)" class="flex-1 h-12 border-2 border-emerald-500 text-emerald-500 rounded-xl font-extrabold text-[12px] hover:bg-emerald-50 transition-all">Cancel</button>
+                                    <button type="button" id="confirm-delete-btn" class="flex-[1.5] h-12 bg-rose-500 text-white rounded-xl font-extrabold text-[12px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all">Yes, Delete Batch</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="px-8 py-3 bg-slate-50 flex items-center gap-2">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authenticated as Admin</span>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -355,11 +345,10 @@
         }
 
         function toggleFormView(show, isEdit = false) {
-            const listView = document.getElementById('list-view');
-            const formView = document.getElementById('form-view');
+            const modal = document.getElementById('form-modal');
             if (show) {
-                listView.classList.add('hidden');
-                formView.classList.remove('hidden');
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent scroll
                 if (!isEdit) {
                     document.getElementById('batch-form').reset();
                     document.getElementById('batch-id').value = '';
@@ -369,8 +358,8 @@
                     document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
                 }
             } else {
-                listView.classList.remove('hidden');
-                formView.classList.add('hidden');
+                modal.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scroll
             }
         }
 
@@ -415,16 +404,49 @@
             finally { toggleSubmitLoading(false); }
         });
 
-        async function deleteBatch(id, name) {
-            if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+        let batchToDelete = null;
+        function toggleDeleteModal(show, id = null, name = '') {
+            const modal = document.getElementById('delete-modal');
+            if (show) {
+                batchToDelete = id;
+                document.getElementById('delete-batch-name').innerText = name;
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+                batchToDelete = null;
+            }
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if (!batchToDelete) return;
+            const btn = document.getElementById('confirm-delete-btn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Deleting...';
+            btn.disabled = true;
+
             try {
-                const resp = await fetch(`${API_URL}/${id}`, {
+                const resp = await fetch(`${API_URL}/${batchToDelete}`, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
                 });
                 const result = await resp.json();
-                if (result.status === 'success') { showToast(result.message); fetchBatches(); }
-            } catch (error) { showToast('Delete failed', 'error'); }
+                if (result.status === 'success') {
+                    showToast(result.message);
+                    toggleDeleteModal(false);
+                    fetchBatches();
+                }
+            } catch (error) {
+                showToast('Delete failed', 'error');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        function deleteBatch(id, name) {
+            toggleDeleteModal(true, id, name);
         }
 
         function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
