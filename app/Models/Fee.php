@@ -15,8 +15,7 @@ class Fee extends Model
         'total_amount',
         'paid_amount',
         'status',
-        'month',
-        'year',
+        'date',
     ];
 
     public function student()

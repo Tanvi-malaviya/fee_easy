@@ -97,6 +97,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 return view('institute.batches.students', compact('id')); })->name('batches.students');
             Route::get('/batches/{id}/homework', function ($id) {
                 return view('institute.batches.homework', compact('id')); })->name('batches.homework');
+            Route::get('/batches/{id}/homework/{homework_id}', function ($id, $homework_id) {
+                return view('institute.batches.homework_show', compact('id', 'homework_id')); })->name('batches.homework.show');
             Route::get('/batches/{id}/attendance-history', function ($id) {
                 return view('institute.batches.attendance', compact('id')); })->name('batches.attendance');
             Route::get('/batches/{id}/resources', function ($id) {

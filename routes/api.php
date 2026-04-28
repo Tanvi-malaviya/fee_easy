@@ -84,6 +84,8 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/homeworks', [InstituteHomeworkController::class, 'store']);
             Route::get('/homeworks', [InstituteHomeworkController::class, 'index']);
+            Route::get('/homeworks/{id}', [InstituteHomeworkController::class, 'show']);
+            Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);

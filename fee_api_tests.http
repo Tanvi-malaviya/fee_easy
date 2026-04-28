@@ -1,0 +1,40 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+# Valid Institute Token
+@token = 44|Rzgzu2bIysXXOIoyHKCYK4foZox3baBTqcXJK9s01f691275
+@studentId = 35
+
+### Get All Fees (Filtered by date)
+GET {{baseUrl}}/institute/fees?date=2026-04-28
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Get Student Fees
+GET {{baseUrl}}/institute/fees/{{studentId}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Create New Fee Record (with Date and Enum payment_method)
+POST {{baseUrl}}/institute/fees
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+    "student_id": {{studentId}},
+    "total_amount": 2000,
+    "paid_amount": 2000,
+    "date": "2026-04-28",
+    "payment_method": "Online",
+    "status": "Paid"
+}
+
+###
+
+### Export Fee Report PDF
+GET {{baseUrl}}/institute/fees/export?date=2026-04-28
+Authorization: Bearer {{token}}
+Accept: application/pdf
