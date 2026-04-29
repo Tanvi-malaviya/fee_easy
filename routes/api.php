@@ -93,6 +93,7 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
+            Route::post('/notifications/mark-all-read', [InstituteNotificationController::class, 'markAllRead']);
 
             // Plan and Subscription routes
             Route::get('/plans', [PlanController::class, 'index']);

@@ -76,6 +76,9 @@ class InstituteApiTest extends TestCase
             'topic' => 'Algebra Review',
             'description' => 'Covered linear equations and sample problems.',
             'date' => now()->toDateString(),
+            'category' => 'Academic',
+            'recipient' => 'students',
+            'target_type' => 'batch',
         ]);
 
         $dailyResponse->assertCreated()

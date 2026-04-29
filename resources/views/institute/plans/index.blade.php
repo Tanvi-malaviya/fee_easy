@@ -3,76 +3,140 @@
 @section('title', 'Subscription Plans')
 
 @section('content')
-<div class="pt-2">
-    <div class="mb-8 flex items-center gap-4">
-        <a href="{{ route('institute.profile.index') }}" class="h-10 w-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-600/30 transition-all shadow-sm group">
-            <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+<div class="max-w-[1200px] mx-auto pb-12 pt-2">
+    <!-- Header -->
+    <div class="mb-6 flex items-center gap-3">
+        <a href="{{ route('institute.profile.index') }}" class="h-8 w-8 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-[#ff6c00] hover:border-orange-500/30 transition-all shadow-sm group">
+            <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
-            <h1 class="text-2xl font-black text-slate-800 leading-tight">Subscription Plans</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Choose the perfect plan for your institute's growth</p>
+            <h1 class="text-xl font-bold text-slate-800 leading-tight">Subscription Plans</h1>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Choose the perfect plan for your institute's growth</p>
         </div>
+    </div>
+
+    <!-- Top Grid: Current Plan & Capacity -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Current Plan Card -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-slate-100/50 p-5 flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 h-36 w-36 bg-orange-500/5 rounded-full"></div>
+            <div>
+                <div class="flex items-center justify-between">
+                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Current Plan</span>
+                    <span id="sub-status" class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">Loading...</span>
+                </div>
+                <h2 id="sub-plan-name" class="text-2xl font-bold text-slate-800 mt-2 leading-tight">Loading Plan...</h2>
+                <p class="text-[11px] text-slate-400 mt-1 font-medium leading-relaxed">Your institution currently enjoys premium features and unlimited scalability.</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-6 pt-3 border-t border-slate-50">
+                <div>
+                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Next Renewal</span>
+                    <p id="sub-renewal" class="text-xs font-bold text-slate-700 mt-0.5">Loading...</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="alert('Manage payment gateway')" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all">Manage Payment</button>
+                    <a href="#plans-section" class="px-4 py-2 bg-[#ff6c00] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:bg-[#e05f00] transition-all">Upgrade Plan</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Capacity Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100/50 p-5 flex flex-col justify-between relative overflow-hidden">
+            <div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800">Student Capacity</span>
+                    <span id="capacity-percent" class="text-xs font-bold text-[#ff6c00]">0%</span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="capacity-bar" class="h-full bg-gradient-to-r from-[#e05f00] to-[#ff6c00] rounded-full" style="width: 0%;"></div>
+                </div>
+                <p id="capacity-text" class="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-wide">0 of 0 enrolled students.</p>
+            </div>
+            
+            <div class="bg-orange-50/50 border border-orange-100 rounded-xl p-2.5 mt-4">
+                <p class="text-[9px] text-slate-600 font-medium leading-relaxed">Approaching limit? Upgrade your tier for unlimited student slots.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Title -->
+    <div id="plans-section" class="text-center mb-6 max-w-xl mx-auto">
+        <h2 class="text-xl font-bold text-slate-800 tracking-tight">Choose the best plan for your campus</h2>
+        <p class="text-xs text-slate-400 mt-1">Scalable solutions for individual schools to large university networks.</p>
     </div>
 
     <!-- Plans Grid -->
-    <div id="plans-loader" class="py-20 flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm">
-        <div class="h-10 w-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">Fetching best plans for you...</p>
+    <div id="plans-loader" class="py-12 flex flex-col items-center justify-center bg-white rounded-2xl border border-slate-100/50 shadow-sm">
+        <div class="h-6 w-6 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin"></div>
+        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Fetching plans...</p>
     </div>
 
-    <div class="max-w-[1400px] mx-auto">
-        <div id="plans-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 hidden">
-            <!-- Plans will be injected here -->
+    <div id="plans-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 hidden">
+        <!-- Plans dynamically injected here -->
+    </div>
+
+    <!-- Bottom Features Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-xl border border-slate-100/50 p-4 flex items-start gap-3">
+            <div class="h-8 w-8 bg-orange-50 text-[#ff6c00] rounded-lg flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-slate-800">Automated Billing</h4>
+                <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">Streamline your finance department with automated invoices.</p>
+            </div>
         </div>
-
-        <!-- Recent Billing History Section -->
-        <div class="mt-6">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-800 leading-tight">Recent Billing History</h2>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Track your previous transactions and subscription statuses</p>
-                </div>
+        <div class="bg-white rounded-xl border border-slate-100/50 p-4 flex items-start gap-3">
+            <div class="h-8 w-8 bg-orange-50 text-[#ff6c00] rounded-lg flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             </div>
-
-            <div class="bg-white rounded-[1rem] border border-slate-100 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-50/50">
-                            <tr>
-                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subscription Plan</th>
-                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Amount Paid</th>
-                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
-                                <th class="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Date & Time</th>
-                            </tr>
-                        </thead>
-                        <tbody id="billing-history-container">
-                            <tr>
-                                <td colspan="4" class="px-8 py-20 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="h-8 w-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading history...</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination Footer -->
-                <div id="billing-pagination" class="px-8 py-5 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between hidden">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        Showing page <span id="current-page-num" class="text-slate-600">1</span> of <span id="total-pages-num" class="text-slate-600">1</span>
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="changeBillingPage('prev')" id="prev-page-btn" class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 hover:text-blue-600 hover:border-blue-600/20 transition-all disabled:opacity-30 disabled:pointer-events-none">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                        </button>
-                        <button onclick="changeBillingPage('next')" id="next-page-btn" class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 hover:text-blue-600 hover:border-blue-600/20 transition-all disabled:opacity-30 disabled:pointer-events-none">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                        </button>
-                    </div>
-                </div>
+            <div>
+                <h4 class="text-xs font-bold text-slate-800">Priority Support</h4>
+                <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">24/7 access to our specialized support engineers.</p>
             </div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-100/50 p-4 flex items-start gap-3">
+            <div class="h-8 w-8 bg-orange-50 text-[#ff6c00] rounded-lg flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-slate-800">WhatsApp Integration</h4>
+                <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">Keep parents and students informed via automated WhatsApp.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Billing History -->
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-100/50 overflow-hidden">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-base font-bold text-slate-800">Recent Billing History</h2>
+            <button onclick="alert('Export statement')" class="text-[#ff6c00] hover:text-[#e05f00] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export
+            </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-slate-700 border-collapse">
+                <thead class="bg-slate-50/75">
+                    <tr>
+                        <th class="px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                        <th class="px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Plan Name</th>
+                        <th class="px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Amount Paid</th>
+                        <th class="px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="billing-history-container" class="divide-y divide-slate-100">
+                    <tr>
+                        <td colspan="4" class="px-4 py-12 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <div class="h-4 w-4 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin mx-auto mb-2"></div>
+                            Loading history...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -80,68 +144,91 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        fetchCurrentSubscription();
         fetchPlans();
         fetchBillingHistory();
     });
+
+    async function fetchCurrentSubscription() {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const response = await fetch('/api/v1/institute/profile', { headers });
+            const result = await response.json();
+            if (result.status === 'success' && result.subscription) {
+                const sub = result.subscription;
+                document.getElementById('sub-plan-name').innerText = sub.plan_name;
+                document.getElementById('sub-status').innerText = sub.status;
+                document.getElementById('sub-renewal').innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
+                
+                // Capacity
+                const used = sub.students_enrolled || 0;
+                const total = sub.student_limit || 1000;
+                const percent = Math.min(100, Math.round((used / total) * 100));
+                
+                document.getElementById('capacity-percent').innerText = `${percent}%`;
+                document.getElementById('capacity-bar').style.width = `${percent}%`;
+                document.getElementById('capacity-text').innerText = `${used} of ${total} enrolled students.`;
+            }
+        } catch (e) { console.error('Sub fetch error:', e); }
+    }
 
     async function fetchPlans() {
         const loader = document.getElementById('plans-loader');
         const container = document.getElementById('plans-container');
         
         try {
-            const response = await fetch('/api/v1/institute/plans', {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
+            const response = await fetch('/api/v1/institute/plans', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const result = await response.json();
             
             if (result.status === 'success') {
                 container.innerHTML = '';
                 result.data.forEach(plan => {
                     const card = document.createElement('div');
-                    card.className = 'bg-white p-6 rounded-2xl border border-slate-100 hover:border-blue-600/30 transition-all group/pitem relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300';
-                    card.innerHTML = `
-                        <div class="absolute -right-8 -bottom-8 h-32 w-32 bg-blue-600/5 rounded-full group-hover/pitem:scale-150 transition-transform duration-700"></div>
-                        <div class="relative z-10">
-                            <div class="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    const nameLower = plan.name.toLowerCase();
+                    const isPro = nameLower.includes('pro');
+                    
+                    card.className = `bg-white rounded-2xl p-5 border shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-1 ${isPro ? 'border-[#ff6c00] ring-1 ring-[#ff6c00]/20' : 'border-slate-100/50'}`;
+                    
+                    const badgeHtml = isPro ? `<span class="absolute right-3 top-3 bg-[#ff6c00] text-white text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Current Plan</span>` : '';
+
+                    let features = [];
+                    if (nameLower.includes('basic')) {
+                        features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
+                    } else if (nameLower.includes('pro')) {
+                        features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
+                    } else {
+                        features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
+                    }
+
+                    const featuresHtml = features.map(f => `
+                        <li class="flex items-center gap-2">
+                            <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
+                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </div>
-                            <h4 class="text-xs font-black text-blue-600 uppercase tracking-[0.2em] mb-2">${plan.name}</h4>
-                            <div class="flex items-baseline gap-1 mb-6">
-                                <span class="text-4xl font-black text-slate-800">₹${parseFloat(plan.price).toLocaleString()}</span>
-                                <span class="text-xs font-bold text-slate-400 tracking-widest">/${plan.duration_days} DAYS</span>
+                            ${f}
+                        </li>
+                    `).join('');
+
+                    card.innerHTML = `
+                        ${badgeHtml}
+                        <div>
+                            <h4 class="text-base font-bold text-slate-800">${plan.name}</h4>
+                            <div class="flex items-baseline gap-1 mt-2 mb-4">
+                                <span class="text-2xl font-bold text-slate-800">₹${parseFloat(plan.price).toLocaleString()}</span>
+                                <span class="text-[9px] font-bold text-slate-400 tracking-wide">/${plan.duration_days} DAYS</span>
                             </div>
                             
-                            <div class="space-y-4 mb-8">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-5 w-5 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-600">Full Dashboard Access</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="h-5 w-5 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-600">Student & Batch Management</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="h-5 w-5 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-600">Attendance & Fees Tracking</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="h-5 w-5 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-600">Priority WhatsApp Support</span>
-                                </div>
-                            </div>
-
-                            <button onclick="choosePlan(${plan.id})" id="plan-btn-${plan.id}" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg shadow-slate-900/10 hover:shadow-blue-600/20 active:scale-[0.98]">
-                                Choose Plan
-                            </button>
+                            <ul class="space-y-2 text-[11px] text-slate-600 font-medium mb-6 pt-3 border-t border-slate-50">
+                                ${featuresHtml}
+                            </ul>
                         </div>
+
+                        <button onclick="choosePlan(${plan.id})" id="plan-btn-${plan.id}" class="w-full py-2.5 ${isPro ? 'bg-[#ff6c00] hover:bg-[#e05f00] text-white shadow-orange-500/20' : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'} rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
+                            ${nameLower.includes('enterprise') ? 'Contact Sales' : (isPro ? 'Manage Billing' : 'Select Plan')}
+                        </button>
                     `;
                     container.appendChild(card);
                 });
@@ -149,25 +236,16 @@
                 loader.classList.add('hidden');
                 container.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error('Fetch Plans Error:', error);
-            alert('Failed to load plans.');
-        }
+        } catch (error) { console.error('Fetch Plans Error:', error); }
     }
 
     async function choosePlan(planId) {
         const btn = document.getElementById(`plan-btn-${planId}`);
         const originalText = btn.innerText;
-        
-        btn.disabled = true;
-        btn.innerText = 'INITIALIZING...';
+        btn.disabled = true; btn.innerText = 'WAIT...';
 
         try {
-            const headers = {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            };
+            const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}' };
             const token = localStorage.getItem('token');
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -178,7 +256,7 @@
             });
 
             const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Failed to initiate purchase');
+            if (!response.ok) throw new Error(result.message || 'Failed');
 
             const options = {
                 "key": result.razorpay_key,
@@ -188,8 +266,7 @@
                 "description": "Subscription for " + result.plan_name,
                 "order_id": result.razorpay_order_id,
                 "handler": async function (resp) {
-                    btn.innerText = 'VERIFYING...';
-                    
+                    btn.innerText = 'VERIFY...';
                     const verifyResponse = await fetch('/api/v1/institute/subscriptions/verify-payment', {
                         method: 'POST',
                         headers: headers,
@@ -201,137 +278,51 @@
                         })
                     });
 
-                    const verifyResult = await verifyResponse.json();
                     if (verifyResponse.ok) {
-                        alert('Payment successful! Your subscription is now active.');
-                        window.location.href = '{{ route("institute.profile.index") }}';
-                    } else {
-                        alert(verifyResult.message || 'Payment verification failed');
-                    }
-                    
-                    btn.disabled = false;
-                    btn.innerText = originalText;
+                        alert('Payment successful!');
+                        window.location.reload();
+                    } else { alert('Verification failed'); }
                 },
-                "prefill": {
-                    "name": result.institute_name,
-                    "email": result.email,
-                    "contact": result.phone
-                },
-                "theme": {
-                    "color": "#1e3a8a"
-                },
-                "modal": {
-                    "ondismiss": function() {
-                        btn.disabled = false;
-                        btn.innerText = originalText;
-                    }
-                }
+                "theme": { "color": "#ff6c00" }
             };
-            
             const rzp = new Razorpay(options);
             rzp.open();
 
-        } catch (error) {
-            console.error('Plan Purchase Error:', error);
-            alert(error.message || 'Something went wrong.');
-            btn.disabled = false;
-            btn.innerText = originalText;
-        }
+        } catch (error) { alert(error.message || 'Error'); }
+        finally { btn.disabled = false; btn.innerText = originalText; }
     }
 
-    let currentBillingPage = 1;
-    let totalBillingPages = 1;
-
-    async function fetchBillingHistory(page = 1) {
+    async function fetchBillingHistory() {
         const container = document.getElementById('billing-history-container');
-        const pagination = document.getElementById('billing-pagination');
-        
         try {
-            const token = localStorage.getItem('token');
-            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const response = await fetch(`/api/v1/institute/subscriptions/history?page=${page}`, { headers });
+            const headers = { 'X-Requested-With': 'XMLHttpRequest', 'Authorization': `Bearer ${localStorage.getItem('token')}` };
+            const response = await fetch('/api/v1/institute/subscriptions/history', { headers });
             const result = await response.json();
             
             if (result.status === 'success') {
                 container.innerHTML = '';
-                
                 if (result.data.length === 0) {
-                    container.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="px-8 py-20 text-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-4">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    </div>
-                                    <p class="text-sm font-black text-slate-400 uppercase tracking-widest">No billing history found</p>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    pagination.classList.add('hidden');
+                    container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400 font-bold text-[10px] uppercase">No billing history</td></tr>`;
                     return;
                 }
                 
-                // Update Pagination Controls
-                currentBillingPage = result.meta.current_page;
-                totalBillingPages = result.meta.last_page;
-                
-                document.getElementById('current-page-num').innerText = currentBillingPage;
-                document.getElementById('total-pages-num').innerText = totalBillingPages;
-                document.getElementById('prev-page-btn').disabled = currentBillingPage === 1;
-                document.getElementById('next-page-btn').disabled = currentBillingPage === totalBillingPages;
-                
-                if (totalBillingPages > 1) pagination.classList.remove('hidden');
-                else pagination.classList.add('hidden');
-
                 result.data.forEach(item => {
-                    const statusColors = {
-                        'active': 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                        'success': 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                        'pending': 'bg-amber-50 text-amber-600 border-amber-100',
-                        'failed': 'bg-rose-50 text-rose-600 border-rose-100'
-                    };
-                    const statusColor = statusColors[item.status.toLowerCase()] || 'bg-slate-50 text-slate-600 border-slate-100';
-                    
-                    const date = new Date(item.created_at);
-                    const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                    const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    const statusColors = { 'active': 'bg-emerald-50 text-emerald-600', 'success': 'bg-emerald-50 text-emerald-600', 'pending': 'bg-amber-50 text-amber-600' };
+                    const date = new Date(item.created_at).toLocaleDateString('en-GB');
 
                     container.innerHTML += `
-                        <tr class="group hover:bg-slate-50/50 transition-colors">
-                            <td class="px-8 py-5 border-t border-slate-50">
-                                <p class="text-sm font-black text-slate-700">${item.plan_name}</p>
-                            </td>
-                            <td class="px-8 py-5 border-t border-slate-50">
-                                <p class="text-sm font-black text-slate-700">₹${parseFloat(item.amount).toLocaleString()}</p>
-                            </td>
-                            <td class="px-8 py-5 border-t border-slate-50">
-                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusColor}">
-                                    ${item.status}
-                                </span>
-                            </td>
-                            <td class="px-8 py-5 border-t border-slate-50">
-                                <p class="text-sm font-bold text-slate-700">${formattedDate}</p>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${formattedTime}</p>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="px-4 py-3 text-xs font-medium text-slate-700">${date}</td>
+                            <td class="px-4 py-3 text-xs font-bold text-slate-800">${item.plan_name}</td>
+                            <td class="px-4 py-3 text-xs font-bold text-slate-800">₹${parseFloat(item.amount).toLocaleString()}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase ${statusColors[item.status.toLowerCase()] || 'bg-slate-100'}">${item.status}</span>
                             </td>
                         </tr>
                     `;
                 });
             }
-        } catch (error) {
-            console.error('Billing History Error:', error);
-            container.innerHTML = '<tr><td colspan="4" class="px-8 py-20 text-center text-rose-500 font-bold">Failed to load history.</td></tr>';
-        }
-    }
-
-    function changeBillingPage(direction) {
-        if (direction === 'next' && currentBillingPage < totalBillingPages) {
-            fetchBillingHistory(currentBillingPage + 1);
-        } else if (direction === 'prev' && currentBillingPage > 1) {
-            fetchBillingHistory(currentBillingPage - 1);
-        }
+        } catch (e) { container.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-rose-400 font-bold">Error loading history</td></tr>'; }
     }
 </script>
 @endsection

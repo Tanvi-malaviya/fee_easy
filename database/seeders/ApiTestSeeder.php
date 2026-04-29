@@ -101,12 +101,11 @@ class ApiTestSeeder extends Seeder
 
         // 7. Fee
         $fee = Fee::firstOrCreate(
-            ['student_id' => $student->id, 'month' => date('F'), 'year' => date('Y')],
+            ['student_id' => $student->id, 'date' => now()->toDateString()],
             [
                 'institute_id' => $institute->id,
                 'total_amount' => 1000,
                 'paid_amount' => 500,
-                'due_amount' => 500,
                 'status' => 'partial'
             ]
         );

@@ -116,49 +116,49 @@
 
                 <!-- Recently Generated Reports -->
                 <!-- <div class="space-y-2 mt-6">
-                    <h4 class="text-xs font-extrabold text-slate-800">Recently Generated Reports</h4>
-                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-                        <table class="min-w-full divide-y divide-slate-50 text-left">
-                            <thead class="bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-3 py-2">Report Name</th>
-                                    <th class="px-3 py-2">Type</th>
-                                    <th class="px-3 py-2">Date</th>
-                                    <th class="px-3 py-2">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50 text-[10px] font-bold text-slate-600">
-                                <tr>
-                                    <td class="px-3 py-2 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>Batch-A Monthly Attendance</span>
-                                    </td>
-                                    <td class="px-3 py-2 text-slate-400">Attendance</td>
-                                    <td class="px-3 py-2 text-slate-400">Oct 24, 2024</td>
-                                    <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>Q3 Fee Collection Summary</span>
-                                    </td>
-                                    <td class="px-3 py-2 text-slate-400">Finance</td>
-                                    <td class="px-3 py-2 text-slate-400">Oct 22, 2024</td>
-                                    <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>Annual Performance Stats</span>
-                                    </td>
-                                    <td class="px-3 py-2 text-slate-400">Performance</td>
-                                    <td class="px-3 py-2 text-slate-400">Oct 20, 2024</td>
-                                    <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold">Processing</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div> -->
+                        <h4 class="text-xs font-extrabold text-slate-800">Recently Generated Reports</h4>
+                        <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                            <table class="min-w-full divide-y divide-slate-50 text-left">
+                                <thead class="bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-3 py-2">Report Name</th>
+                                        <th class="px-3 py-2">Type</th>
+                                        <th class="px-3 py-2">Date</th>
+                                        <th class="px-3 py-2">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50 text-[10px] font-bold text-slate-600">
+                                    <tr>
+                                        <td class="px-3 py-2 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Batch-A Monthly Attendance</span>
+                                        </td>
+                                        <td class="px-3 py-2 text-slate-400">Attendance</td>
+                                        <td class="px-3 py-2 text-slate-400">Oct 24, 2024</td>
+                                        <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Q3 Fee Collection Summary</span>
+                                        </td>
+                                        <td class="px-3 py-2 text-slate-400">Finance</td>
+                                        <td class="px-3 py-2 text-slate-400">Oct 22, 2024</td>
+                                        <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Annual Performance Stats</span>
+                                        </td>
+                                        <td class="px-3 py-2 text-slate-400">Performance</td>
+                                        <td class="px-3 py-2 text-slate-400">Oct 20, 2024</td>
+                                        <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold">Processing</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
             </div>
 
             <!-- Section: Fees -->
@@ -277,7 +277,8 @@
                                 <p class="text-[9px] text-slate-400 mt-0.5 font-medium">Revenue performance over time</p>
                             </div>
                             <div class="flex items-center gap-1.5 text-[9px] font-bold">
-                                <span class="flex items-center gap-1 text-slate-600"><span class="w-2 h-2 rounded-full bg-[#ff6c00] block"></span> Collected</span>
+                                <span class="flex items-center gap-1 text-slate-600"><span
+                                        class="w-2 h-2 rounded-full bg-[#ff6c00] block"></span> Collected</span>
                             </div>
                         </div>
                         <div class="h-40 flex items-end justify-between px-2 pt-4 gap-2" id="fee-trends-chart">
@@ -289,7 +290,8 @@
                     <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col">
                         <h4 class="text-xs font-bold text-slate-800 tracking-tight">By Batch</h4>
                         <p class="text-[9px] text-slate-400 mt-0.5 font-medium mb-3">Live collection breakdown</p>
-                        <div class="space-y-1.5 max-h-[150px] overflow-y-auto flex-1 flex flex-col pr-1" id="fee-top-batches">
+                        <div class="space-y-1.5 max-h-[150px] overflow-y-auto flex-1 flex flex-col pr-1"
+                            id="fee-top-batches">
                             <!-- Top batches injected here via script -->
                         </div>
                     </div>
@@ -321,13 +323,16 @@
 
                     <!-- Frontend Pagination Controls -->
                     <div class="flex items-center justify-between mt-4 px-1" id="fee-pagination-controls">
-                        <span class="text-[10px] font-bold text-slate-400" id="fee-pagination-info">Showing 1-10 of 0 batches</span>
+                        <span class="text-[10px] font-bold text-slate-400" id="fee-pagination-info">Showing 1-10 of 0
+                            batches</span>
                         <div class="flex items-center gap-1">
-                            <button onclick="changeFeePage(-1)" id="fee-prev-btn" class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 transition-all disabled:opacity-50 disabled:hover:bg-slate-50 disabled:cursor-not-allowed flex items-center justify-center">Prev</button>
+                            <button onclick="changeFeePage(-1)" id="fee-prev-btn"
+                                class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 transition-all disabled:opacity-50 disabled:hover:bg-slate-50 disabled:cursor-not-allowed flex items-center justify-center">Prev</button>
                             <div class="flex items-center gap-1" id="fee-page-numbers">
                                 <!-- Page numbers inserted here -->
                             </div>
-                            <button onclick="changeFeePage(1)" id="fee-next-btn" class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 transition-all disabled:opacity-50 disabled:hover:bg-slate-50 disabled:cursor-not-allowed flex items-center justify-center">Next</button>
+                            <button onclick="changeFeePage(1)" id="fee-next-btn"
+                                class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 transition-all disabled:opacity-50 disabled:hover:bg-slate-50 disabled:cursor-not-allowed flex items-center justify-center">Next</button>
                         </div>
                     </div>
                 </div>
@@ -633,7 +638,8 @@
         <div class="flex items-center justify-between mb-2">
             <div>
                 <span class="text-[9px] font-bold text-[#ff6c00] uppercase tracking-wider block">Academic Insights</span>
-                <h2 class="text-xl font-black text-slate-800 tracking-tight leading-tight mt-0.5">Student Performance Report</h2>
+                <h2 class="text-xl font-black text-slate-800 tracking-tight leading-tight mt-0.5">Student Performance Report
+                </h2>
                 <p class="text-[11px] font-medium text-slate-400 mt-1">Holistic assessment breakdown and tracking.</p>
             </div>
             <div class="flex items-center gap-2">
@@ -652,12 +658,16 @@
                     <div class="flex items-center justify-between">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Average Grade</p>
                         <svg class="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 14zm0 0l-6.16-3.422a12.083 12.083 0 00-.665 6.479A11.952 11.952 0 0012 14z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 14zm0 0l-6.16-3.422a12.083 12.083 0 00-.665 6.479A11.952 11.952 0 0012 14z" />
                         </svg>
                     </div>
                     <h3 class="text-xl font-extrabold text-slate-800 mt-2">A-</h3>
                     <p class="text-[9px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
                         +2.4% from last term
                     </p>
                 </div>
@@ -685,7 +695,8 @@
                     <div class="flex items-center justify-between">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Top Performing Batch</p>
                         <svg class="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
                     <h3 id="perf-top-batch" class="text-sm font-extrabold text-slate-800 mt-2">N/A</h3>
@@ -725,9 +736,11 @@
                 <div class="h-44 flex items-end justify-between px-2 pt-4 relative" id="performance-growth-container">
                     <svg class="absolute inset-0 w-full h-full p-4" viewBox="0 0 500 100" preserveAspectRatio="none">
                         <!-- Last Term Grey Line -->
-                        <path d="M0,80 Q50,40 100,70 T200,60 T300,80 T400,50 T500,70" fill="none" stroke="#cbd5e1" stroke-width="2.5" />
+                        <path d="M0,80 Q50,40 100,70 T200,60 T300,80 T400,50 T500,70" fill="none" stroke="#cbd5e1"
+                            stroke-width="2.5" />
                         <!-- Current Term Orange Line -->
-                        <path d="M0,90 Q50,60 100,40 T200,75 T300,30 T400,65 T500,20" fill="none" stroke="#ff6c00" stroke-width="3" />
+                        <path d="M0,90 Q50,60 100,40 T200,75 T300,30 T400,65 T500,20" fill="none" stroke="#ff6c00"
+                            stroke-width="3" />
                     </svg>
                     <div class="w-full flex justify-between absolute bottom-1 px-4 text-[8px] font-bold text-slate-400">
                         <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
@@ -741,7 +754,8 @@
             <div class="flex items-center justify-between mb-3">
                 <h4 class="text-xs font-bold text-slate-800 tracking-tight">Detailed Student Ranking</h4>
                 <div class="relative w-48">
-                    <input type="text" id="search-perf-student" onkeyup="renderPerformanceRanking()" placeholder="Search by name, batch..."
+                    <input type="text" id="search-perf-student" onkeyup="renderPerformanceRanking()"
+                        placeholder="Search by name, batch..."
                         class="w-full text-[10px] font-bold text-slate-800 placeholder-slate-400 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-[#ff6c00] transition-all">
                 </div>
             </div>
@@ -757,8 +771,7 @@
                             <th class="px-3 py-2.5">Average Score</th>
                         </tr>
                     </thead>
-                    <tbody id="perf-ranking-rows"
-                        class="divide-y divide-slate-50 font-bold text-slate-600 text-[11px]">
+                    <tbody id="perf-ranking-rows" class="divide-y divide-slate-50 font-bold text-slate-600 text-[11px]">
                         <!-- Dynamic Rankings injected here -->
                     </tbody>
                 </table>
@@ -766,11 +779,14 @@
 
             <!-- Frontend Pagination Controls -->
             <div class="flex items-center justify-between mt-4 px-1">
-                <span class="text-[10px] font-bold text-slate-400" id="perf-pagination-info">Showing 1-10 of 0 students</span>
+                <span class="text-[10px] font-bold text-slate-400" id="perf-pagination-info">Showing 1-10 of 0
+                    students</span>
                 <div class="flex items-center gap-1">
-                    <button onclick="changePerfPage(-1)" id="perf-prev-btn" class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Prev</button>
+                    <button onclick="changePerfPage(-1)" id="perf-prev-btn"
+                        class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Prev</button>
                     <div class="flex items-center gap-1" id="perf-page-numbers"></div>
-                    <button onclick="changePerfPage(1)" id="perf-next-btn" class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Next</button>
+                    <button onclick="changePerfPage(1)" id="perf-next-btn"
+                        class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Next</button>
                 </div>
             </div>
         </div>
@@ -849,14 +865,14 @@
                         let tooltipHtml = `<div id="growth-tooltip" class="absolute hidden bg-slate-900 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-md pointer-events-none transition-all duration-150 z-30 transform -translate-x-1/2 -translate-y-full mt-2"></div>`;
 
                         svgContainer.innerHTML = `
-                            <svg class="absolute inset-0 w-full h-full p-4" viewBox="0 0 500 100" preserveAspectRatio="none">
-                                <path d="${pathD}" fill="none" stroke="#ff6c00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="w-full flex justify-between absolute bottom-1 px-4 text-[8px] font-bold text-slate-400">
-                                ${labelsHtml}
-                            </div>
-                            ${tooltipHtml}
-                        `;
+                                <svg class="absolute inset-0 w-full h-full p-4" viewBox="0 0 500 100" preserveAspectRatio="none">
+                                    <path d="${pathD}" fill="none" stroke="#ff6c00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <div class="w-full flex justify-between absolute bottom-1 px-4 text-[8px] font-bold text-slate-400">
+                                    ${labelsHtml}
+                                </div>
+                                ${tooltipHtml}
+                            `;
 
                         svgContainer.addEventListener('mousemove', (e) => {
                             const rect = svgContainer.getBoundingClientRect();
@@ -905,8 +921,8 @@
 
             let filtered = globalPerformanceData;
             if (searchVal) {
-                filtered = globalPerformanceData.filter(s => 
-                    s.name.toLowerCase().includes(searchVal) || 
+                filtered = globalPerformanceData.filter(s =>
+                    s.name.toLowerCase().includes(searchVal) ||
                     s.batch_name.toLowerCase().includes(searchVal)
                 );
             }
@@ -954,35 +970,35 @@
             if (pageData.length > 0) {
                 container.innerHTML = pageData.map(s => {
                     const rankLabel = s.rank.toString().padStart(2, '0');
-                    const rankColor = s.rank === 1 ? 'text-amber-500 bg-amber-50' : 
-                                      s.rank === 2 ? 'text-slate-500 bg-slate-50' : 
-                                      s.rank === 3 ? 'text-orange-500 bg-orange-50' : 'text-slate-400 bg-slate-50';
+                    const rankColor = s.rank === 1 ? 'text-amber-500 bg-amber-50' :
+                        s.rank === 2 ? 'text-slate-500 bg-slate-50' :
+                            s.rank === 3 ? 'text-orange-500 bg-orange-50' : 'text-slate-400 bg-slate-50';
                     return `
-                        <tr class="hover:bg-slate-50/40 transition-colors">
-                            <td class="px-3 py-3">
-                                <span class="px-2 py-1 rounded-lg font-black text-[10px] ${rankColor}">${rankLabel}</span>
-                            </td>
-                            <td class="px-3 py-3 flex items-center gap-2">
-                                <div class="h-7 w-7 rounded-full bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">
-                                    ${s.name.substring(0,1)}
-                                </div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-800 leading-none">${s.name}</h5>
-                                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${s.id_label}</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-3 text-slate-600">${s.batch_name}</td>
-                            <td class="px-3 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-12 bg-slate-100 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-emerald-500 h-full rounded-full" style="width: ${s.attendance}%"></div>
+                            <tr class="hover:bg-slate-50/40 transition-colors">
+                                <td class="px-3 py-3">
+                                    <span class="px-2 py-1 rounded-lg font-black text-[10px] ${rankColor}">${rankLabel}</span>
+                                </td>
+                                <td class="px-3 py-3 flex items-center gap-2">
+                                    <div class="h-7 w-7 rounded-full bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">
+                                        ${s.name.substring(0, 1)}
                                     </div>
-                                    <span class="text-slate-800 font-bold text-[10px]">${s.attendance}%</span>
-                                </div>
-                            </td>
-                            <td class="px-3 py-3 text-slate-800 font-extrabold text-xs">${s.score}</td>
-                        </tr>
-                    `;
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-800 leading-none">${s.name}</h5>
+                                        <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${s.id_label}</p>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3 text-slate-600">${s.batch_name}</td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-12 bg-slate-100 h-1 rounded-full overflow-hidden">
+                                            <div class="bg-emerald-500 h-full rounded-full" style="width: ${s.attendance}%"></div>
+                                        </div>
+                                        <span class="text-slate-800 font-bold text-[10px]">${s.attendance}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3 text-slate-800 font-extrabold text-xs">${s.score}</td>
+                            </tr>
+                        `;
                 }).join('');
             } else {
                 container.innerHTML = `<tr><td colspan="5" class="px-3 py-4 text-center text-slate-400 italic">No rankings available.</td></tr>`;
@@ -1034,9 +1050,9 @@
             document.getElementById('fee-rate-bar').style.width = pct + '%';
 
             const feeBatches = globalFeeData.batches || [];
-            
+
             // By Batch Section
-            const sortedBatches = [...feeBatches].sort((a,b) => {
+            const sortedBatches = [...feeBatches].sort((a, b) => {
                 const b1 = (a.total_collected + a.total_due) || 1;
                 const pct1 = a.total_collected / b1;
 
@@ -1052,17 +1068,17 @@
                     const paid = b.total_collected;
                     const bPct = billed > 0 ? ((paid / billed) * 100).toFixed(0) : '0';
                     return `
-                        <div class="flex items-center justify-between border-b border-slate-50 pb-1.5 last:border-0 last:pb-0">
-                            <div>
-                                <h5 class="text-[10px] font-bold text-slate-800 leading-none">${b.batch_name}</h5>
-                                <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${b.students_count || 0} Students</p>
+                            <div class="flex items-center justify-between border-b border-slate-50 pb-1.5 last:border-0 last:pb-0">
+                                <div>
+                                    <h5 class="text-[10px] font-bold text-slate-800 leading-none">${b.batch_name}</h5>
+                                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${b.students_count || 0} Students</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] font-black text-emerald-600">${bPct}%</span>
+                                    <p class="text-[7px] font-bold text-slate-400 mt-0.5">₹${(paid / 1000).toFixed(1)}k / ₹${(billed / 1000).toFixed(1)}k</p>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-[10px] font-black text-emerald-600">${bPct}%</span>
-                                <p class="text-[7px] font-bold text-slate-400 mt-0.5">₹${(paid/1000).toFixed(1)}k / ₹${(billed/1000).toFixed(1)}k</p>
-                            </div>
-                        </div>
-                    `;
+                        `;
                 }).join('');
             }
 
@@ -1070,7 +1086,7 @@
             const chartContainer = document.getElementById('fee-trends-chart');
             if (chartContainer) {
                 const trends = globalFeeData.trends || [];
-                
+
                 // Find maximum value to normalize heights properly
                 const maxVal = Math.max(...trends.map(t => t.collected), 100);
 
@@ -1078,13 +1094,13 @@
                     const hCollected = maxVal > 0 ? ((t.collected / maxVal) * 100) : 0;
 
                     return `
-                        <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                            <div class="w-full flex items-end justify-center h-full">
-                                <div class="bg-[#ff6c00] w-3 rounded-t-sm shadow-sm transition-all duration-500" style="height: ${hCollected}%" title="Collected: ₹${t.collected}"></div>
+                            <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="w-full flex items-end justify-center h-full">
+                                    <div class="bg-[#ff6c00] w-3 rounded-t-sm shadow-sm transition-all duration-500" style="height: ${hCollected}%" title="Collected: ₹${t.collected}"></div>
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-400">${t.month}</span>
                             </div>
-                            <span class="text-[8px] font-bold text-slate-400">${t.month}</span>
-                        </div>
-                    `;
+                        `;
                 }).join('');
             }
 
@@ -1092,7 +1108,7 @@
             if (feeBatches && feeBatches.length > 0) {
                 const totalFeeItems = feeBatches.length;
                 const totalFeePages = Math.ceil(totalFeeItems / feeRowsPerPage);
-                
+
                 if (currentFeePage < 1) currentFeePage = 1;
                 if (currentFeePage > totalFeePages) currentFeePage = totalFeePages;
 
@@ -1118,38 +1134,38 @@
                     const bPct = billed > 0 ? ((paid / billed) * 100).toFixed(1) : '0.0';
 
                     return `
-                        <tr class="hover:bg-slate-50/40 transition-colors">
-                            <td class="px-3 py-3 flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-xl bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-800 leading-none">${batch.batch_name}</h5>
-                                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${batch.students_count || 0} Students enrolled</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-3 text-slate-600 font-bold text-xs">₹${billed.toLocaleString()}</td>
-                            <td class="px-3 py-3 text-emerald-600 font-black text-xs">₹${paid.toLocaleString()}</td>
-                            <td class="px-3 py-3 text-rose-500 font-black text-xs">₹${due.toLocaleString()}</td>
-                            <td class="px-3 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-16 bg-slate-100 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-[#ff6c00] h-full rounded-full" style="width: ${bPct}%"></div>
+                            <tr class="hover:bg-slate-50/40 transition-colors">
+                                <td class="px-3 py-3 flex items-center gap-2">
+                                    <div class="h-8 w-8 rounded-xl bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
                                     </div>
-                                    <span class="text-slate-800 font-black text-xs">${bPct}%</span>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-800 leading-none">${batch.batch_name}</h5>
+                                        <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${batch.students_count || 0} Students enrolled</p>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3 text-slate-600 font-bold text-xs">₹${billed.toLocaleString()}</td>
+                                <td class="px-3 py-3 text-emerald-600 font-black text-xs">₹${paid.toLocaleString()}</td>
+                                <td class="px-3 py-3 text-rose-500 font-black text-xs">₹${due.toLocaleString()}</td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-16 bg-slate-100 h-1 rounded-full overflow-hidden">
+                                            <div class="bg-[#ff6c00] h-full rounded-full" style="width: ${bPct}%"></div>
+                                        </div>
+                                        <span class="text-slate-800 font-black text-xs">${bPct}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
                 }).join('');
             } else {
                 rosterContainer.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="px-3 py-4 text-center text-slate-400 font-medium italic">No corresponding collections mapped.</td>
-                    </tr>
-                `;
+                        <tr>
+                            <td colspan="5" class="px-3 py-4 text-center text-slate-400 font-medium italic">No corresponding collections mapped.</td>
+                        </tr>
+                    `;
             }
         }
 
@@ -1216,7 +1232,7 @@
                 html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">28</div>`;
                 html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">29</div>`;
                 html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">30</div>`;
-                
+
                 const dayStatusMap = {};
                 if (globalAttendanceData.attendance) {
                     globalAttendanceData.attendance.forEach(att => {
@@ -1242,11 +1258,11 @@
                 }
 
                 for (let day = 1; day <= daysInMonth; day++) {
-                    let weekday = (day + 3) % 7; 
-                    if (weekday === 0) weekday = 7; 
-                    
-                    let colorClass = 'bg-slate-50 text-slate-300'; 
-                    
+                    let weekday = (day + 3) % 7;
+                    if (weekday === 0) weekday = 7;
+
+                    let colorClass = 'bg-slate-50 text-slate-300';
+
                     if (dayStatusMap[day]) {
                         const counts = dayStatusMap[day];
                         if (counts.absent > 0 && counts.present === 0) {
@@ -1267,69 +1283,69 @@
             if (globalAttendanceData.student_roster && globalAttendanceData.student_roster.length > 0) {
                 const totalStudents = globalAttendanceData.student_roster.length;
                 const totalPages = Math.ceil(totalStudents / rosterRowsPerPage);
-                
+
                 if (currentRosterPage > totalPages) currentRosterPage = totalPages;
                 if (currentRosterPage < 1) currentRosterPage = 1;
 
                 const startIdx = (currentRosterPage - 1) * rosterRowsPerPage;
                 const endIdx = Math.min(startIdx + rosterRowsPerPage, totalStudents);
-                
+
                 document.getElementById('roster-page-info').innerText = `Showing ${startIdx + 1}-${endIdx} of ${totalStudents} students`;
 
                 // Generate Pagination Controls
                 let pagHtml = '';
                 pagHtml += `<button onclick="changeRosterPage(${currentRosterPage - 1})" class="px-2.5 py-1 border border-slate-100 rounded-lg text-slate-500 font-bold text-[10px] hover:border-teal-500 hover:text-teal-600 transition-colors ${currentRosterPage === 1 ? 'opacity-40 pointer-events-none' : ''}">&lt;</button>`;
-                
+
                 for (let p = 1; p <= totalPages; p++) {
                     pagHtml += `<button onclick="changeRosterPage(${p})" class="px-2.5 py-1 rounded-lg font-bold text-[10px] transition-all ${p === currentRosterPage ? 'bg-teal-600 text-white shadow-sm' : 'border border-slate-100 text-slate-500 hover:border-teal-500 hover:text-teal-600'}">${p}</button>`;
                 }
-                
+
                 pagHtml += `<button onclick="changeRosterPage(${currentRosterPage + 1})" class="px-2.5 py-1 border border-slate-100 rounded-lg text-slate-500 font-bold text-[10px] hover:border-teal-500 hover:text-teal-600 transition-colors ${currentRosterPage === totalPages ? 'opacity-40 pointer-events-none' : ''}">&gt;</button>`;
                 document.getElementById('roster-pagination-controls').innerHTML = pagHtml;
 
                 const pageItems = globalAttendanceData.student_roster.slice(startIdx, endIdx);
 
                 rosterContainer.innerHTML = pageItems.map(r => {
-                    const initials = r.student_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+                    const initials = r.student_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                     const pctVal = parseFloat(r.percentage);
-                    
+
                     let barColor = 'bg-emerald-600';
                     let textColor = 'text-emerald-600';
                     if (pctVal < 50) { barColor = 'bg-rose-500'; textColor = 'text-rose-500'; }
                     else if (pctVal < 75) { barColor = 'bg-[#ff6c00]'; textColor = 'text-[#ff6c00]'; }
 
                     return `
-                        <tr class="hover:bg-slate-50/40 transition-colors">
-                            <td class="px-3 py-3 flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-full bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">${initials}</div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-800 leading-none">${r.student_name}</h5>
-                                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-wider">ID: #ST-${r.student_id}</p>
-                                </div>
-                            </td>
-                            <td class="px-3 py-3">
-                                <span class="px-2 py-1 bg-teal-50 text-teal-600 text-[8px] font-black uppercase tracking-wider rounded-md">${r.batch_name}</span>
-                            </td>
-                            <td class="px-3 py-3 text-slate-600 font-bold text-xs">${r.total_logs} Days</td>
-                            <td class="px-3 py-3 text-emerald-600 font-black text-sm">${r.present}</td>
-                            <td class="px-3 py-3 text-rose-500 font-black text-sm">${r.absent}</td>
-                            <td class="px-3 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-16 bg-slate-100 h-1 rounded-full overflow-hidden">
-                                        <div class="${barColor} h-full rounded-full" style="width: ${pctVal}%"></div>
+                            <tr class="hover:bg-slate-50/40 transition-colors">
+                                <td class="px-3 py-3 flex items-center gap-2">
+                                    <div class="h-8 w-8 rounded-full bg-orange-100 text-[#ff6c00] font-bold text-xs flex items-center justify-center">${initials}</div>
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-800 leading-none">${r.student_name}</h5>
+                                        <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-wider">ID: #ST-${r.student_id}</p>
                                     </div>
-                                    <span class="${textColor} font-black text-xs">${r.percentage}</span>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                                </td>
+                                <td class="px-3 py-3">
+                                    <span class="px-2 py-1 bg-teal-50 text-teal-600 text-[8px] font-black uppercase tracking-wider rounded-md">${r.batch_name}</span>
+                                </td>
+                                <td class="px-3 py-3 text-slate-600 font-bold text-xs">${r.total_logs} Days</td>
+                                <td class="px-3 py-3 text-emerald-600 font-black text-sm">${r.present}</td>
+                                <td class="px-3 py-3 text-rose-500 font-black text-sm">${r.absent}</td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-16 bg-slate-100 h-1 rounded-full overflow-hidden">
+                                            <div class="${barColor} h-full rounded-full" style="width: ${pctVal}%"></div>
+                                        </div>
+                                        <span class="${textColor} font-black text-xs">${r.percentage}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
                 }).join('');
             } else {
                 rosterContainer.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-3 py-4 text-center text-slate-400 font-medium italic">No individual student logs mapped for the current constraints.</td>
-                    </tr>
-                `;
+                        <tr>
+                            <td colspan="6" class="px-3 py-4 text-center text-slate-400 font-medium italic">No individual student logs mapped for the current constraints.</td>
+                        </tr>
+                    `;
             }
         }
 
@@ -1358,18 +1374,18 @@
                     container.innerHTML = students.map(s => {
                         const due = s.total_due || 0;
                         return `
-                            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
-                                <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
-                                <div class="flex-1">
-                                    <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
+                                <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
+                                    <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
+                                    <div class="flex-1">
+                                        <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-2.5 py-1 ${due <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                            ${due <= 0 ? 'Paid' : '₹' + due}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="px-2.5 py-1 ${due <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                        ${due <= 0 ? 'Paid' : '₹' + due}
-                                    </span>
-                                </div>
-                            </div>
-                        `;
+                            `;
                     }).join('');
                 } else if (type === 'attendance') {
                     const pct = Math.floor(Math.random() * (98 - 75 + 1) + 75); // Mock
@@ -1379,19 +1395,19 @@
                     container.innerHTML = students.map(s => {
                         const sPct = Math.floor(Math.random() * (100 - 60 + 1) + 60); // Mock
                         return `
-                            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
-                                <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
-                                <div class="flex-1">
-                                    <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
-                                    <div class="mt-2.5 flex items-center gap-2">
-                                        <div class="flex-1 bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100/50">
-                                            <div class="bg-blue-500 h-full rounded-full" style="width: ${sPct}%"></div>
+                                <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
+                                    <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
+                                    <div class="flex-1">
+                                        <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
+                                        <div class="mt-2.5 flex items-center gap-2">
+                                            <div class="flex-1 bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100/50">
+                                                <div class="bg-blue-500 h-full rounded-full" style="width: ${sPct}%"></div>
+                                            </div>
+                                            <span class="text-[9px] font-bold text-blue-600">${sPct}%</span>
                                         </div>
-                                        <span class="text-[9px] font-bold text-blue-600">${sPct}%</span>
                                     </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
                     }).join('');
                 }
 
