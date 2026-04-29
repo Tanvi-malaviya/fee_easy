@@ -2,9 +2,9 @@
 
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
-    <div class="max-w-[1400px] mx-auto pb-10 px-4 sm:px-6">
+    <div class="max-w-[1400px] mx-auto pb-4 px-4 sm:px-6">
         <!-- Breadcrumb & Actions -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
                 <a href="{{ route('institute.batches.index') }}"
                     class="inline-flex items-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] hover:text-blue-600 transition-colors group mb-3">
@@ -46,10 +46,10 @@
         </div>
 
         <!-- Top Info Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
             <!-- Instructor Card -->
             <div
-                class="bg-white p-6 rounded-2xl border border-slate-50 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                class="bg-white p-4 rounded-xl border border-slate-50 shadow-lg shadow-slate-200/40 relative overflow-hidden group">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Instructor</p>
                 <div class="flex items-center gap-5">
                     <div class="relative">
@@ -68,7 +68,7 @@
                             Primary Tutor</p>
                     </div>
                 </div>
-                <div class="mt-8 pt-6 border-t border-slate-50 flex items-center gap-3">
+                <div class="mt-4 pt-4 border-t border-slate-50 flex items-center gap-3">
                     <div
                         class="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@
 
             <!-- Schedule Card -->
             <div
-                class="bg-white p-6 rounded-2xl border border-slate-50 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                class="bg-white p-4 rounded-xl border border-slate-50 shadow-lg shadow-slate-200/40 relative overflow-hidden group">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Schedule & Venue</p>
                 <div class="space-y-6">
                     <div class="flex items-center gap-4">
@@ -117,7 +117,7 @@
 
             <!-- Enrollment Card -->
             <div
-                class="bg-white p-6 rounded-2xl border border-slate-50 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                class="bg-white p-4 rounded-xl border border-slate-50 shadow-lg shadow-slate-200/40 relative overflow-hidden group">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Enrollment Status</p>
                 <div class="flex items-end gap-2 mb-4">
                     <h2 id="current-enrollment" class="text-5xl font-bold text-slate-900">0</h2>
@@ -151,10 +151,10 @@
         </div>
 
         <!-- Quick Access Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             <!-- Students -->
             <a href="{{ route('institute.batches.students', $id) }}"
-                class="group bg-white p-6 rounded-2xl border-t-4 border-t-orange-500 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-orange-200/40 transition-all hover:-translate-y-2 relative overflow-hidden">
+                class="group bg-white p-4 rounded-xl border-t-4 border-t-orange-500 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-orange-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
                 <div
                     class="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +174,7 @@
 
             <!-- Homework -->
             <a href="{{ route('institute.batches.homework', $id) }}"
-                class="group bg-white p-6 rounded-2xl border-t-4 border-t-teal-500 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-teal-200/40 transition-all hover:-translate-y-2 relative overflow-hidden">
+                class="group bg-white p-4 rounded-xl border-t-4 border-t-teal-500 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-teal-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
                 <div
                     class="h-14 w-14 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-500 mb-6 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +194,7 @@
 
             <!-- Attendance -->
             <a href="{{ route('institute.batches.attendance', $id) }}"
-                class="group bg-white p-6 rounded-2xl border-t-4 border-t-amber-700 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-amber-200/40 transition-all hover:-translate-y-2 relative overflow-hidden">
+                class="group bg-white p-4 rounded-xl border-t-4 border-t-amber-700 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-amber-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
                 <div
                     class="h-14 w-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-700 mb-6 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +214,7 @@
 
             <!-- Resources -->
             <a href="{{ route('institute.batches.resources', $id) }}"
-                class="group bg-white p-6 rounded-2xl border-t-4 border-t-emerald-600 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:shadow-emerald-200/40 transition-all hover:-translate-y-2 relative overflow-hidden">
+                class="group bg-white p-4 rounded-xl border-t-4 border-t-emerald-600 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-emerald-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
                 <div
                     class="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -650,31 +650,31 @@
             container.innerHTML = students.map(student => {
                 const initial = student.name.charAt(0).toUpperCase();
                 return `
-                                            <div class="group relative bg-white rounded-2xl border border-slate-50 p-6 hover:shadow-2xl hover:shadow-slate-200/50 hover:border-blue-100 transition-all duration-500 cursor-pointer overflow-hidden"
+                                            <div class="group relative bg-white rounded-xl border border-slate-50 p-4 hover:shadow-2xl hover:shadow-slate-200/50 hover:border-blue-100 transition-all duration-500 cursor-pointer overflow-hidden"
                                                  onclick="window.location.href='/institute/students/${student.id}'">
 
                                                 <!-- Top Action Area -->
-                                                <div class="flex items-start justify-between mb-6">
-                                                    <div class="h-16 w-16 rounded-2xl bg-slate-50 p-0.5 border border-slate-100 overflow-hidden group-hover:scale-110 transition-transform duration-500">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="h-14 w-14 rounded-xl bg-slate-50 p-0.5 border border-slate-100 overflow-hidden group-hover:scale-110 transition-transform duration-500">
                                                         <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F8FAFC&color=64748B&bold=true'}" 
-                                                             class="w-full h-full object-cover rounded-2xl">
+                                                             class="w-full h-full object-cover rounded-xl">
                                                     </div>
                                                     <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" 
-                                                            class="h-10 w-10 bg-white border border-slate-50 rounded-xl flex items-center justify-center text-slate-300 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            class="h-8 w-8 bg-white border border-slate-50 rounded-lg flex items-center justify-center text-slate-300 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
                                                     </button>
                                                 </div>
 
                                                 <!-- Info Section -->
-                                                <div class="mb-6">
-                                                    <h4 class="text-lg font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">${student.name}</h4>
+                                                <div class="mb-3">
+                                                    <h4 class="text-base font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">${student.name}</h4>
                                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: ST-${String(student.id).padStart(4, '0')}</p>
                                                 </div>
 
                                                 <!-- Stats Grid -->
-                                                <div class="grid grid-cols-2 gap-3 pb-6 border-b border-slate-50">
+                                                <div class="grid grid-cols-2 gap-2 pb-3 border-b border-slate-50">
                                                     <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
                                                         <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1">Standard</p>
                                                         <p class="text-xs font-bold text-slate-700">${student.standard || 'N/A'}</p>

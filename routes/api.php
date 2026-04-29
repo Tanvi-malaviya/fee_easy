@@ -77,6 +77,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteProfileController::class, 'show']);
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
+            Route::post('/profile/change-password', [InstituteProfileController::class, 'changePassword']);
             Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo
 
             Route::post('/daily-updates', [InstituteDailyUpdateController::class, 'store']);
@@ -148,6 +149,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/reports/fee/export', [InstituteReportController::class, 'exportFeeReport']);
             Route::get('/reports/attendance', [InstituteReportController::class, 'attendanceReport']);
             Route::get('/reports/attendance/export', [InstituteReportController::class, 'exportAttendanceReport']);
+            Route::get('/reports/performance', [InstituteReportController::class, 'performanceReport']);
+            Route::get('/reports/performance/export', [InstituteReportController::class, 'exportPerformanceReport']);
 
             Route::get('/subscription', [InstituteSubscriptionController::class, 'show']);
             Route::post('/subscription/renew', [InstituteSubscriptionController::class, 'renew']);

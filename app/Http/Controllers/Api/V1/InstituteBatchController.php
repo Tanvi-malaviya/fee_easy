@@ -18,9 +18,19 @@ class InstituteBatchController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batches = Batch::where('institute_id', $request->user()->id)
-            ->withCount('students')
-            ->get();
+        $query = Batch::where('institute_id', $request->user()->id)
+            ->withCount('students');
+
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('subject', 'like', $searchTerm)
+                  ->orWhere('description', 'like', $searchTerm);
+            });
+        }
+
+        $batches = $query->get();
 
         // Calculate total paid for each batch
         foreach ($batches as $batch) {
@@ -86,6 +96,7 @@ class InstituteBatchController extends Controller
             'start_time' => 'nullable|string',
             'end_time' => 'nullable|string',
             'days' => 'nullable|array',
+            'max_capacity' => 'nullable|integer|min:1',
         ]);
 
         $batch = Batch::create([
@@ -97,6 +108,7 @@ class InstituteBatchController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'days' => $request->days,
+            'max_capacity' => $request->max_capacity ?? 30,
         ]);
 
         return response()->json([
@@ -132,9 +144,10 @@ class InstituteBatchController extends Controller
             'start_time' => 'nullable|string',
             'end_time' => 'nullable|string',
             'days' => 'nullable|array',
+            'max_capacity' => 'nullable|integer|min:1',
         ]);
 
-        $batch->update($request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days']));
+        $batch->update($request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'max_capacity']));
 
         return response()->json([
             'status' => 'success',
