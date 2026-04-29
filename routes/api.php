@@ -71,7 +71,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [InstituteAuthController::class, 'register']);
         Route::post('/verify-otp', [InstituteAuthController::class, 'verifyOtp']);
         Route::post('/resend-otp', [InstituteAuthController::class, 'resendOtp']);
+        Route::post('/reports/attendance/resend-otp', [InstituteAuthController::class, 'resendOtp']);
         Route::post('/login', [InstituteAuthController::class, 'login']);
+        Route::post('/forgot-password', [InstituteAuthController::class, 'sendResetPasswordEmail']);
+        Route::post('/reset-password', [InstituteAuthController::class, 'resetPassword']);
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);

@@ -34,7 +34,6 @@ class InstituteProfileController extends Controller
         $request->validate([
             'institute_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email,' . $institute->id,
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
             'address_line_2' => 'nullable|string',
@@ -49,7 +48,6 @@ class InstituteProfileController extends Controller
         $data = $request->only([
             'institute_name',
             'name',
-            'email',
             'phone',
             'address',
             'address_line_2',
@@ -109,7 +107,7 @@ class InstituteProfileController extends Controller
 
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
+            'new_password' => 'required|string',
         ]);
 
         if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $institute->password)) {
@@ -117,6 +115,46 @@ class InstituteProfileController extends Controller
                 'status' => 'error',
                 'message' => 'Current password does not match.'
             ], 400);
+        }
+
+        if ($request->current_password === $request->new_password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'New password cannot be the same as current password.',
+            ], 422);
+        }
+
+        $newPassword = $request->new_password;
+        $errors = [];
+
+        if (strlen($newPassword) < 8 || strlen($newPassword) > 15) {
+            $errors[] = 'Password must be between 8 and 15 characters long.';
+        }
+        if (!preg_match('/[a-z]/i', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 standard letter.';
+        }
+        if (!preg_match('/[A-Z]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 capital letter.';
+        }
+        if (!preg_match('/\d/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 number.';
+        }
+        if (!preg_match('/[\W_]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 special character.';
+        }
+
+        // Evaluate confirmation only if all strength criteria have passed successfully
+        if (empty($errors) && $request->new_password !== $request->new_password_confirmation) {
+            $errors[] = 'The new password field confirmation does not match.';
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'new_password' => $errors
+                ]
+            ], 422);
         }
 
         $institute->update([
