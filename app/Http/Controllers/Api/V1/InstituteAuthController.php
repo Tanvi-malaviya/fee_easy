@@ -16,24 +16,24 @@ class InstituteAuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email',
-            'phone' => 'required|string|unique:institutes,phone',
-            'password' => 'required|string|min:8|confirmed',
             'institute_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:institutes,email',
+            'password' => 'required|string|min:8',
+            'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string',
         ]);
 
         $otp = rand(100000, 999999);
 
         $institute = Institute::create([
-            'name' => $request->name,
+            'name' => $request->name ?: $request->institute_name,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone' => $request->phone ?: '',
             'password' => Hash::make($request->password),
             'institute_name' => $request->institute_name,
             'otp' => $otp,
             'otp_expires_at' => Carbon::now()->addMinutes(10),
-            'status' => 'pending', // Or active, depends on your flow
+            'status' => 'pending', 
         ]);
 
         // In production, send OTP via SMS/Email here

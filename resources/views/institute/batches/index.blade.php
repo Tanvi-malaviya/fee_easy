@@ -28,18 +28,15 @@
 
             <div
                 class="bg-white p-2 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-2">
-                <div class="relative flex-1 group w-full md:w-auto">
-                    <input type="text" id="batch-search" placeholder="Search batches..."
-                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                <div class="relative flex-1 group w-full md:w-auto flex items-center">
+                    <input type="text" id="batch-search" placeholder="Search batches..." onkeydown="if(event.key === 'Enter') executeSearch()"
+                        class="w-full pl-4 pr-24 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                    <button onclick="executeSearch()"
+                        class="absolute right-1 top-1 bottom-1 px-4 bg-primary text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-[1.02] transition-transform flex items-center gap-1">
+                        Search
+                    </button>
                 </div>
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <button
-                        class="h-10 px-4 bg-white border border-slate-100 text-slate-500 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-50 transition-all flex items-center gap-2">Filter</button>
                     <button
                         class="h-10 px-4 bg-white border border-slate-100 text-slate-500 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-50 transition-all flex items-center gap-2">Export</button>
                     <button onclick="toggleFormView(true)"
@@ -50,7 +47,7 @@
             </div>
 
             <div id="batch-grid"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 relative min-h-[300px]">
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 relative items-start">
                 <div id="loading-spinner"
                     class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-[1rem]">
                     <div class="h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
@@ -75,25 +72,20 @@
                 </style>
                 <div class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                     <!-- Header -->
-                    <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
+                    <div class="px-6 py-3 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
                         <div>
                             <h1 id="form-title" class="text-lg font-bold text-slate-800 tracking-tight">Manage Batch</h1>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Configure details, schedule, and capacity.</p>
                         </div>
                         <button type="button" onclick="toggleFormView(false)" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
 
-                    <form id="batch-form" class="px-6 py-4 space-y-3">
+                    <form id="batch-form" class="px-6 py-2 space-y-2">
                         <input type="hidden" id="batch-id" name="id">
 
                         <!-- General Information -->
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2 text-primary">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <h3 class="text-[9px] font-bold uppercase tracking-widest">General Information</h3>
-                            </div>
+                        <div class="space-y-2">
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Name</label>
@@ -121,11 +113,7 @@
                         </div>
 
                         <!-- Schedule Section -->
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2 text-primary pt-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <h3 class="text-[9px] font-bold uppercase tracking-widest">Schedule & Timing</h3>
-                            </div>
+                        <div class="space-y-2 pt-1">
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start Time</label>
@@ -138,38 +126,24 @@
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
-                                <div class="flex flex-wrap gap-1.5">
-                                    @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-                                        <label class="relative cursor-pointer group">
-                                            <input type="checkbox" name="days[]" value="{{ $day }}" class="peer sr-only day-checkbox">
-                                            <div class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
-                                                {{ $day }}
-                                            </div>
-                                        </label>
-                                    @endforeach
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="col-span-2 space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                                            <label class="relative cursor-pointer group">
+                                                <input type="checkbox" name="days[]" value="{{ $day }}" class="peer sr-only day-checkbox">
+                                                <div class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
+                                                    {{ $day }}
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Capacity Section -->
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2 text-primary pt-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857"/></svg>
-                                <h3 class="text-[9px] font-bold uppercase tracking-widest">Capacity</h3>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <div class="w-32 space-y-1">
+                                <div class="col-span-1 space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Max Seats</label>
                                     <input type="number" name="max_capacity" id="field-capacity" placeholder="30"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                                <div class="flex-1 p-2 bg-secondary/5 rounded-lg border border-secondary/10 flex items-center gap-2">
-                                    <svg class="w-3 h-3 text-secondary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                    <p class="text-[8px] font-bold text-slate-500 leading-tight">
-                                        <span class="text-secondary uppercase mr-1">Tip:</span> 25-35 seats recommended.
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -226,8 +200,9 @@
 
         async function fetchBatches(page = 1) {
             toggleLoader(true);
+            const searchVal = document.getElementById('batch-search').value;
             try {
-                const response = await fetch(`${API_URL}?page=${page}`, {
+                const response = await fetch(`${API_URL}?page=${page}&search=${encodeURIComponent(searchVal)}`, {
                     headers: { 'Accept': 'application/json' }
                 });
                 const result = await response.json();
@@ -240,6 +215,10 @@
                 }
             } catch (error) { console.error(error); }
             finally { toggleLoader(false); }
+        }
+
+        function executeSearch() {
+            fetchBatches(1);
         }
 
         function renderBatches(items) {
@@ -260,8 +239,8 @@
                     : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
 
                 return `
-                    <div class="bg-white p-5 rounded-[1rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-                        <div class="flex items-start justify-between mb-4">
+                    <div class="bg-white p-4 rounded-[1rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-start justify-between mb-2">
                             <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">${icon}</div>
                             <!-- Actions Small Card -->
                             <div class="flex items-center bg-white border border-slate-100 rounded-xl p-1 shadow-sm gap-0.5">
@@ -276,7 +255,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="space-y-1 mb-2">
+                        <div class="space-y-1 mb-1">
                             <h4 class="text-sm font-bold text-slate-800 leading-tight">${batch.name}</h4>
                             <div class="flex items-center gap-2">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${batch.subject}</span>

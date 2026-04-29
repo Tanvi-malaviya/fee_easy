@@ -18,6 +18,7 @@ class Batch extends Model
         'start_time',
         'end_time',
         'days',
+        'max_capacity',
     ];
 
     protected $casts = [

@@ -50,23 +50,25 @@
                 <p id="progress-percentage" class="text-[13px] font-bold text-teal-600 tracking-wider">0% COMPLETE</p>
             </div>
 
-            <div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex mb-4">
+            <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex mb-4">
                 <div id="bar-submitted" class="h-full bg-orange-700 transition-all duration-1000" style="width: 0%"></div>
                 <div id="bar-pending" class="h-full bg-teal-200 transition-all duration-1000" style="width: 0%"></div>
                 <div id="bar-missing" class="h-full bg-rose-700 transition-all duration-1000" style="width: 0%"></div>
             </div>
 
-            <div class="flex items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-orange-700"></div> SUBMITTED (<span
-                        id="legend-submitted">0</span>)
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-teal-200"></div> PENDING (<span id="legend-pending">0</span>)
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-rose-700"></div> MISSING (<span id="legend-missing">0</span>)
-                </div>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
+                <button onclick="filterByStatus('all')" id="btn-all" class="px-3 py-1.5 bg-orange-700 text-white rounded-xl transition-all shadow-md shadow-orange-700/10 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-300"></span> ALL (<span id="legend-all">0</span>)
+                </button>
+                <button onclick="filterByStatus('submitted')" id="btn-submitted" class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-700"></span> SUBMITTED (<span id="legend-submitted">0</span>)
+                </button>
+                <button onclick="filterByStatus('pending')" id="btn-pending" class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-200"></span> PENDING (<span id="legend-pending">0</span>)
+                </button>
+                <button onclick="filterByStatus('missing')" id="btn-missing" class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-700"></span> MISSING (<span id="legend-missing">0</span>)
+                </button>
             </div>
         </div>
 
@@ -103,6 +105,7 @@
         let homeworkData = null;
         let students = [];
         let submissionsMap = {}; // student_id -> submission object
+        let currentFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
             await fetchHomeworkData();
@@ -201,6 +204,29 @@
             }
         }
 
+        function filterByStatus(status) {
+            currentFilter = status;
+            renderUI();
+            
+            // Update button styles
+            const btns = {
+                all: document.getElementById('btn-all'),
+                submitted: document.getElementById('btn-submitted'),
+                pending: document.getElementById('btn-pending'),
+                missing: document.getElementById('btn-missing')
+            };
+
+            Object.keys(btns).forEach(key => {
+                const btn = btns[key];
+                if (!btn) return;
+                if (key === status) {
+                    btn.className = "px-3 py-1.5 bg-orange-700 text-white rounded-xl transition-all shadow-md shadow-orange-700/10 flex items-center gap-1.5";
+                } else {
+                    btn.className = "px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5";
+                }
+            });
+        }
+
         function renderUI() {
             // Header
             document.getElementById('header-batch-name').innerText = homeworkData.batch.name;
@@ -226,9 +252,20 @@
 
             document.getElementById('progress-submitted-count').innerText = submittedCount;
             document.getElementById('progress-total-count').innerText = total;
+            document.getElementById('legend-all').innerText = total;
             document.getElementById('legend-submitted').innerText = submittedCount;
             document.getElementById('legend-pending').innerText = pendingCount;
             document.getElementById('legend-missing').innerText = missingCount;
+
+            // Filter students for grid
+            let filteredStudents = students;
+            if (currentFilter === 'submitted') {
+                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Submitted' || submissionsMap[s.id].status === 'Late');
+            } else if (currentFilter === 'pending') {
+                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Pending');
+            } else if (currentFilter === 'missing') {
+                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Missing');
+            }
 
             const subPct = total ? (submittedCount / total) * 100 : 0;
             const penPct = total ? (pendingCount / total) * 100 : 0;
@@ -241,12 +278,12 @@
 
             // Grid
             const container = document.getElementById('student-grid');
-            if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No students in this batch.</p></div>`;
+            if (filteredStudents.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-20 text-center w-full"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No students match this status.</p></div>`;
                 return;
             }
 
-            container.innerHTML = students.map(student => {
+            container.innerHTML = filteredStudents.map(student => {
                 const sub = submissionsMap[student.id];
                 const isMissing = sub.status === 'Missing';
 

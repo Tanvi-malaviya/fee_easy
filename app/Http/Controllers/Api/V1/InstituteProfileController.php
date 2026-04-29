@@ -42,7 +42,8 @@ class InstituteProfileController extends Controller
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
             'pincode' => 'nullable|string|max:20',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable',
+            'logo_url' => 'nullable',
         ]);
 
         $data = $request->only([
@@ -58,14 +59,36 @@ class InstituteProfileController extends Controller
             'pincode'
         ]);
 
-        if ($request->hasFile('logo')) {
+        if ($request->hasFile('logo') || $request->hasFile('logo_url')) {
             // Delete old logo if exists
             if ($institute->logo && Storage::disk('public')->exists($institute->logo)) {
                 Storage::disk('public')->delete($institute->logo);
             }
 
-            $path = $request->file('logo')->store('institutes/logos', 'public');
+            $file = $request->hasFile('logo') ? $request->file('logo') : $request->file('logo_url');
+            $path = $file->store('institutes/logos', 'public');
             $data['logo'] = $path;
+        } elseif (($request->has('logo') && !empty($request->logo)) || ($request->has('logo_url') && !empty($request->logo_url))) {
+            $logoStr = $request->has('logo') ? $request->logo : $request->logo_url;
+            // Check if it's a valid base64 data URI
+            if (preg_match('/^data:image\/(\w+);base64,/', $logoStr, $type)) {
+                $logoStr = substr($logoStr, strpos($logoStr, ',') + 1);
+                $type = strtolower($type[1]); // png, jpeg, etc.
+
+                if (in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'svg'])) {
+                    $logoStr = base64_decode($logoStr);
+
+                    if ($logoStr !== false) {
+                        if ($institute->logo && Storage::disk('public')->exists($institute->logo)) {
+                            Storage::disk('public')->delete($institute->logo);
+                        }
+
+                        $filename = 'institutes/logos/' . uniqid() . '.' . $type;
+                        Storage::disk('public')->put($filename, $logoStr);
+                        $data['logo'] = $filename;
+                    }
+                }
+            }
         }
 
         $institute->update($data);
@@ -74,6 +97,35 @@ class InstituteProfileController extends Controller
             'status' => 'success',
             'message' => 'Profile updated successfully',
             'data' => $institute
+        ]);
+    }
+
+    /**
+     * Change password for institute.
+     */
+    public function changePassword(\Illuminate\Http\Request $request)
+    {
+        $institute = $request->user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $institute->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Current password does not match.'
+            ], 400);
+        }
+
+        $institute->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password changed successfully.'
         ]);
     }
 }

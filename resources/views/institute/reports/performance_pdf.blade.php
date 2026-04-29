@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Report - {{ $batch->name ?? 'All Batches' }}</title>
+    <title>Performance Report - {{ $batch->name ?? 'All Batches' }}</title>
     <style>
         body { font-family: 'DejaVu Sans', sans-serif; color: #334155; margin: 0; padding: 0; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
@@ -25,20 +25,19 @@
 <body>
     <div class="header">
         <h1>{{ $institute->name }}</h1>
-        <p>Fee Summary Report: {{ $batch->name ?? 'All Batches' }} ({{ $month }} {{ $year }})</p>
+        <p>Performance Report: {{ $batch->name ?? 'All Batches' }}</p>
     </div>
 
     @php
-        $totalCollectedSum = collect($batchesData)->sum('total_collected');
-        $totalDueSum = collect($batchesData)->sum('total_due');
-        $totalAmountSum = $totalCollectedSum + $totalDueSum;
+        $globalPerformance = collect($batchesData)->avg(function($b) {
+            return (float) str_replace('%', '', $b->avg_score);
+        });
     @endphp
 
     <div class="summary">
         <table>
             <tr>
-                <td style="width: 50%;">Total Amount: <br><span class="value">₹{{ number_format($totalAmountSum, 2) }}</span></td>
-                <td style="width: 50%; text-align: right;">Paid Amount: <br><span class="value">₹{{ number_format($totalCollectedSum, 2) }}</span></td>
+                <td style="width: 100%; text-align: center;">Average Performance: <br><span class="value">{{ round($globalPerformance, 2) }}%</span></td>
             </tr>
         </table>
     </div>
@@ -47,18 +46,16 @@
         <thead>
             <tr>
                 <th>Batch Name</th>
-                <th>Fees/Student</th>
-                <th>Collected</th>
-                <th>Students</th>
+                <th>Average Score</th>
+                <th>Students Count</th>
             </tr>
         </thead>
         <tbody>
             @foreach($batchesData as $b)
             <tr>
                 <td style="color: #1e3a8a;">{{ $b->name }}</td>
-                <td>₹{{ number_format($b->fees, 2) }}</td>
-                <td style="color: #059669;">₹{{ number_format($b->total_collected, 2) }}</td>
-                <td>{{ $b->students_count }}</td>
+                <td style="color: #059669; font-weight: bold;">{{ $b->avg_score }}</td>
+                <td>{{ $b->students_count }} Students</td>
             </tr>
             @endforeach
         </tbody>

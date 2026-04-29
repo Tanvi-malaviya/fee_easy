@@ -2,7 +2,7 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-6 pb-24 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto pt-6 px-4 sm:px-6">
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-[#ff6600] transition-colors">Batches</a>
@@ -15,7 +15,7 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Batch Resources</h1>
+                <h1 class="text-2xl font-bold text-slate-700 tracking-tight">Batch Resources</h1>
                 <p class="text-xs font-semibold text-slate-400 mt-1">Manage and distribute educational files, videos, and visual assets.</p>
             </div>
             
@@ -23,14 +23,6 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 Upload Resource
             </button>
-        </div>
-
-        <!-- Filter Tabs -->
-        <div class="flex flex-wrap items-center gap-2 mb-6">
-            <button onclick="filterResources('all')" class="tab-btn active px-4 py-2 bg-[#a3360a] text-white text-xs font-bold rounded-xl border border-transparent shadow-sm transition-all">All Resources</button>
-            <button onclick="filterResources('document')" class="tab-btn px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl border border-slate-100 shadow-sm transition-all">Documents</button>
-            <button onclick="filterResources('video')" class="tab-btn px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl border border-slate-100 shadow-sm transition-all">Videos</button>
-            <button onclick="filterResources('image')" class="tab-btn px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl border border-slate-100 shadow-sm transition-all">Images</button>
         </div>
 
         <!-- Resources Grid -->
@@ -46,6 +38,9 @@
 
             <!-- Grid Items rendered dynamically -->
         </div>
+
+        <!-- Pagination Controls -->
+        <div id="pagination-controls" class="flex items-center justify-center gap-2 mt-2 mb-8"></div>
     </div>
 
     <!-- UPLOAD MODAL -->
@@ -86,7 +81,7 @@
                     <div id="drop-zone" class="border border-dashed border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50/30 group hover:border-[#a3360a]/30 hover:bg-slate-50/50 transition-all cursor-pointer relative">
                         <input type="file" id="res-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
                         
-                        <div class="h-12 w-12 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-4 group-hover:scale-110 transition-transform">
+                        <div class="h-6 w-6 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-2 group-hover:scale-110 transition-transform">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         </div>
                         
@@ -129,12 +124,118 @@
         </div>
     </div>
 
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div id="delete-modal" class="fixed inset-0 z-[150] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
+            <div class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-rose-500 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                <div class="p-8">
+                    <div class="flex gap-4">
+                        <div class="h-12 w-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-slate-600 mb-2">Delete Resource?</h3>
+                            <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want to permanently remove this resource? This action cannot be undone.</p>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="closeDeleteModal()" class="flex-1 h-12 border-2 border-emerald-500 text-emerald-500 rounded-xl font-extrabold text-[12px] hover:bg-emerald-50 transition-all">Cancel</button>
+                                <button type="button" id="confirm-delete-btn" class="flex-[1.5] h-12 bg-rose-500 text-white rounded-xl font-extrabold text-[12px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all">Yes, Delete Resource</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-8 py-3 bg-slate-50 flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authenticated as Admin</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW MODAL -->
+    <div id="view-modal" class="fixed inset-0 z-[150] bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white w-full max-w-[850px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <span>Resource Details</span>
+                </div>
+                <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-6">
+                <!-- Left Side: Preview & Description -->
+                <div class="flex-1 space-y-4">
+                    <div>
+                        <h2 id="view-title" class="text-xl font-black text-slate-900 leading-tight">Resource Title</h2>
+                        <div class="flex flex-wrap items-center gap-4 text-[10px] font-bold text-slate-400 mt-2">
+                            <span id="view-meta-type" class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-orange-500"></span> MP4 Video</span>
+                            <span id="view-meta-size" class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> 124MB</span>
+                            <span id="view-meta-date" class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Uploaded Oct 12, 2024</span>
+                        </div>
+                    </div>
+
+                    <!-- Media Preview Area -->
+                    <div id="view-preview-container" class="rounded-xl overflow-hidden bg-slate-900 w-full aspect-video flex items-center justify-center text-slate-500 relative min-h-[250px]">
+                        <!-- Preview injected via JS -->
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Description</h4>
+                        <p id="view-description" class="text-xs font-medium text-slate-600 leading-relaxed">No description provided.</p>
+                    </div>
+                </div>
+
+                <!-- Right Side: Action & Info -->
+                <div class="w-full md:w-[240px] space-y-4">
+                    <!-- Download Button -->
+                    <a id="view-download-btn" href="#" download class="w-full py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        Download Resource
+                    </a>
+
+                    <!-- Resource Author -->
+                    <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100 flex items-center gap-3">
+                        <div class="h-9 w-9 bg-orange-100/50 text-[#a3360a] rounded-xl flex items-center justify-center font-bold text-xs">
+                            A
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900">Institute Admin</p>
+                            <p class="text-[8px] font-semibold text-slate-400">Content Publisher</p>
+                        </div>
+                    </div>
+
+                    <!-- File Information -->
+                    <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100">
+                        <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">File Information</h4>
+                        <div class="space-y-2 text-[10px] font-bold text-slate-600">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Status:</span>
+                                <span class="text-emerald-600">Quality Checked</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Language:</span>
+                                <span>English</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const BATCH_ID = "{{ $id }}";
         const API_RESOURCES_URL = `/api/v1/institute/resources`;
         
         let resources = [];
-        let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 8; 
         let selectedFile = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -159,35 +260,26 @@
             }
         }
 
-        function filterResources(type) {
-            currentFilter = type;
-            
-            // Toggle active tabs
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => {
-                tab.className = 'tab-btn px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl border border-slate-100 shadow-sm transition-all';
-            });
-            event.target.className = 'tab-btn active px-4 py-2 bg-[#a3360a] text-white text-xs font-bold rounded-xl border border-transparent shadow-sm transition-all';
-
+        function changePage(page) {
+            currentPage = page;
             renderResources();
         }
 
         function renderResources() {
             const container = document.getElementById('resources-grid');
-            const filtered = currentFilter === 'all' ? resources : resources.filter(r => r.file_type === currentFilter);
+            const totalPages = Math.ceil(resources.length / itemsPerPage) || 1;
+            
+            if (currentPage > totalPages) {
+                currentPage = totalPages;
+            }
 
-            // Retain the Quick Add card
-            container.innerHTML = `
-                <div onclick="openUploadModal()" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-[#a3360a]/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
-                    <div class="h-10 w-10 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-2 group-hover:scale-110 transition-transform">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
-                    </div>
-                    <p class="text-xs font-bold text-slate-800">Quick Add</p>
-                    <p class="text-[10px] text-slate-400 mt-1">Drag & drop files here</p>
-                </div>
-            `;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginated = resources.slice(startIndex, endIndex);
 
-            filtered.forEach(res => {
+            container.innerHTML = '';
+
+            paginated.forEach(res => {
                 const typeLabel = res.file_type.toUpperCase();
                 let typeColor = 'bg-slate-100 text-slate-600';
                 let iconBlock = '';
@@ -203,7 +295,7 @@
                     typeColor = 'bg-blue-600 text-white';
                     iconBlock = `
                         <div class="h-28 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 relative overflow-hidden">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l3.086-3.086a2.25 2.25 0 013.182 0l2.324 2.324m-14.73 2.25H21h-2.25" /></svg>
+                            <img src="/storage/${res.file_path}" class="w-full h-full object-cover">
                         </div>`;
                 } else {
                     typeColor = 'bg-rose-600 text-white';
@@ -224,14 +316,14 @@
                             <span class="absolute top-4 right-4 z-10 px-1.5 py-0.5 ${typeColor} rounded text-[8px] font-black tracking-widest">${typeLabel}</span>
                             ${iconBlock}
 
-                            <h4 class="text-[12px] font-bold text-slate-900 mt-2 leading-tight truncate" title="${res.title}">${res.title}</h4>
+                            <h4 class="text-[12px] font-bold text-slate-700 mt-2 leading-tight truncate" title="${res.title}">${res.title}</h4>
                             <p class="text-[9px] font-medium text-slate-400 mt-0.5 truncate">Added ${dateStr} • ${res.file_size || 'N/A'}</p>
                         </div>
 
                         <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
-                            <a href="/storage/${res.file_path}" target="_blank" class="text-[10px] font-bold text-[#a3360a] hover:underline flex items-center gap-1">
+                            <a href="javascript:void(0)" onclick="openViewModal(${res.id})" class="text-[10px] font-bold text-[#a3360a] hover:underline flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                Open
+                                View
                             </a>
                             <button onclick="deleteResource(${res.id})" class="text-slate-400 hover:text-rose-600 transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -241,6 +333,33 @@
                 `;
                 container.insertAdjacentHTML('beforeend', itemHTML);
             });
+
+            // Render Pagination Controls
+            const paginationContainer = document.getElementById('pagination-controls');
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 text-xs font-bold hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${currentPage === i ? 'bg-[#a3360a] border-transparent text-white shadow-sm shadow-orange-700/10' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${i}</button>
+                `;
+            }
+
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 text-xs font-bold hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </button>
+            `;
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         function handleFileSelect(event) {
@@ -325,11 +444,27 @@
             }
         }
 
-        async function deleteResource(id) {
-            if (!confirm('Are you sure you want to delete this resource?')) return;
+        let pendingDeleteId = null;
+
+        function deleteResource(id) {
+            pendingDeleteId = id;
+            document.getElementById('delete-modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            document.getElementById('delete-modal').classList.replace('flex', 'hidden');
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.disabled = true;
+            btn.innerText = 'Deleting...';
 
             try {
-                const response = await fetch(`${API_RESOURCES_URL}/${id}`, {
+                const response = await fetch(`${API_RESOURCES_URL}/${pendingDeleteId}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': "{{ csrf_token() }}",
@@ -339,6 +474,7 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     showToast('Material deleted successfully');
+                    closeDeleteModal();
                     fetchResources();
                 } else {
                     showToast('Failed to delete resource', 'error');
@@ -346,7 +482,54 @@
             } catch (error) {
                 console.error(error);
                 showToast('Failed to delete resource', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Delete';
             }
+        });
+
+        function openViewModal(id) {
+            const res = resources.find(r => r.id === id);
+            if (!res) return;
+
+            document.getElementById('view-title').innerText = res.title;
+            document.getElementById('view-description').innerText = res.description || 'No description provided.';
+            
+            const dateStr = new Date(res.created_at).toLocaleDateString('en-IN', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+
+            document.getElementById('view-meta-type').innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500"></span> ${res.file_type.toUpperCase()}`;
+            document.getElementById('view-meta-size').innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500"></span> ${res.file_size || 'N/A'}`;
+            document.getElementById('view-meta-date').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Uploaded ${dateStr}`;
+
+            // Download Link
+            document.getElementById('view-download-btn').href = `/storage/${res.file_path}`;
+
+            // Preview logic
+            const previewContainer = document.getElementById('view-preview-container');
+            if (res.file_type === 'video') {
+                previewContainer.innerHTML = `<video src="/storage/${res.file_path}" controls class="w-full max-h-[350px] bg-black rounded-lg"></video>`;
+            } else if (res.file_type === 'image') {
+                previewContainer.innerHTML = `<img src="/storage/${res.file_path}" class="w-full max-h-[350px] object-contain bg-slate-50 rounded-lg">`;
+            } else {
+                previewContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-8 text-slate-400">
+                        <svg class="w-16 h-16 mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                        <span class="text-xs font-bold text-slate-600 truncate max-w-[200px]">${res.title}</span>
+                        <span class="text-[10px] text-slate-400 mt-1 uppercase">${res.file_path.split('.').pop()} Document</span>
+                    </div>`;
+            }
+
+            document.getElementById('view-modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeViewModal() {
+            // Stop video playing if open
+            const video = document.querySelector('#view-preview-container video');
+            if (video) video.pause();
+            
+            document.getElementById('view-modal').classList.replace('flex', 'hidden');
         }
 
         function showToast(message, type = 'success') {

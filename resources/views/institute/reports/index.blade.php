@@ -1,132 +1,234 @@
 @extends('layouts.institute')
 
 @section('content')
-<div class="space-y-6 max-w-[1600px] mx-auto pb-10">
+<div class="space-y-3 max-w-[1600px] mx-auto pb-5 px-4 animate-in fade-in duration-500">
     <!-- Page Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div>
-            <div id="breadcrumb" class="hidden mb-2 items-center gap-2">
-                <button onclick="exitDrillDown()" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                    Back to Batches
-                </button>
-            </div>
-            <h1 id="page-title" class="text-3xl font-black text-slate-800 tracking-tight mt-2">Analytics & Reports</h1>
+    <div id="header-container" class="mb-6">
+        <div id="breadcrumb" class="hidden mb-2 items-center gap-2">
+            <button onclick="exitDrillDown()" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider hover:text-[#ff6c00] transition-colors flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
+                Back to Batches
+            </button>
         </div>
-        <div class="flex items-center gap-3">
-            <!-- <button onclick="fetchAllReports()" class="h-11 px-6 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Refresh
-            </button> -->
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <div id="tab-nav" class="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm inline-flex items-center gap-1">
-        <button onclick="switchTab('fees')" id="tab-btn-fees" class="tab-btn active px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all">Fees</button>
-        <button onclick="switchTab('attendance')" id="tab-btn-attendance" class="tab-btn px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-400 transition-all">Attendance</button>
-        <button onclick="switchTab('performance')" id="tab-btn-performance" class="tab-btn px-8 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-400 transition-all">Performance</button>
+        <h1 id="page-title" class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Reports Hub</h1>
+        <p id="page-subtitle" class="text-xs sm:text-sm text-slate-500 font-medium mt-1.5 max-w-2xl leading-relaxed">Access real-time academic analytics, financial summaries, and student progress metrics through our centralized reporting engine.</p>
     </div>
 
     <style>
-        .tab-btn.active { background: #1e3a8a; color: white; box-shadow: 0 4px 12px -2px rgba(30, 58, 138, 0.2); }
-        .batch-card:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+        .batch-card { transition: all 0.3s ease; }
+        .batch-card:hover { transform: translateY(-2px); border-color: #f97316; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
     </style>
 
     <!-- Main Container -->
     <div id="reports-container" class="relative">
-        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-10 hidden rounded-[2.5rem]">
-            <div class="h-10 w-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm z-50 hidden rounded-xl">
+            <div class="h-10 w-10 border-4 border-slate-200 border-t-[#f97316] rounded-full animate-spin"></div>
+        </div>
+
+        <!-- Section: Hub -->
+        <div id="section-hub" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Attendance Card -->
+                <div class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                    <div>
+                        <div class="h-12 w-12 bg-orange-50 rounded-xl flex items-center justify-center text-[#ff6c00] mb-6 shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-2">Attendance Report</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-6">Comprehensive analysis of daily, weekly, and monthly student presence across all active batches.</p>
+                    </div>
+                    <button onclick="switchTab('attendance')" class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                        View Report
+                    </button>
+                </div>
+
+                <!-- Fees Card -->
+                <div class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                    <div>
+                        <div class="h-12 w-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-500 mb-6 shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-2">Fee Collection Report</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-6">Track incoming revenue, pending dues, and scholarship distributions with granular filtering options.</p>
+                    </div>
+                    <button onclick="switchTab('fees')" class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                        View Report
+                    </button>
+                </div>
+
+                <!-- Performance Card -->
+                <div class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                    <div>
+                        <div class="h-12 w-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 mb-6 shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-2">Student Performance Report</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-6">Deep dive into examination results, assignment completion rates, and individual student growth curves.</p>
+                    </div>
+                    <button onclick="switchTab('performance')" class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                        View Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recently Generated Reports -->
+            <!-- <div class="space-y-2 mt-6">
+                <h4 class="text-xs font-extrabold text-slate-800">Recently Generated Reports</h4>
+                <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                    <table class="min-w-full divide-y divide-slate-50 text-left">
+                        <thead class="bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                            <tr>
+                                <th class="px-3 py-2">Report Name</th>
+                                <th class="px-3 py-2">Type</th>
+                                <th class="px-3 py-2">Date</th>
+                                <th class="px-3 py-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-[10px] font-bold text-slate-600">
+                            <tr>
+                                <td class="px-3 py-2 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Batch-A Monthly Attendance</span>
+                                </td>
+                                <td class="px-3 py-2 text-slate-400">Attendance</td>
+                                <td class="px-3 py-2 text-slate-400">Oct 24, 2024</td>
+                                <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-3 py-2 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Q3 Fee Collection Summary</span>
+                                </td>
+                                <td class="px-3 py-2 text-slate-400">Finance</td>
+                                <td class="px-3 py-2 text-slate-400">Oct 22, 2024</td>
+                                <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-bold">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-3 py-2 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-[#f97316] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Annual Performance Stats</span>
+                                </td>
+                                <td class="px-3 py-2 text-slate-400">Performance</td>
+                                <td class="px-3 py-2 text-slate-400">Oct 20, 2024</td>
+                                <td class="px-3 py-2"><span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold">Processing</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
         </div>
 
         <!-- Section: Fees -->
-        <div id="section-fees" class="tab-section space-y-4">
-            <div class="flex items-center justify-between mb-2">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue Summary</h4>
-                <button onclick="exportFees()" class="h-8 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <div id="section-fees" class="tab-section space-y-3 hidden">
+            <div class="flex items-center justify-between">
+                <h4 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Revenue Analysis</h4>
+                <button onclick="exportFees()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Export
                 </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Revenue</p>
-                    <h3 id="fee-total-revenue" class="text-xl font-black text-slate-800 tracking-tight">₹0</h3>
+
+            <!-- Revenue Status Card -->
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden max-w-md">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Revenue Overview</p>
+                <div class="flex items-end gap-1.5 mb-2">
+                    <h2 id="fee-total-collected" class="text-2xl font-black text-slate-800">₹0</h2>
+                    <p class="text-sm font-bold text-slate-300 mb-0.5">/ <span id="fee-total-revenue">₹0</span></p>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Collected</p>
-                    <h3 id="fee-total-collected" class="text-xl font-black text-emerald-600 tracking-tight">₹0</h3>
+
+                <div class="w-full h-2 bg-slate-50 rounded-full overflow-hidden mb-3 border border-slate-100">
+                    <div id="revenue-progress"
+                        class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000"
+                        style="width: 0%"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-slate-50/60 p-2 rounded-lg border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Collected</p>
+                        <h4 id="stat-total-collected" class="text-sm font-extrabold text-emerald-600">₹0</h4>
+                    </div>
+                    <div class="bg-slate-50/60 p-2 rounded-lg border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pending</p>
+                        <h4 id="stat-total-pending" class="text-sm font-extrabold text-rose-500">₹0</h4>
+                    </div>
                 </div>
             </div>
-            <div id="fee-batch-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+            <div id="fee-batch-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                 <!-- Batch cards injected here -->
             </div>
         </div>
+        </div>
 
         <!-- Section: Attendance -->
-        <div id="section-attendance" class="tab-section space-y-6 hidden">
+        <div id="section-attendance" class="tab-section space-y-3 hidden">
             <div class="flex items-center justify-between">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Attendance Analytics</h4>
-                <button onclick="exportAttendance()" class="h-8 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <h4 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Attendance Analytics</h4>
+                <button onclick="exportAttendance()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Export
                 </button>
             </div>
 
             <!-- Weekly Graph Card -->
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
+            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm max-w-2xl">
+                <div class="flex items-center justify-between mb-3">
                     <div>
-                        <h4 class="text-sm font-black text-slate-800 tracking-tight">Weekly Attendance Trend</h4>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily presence percentage across all batches</p>
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight">Weekly Attendance Trend</h4>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Daily presence percentage across all batches</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="h-2 w-2 rounded-full bg-blue-500"></div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Presence %</span>
+                    <div class="flex items-center gap-1.5">
+                        <div class="h-2 w-2 rounded-full bg-[#f97316]"></div>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Presence %</span>
                     </div>
                 </div>
-                <div class="h-[250px] w-full relative">
+                <div class="h-[180px] w-full relative">
                     <canvas id="weeklyAttendanceChart"></canvas>
                 </div>
             </div>
 
-            <div id="attendance-batch-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div id="attendance-batch-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                 <!-- Batch cards injected here -->
             </div>
         </div>
 
         <!-- Drill-down View: Student Data -->
-        <div id="section-drilldown" class="hidden space-y-4">
-            <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                <div class="flex items-center gap-3">
+        <div id="section-drilldown" class="hidden space-y-3">
+            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="h-8 w-8 rounded-lg bg-orange-50 flex items-center justify-center text-[#f97316]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                    </div>
                     <div>
-                        <h4 id="drilldown-batch-name" class="text-lg font-black text-slate-800 leading-none">Batch Name</h4>
+                        <h4 id="drilldown-batch-name" class="text-sm font-bold text-slate-800 leading-none">Batch Name</h4>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Student Analytics Breakdown</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 pr-1">
+                <div class="flex items-center gap-2 pr-1">
                     <div class="text-right">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Aggregate</p>
-                        <p id="drilldown-avg" class="text-sm font-black text-blue-600 tracking-tight">0%</p>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Aggregate</p>
+                        <p id="drilldown-avg" class="text-sm font-black text-[#f97316] tracking-tight">0%</p>
                     </div>
                 </div>
             </div>
-            <div id="drilldown-student-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div id="drilldown-student-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                 <!-- Student cards injected here -->
             </div>
         </div>
 
         <!-- Performance Section -->
         <div id="section-performance" class="tab-section hidden">
-            <div class="bg-white p-12 rounded-2xl border border-slate-100 shadow-sm text-center">
-                <div class="h-16 w-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm text-center max-w-sm mx-auto">
+                <div class="h-12 w-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
-                <h4 class="text-xl font-black text-slate-800 tracking-tight">Performance Tracking</h4>
-                <p class="text-[12px] text-slate-400 font-bold mt-1 max-w-sm mx-auto leading-relaxed">Metrics are currently being calibrated for your next cycle.</p>
+                <h4 class="text-sm font-bold text-slate-800">Performance Tracking</h4>
+                <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Metrics are being calibrated for the evaluation cycle.</p>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
     const API_REPORTS_URL = "/api/v1/institute/reports";
@@ -145,7 +247,7 @@
         try {
             const [batchResp, feeResp] = await Promise.all([
                 fetch(API_BATCHES_URL, { headers: { 'Accept': 'application/json' } }),
-                fetch(`${API_REPORTS_URL}/fees`, { headers: { 'Accept': 'application/json' } })
+                fetch(`${API_REPORTS_URL}/fee`, { headers: { 'Accept': 'application/json' } })
             ]);
 
             globalBatches = (await batchResp.json()).data.items;
@@ -166,30 +268,42 @@
 
     function renderFeeBatchCards() {
         const summary = globalFeeData.summary;
-        document.getElementById('fee-total-revenue').innerText = '₹' + summary.total_amount;
-        document.getElementById('fee-total-collected').innerText = '₹' + summary.paid_amount;
+        const total = summary.total_amount || 0;
+        const collected = summary.paid_amount || 0;
+        const pending = total - collected;
+        const pct = total > 0 ? Math.min(100, Math.floor((collected / total) * 100)) : 0;
+        
+        document.getElementById('fee-total-collected').innerText = '₹' + collected;
+        document.getElementById('fee-total-revenue').innerText = '₹' + total;
+        document.getElementById('stat-total-collected').innerText = '₹' + collected;
+        document.getElementById('stat-total-pending').innerText = '₹' + pending;
+        document.getElementById('revenue-progress').style.width = pct + '%';
 
-        const container = document.getElementById('fee-batch-grid');
         container.innerHTML = globalBatches.map(batch => {
             const billed = batch.fees * (batch.students_count || 0);
             const paid = batch.total_paid || 0;
             const due = billed - paid;
             
             return `
-                <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'fees')" class="batch-card bg-white p-4 pt-5 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group">
-                    <div class="flex items-start justify-between mb-1">
-                        <h4 class="text-[14px] font-black text-slate-800 leading-tight">${batch.name}</h4>
-                        <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-tight flex-shrink-0">${batch.students_count || 0} Students</span>
+                <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'fees')" class="batch-card bg-white p-3 rounded-xl border border-slate-100 shadow-sm transition-all duration-300 cursor-pointer group hover:border-[#f97316] hover:shadow-md relative overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between mb-1.5">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 leading-tight group-hover:text-[#f97316] transition-colors">${batch.name}</h4>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Fee: ₹${batch.fees || 0}</p>
+                            </div>
+                            <span class="px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded-md text-[8px] font-bold uppercase tracking-wider flex-shrink-0">${batch.students_count || 0} Scholars</span>
+                        </div>
                     </div>
                     
-                    <div class="mt-4 pt-3 border-t border-slate-50 grid grid-cols-2 gap-2">
+                    <div class="mt-2 pt-2 border-t border-slate-50 grid grid-cols-2 gap-1">
                         <div>
-                            <p class="text-[7px] font-black text-slate-300 uppercase tracking-widest">Collected</p>
-                            <p class="text-[12px] font-black text-emerald-500">₹${paid}</p>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Collected</p>
+                            <p class="text-xs font-extrabold text-emerald-600 mt-0.5">₹${paid}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-[7px] font-black text-slate-300 uppercase tracking-widest">Pending</p>
-                            <p class="text-[12px] font-black ${due > 0 ? 'text-rose-500' : 'text-slate-300'}">₹${due}</p>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Pending</p>
+                            <p class="text-xs font-extrabold ${due > 0 ? 'text-rose-500' : 'text-slate-300'} mt-0.5">₹${due}</p>
                         </div>
                     </div>
                 </div>
@@ -204,23 +318,25 @@
             const color = pct > 90 ? 'emerald' : (pct > 80 ? 'blue' : 'amber');
 
             return `
-                <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'attendance')" class="batch-card bg-white p-4 pt-5 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group">
-                    <div class="flex items-start justify-between mb-1">
-                        <div>
-                            <h4 class="text-[14px] font-black text-slate-800 leading-tight">${batch.name}</h4>
-                            <span class="mt-1 px-2 py-0.5 bg-slate-50 text-slate-400 rounded-lg text-[8px] font-black uppercase tracking-tight inline-block">${batch.students_count || 0} Students</span>
-                        </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-[7px] font-black text-slate-300 uppercase tracking-widest">Avg Present</p>
-                            <p class="text-[13px] font-black text-slate-800 leading-none mt-0.5">${pct}%</p>
+                <div onclick="drillDownBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}', 'attendance')" class="batch-card bg-white p-3 rounded-xl border border-slate-100 shadow-sm transition-all duration-300 cursor-pointer group hover:border-[#f97316] hover:shadow-md relative overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between mb-1.5">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 leading-tight group-hover:text-[#f97316] transition-colors">${batch.name}</h4>
+                                <span class="mt-0.5 px-1.5 py-0.5 bg-slate-50 text-slate-400 rounded-md text-[8px] font-bold uppercase tracking-wider inline-block">${batch.students_count || 0} Scholars</span>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Presence</p>
+                                <p class="text-xs font-extrabold text-slate-800 leading-none mt-0.5">${pct}%</p>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="mt-4 flex items-center gap-2">
-                        <div class="flex-1 bg-slate-50 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-${color}-500 h-full" style="width: ${pct}%"></div>
+                    <div class="mt-2 flex items-center gap-1.5">
+                        <div class="flex-1 bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100/50">
+                            <div class="bg-${color === 'blue' ? '[#f97316]' : color + '-500'} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
                         </div>
-                        <span class="text-[9px] font-black text-${color}-600 uppercase tracking-tighter">${pct > 90 ? 'Perfect' : 'Stable'}</span>
+                        <span class="text-[8px] font-bold text-${color === 'blue' ? '[#f97316]' : color + '-600'} uppercase tracking-wider">${pct > 90 ? 'Perfect' : 'Stable'}</span>
                     </div>
                 </div>
             `;
@@ -285,13 +401,13 @@
                 container.innerHTML = students.map(s => {
                     const due = s.total_due || 0;
                     return `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                            <div class="h-9 w-9 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 font-black text-[11px]">${s.name.charAt(0)}</div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
+                            <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
                             <div class="flex-1">
-                                <h5 class="text-[12px] font-black text-slate-800 leading-none">${s.name}</h5>
+                                <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
                             </div>
                             <div class="text-right">
-                                <span class="px-2 py-0.5 ${due <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} rounded-lg text-[8px] font-black uppercase tracking-tight">
+                                <span class="px-2.5 py-1 ${due <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} rounded-lg text-[10px] font-bold uppercase tracking-wider">
                                     ${due <= 0 ? 'Paid' : '₹'+due}
                                 </span>
                             </div>
@@ -306,15 +422,15 @@
                 container.innerHTML = students.map(s => {
                     const sPct = Math.floor(Math.random() * (100 - 60 + 1) + 60); // Mock
                     return `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                            <div class="h-9 w-9 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 font-black text-[11px]">${s.name.charAt(0)}</div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 hover:border-blue-500 hover:shadow-md transition-all duration-300">
+                            <div class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold text-sm">${s.name.charAt(0).toUpperCase()}</div>
                             <div class="flex-1">
-                                <h5 class="text-[12px] font-black text-slate-800 leading-none">${s.name}</h5>
-                                <div class="mt-2 flex items-center gap-2">
-                                    <div class="flex-1 bg-slate-50 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-blue-500 h-full" style="width: ${sPct}%"></div>
+                                <h5 class="text-sm font-bold text-slate-900 leading-none">${s.name}</h5>
+                                <div class="mt-2.5 flex items-center gap-2">
+                                    <div class="flex-1 bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100/50">
+                                        <div class="bg-blue-500 h-full rounded-full" style="width: ${sPct}%"></div>
                                     </div>
-                                    <span class="text-[8px] font-black text-blue-600">${sPct}%</span>
+                                    <span class="text-[9px] font-bold text-blue-600">${sPct}%</span>
                                 </div>
                             </div>
                         </div>
@@ -324,7 +440,7 @@
 
             // UI Transitions
             document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById('tab-nav').classList.add('hidden');
+            document.getElementById('section-hub').classList.add('hidden');
             document.getElementById('breadcrumb').classList.remove('hidden');
             document.getElementById('section-drilldown').classList.remove('hidden');
             document.getElementById('page-title').innerText = 'Batch Intelligence';
@@ -337,24 +453,29 @@
     }
 
     function exitDrillDown() {
-        document.getElementById('section-drilldown').classList.add('hidden');
-        document.getElementById('breadcrumb').classList.add('hidden');
-        document.getElementById('tab-nav').classList.remove('hidden');
-        document.getElementById(`section-${currentTab}`).classList.remove('hidden');
-        document.getElementById('page-title').innerText = 'Analytics & Reports';
+        if (!document.getElementById('section-drilldown').classList.contains('hidden')) {
+            document.getElementById('section-drilldown').classList.add('hidden');
+            document.getElementById(`section-${currentTab}`).classList.remove('hidden');
+            const titles = { 'fees': 'Fee Collection Report', 'attendance': 'Attendance Report', 'performance': 'Performance Report' };
+            document.getElementById('page-title').innerText = titles[currentTab] || 'Report';
+        } else {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('section-hub').classList.remove('hidden');
+            document.getElementById('breadcrumb').classList.add('hidden');
+            document.getElementById('page-title').innerText = 'Analytics & Intelligence';
+        }
     }
 
     function switchTab(tabId) {
         currentTab = tabId;
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active', 'text-white');
-            btn.classList.add('text-slate-400');
-        });
-        document.getElementById(`tab-btn-${tabId}`).classList.add('active');
-        document.getElementById(`tab-btn-${tabId}`).classList.remove('text-slate-400');
-
+        document.getElementById('section-hub').classList.add('hidden');
         document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
         document.getElementById(`section-${tabId}`).classList.remove('hidden');
+        document.getElementById('breadcrumb').classList.remove('hidden');
+        
+        const titles = { 'fees': 'Fee Collection Report', 'attendance': 'Attendance Report', 'performance': 'Performance Report' };
+        document.getElementById('page-title').innerText = titles[tabId] || 'Report';
+        
         renderBatchCards();
     }
 

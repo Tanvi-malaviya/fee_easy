@@ -26,6 +26,10 @@ class InstituteStudentController extends Controller
             ->with('batch')
             ->withAvg('homeworkSubmissions', 'score');
 
+        if ($request->boolean('has_fees')) {
+            $query->has('fees');
+        }
+
         // Search Filter (Name, Email, Phone)
         if ($request->filled('search')) {
             $search = $request->search;

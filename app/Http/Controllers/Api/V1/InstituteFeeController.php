@@ -18,10 +18,38 @@ class InstituteFeeController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $paginator = Fee::where('institute_id', $request->user()->id)
-            ->with(['student:id,name,email', 'payments'])
-            ->latest()
-            ->paginate(10);
+        $query = Fee::where('institute_id', $request->user()->id)
+            ->with(['student' => function($q) {
+                $q->select('id', 'name', 'email', 'batch_id', 'monthly_fee');
+            }, 'student.batch', 'payments']);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('batch_id')) {
+            $query->whereHas('student', function($q) use ($request) {
+                $q->where('batch_id', $request->batch_id);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->whereHas('student', function($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm);
+            });
+        }
+
+        $paginator = $query->latest()->paginate(12);
+
+        $paginator->getCollection()->transform(function($fee) {
+            if ($fee->student) {
+                $fee->student->total_paid = \App\Models\Payment::where('student_id', $fee->student_id)->sum('amount');
+                $fee->student->total_due = ($fee->student->monthly_fee ?? 0) - $fee->student->total_paid;
+            }
+            return $fee;
+        });
+
 
         $currentMonthTotal = Fee::where('institute_id', $request->user()->id)
             ->whereMonth('date', now()->month)
@@ -152,10 +180,21 @@ class InstituteFeeController extends Controller
 
         $fees = $query->latest()->get();
 
+        $month = now()->format('F');
+        $year = now()->format('Y');
+
+        if ($request->filled('date')) {
+            $carbonDate = \Carbon\Carbon::parse($request->date);
+            $month = $carbonDate->format('F');
+            $year = $carbonDate->format('Y');
+        }
+
         $data = [
             'institute' => $institute,
             'fees' => $fees,
             'date' => $request->input('date', 'All'),
+            'month' => $month,
+            'year' => $year,
             'student' => $request->filled('student_id') ? \App\Models\Student::find($request->student_id)->name : 'All',
         ];
 
