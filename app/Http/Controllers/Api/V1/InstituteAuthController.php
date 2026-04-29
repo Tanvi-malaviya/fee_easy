@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class InstituteAuthController extends Controller
 {
@@ -18,7 +20,7 @@ class InstituteAuthController extends Controller
         $request->validate([
             'institute_name' => 'required|string|max:255',
             'email' => 'required|email|unique:institutes,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|max:15',
             'name' => 'nullable|string|max:255',
             'phone' => 'nullable|string',
         ]);
@@ -36,15 +38,15 @@ class InstituteAuthController extends Controller
             'status' => 'pending', 
         ]);
 
-        // In production, send OTP via SMS/Email here
+        try {
+            Mail::to($institute->email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            // Log or ignore gracefully depending on testing configs
+        }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Institute registered successfully. Please verify your OTP.',
-            'data' => [
-                'email' => $institute->email,
-                'otp' => $otp, // Returning for testing purposes
-            ]
         ], 201);
     }
 
@@ -83,10 +85,9 @@ class InstituteAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'OTP verified successfully.',
-            'data' => array_merge(
-                ['token' => $token],
-                $institute->toArray()
-            )
+            'data' => [
+                'token' => $token
+            ]
         ]);
     }
 
@@ -104,16 +105,107 @@ class InstituteAuthController extends Controller
             'otp_expires_at' => Carbon::now()->addMinutes(10),
         ]);
 
-        // In production, send OTP via SMS/Email here
+        try {
+            Mail::to($institute->email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            // Log or ignore gracefully depending on testing configs
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'A new OTP has been sent to your email/phone.',
-            'data' => [
-                'otp' => $otp // Returning for testing purposes
-            ]
+            'message' => 'A new OTP has been successfully sent to your email address.',
+           
         ]);
     }
+    public function sendResetPasswordEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:institutes,email',
+        ]);
+
+        $institute = Institute::where('email', $request->email)->first();
+
+        $otp = rand(100000, 999999);
+        $institute->update([
+            'otp' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($institute->email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            // Log gracefully
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Reset password OTP has been sent successfully to your email.',
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:institutes,email',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $newPassword = $request->password;
+        $errors = [];
+
+        if (strlen($newPassword) < 8 || strlen($newPassword) > 15) {
+            $errors[] = 'Password must be between 8 and 15 characters long.';
+        }
+        if (!preg_match('/[a-z]/i', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 standard letter.';
+        }
+        if (!preg_match('/[A-Z]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 capital letter.';
+        }
+        if (!preg_match('/\d/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 number.';
+        }
+        if (!preg_match('/[\W_]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 special character.';
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation errors.',
+                'errors' => $errors
+            ], 422);
+        }
+
+        $institute = Institute::where('email', $request->email)->first();
+
+        if ($institute->otp !== $request->otp) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid OTP.',
+            ], 400);
+        }
+
+        if ($institute->otp_expires_at && $institute->otp_expires_at->isPast()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'OTP has expired.',
+            ], 400);
+        }
+
+        $institute->update([
+            'password' => Hash::make($request->password),
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password reset successfully.',
+        ]);
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -136,7 +228,18 @@ class InstituteAuthController extends Controller
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => array_merge(
-                ['token' => $token],
+                [
+                    'token' => $token,
+                    'is_profile_setup' => !empty($institute->institute_name) &&
+                        !empty($institute->name) &&
+                        !empty($institute->phone) &&
+                        !empty($institute->address) &&
+                        !empty($institute->city) &&
+                        !empty($institute->state) &&
+                        !empty($institute->country) &&
+                        !empty($institute->pincode) &&
+                        !empty($institute->logo),
+                ],
                 $institute->toArray()
             )
         ]);

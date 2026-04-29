@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Batch Attendance Report - {{ $batch->name }}</title>
+    <title>Attendance Report - {{ $batch->name ?? 'All Batches' }}</title>
     <style>
         body { font-family: 'DejaVu Sans', sans-serif; color: #334155; margin: 0; padding: 0; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
@@ -16,7 +16,7 @@
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: #1e3a8a; color: white; text-align: left; padding: 12px 10px; font-size: 10px; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: bold; }
         tr:nth-child(even) { background: #f1f5f9; }
         
         .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #94a3b8; padding: 10px 0; }
@@ -25,9 +25,37 @@
 <body>
     <div class="header">
         <h1>{{ $institute->name }}</h1>
-        <p>Batch Attendance Report: {{ $batch->name }} ({{ $month_name }} {{ $year }})</p>
+        <p>Attendance Report: {{ $batch->name ?? 'All Batches' }} ({{ $month_name }} {{ $year }})</p>
     </div>
 
+    @isset($batchesData)
+    <div class="summary">
+        <table>
+            <tr>
+                <td style="width: 100%; text-align: center;">Total Batches: <br><span class="value">{{ count($batchesData) }}</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Batch Name</th>
+                <th>Average Attendance</th>
+                <th>Students Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($batchesData as $b)
+            <tr>
+                <td style="color: #1e3a8a;">{{ $b->name }}</td>
+                <td style="color: #059669;">{{ $b->avg_attendance }}</td>
+                <td>{{ $b->students_count }} Students</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @else
     <div class="summary">
         <table>
             <tr>
@@ -43,7 +71,6 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Student ID</th>
                 <th>Student Name</th>
                 <th>Status</th>
                 <th>Marked By</th>
@@ -53,9 +80,8 @@
             @foreach($attendance as $record)
             <tr>
                 <td>{{ \Carbon\Carbon::parse($record->date)->format('d M, Y') }}</td>
-                <td>STU-{{ str_pad($record->student_id, 4, '0', STR_PAD_LEFT) }}</td>
                 <td>{{ $record->student->name ?? 'N/A' }}</td>
-                <td style="font-weight: bold; color: {{ $record->status === 'Present' ? '#059669' : ($record->status === 'Absent' ? '#dc2626' : '#d97706') }}">
+                <td style="color: {{ $record->status === 'Present' ? '#059669' : ($record->status === 'Absent' ? '#dc2626' : '#d97706') }}">
                     {{ $record->status }}
                 </td>
                 <td>{{ $record->marked_by ?? 'N/A' }}</td>
@@ -63,6 +89,7 @@
             @endforeach
         </tbody>
     </table>
+    @endisset
 
     <div class="footer">
         Generated on {{ now()->format('d M, Y h:i A') }} | Powered by FeeEasy
