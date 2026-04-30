@@ -39,12 +39,12 @@
                 
                 <div class="flex-1 text-center md:text-left">
                     <h1 class="text-3xl font-semibold text-slate-800 tracking-tight">{{ $student->name }}</h1>
-                    <p class="text-sm text-slate-400 mt-1">Student ID: <span class="text-slate-500 font-medium">TU-2024-0892</span></p>
+                    <p class="text-sm text-slate-400 mt-1">Student ID: <span class="text-slate-500 font-medium">TU-{{ $student->created_at->format('Y') }}-{{ str_pad($student->id, 4, '0', STR_PAD_LEFT) }}</span></p>
                     
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-5">
                         <div class="bg-slate-50 rounded-xl px-5 py-3 border border-slate-100 min-w-[110px]">
-                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Grade</p>
-                            <p class="text-base font-semibold text-slate-800">{{ $student->standard ?: '12' }}</p>
+                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Avg Grade</p>
+                            <p class="text-base font-semibold text-slate-800">{{ $averageGrade }}/10</p>
                         </div>
                         <div class="bg-emerald-50/30 rounded-xl px-5 py-3 border border-emerald-100 min-w-[110px]">
                             <p class="text-[9px] font-medium text-emerald-600/50 uppercase tracking-widest mb-1">Payment Status</p>
@@ -52,7 +52,7 @@
                         </div>
                         <div class="bg-blue-50/30 rounded-xl px-4 py-3 border border-blue-100 min-w-[110px]">
                             <p class="text-[9px] font-medium text-blue-600/50 uppercase tracking-widest mb-1">Attendance</p>
-                            <p class="text-base font-semibold text-blue-600">94%</p>
+                            <p class="text-base font-semibold text-blue-600">{{ $attendancePercentage }}%</p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,11 @@
 
             <div class="space-y-2 mb-4 flex-1">
                 <div class="flex justify-between text-xs">
-                    <span class="font-medium text-slate-400">Tuition Fees</span>
+                    <span class="font-medium text-slate-400">Standard</span>
+                    <span class="font-bold text-slate-700">{{ $student->standard }}</span>
+                </div>
+                <div class="flex justify-between text-xs pt-1">
+                    <span class="font-medium text-slate-400">Monthly Tuition Fee</span>
                     <span class="font-bold text-slate-700">₹{{ number_format($student->monthly_fee) }}</span>
                 </div>
             </div>
@@ -100,7 +104,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-12">
             <div>
                 <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Batch Name</p>
-                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->batch ? $student->batch->name : 'Science Stream - Section B' }}</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->batch ? $student->batch->name : 'N/A' }}</p>
             </div>
             <div>
                 <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Date of Admission</p>
@@ -108,7 +112,7 @@
             </div>
             <div>
                 <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Guardian Name</p>
-                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->guardian_name ?: 'Mr. Rajesh Malhotra' }}</p>
+                <p class="text-base font-medium text-slate-700 leading-tight">{{ $student->guardian_name ?: 'N/A' }}</p>
             </div>
             <div>
                 <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Phone Number</p>

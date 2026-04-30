@@ -98,15 +98,30 @@
             </nav>
 
             <!-- Right Profile Section -->
-            <div class="flex items-center gap-5">
+            <div class="flex items-center gap-4">
                 <a href="{{ route('institute.notifications.index') }}" class="text-slate-400 hover:text-slate-800 transition-colors relative">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     <span id="notif-dot" class="absolute -top-1 -right-1 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
                 </a>
-                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all">
+                
+                <div class="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+
+                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0">
                     <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" 
                          class="h-full w-full object-cover">
                 </a>
+
+                <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                    class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group"
+                    title="Logout">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+
+                <form id="logout-form" action="{{ route('institute.logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             </div>
         </div>
     </header>
@@ -181,29 +196,7 @@
             }, 3000);
         }
 
-        // Notification Logic
-        async function fetchNotifications() {
-            try {
-                const response = await fetch('/api/v1/institute/notifications', {
-                    headers: { 'Accept': 'application/json' }
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    const dot = document.getElementById('notif-dot');
-                    if (dot) {
-                        const unread = result.data.filter(n => !n.is_read).length;
-                        if (unread > 0) {
-                            dot.classList.remove('hidden');
-                        } else {
-                            dot.classList.add('hidden');
-                        }
-                    }
-                }
-            } catch (error) { console.error('Failed to fetch notifications'); }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            fetchNotifications();
             
             // Mobile Menu Toggle
             const menuBtn = document.getElementById('mobile-sidebar-toggle');

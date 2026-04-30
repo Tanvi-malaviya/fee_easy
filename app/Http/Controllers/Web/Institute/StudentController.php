@@ -82,20 +82,22 @@ class StudentController extends Controller
         $institute = Auth::guard('institute')->user();
         if ($student->institute_id !== $institute->id) abort(403);
 
-        $student->load(['batch', 'fees']);
+        $student->load(['batch', 'fees', 'attendance', 'homeworkSubmissions']);
         
-        // Calculate balance (Difference between total assigned fees and total paid amount)
-        $totalAssigned = $student->fees->sum('total_amount');
-        $totalPaid = $student->fees->sum('paid_amount');
-        
-        // If no fee records exist, show monthly_fee as the pending balance for the current month
-        if ($student->fees->count() === 0) {
-            $balance = $student->monthly_fee;
-        } else {
-            $balance = $totalAssigned - $totalPaid;
-        }
+        // Calculate balance (Monthly Fee - Total Payments)
+        $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+        $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
 
-        return view('institute.students.show', compact('student', 'balance'));
+        // Attendance stats
+        $totalDays = $student->attendance()->count();
+        $presentDays = $student->attendance()->where('status', 'Present')->count();
+        $attendancePercentage = $totalDays > 0 ? round(($presentDays / $totalDays) * 100) : 0;
+
+        // Homework stats (Average Score)
+        $averageGrade = $student->homeworkSubmissions()->whereNotNull('score')->avg('score');
+        $averageGrade = $averageGrade ? round($averageGrade, 1) : 0;
+
+        return view('institute.students.show', compact('student', 'balance', 'attendancePercentage', 'averageGrade'));
     }
 
     /**

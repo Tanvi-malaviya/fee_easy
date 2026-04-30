@@ -150,8 +150,8 @@
 <!-- View Update Modal -->
 <div id="view-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden p-4">
     <div onclick="closeViewModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-    <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div class="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
             <div class="flex items-center gap-3">
                 <div id="view-cat-icon" class="h-9 w-9 rounded-xl flex items-center justify-center"></div>
                 <div>
@@ -167,19 +167,19 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <div class="p-6">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Target Audience:</span>
-                <span id="view-target" class="text-[9px] font-black text-[#1e3a8a] bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider"></span>
+        <div class="p-5">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Target:</span>
+                <span id="view-target" class="text-[9px] font-black text-[#ff6c00] bg-orange-50 px-2 py-0.5 rounded-md uppercase tracking-wider"></span>
             </div>
             
             <div class="prose prose-slate max-w-none">
                 <p id="view-description" class="text-[13px] text-slate-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
             </div>
 
-            <div id="view-attachment-container" class="mt-6 pt-4 border-t border-slate-50 hidden">
-                <a id="view-attachment-link" href="#" target="_blank" class="inline-flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-100 rounded-xl hover:bg-blue-50 hover:border-blue-100 transition-all group w-full">
-                    <div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
+            <div id="view-attachment-container" class="mt-4 pt-3 border-t border-slate-50 hidden">
+                <a id="view-attachment-link" href="#" target="_blank" class="inline-flex items-center gap-3 p-2 bg-slate-50 border border-slate-100 rounded-xl hover:bg-orange-50 hover:border-orange-100 transition-all group w-full">
+                    <div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-[#ff6c00] shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
                     </div>
                     <div>
@@ -189,8 +189,8 @@
                 </a>
             </div>
         </div>
-        <div class="p-4 bg-slate-50/30 border-t border-slate-50 flex justify-end">
-            <button onclick="closeViewModal()" class="px-6 py-2 bg-slate-800 text-white rounded-xl font-bold text-[11px] shadow-lg shadow-slate-900/10 hover:scale-[1.02] active:scale-95 transition-all">
+        <div class="px-5 py-3 bg-slate-50/30 border-t border-slate-50 flex justify-end">
+            <button onclick="closeViewModal()" class="px-6 py-2 bg-primary2 text-white rounded-xl font-bold text-[11px] shadow-lg shadow-slate-900/10 hover:scale-[1.02] active:scale-95 transition-all">
                 Close Details
             </button>
         </div>
@@ -375,15 +375,21 @@
     function viewUpdateDetails(updateStr) {
         const update = JSON.parse(updateStr);
         const modal = document.getElementById('view-modal');
-        const catColors = { 'Academic': 'blue', 'Administrative': 'indigo', 'Emergency': 'rose', 'Event': 'amber', 'Other': 'slate' };
-        const color = catColors[update.category] || 'slate';
+        const catColors = { 'Academic': 'orange', 'Administrative': 'indigo', 'Emergency': 'rose', 'Event': 'amber', 'Other': 'slate' };
+        const color = catColors[update.category] || 'orange';
 
         const iconSvg = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`;
 
         document.getElementById('view-topic').innerText = update.topic || update.category || 'General Notice';
         document.getElementById('view-category').innerText = update.category || 'Update';
-        document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-50 text-${color}-600`;
-        document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-50 text-${color}-600`;
+        
+        if (color === 'orange') {
+            document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-orange-50 text-[#ff6c00]`;
+            document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-orange-50 text-[#ff6c00]`;
+        } else {
+            document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-50 text-${color}-600`;
+            document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-50 text-${color}-600`;
+        }
         document.getElementById('view-cat-icon').innerHTML = iconSvg;
         
         document.getElementById('view-date').innerText = update.date || 'Today';

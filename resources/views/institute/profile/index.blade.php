@@ -389,11 +389,6 @@
                     <textarea name="access_token" id="wa-access_token" rows="3" required class="textarea-wa" placeholder="EAAW..."></textarea>
                 </div>
 
-                <div class="flex items-center gap-2 pt-1">
-                    <input type="checkbox" name="is_active" id="wa-is_active" value="1" class="rounded border-slate-200 text-[#ff6c00] focus:ring-[#ff6c00]/20 h-3.5 w-3.5">
-                    <label for="wa-is_active" class="text-[10px] font-bold text-slate-600">Activate Integration</label>
-                </div>
-
                 <!-- Footer Buttons -->
                 <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 mt-2">
                     <button type="button" onclick="closeWhatsAppModal()" class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
@@ -638,7 +633,7 @@
                 phone_number_id: formData.get('phone_number_id'),
                 business_account_id: formData.get('business_account_id'),
                 access_token: formData.get('access_token'),
-                is_active: formData.get('is_active') === '1' ? 1 : 0
+                is_active: 1
             };
 
             const headers = {

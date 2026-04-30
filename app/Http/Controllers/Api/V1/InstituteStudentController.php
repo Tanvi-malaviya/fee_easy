@@ -23,7 +23,7 @@ class InstituteStudentController extends Controller
         }
 
         $query = Student::where('institute_id', $request->user()->id)
-            ->with('batch')
+            ->with(['batch', 'fees'])
             ->withAvg('homeworkSubmissions', 'score');
 
         if ($request->boolean('has_fees')) {
@@ -93,8 +93,8 @@ class InstituteStudentController extends Controller
         $paginator = $query->paginate(10);
 
         $items = collect($paginator->items())->map(function ($student) {
-            $student->total_paid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
-            $student->total_due = ($student->monthly_fee ?? 0) - $student->total_paid;
+            $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+            $student->total_due = ($student->monthly_fee ?? 0) - $totalPaid;
             return $student;
         });
 

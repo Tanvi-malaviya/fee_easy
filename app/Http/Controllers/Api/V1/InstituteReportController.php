@@ -26,7 +26,13 @@ class InstituteReportController extends Controller
 
         $totalFees = Fee::where('institute_id', $institute->id)->sum('total_amount');
         $paidFees = Fee::where('institute_id', $institute->id)->sum('paid_amount');
-        $dueFees = $totalFees - $paidFees;
+        
+        // Calculate due fees more comprehensively (Monthly Fee - Total Payments)
+        $dueFees = 0;
+        foreach ($institute->students as $student) {
+            $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+            $dueFees += max(0, ($student->monthly_fee ?? 0) - $totalPaid);
+        }
 
         $instituteHomeworkIds = Homework::where('institute_id', $institute->id)->pluck('id');
         $allSubmissions = HomeworkSubmission::whereIn('homework_id', $instituteHomeworkIds)->whereNotNull('score')->get();

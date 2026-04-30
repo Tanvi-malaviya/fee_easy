@@ -143,100 +143,127 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchCurrentSubscription();
-        fetchPlans();
-        fetchBillingHistory();
-    });
-
-    async function fetchCurrentSubscription() {
+    document.addEventListener('DOMContentLoaded', fetchAllData);
+    
+    async function fetchAllData() {
         try {
-            const token = localStorage.getItem('token');
-            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const response = await fetch('/api/v1/institute/profile', { headers });
-            const result = await response.json();
-            if (result.status === 'success' && result.subscription) {
-                const sub = result.subscription;
-                document.getElementById('sub-plan-name').innerText = sub.plan_name;
-                document.getElementById('sub-status').innerText = sub.status;
-                document.getElementById('sub-renewal').innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
-                
-                // Capacity
-                const used = sub.students_enrolled || 0;
-                const total = sub.student_limit || 1000;
-                const percent = Math.min(100, Math.round((used / total) * 100));
-                
-                document.getElementById('capacity-percent').innerText = `${percent}%`;
-                document.getElementById('capacity-bar').style.width = `${percent}%`;
-                document.getElementById('capacity-text').innerText = `${used} of ${total} enrolled students.`;
-            }
-        } catch (e) { console.error('Sub fetch error:', e); }
-    }
-
-    async function fetchPlans() {
-        const loader = document.getElementById('plans-loader');
-        const container = document.getElementById('plans-container');
-        
-        try {
-            const response = await fetch('/api/v1/institute/plans', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const response = await fetch('/api/v1/institute/subscriptions/all-data', { 
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                } 
+            });
             const result = await response.json();
             
             if (result.status === 'success') {
-                container.innerHTML = '';
-                result.data.forEach(plan => {
-                    const card = document.createElement('div');
-                    const nameLower = plan.name.toLowerCase();
-                    const isPro = nameLower.includes('pro');
-                    
-                    card.className = `bg-white rounded-2xl p-5 border shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-1 ${isPro ? 'border-[#ff6c00] ring-1 ring-[#ff6c00]/20' : 'border-slate-100/50'}`;
-                    
-                    const badgeHtml = isPro ? `<span class="absolute right-3 top-3 bg-[#ff6c00] text-white text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Current Plan</span>` : '';
-
-                    let features = [];
-                    if (nameLower.includes('basic')) {
-                        features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
-                    } else if (nameLower.includes('pro')) {
-                        features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
-                    } else {
-                        features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
-                    }
-
-                    const featuresHtml = features.map(f => `
-                        <li class="flex items-center gap-2">
-                            <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
-                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            ${f}
-                        </li>
-                    `).join('');
-
-                    card.innerHTML = `
-                        ${badgeHtml}
-                        <div>
-                            <h4 class="text-base font-bold text-slate-800">${plan.name}</h4>
-                            <div class="flex items-baseline gap-1 mt-2 mb-4">
-                                <span class="text-2xl font-bold text-slate-800">₹${parseFloat(plan.price).toLocaleString()}</span>
-                                <span class="text-[9px] font-bold text-slate-400 tracking-wide">/${plan.duration_days} DAYS</span>
-                            </div>
-                            
-                            <ul class="space-y-2 text-[11px] text-slate-600 font-medium mb-6 pt-3 border-t border-slate-50">
-                                ${featuresHtml}
-                            </ul>
-                        </div>
-
-                        <button onclick="choosePlan(${plan.id})" id="plan-btn-${plan.id}" class="w-full py-2.5 ${isPro ? 'bg-[#ff6c00] hover:bg-[#e05f00] text-white shadow-orange-500/20' : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'} rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
-                            ${nameLower.includes('enterprise') ? 'Contact Sales' : (isPro ? 'Manage Billing' : 'Select Plan')}
-                        </button>
-                    `;
-                    container.appendChild(card);
-                });
+                const data = result.data;
                 
-                loader.classList.add('hidden');
-                container.classList.remove('hidden');
+                // 1. Current Subscription & Capacity
+                if (data.subscription) {
+                    const sub = data.subscription;
+                    document.getElementById('sub-plan-name').innerText = sub.plan_name;
+                    document.getElementById('sub-status').innerText = sub.status;
+                    document.getElementById('sub-renewal').innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
+                    
+                    const used = sub.students_enrolled || 0;
+                    const total = sub.student_limit || 1000;
+                    const percent = Math.min(100, Math.round((used / total) * 100));
+                    
+                    document.getElementById('capacity-percent').innerText = `${percent}%`;
+                    document.getElementById('capacity-bar').style.width = `${percent}%`;
+                    document.getElementById('capacity-text').innerText = `${used} of ${total} enrolled students.`;
+                }
+
+                // 2. Plans Grid
+                renderPlans(data.plans);
+
+                // 3. Billing History
+                renderHistory(data.history);
             }
-        } catch (error) { console.error('Fetch Plans Error:', error); }
+        } catch (e) { console.error('Fetch all error:', e); }
+    }
+
+    function renderPlans(plans) {
+        const container = document.getElementById('plans-container');
+        const loader = document.getElementById('plans-loader');
+        
+        container.innerHTML = '';
+        plans.forEach(plan => {
+            const card = document.createElement('div');
+            const nameLower = plan.name.toLowerCase();
+            const isPro = nameLower.includes('pro');
+            
+            card.className = `bg-white rounded-2xl p-5 border shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-1 ${isPro ? 'border-[#ff6c00] ring-1 ring-[#ff6c00]/20' : 'border-slate-100/50'}`;
+            
+            const badgeHtml = isPro ? `<span class="absolute right-3 top-3 bg-[#ff6c00] text-white text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Current Plan</span>` : '';
+
+            let features = [];
+            if (nameLower.includes('basic')) {
+                features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
+            } else if (nameLower.includes('pro')) {
+                features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
+            } else {
+                features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
+            }
+
+            const featuresHtml = features.map(f => `
+                <li class="flex items-center gap-2">
+                    <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
+                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    ${f}
+                </li>
+            `).join('');
+
+            card.innerHTML = `
+                ${badgeHtml}
+                <div>
+                    <h4 class="text-base font-bold text-slate-800">${plan.name}</h4>
+                    <div class="flex items-baseline gap-1 mt-2 mb-4">
+                        <span class="text-2xl font-bold text-slate-800">₹${parseFloat(plan.price).toLocaleString()}</span>
+                        <span class="text-[9px] font-bold text-slate-400 tracking-wide">/${plan.duration_days} DAYS</span>
+                    </div>
+                    
+                    <ul class="space-y-2 text-[11px] text-slate-600 font-medium mb-6 pt-3 border-t border-slate-50">
+                        ${featuresHtml}
+                    </ul>
+                </div>
+
+                <button onclick="choosePlan(${plan.id})" id="plan-btn-${plan.id}" class="w-full py-2.5 ${isPro ? 'bg-[#ff6c00] hover:bg-[#e05f00] text-white shadow-orange-500/20' : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'} rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
+                    ${nameLower.includes('enterprise') ? 'Contact Sales' : (isPro ? 'Manage Billing' : 'Select Plan')}
+                </button>
+            `;
+            container.appendChild(card);
+        });
+        
+        loader.classList.add('hidden');
+        container.classList.remove('hidden');
+    }
+
+    function renderHistory(history) {
+        const container = document.getElementById('billing-history-container');
+        container.innerHTML = '';
+        
+        if (history.length === 0) {
+            container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400 font-bold text-[10px] uppercase">No billing history</td></tr>`;
+            return;
+        }
+        
+        history.forEach(item => {
+            const statusColors = { 'active': 'bg-emerald-50 text-emerald-600', 'success': 'bg-emerald-50 text-emerald-600', 'pending': 'bg-amber-50 text-amber-600' };
+            const date = new Date(item.created_at).toLocaleDateString('en-GB');
+
+            container.innerHTML += `
+                <tr class="hover:bg-slate-50/50">
+                    <td class="px-4 py-3 text-xs font-medium text-slate-700">${date}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">${item.plan_name}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">₹${parseFloat(item.amount).toLocaleString()}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase ${statusColors[item.status.toLowerCase()] || 'bg-slate-100'}">${item.status}</span>
+                    </td>
+                </tr>
+            `;
+        });
     }
 
     async function choosePlan(planId) {
@@ -290,39 +317,6 @@
 
         } catch (error) { alert(error.message || 'Error'); }
         finally { btn.disabled = false; btn.innerText = originalText; }
-    }
-
-    async function fetchBillingHistory() {
-        const container = document.getElementById('billing-history-container');
-        try {
-            const headers = { 'X-Requested-With': 'XMLHttpRequest', 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-            const response = await fetch('/api/v1/institute/subscriptions/history', { headers });
-            const result = await response.json();
-            
-            if (result.status === 'success') {
-                container.innerHTML = '';
-                if (result.data.length === 0) {
-                    container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400 font-bold text-[10px] uppercase">No billing history</td></tr>`;
-                    return;
-                }
-                
-                result.data.forEach(item => {
-                    const statusColors = { 'active': 'bg-emerald-50 text-emerald-600', 'success': 'bg-emerald-50 text-emerald-600', 'pending': 'bg-amber-50 text-amber-600' };
-                    const date = new Date(item.created_at).toLocaleDateString('en-GB');
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50/50">
-                            <td class="px-4 py-3 text-xs font-medium text-slate-700">${date}</td>
-                            <td class="px-4 py-3 text-xs font-bold text-slate-800">${item.plan_name}</td>
-                            <td class="px-4 py-3 text-xs font-bold text-slate-800">₹${parseFloat(item.amount).toLocaleString()}</td>
-                            <td class="px-4 py-3">
-                                <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase ${statusColors[item.status.toLowerCase()] || 'bg-slate-100'}">${item.status}</span>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-        } catch (e) { container.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-rose-400 font-bold">Error loading history</td></tr>'; }
     }
 </script>
 @endsection

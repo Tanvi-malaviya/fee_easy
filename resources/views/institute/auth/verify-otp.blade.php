@@ -17,8 +17,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-y: auto;
             position: relative;
+            padding: 20px 0;
         }
 
         .bg-pattern {
@@ -45,65 +46,110 @@
 
         .verify-card {
             background: #ffffff;
-            border-radius: 2.5rem;
-            padding: 2.5rem 2.25rem;
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
             border: 1px solid #f1f5f9;
             text-align: center;
         }
 
         /* Timeline Section */
-        .timeline-line { background: #f1f5f9; }
-        .timeline-progress { background: #3b82f6; }
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 14px;
+            left: 2rem;
+            right: 2rem;
+            height: 2px;
+            background: #f1f5f9;
+            z-index: 0;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 14px;
+            left: 2rem;
+            height: 2px;
+            background: #FF6B00;
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
         
+        .step-item {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .step-circle {
-            height: 36px;
-            width: 36px;
+            height: 28px;
+            width: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 700;
             transition: all 0.3s ease;
         }
         
-        .step-active { background: #3b82f6; color: white; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3); }
-        .step-completed { background: #3b82f6; color: white; }
+        .step-active { background: #FF6B00; color: white; box-shadow: 0 5px 15px rgba(255, 107, 0, 0.3); }
+        .step-completed { background: #FF6B00; color: white; }
         .step-pending { background: #f8fafc; color: #94a3b8; border: 2px solid #f1f5f9; }
         
         .step-label {
-            font-size: 9px;
+            font-size: 7px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            margin-top: 8px;
+            margin-top: 4px;
         }
         .label-active { color: #1e293b; }
         .label-pending { color: #94a3b8; }
 
-        .header-section { text-align: center; margin-bottom: 2rem; margin-top: 1rem; }
-        .header-section i { font-size: 2.5rem; color: #3b82f6; margin-bottom: 1rem; }
-        .header-section h2 { font-size: 1.8rem; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; }
-        .header-section p { font-size: 10px; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 4px; }
+        .logo-box {
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-box img {
+            height: 35px;
+            width: auto;
+            margin: 0 auto;
+        }
+
+        .header-section { text-align: center; margin-bottom: 0.75rem; margin-top: 0.25rem; }
+        .header-section i { font-size: 1.75rem; color: #FF6B00; margin-bottom: 0.25rem; }
+        .header-section h2 { font-size: 1.4rem; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; }
+        .header-section p { font-size: 8px; font-weight: 700; color: #FF6B00; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 1px; }
 
         .form-label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .input-field {
             width: 100%;
-            height: 3.5rem;
+            height: 2.8rem;
             background: #f8fafc;
             border: 2px solid #f1f5f9;
-            border-radius: 1rem;
-            font-size: 2.2rem;
+            border-radius: 0.75rem;
+            font-size: 1.8rem;
             font-weight: 900;
             color: #1e293b;
             text-align: center;
@@ -114,41 +160,41 @@
         }
 
         .input-field:focus {
-            border-color: #3b82f6;
+            border-color: #FF6B00;
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.05);
         }
 
         .submit-btn {
             width: 100%;
-            height: 3.5rem;
-            background: #1e3a8a;
+            height: 3rem;
+            background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 1.25rem;
-            font-size: 0.9rem;
+            border-radius: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.15);
-            margin-top: 1.5rem;
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.15);
+            margin-top: 1rem;
         }
 
         .submit-btn:hover {
-            background: #1e40af;
+            background: #e66000;
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(30, 58, 138, 0.2);
+            box-shadow: 0 15px 30px rgba(255, 107, 0, 0.2);
         }
 
-        .footer-text { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
-        .footer-text p { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
-        .footer-text a { color: #1e3a8a; text-decoration: none; font-weight: 800; }
-        .logout-btn { background: none; border: none; font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; margin-top: 1rem; }
-        .logout-btn:hover { color: #1e3a8a; }
+        .footer-text { text-align: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; }
+        .footer-text p { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
+        .footer-text a { color: #FF6B00; text-decoration: none; font-weight: 800; }
+        .logout-btn { background: none; border: none; font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; margin-top: 0.5rem; }
+        .logout-btn:hover { color: #FF6B00; }
 
-        .error-box { background: #fff1f2; border-radius: 1rem; padding: 0.75rem; margin-bottom: 1.5rem; }
+        .error-box { background: #fff1f2; border-radius: 1rem; padding: 0.75rem; margin-bottom: 1.25rem; }
         .error-box p { font-size: 0.75rem; font-weight: 600; color: #e11d48; display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
     </style>
 </head>
@@ -158,25 +204,29 @@
     <div class="verify-wrapper">
         <div class="verify-card">
             <!-- Timeline Section -->
-            <div class="flex items-center justify-between mb-8 relative px-6">
-                <div class="absolute top-4.5 left-6 right-6 h-0.5 timeline-line z-0"></div>
-                <div class="absolute top-4.5 left-6 h-0.5 timeline-progress z-0 transition-all duration-500" style="width: 50%"></div>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-progress" style="width: 50%"></div>
 
                 <!-- Step 1 (Completed) -->
-                <div class="relative z-10 flex flex-col items-center">
-                    <div class="step-circle step-completed"><i class="fas fa-check text-xs"></i></div>
+                <div class="step-item">
+                    <div class="step-circle step-completed"><i class="fas fa-check text-[10px]"></i></div>
                     <span class="step-label label-active">Register</span>
                 </div>
                 <!-- Step 2 (Active) -->
-                <div class="relative z-10 flex flex-col items-center">
+                <div class="step-item">
                     <div class="step-circle step-active">2</div>
                     <span class="step-label label-active">Verify</span>
                 </div>
                 <!-- Step 3 (Pending) -->
-                <div class="relative z-10 flex flex-col items-center">
+                <div class="step-item">
                     <div class="step-circle step-pending">3</div>
                     <span class="step-label label-pending">Setup</span>
                 </div>
+            </div>
+
+            <div class="logo-box">
+                <img src="{{ asset('images/turooa.png') }}" alt="Logo">
             </div>
 
             <!-- Header Section -->
@@ -187,7 +237,7 @@
             </div>
 
             <!-- Form Section -->
-            <form method="POST" action="{{ route('institute.verify-otp') }}" class="space-y-4">
+            <form method="POST" action="{{ route('institute.verify-otp') }}" class="space-y-3">
                 @csrf
                 
                 @if ($errors->any())
@@ -198,7 +248,7 @@
                     </div>
                 @endif
 
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <label class="form-label">Verification Code</label>
                     <input type="text" name="otp" required maxlength="6"
                         class="input-field" placeholder="000000">
