@@ -57,69 +57,71 @@
 <body class="bg-[#F8F9FA] text-slate-900 antialiased overflow-x-hidden">
 
     <!-- TOP NAVBAR -->
-    <header class="fixed top-0 left-0 right-0 h-20 bg-white border-b border-slate-100 z-[100] shadow-sm">
+    <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-[100] shadow-sm">
         <div class="max-w-[1600px] mx-auto h-full px-6 flex items-center justify-between">
             
             <!-- Logo Section -->
-            <div class="flex items-center space-x-3 shrink-0">
-                <div class="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <div class="flex items-center gap-3">
+                <button id="mobile-sidebar-toggle" class="lg:hidden h-9 w-9 flex items-center justify-center text-slate-400 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                </button>
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('images/turooa.png') }}" alt="Logo" class="h-12 w-auto object-contain" onerror="this.style.display='none'">
+
                 </div>
-                <h1 class="text-xl font-black text-slate-800 tracking-tight">FeeEasy</h1>
             </div>
 
             <!-- Navigation Links -->
-            <nav class="hidden lg:flex items-center space-x-8 px-10 overflow-x-auto overflow-y-hidden no-scrollbar">
+            <nav class="hidden lg:flex items-center gap-10 h-full">
                 @php
                     $navItems = [
                         ['route' => 'institute.dashboard', 'label' => 'Dashboard'],
                         ['route' => 'institute.students.index', 'label' => 'Students'],
-                        ['route' => 'institute.batches.index', 'label' => 'Batches'],
-                        ['route' => 'institute.fees.index', 'label' => 'Fees'],
-                        ['route' => 'institute.reports.index', 'label' => 'Reports'],
-                        ['route' => 'institute.updates.index', 'label' => 'Updates'],
+                        ['route' => 'institute.batches.index', 'label' => 'Batch'],
+                        ['route' => 'institute.reports.index', 'label' => 'Report'],
+                        ['route' => 'institute.fees.index', 'label' => 'Finance'],
                     ];
                 @endphp
 
                 @foreach($navItems as $item)
                     @php 
-                        $active = request()->routeIs($item['route']); 
+                        $active = request()->routeIs($item['route']) || (request()->is('institute/batches/*') && $item['label'] == 'Batch') || (request()->is('institute/students/*') && $item['label'] == 'Students');
                     @endphp
                     <a href="{{ route($item['route']) }}" 
-                       class="nav-link relative text-[13px] font-bold uppercase tracking-widest transition-all {{ $active ? 'active' : 'text-slate-400 hover:text-slate-800' }}">
+                       class="relative h-full flex items-center text-[14px] font-bold transition-all {{ $active ? 'text-[#FF6B00]' : 'text-slate-500 hover:text-slate-800' }}">
                         {{ $item['label'] }}
+                        @if($active)
+                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF6B00] rounded-full"></div>
+                        @endif
                     </a>
                 @endforeach
             </nav>
 
             <!-- Right Profile Section -->
-            <div class="flex items-center space-x-3 shrink-0">
-                <button class="h-10 w-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center hover:bg-slate-100 transition-colors relative">
+            <div class="flex items-center gap-4">
+                <a href="{{ route('institute.notifications.index') }}" class="text-slate-400 hover:text-slate-800 transition-colors relative">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    <span class="absolute top-2.5 right-2.5 h-2 w-2 bg-primary rounded-full border-2 border-white"></span>
+                    <span id="notif-dot" class="absolute -top-1 -right-1 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
+                </a>
+                
+                <div class="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+
+                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0">
+                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" 
+                         class="h-full w-full object-cover">
+                </a>
+
+                <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                    class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group"
+                    title="Logout">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                 </button>
 
-                <div class="flex items-center bg-slate-50 rounded-xl border border-slate-100 group transition-all hover:shadow-md overflow-hidden">
-                    <a href="{{ route('institute.profile.index') }}" class="flex items-center p-1.5 pr-3 hover:bg-slate-100/50 transition-colors">
-                        <div class="h-8 w-8 rounded-lg bg-primary border border-primary overflow-hidden shrink-0">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('institute')->user()->name) }}&background=FF6B00&color=fff" class="w-full h-full object-cover">
-                        </div>
-                        <div class="ml-2 hidden sm:block">
-                            <p class="text-[11px] font-black text-slate-800 leading-none">{{ auth()->guard('institute')->user()->name }}</p>
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter mt-1">Profile & Settings</p>
-                        </div>
-                    </a>
-                    <div class="h-8 w-px bg-slate-200 mx-1"></div>
-                    <form action="{{ route('institute.logout') }}" method="POST" class="pr-2">
-                        @csrf
-                        <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Logout">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                        </button>
-                    </form>
-                </div>
-                <button id="menu-btn" class="lg:hidden p-2 text-slate-600 bg-white border border-slate-100 rounded-xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
+                <form id="logout-form" action="{{ route('institute.logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             </div>
         </div>
     </header>
@@ -138,7 +140,7 @@
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="mt-16 px-4 md:px-6 py-2 min-h-[calc(100vh-80px)]">
+    <main class="mt-16 px-4 md:px-6 pt-2 pb-4 min-h-[calc(100vh-64px)]">
         @yield('content')
     </main>
 
@@ -193,6 +195,28 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Mobile Menu Toggle
+            const menuBtn = document.getElementById('mobile-sidebar-toggle');
+            const closeBtn = document.getElementById('close-menu');
+            const menu = document.getElementById('mobile-menu');
+
+            if (menuBtn && menu) {
+                menuBtn.addEventListener('click', () => {
+                    menu.classList.remove('hidden');
+                    menu.classList.add('flex');
+                });
+            }
+
+            if (closeBtn && menu) {
+                closeBtn.addEventListener('click', () => {
+                    menu.classList.add('hidden');
+                    menu.classList.remove('flex');
+                });
+            }
+        });
     </script>
     @stack('modals')
 </body>

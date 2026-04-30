@@ -17,8 +17,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-y: auto;
             position: relative;
+            padding: 20px 0;
         }
 
         .bg-pattern {
@@ -46,7 +47,7 @@
         .login-card {
             background: #ffffff;
             border-radius: 1.5rem;
-            padding: 1.25rem 2.25rem;
+            padding: 1.5rem 2rem;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
             border: 1px solid #f1f5f9;
             text-align: center;
@@ -56,51 +57,46 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 55px;
-            width: 55px;
-            background: #1e3a8a;
-            border-radius: 1rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.2);
+            margin-bottom: 0.5rem;
         }
 
-        .logo-box svg {
-            width: 1.8rem;
-            height: 1.8rem;
-            color: white;
+        .logo-box img {
+            height: 60px;
+            width: auto;
+            object-contain: contain;
         }
 
         .logo-section h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 900;
             color: #1e293b;
             letter-spacing: -0.5px;
-            margin-bottom: 0.15rem;
+            margin-bottom: 0.1rem;
             text-transform: uppercase;
         }
 
         .logo-section p {
             font-size: 0.65rem;
             font-weight: 700;
-            color: #3b82f6;
+            color: #FF6B00;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .form-group {
             text-align: left;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .form-label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             padding-left: 0.25rem;
         }
 
@@ -110,12 +106,12 @@
 
         .input-field {
             width: 100%;
-            height: 3.5rem;
+            height: 3.2rem;
             padding: 0 1.5rem 0 3.5rem;
             background: #fcfdfe;
             border: 2px solid #f1f5f9;
-            border-radius: 1.25rem;
-            font-size: 0.95rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #1e293b;
             transition: all 0.3s ease;
@@ -123,9 +119,9 @@
         }
 
         .input-field:focus {
-            border-color: #3b82f6;
+            border-color: #FF6B00;
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.05);
         }
 
         .input-icon {
@@ -134,20 +130,20 @@
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
 
         .input-field:focus + .input-icon {
-            color: #3b82f6;
+            color: #FF6B00;
         }
 
         .options-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 0.75rem;
-            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
             padding: 0 0.25rem;
         }
 
@@ -159,58 +155,58 @@
         }
 
         .remember-me input {
-            width: 1.1rem;
-            height: 1.1rem;
-            accent-color: #1e3a8a;
+            width: 1rem;
+            height: 1rem;
+            accent-color: #FF6B00;
             cursor: pointer;
         }
 
         .remember-me span {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #64748b;
         }
 
         .forgot-link {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #3b82f6;
+            color: #FF6B00;
             text-decoration: none;
         }
 
         .submit-btn {
             width: 100%;
-            height: 3.5rem;
-            background: #1e3a8a;
+            height: 3.2rem;
+            background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 1.25rem;
-            font-size: 0.9rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.15);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.15);
         }
 
         .submit-btn:hover {
-            background: #1e40af;
+            background: #e66000;
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(30, 58, 138, 0.2);
+            box-shadow: 0 15px 30px rgba(255, 107, 0, 0.2);
         }
 
         .footer-text {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
             border-top: 1px solid #f1f5f9;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #94a3b8;
         }
 
         .footer-text a {
-            color: #1e3a8a;
+            color: #FF6B00;
             text-decoration: none;
             font-weight: 800;
         }
@@ -240,9 +236,7 @@
         <div class="login-card">
             <div class="logo-section">
                 <div class="logo-box">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
+                    <img src="{{ asset('images/turooa.png') }}" alt="Logo">
                 </div>
                 <h1>FeeEasy</h1>
                 <p>Management System</p>

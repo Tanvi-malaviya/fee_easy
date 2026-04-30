@@ -3,7 +3,7 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-10">
+    <div class="max-w-7xl mx-auto pt-2">
         <!-- Header -->
         <div class="mb-4">
             <div class="flex items-center justify-between mb-2">
@@ -35,14 +35,14 @@
                     </div> -->
             </div>
 
-            <h1 id="header-homework-title" class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Loading...</h1>
+            <h1 id="header-homework-title" class="text-3xl font-bold text-slate-900 tracking-tight mb-1">Loading...</h1>
             <p class="text-[13px] font-medium text-slate-500 tracking-wide">
                 Assigned: <span id="header-assigned-date">...</span> &bull; Due: <span id="header-due-date">...</span>
             </p>
         </div>
 
         <!-- Progress Overview -->
-        <div class="bg-white rounded-xl p-8 mb-4 border border-slate-100 shadow-sm">
+        <div class="bg-white rounded-xl p-6 mb-4 border border-slate-100 shadow-sm">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-[15px] font-medium text-slate-400"><span id="progress-submitted-count"
                         class="text-orange-700 font-bold">0</span> / <span id="progress-total-count">0</span> Assignments

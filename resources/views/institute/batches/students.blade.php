@@ -334,13 +334,13 @@
             } catch (error) {
                 showToast('Failed to load students', 'error');
                 container.innerHTML = `
-                        <div class="col-span-full py-20 text-center flex flex-col items-center">
-                            <div class="h-20 w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-6">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                            </div>
-                            <p class="text-rose-500 font-bold uppercase tracking-[0.2em] text-[10px]">Failed to Load Student Records</p>
-                            <button onclick="fetchStudents()" class="mt-4 text-blue-600 font-bold text-xs hover:underline uppercase tracking-widest">Try Again</button>
-                        </div>`;
+                            <div class="col-span-full py-20 text-center flex flex-col items-center">
+                                <div class="h-20 w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-6">
+                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                </div>
+                                <p class="text-rose-500 font-bold uppercase tracking-[0.2em] text-[10px]">Failed to Load Student Records</p>
+                                <button onclick="fetchStudents()" class="mt-4 text-blue-600 font-bold text-xs hover:underline uppercase tracking-widest">Try Again</button>
+                            </div>`;
             }
         }
 
@@ -386,20 +386,20 @@
             container.innerHTML = students.map(student => {
                 const isSelected = selectedStudentIds.has(parseInt(student.id, 10));
                 return `
-                        <div onclick="toggleStudentSelection(${student.id})" 
-                            class="flex items-center p-2 rounded-xl cursor-pointer transition-all duration-300 group ${isSelected ? 'bg-orange-50 border border-orange-200' : 'hover:bg-slate-50 border border-transparent'}">
-                            <div class="h-9 w-9 rounded-lg ${isSelected ? 'bg-[#ff6600] text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm mr-3 transition-colors shrink-0">
-                                ${student.name.substring(0, 1).toUpperCase()}
+                            <div onclick="toggleStudentSelection(${student.id})" 
+                                class="flex items-center p-2 rounded-xl cursor-pointer transition-all duration-300 group ${isSelected ? 'bg-orange-50 border border-orange-200' : 'hover:bg-slate-50 border border-transparent'}">
+                                <div class="h-9 w-9 rounded-lg ${isSelected ? 'bg-[#ff6600] text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm mr-3 transition-colors shrink-0">
+                                    ${student.name.substring(0, 1).toUpperCase()}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
+                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: #TUA-${String(student.id).padStart(4, '0')}</p>
+                                </div>
+                                <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
+                                    <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                </div>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
-                                <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: #TUA-${String(student.id).padStart(4, '0')}</p>
-                            </div>
-                            <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
-                                <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                        </div>
-                    `;
+                        `;
             }).join('');
         }
 
@@ -452,38 +452,38 @@
                 if (student) {
                     const fees = studentFees.get(id);
                     html += `
-                            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-6 group border-l-4 border-l-[#ff6600] animate-in slide-in-from-right-4 duration-300">
-                                <div class="flex items-center gap-4 flex-1">
-                                    <div class="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-lg overflow-hidden shrink-0">
-                                        <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
-                                    </div>
-                                    <div>
-                                        <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
-                                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">${student.email ? student.email.split('@')[0].substring(0, 15) : 'STUDENT'}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-6">
-                                    <div>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
-                                        <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
-                                            <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
-                                            <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
-                                                class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-6 group border-l-4 border-l-[#ff6600] animate-in slide-in-from-right-4 duration-300">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <div class="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-lg overflow-hidden shrink-0">
+                                            <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
+                                        </div>
+                                        <div>
+                                            <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
+                                            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">${student.email ? student.email.split('@')[0].substring(0, 15) : 'STUDENT'}</p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Other Fees</p>
-                                        <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
-                                            <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
-                                            <input type="number" value="${fees.other}" onchange="updateStudentFee(${id}, 'other', this.value)"
-                                                class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                    <div class="flex items-center gap-6">
+                                        <div>
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
+                                            <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
+                                                <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
+                                                <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
+                                                    class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                            </div>
                                         </div>
+                                        <div>
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Other Fees</p>
+                                            <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
+                                                <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
+                                                <input type="number" value="${fees.other}" onchange="updateStudentFee(${id}, 'other', this.value)"
+                                                    class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                            </div>
+                                        </div>
+                                        <button onclick="toggleStudentSelection(${id})" class="text-rose-500 hover:text-rose-600 transition-colors p-2 mt-4">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                        </button>
                                     </div>
-                                    <button onclick="toggleStudentSelection(${id})" class="text-rose-500 hover:text-rose-600 transition-colors p-2 mt-4">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                    </button>
-                                </div>
-                            </div>`;
+                                </div>`;
                 }
             });
             container.innerHTML = html;
@@ -528,7 +528,7 @@
 
             let total = 0;
             let count = 0;
-            
+
             students.forEach(s => {
                 if (s.homework_submissions_avg_score !== null && s.homework_submissions_avg_score !== undefined) {
                     total += parseFloat(s.homework_submissions_avg_score) * 10;
@@ -559,17 +559,17 @@
             const container = document.getElementById('student-grid');
             if (students.length === 0) {
                 container.innerHTML = `<div class="col-span-full py-20 text-center flex flex-col items-center">
-                        <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                        </div>
-                        <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">No Scholars Found</p>
-                    </div>`;
+                            <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">No Scholars Found</p>
+                        </div>`;
                 return;
             }
             container.innerHTML = students.map(student => {
                 const rawScore = student.homework_submissions_avg_score ? parseFloat(student.homework_submissions_avg_score) : 0;
                 const performance = Math.round(rawScore * 10);
-                
+
                 let perfColor = 'emerald';
                 if (performance === 0) perfColor = 'slate';
                 else if (performance < 50) perfColor = 'rose';
@@ -588,64 +588,64 @@
                 }
 
                 return `
-                                <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
-                                     onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
+                                    <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
+                                         onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
 
-                                    <!-- Top Content Section with Padding -->
-                                    <div class="pt-5 pl-5 pr-5 flex-1 flex flex-col">
-                                        <!-- ID Badge -->
-                                        <div class="absolute top-4 right-4">
-                                            <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                ID: #ST-${String(student.id).padStart(4, '0')}
-                                            </span>
-                                        </div>
-
-                                        <!-- Profile Section -->
-                                        <div class="flex flex-col items-left mb-4">
-                                            <div class="h-16 w-16 rounded-full border-2 border-slate-50 overflow-hidden mb-3 shadow-inner">
-                                                <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
-                                            </div>
-                                            <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
-                                            <p class="text-[10px] font-bold text-slate-400 mt-0.5">${student.email || 'no-email@academy.edu'}</p>
-                                        </div>
-
-                                        <!-- Metrics Section -->
-                                        <div class="space-y-4 mb-2 flex-1">
-                                            <div>
-                                                <div class="flex items-left justify-between mb-1.5">
-                                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
-                                                    <span class="text-[9px] font-black text-${perfColor}-500 uppercase tracking-wider">${performance > 0 ? performance + '%' : 'N/A'}</span>
-                                                </div>
-                                                <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                    <div class="h-full bg-${perfColor}-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-center justify-between border-slate-50">
-                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
-                                                <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
-                                                    ${feeStatusText}
+                                        <!-- Top Content Section with Padding -->
+                                        <div class="pt-5 pl-5 pr-5 flex-1 flex flex-col">
+                                            <!-- ID Badge -->
+                                            <div class="absolute top-4 right-4">
+                                                <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
+                                                    ID: #ST-${String(student.id).padStart(4, '0')}
                                                 </span>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <!-- Footer Actions -->
-                                    <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                        <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
-                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                            View
-                                        </a>
-                                        <div class="flex items-center gap-3">
-                                            <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                            </a>
-                                            <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Remove from batch">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                            </button>
+                                            <!-- Profile Section -->
+                                            <div class="flex flex-col items-left mb-4">
+                                                <div class="h-16 w-16 rounded-full border-2 border-slate-50 overflow-hidden mb-3 shadow-inner">
+                                                    <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
+                                                </div>
+                                                <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
+                                                <p class="text-[10px] font-bold text-slate-400 mt-0.5">${student.email || 'no-email@academy.edu'}</p>
+                                            </div>
+
+                                            <!-- Metrics Section -->
+                                            <div class="space-y-4 mb-2 flex-1">
+                                                <div>
+                                                    <div class="flex items-left justify-between mb-1.5">
+                                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
+                                                        <span class="text-[9px] font-black text-${perfColor}-500 uppercase tracking-wider">${performance > 0 ? performance + '%' : 'N/A'}</span>
+                                                    </div>
+                                                    <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+                                                        <div class="h-full bg-${perfColor}-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center justify-between border-slate-50">
+                                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
+                                                    <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
+                                                        ${feeStatusText}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>`;
+
+                                        <!-- Footer Actions -->
+                                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                                            <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                View
+                                            </a>
+                                            <div class="flex items-center gap-3">
+                                                <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                </a>
+                                                <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Remove from batch">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>`;
             }).join('');
         }
 
@@ -682,10 +682,10 @@
             const toast = document.createElement('div');
             toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right-10 duration-500 ${type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white'}`;
             toast.innerHTML = `
-                    <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-blue-500' : 'bg-rose-400'}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
-                    </div>
-                    <p class="text-sm font-bold">${message}</p>`;
+                        <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-blue-500' : 'bg-rose-400'}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
+                        </div>
+                        <p class="text-sm font-bold">${message}</p>`;
             container.appendChild(toast);
             setTimeout(() => { toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-10'); setTimeout(() => toast.remove(), 500); }, 3000);
         }

@@ -6,40 +6,38 @@
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
     <!-- Page Header & Info -->
-    <div class="bg-white p-5 md:p-6 rounded-[1rem] md:rounded-[1.2rem] border border-slate-100 shadow-sm">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+    <div class="p-5 pb-0 md:p-4 md:pb-0 animate-in fade-in duration-500">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="flex-1">
-                <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Daily Updates</h1>
-                <p class="text-xs text-slate-400 mt-0.5 font-medium">Post announcements, homework, or daily logs.</p>
+                <span class="text-[9px] font-bold text-[#ff6c00] uppercase tracking-wider block">Communication Center</span>
+                <h1 class="text-2xl font-[550] text-slate-800 tracking-tight leading-tight mt-0.5">Daily Updates Feed</h1>
+                <p class="text-xs text-slate-400 mt-1 font-medium leading-relaxed max-w-xl">Post announcements, academic milestones, critical homework tasks, or general classroom notices securely.</p>
             </div>
             <div class="flex items-center gap-4">
-                <button onclick="openUpdateModal()" class="px-6 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-[12px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform">
-                    + Create New Update
+                <button onclick="openUpdateModal()" class="px-5 py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[11px] shadow-md shadow-orange-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Create New Update
                 </button>
             </div>
         </div>
         
-        <div class="bg-blue-50/40 p-3 md:p-4 rounded-xl border border-blue-100/50">
+        <!-- <div class="bg-slate-50/50 p-3 md:p-4 rounded-xl border border-slate-100">
             <div class="flex items-start gap-3">
-                <div class="h-8 w-8 bg-white rounded-lg shadow-sm border border-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="h-7 w-7 bg-white rounded-lg shadow-sm border border-slate-100 flex items-center justify-center text-[#ff6c00] shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <h4 class="text-[11px] font-black text-blue-900 uppercase tracking-wider mb-0.5">Quick Guide</h4>
-                    <p class="text-[11px] text-blue-700/60 leading-relaxed font-medium">Daily updates keep everyone informed about class logs, homework, and milestones. Notifications are sent automatically.</p>
+                    <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-0.5">Quick Guide</h4>
+                    <p class="text-[10px] text-slate-500 leading-relaxed font-medium">Keep everyone informed regarding upcoming schedules, important events, and syllabus progression. Direct channels minimize delays.</p>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Feed Section -->
-    <div class="space-y-4">
-        <div class="flex items-center justify-between px-2">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Update Log Feed</h3>
-            <div id="loading-spinner" class="hidden h-4 w-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-        </div>
+    <div>
         
-        <div id="update-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="update-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Data populated via AJAX -->
             <div class="col-span-full py-10 text-center text-slate-300 italic text-xs">Loading feed...</div>
         </div>
@@ -86,10 +84,11 @@
                     <div class="space-y-1">
                         <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Category</label>
                         <select name="category" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none">
-                            <option value="Notice">Notice</option>
-                            <option value="Fee Reminder">Fee Reminder</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Administrative">Administrative</option>
+                            <option value="Emergency">Emergency</option>
                             <option value="Event">Event</option>
-                            <option value="Holiday">Holiday</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
@@ -138,7 +137,7 @@
 
                 <div class="pt-2 flex items-center justify-end space-x-3">
                     <button type="button" onclick="closeUpdateModal()" class="px-6 py-2.5 text-xs font-bold text-slate-400 hover:text-slate-600">Cancel</button>
-                    <button type="submit" id="submit-btn" class="px-8 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-900/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    <button type="submit" id="submit-btn" class="px-8 py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/10 hover:scale-[1.02] active:scale-95 transition-all">
                         <span id="btn-text">Publish Update</span>
                     </button>
                 </div>
@@ -151,8 +150,8 @@
 <!-- View Update Modal -->
 <div id="view-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden p-4">
     <div onclick="closeViewModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-    <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div class="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
             <div class="flex items-center gap-3">
                 <div id="view-cat-icon" class="h-9 w-9 rounded-xl flex items-center justify-center"></div>
                 <div>
@@ -168,19 +167,19 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <div class="p-6">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Target Audience:</span>
-                <span id="view-target" class="text-[9px] font-black text-[#1e3a8a] bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider"></span>
+        <div class="p-5">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Target:</span>
+                <span id="view-target" class="text-[9px] font-black text-[#ff6c00] bg-orange-50 px-2 py-0.5 rounded-md uppercase tracking-wider"></span>
             </div>
             
             <div class="prose prose-slate max-w-none">
                 <p id="view-description" class="text-[13px] text-slate-600 leading-relaxed font-medium whitespace-pre-wrap"></p>
             </div>
 
-            <div id="view-attachment-container" class="mt-6 pt-4 border-t border-slate-50 hidden">
-                <a id="view-attachment-link" href="#" target="_blank" class="inline-flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-100 rounded-xl hover:bg-blue-50 hover:border-blue-100 transition-all group w-full">
-                    <div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
+            <div id="view-attachment-container" class="mt-4 pt-3 border-t border-slate-50 hidden">
+                <a id="view-attachment-link" href="#" target="_blank" class="inline-flex items-center gap-3 p-2 bg-slate-50 border border-slate-100 rounded-xl hover:bg-orange-50 hover:border-orange-100 transition-all group w-full">
+                    <div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-[#ff6c00] shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
                     </div>
                     <div>
@@ -190,8 +189,8 @@
                 </a>
             </div>
         </div>
-        <div class="p-4 bg-slate-50/30 border-t border-slate-50 flex justify-end">
-            <button onclick="closeViewModal()" class="px-6 py-2 bg-slate-800 text-white rounded-xl font-bold text-[11px] shadow-lg shadow-slate-900/10 hover:scale-[1.02] active:scale-95 transition-all">
+        <div class="px-5 py-3 bg-slate-50/30 border-t border-slate-50 flex justify-end">
+            <button onclick="closeViewModal()" class="px-6 py-2 bg-primary2 text-white rounded-xl font-bold text-[11px] shadow-lg shadow-slate-900/10 hover:scale-[1.02] active:scale-95 transition-all">
                 Close Details
             </button>
         </div>
@@ -281,43 +280,44 @@
 
         container.innerHTML = updates.map(update => {
             const catColors = {
-                'Fee Reminder': 'rose',
+                'Academic': 'blue',
+                'Administrative': 'indigo',
+                'Emergency': 'rose',
                 'Event': 'amber',
-                'Holiday': 'emerald',
-                'Notice': 'indigo'
+                'Other': 'slate'
             };
             const color = catColors[update.category] || 'slate';
             const updateJson = JSON.stringify(update).replace(/"/g, '&quot;');
             
             return `
-            <div onclick="viewUpdateDetails('${updateJson}')" class="bg-white p-4 rounded-[1rem] border border-slate-50 shadow-sm hover:shadow-md hover:border-blue-100 cursor-pointer transition-all animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col h-full group">
+            <div onclick="viewUpdateDetails('${updateJson}')" class="bg-white p-5 ml-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-[#ff6c00]/30 cursor-pointer transition-all duration-300 flex flex-col h-full group">
                 <div class="flex items-center justify-between mb-3">
-                    <div class="h-7 w-7 bg-${color}-50 rounded-lg flex items-center justify-center text-${color}-600 shrink-0 group-hover:scale-110 transition-transform">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    <div class="h-8 w-8 bg-${color}-50 rounded-xl flex items-center justify-center text-${color}-600 shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     </div>
-                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">${update.date || 'Today'}</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${update.date || 'Today'}</span>
                 </div>
                 
                 <div class="mb-3">
                     <div class="flex items-center gap-2 mb-0.5">
-                        <h4 class="text-[12px] font-black text-slate-800 leading-tight truncate group-hover:text-blue-700 transition-colors">${update.topic}</h4>
-                        <span class="px-1 py-0.5 bg-${color}-50 text-${color}-600 rounded text-[7px] font-black uppercase tracking-wider shrink-0">${update.category || 'Update'}</span>
+                        <h4 class="text-sm font-bold text-slate-800 leading-tight truncate group-hover:text-[#ff6c00] transition-colors">${update.topic || update.category || 'General Notice'}</h4>
                     </div>
-                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em] block">
-                        Recipient: <span class="text-blue-600 font-black">${update.recipient === 'both' ? 'Both' : update.recipient}</span> • Target: ${update.target_type === 'all' ? 'Everyone' : (update.batch ? update.batch.name : (update.standard ? update.standard + ' Standard' : 'Unknown'))}
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Recipient: <span class="text-[#ff6c00] font-extrabold">${update.recipient === 'both' ? 'Both' : update.recipient}</span> • Target: <span class="text-slate-600 font-extrabold">${update.target_type === 'all' ? 'Everyone' : (update.batch ? update.batch.name : (update.standard ? update.standard + ' Standard' : 'Unknown'))}</span>
                     </span>
                 </div>
 
                 <p class="text-[11px] text-slate-500 leading-relaxed font-medium mb-4 flex-1 line-clamp-2">${update.description}</p>
                 
                 ${update.attachment ? `
-                    <div class="mt-auto pt-3 border-t border-slate-50 flex items-center justify-between text-blue-600">
-                        <span class="text-[9px] font-black uppercase tracking-widest">Has Attachment</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <div class="mt-auto pt-3 border-t border-slate-50 flex items-center justify-between text-[#ff6c00]">
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider">Has Attachment</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
                     </div>
                 ` : `
-                    <div class="mt-auto pt-3 border-t border-slate-50 opacity-0 group-hover:opacity-100 transition-opacity">
-                         <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Click to expand</span>
+                    <div class="mt-auto pt-3 border-t border-slate-50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-between text-slate-400">
+                         <span class="text-[9px] font-bold uppercase tracking-wider">Click to expand</span>
+                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                     </div>
                 `}
             </div>
@@ -337,11 +337,23 @@
         try {
             const response = await fetch("/api/v1/institute/daily-updates", {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+                headers: { 
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN 
+                },
                 body: f
             });
 
-            const result = await response.json();
+            const textResponse = await response.text();
+            let result;
+            try {
+                result = JSON.parse(textResponse);
+            } catch(e) {
+                console.error("Non-JSON response:", textResponse);
+                showToast('Server error or invalid response format.', 'error');
+                return;
+            }
+
             if (response.ok && result.status === 'success') {
                 showToast(result.message || 'Update published successfully!', 'success');
                 closeUpdateModal();
@@ -349,7 +361,7 @@
                 e.target.reset();
                 handleTargetChange();
             } else {
-                showToast(result.message || 'Validation failed. Check database columns.', 'error');
+                showToast(result.message || 'Validation failed. Check inputs.', 'error');
             }
         } catch (error) { 
             console.error(error);
@@ -363,15 +375,21 @@
     function viewUpdateDetails(updateStr) {
         const update = JSON.parse(updateStr);
         const modal = document.getElementById('view-modal');
-        const catColors = { 'Fee Reminder': 'rose', 'Event': 'amber', 'Holiday': 'emerald', 'Notice': 'indigo' };
-        const color = catColors[update.category] || 'slate';
+        const catColors = { 'Academic': 'orange', 'Administrative': 'indigo', 'Emergency': 'rose', 'Event': 'amber', 'Other': 'slate' };
+        const color = catColors[update.category] || 'orange';
 
         const iconSvg = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`;
 
-        document.getElementById('view-topic').innerText = update.topic;
+        document.getElementById('view-topic').innerText = update.topic || update.category || 'General Notice';
         document.getElementById('view-category').innerText = update.category || 'Update';
-        document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-50 text-${color}-600`;
-        document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-50 text-${color}-600`;
+        
+        if (color === 'orange') {
+            document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-orange-50 text-[#ff6c00]`;
+            document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-orange-50 text-[#ff6c00]`;
+        } else {
+            document.getElementById('view-category').className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-50 text-${color}-600`;
+            document.getElementById('view-cat-icon').className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-50 text-${color}-600`;
+        }
         document.getElementById('view-cat-icon').innerHTML = iconSvg;
         
         document.getElementById('view-date').innerText = update.date || 'Today';

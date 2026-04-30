@@ -13,7 +13,7 @@ class PlanController extends Controller
      */
     public function index()
     {
-        $plans = Plan::where('status', 'active')->orderBy('price', 'asc')->get();
+        $plans = Plan::where('status', true)->orderBy('price', 'asc')->get();
         
         return response()->json([
             'status' => 'success',

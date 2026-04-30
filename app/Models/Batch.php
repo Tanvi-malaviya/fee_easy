@@ -19,11 +19,22 @@ class Batch extends Model
         'end_time',
         'days',
         'max_capacity',
+        'classroom',
     ];
 
     protected $casts = [
         'days' => 'array',
     ];
+
+    public function getStartTimeAttribute($value)
+    {
+        return $value ? date('H:i', strtotime($value)) : null;
+    }
+
+    public function getEndTimeAttribute($value)
+    {
+        return $value ? date('H:i', strtotime($value)) : null;
+    }
 
     public function institute()
     {

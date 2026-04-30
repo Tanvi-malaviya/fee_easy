@@ -209,4 +209,48 @@ class InstituteSubscriptionController extends Controller
             ]
         ]);
     }
+
+    public function allData(Request $request)
+    {
+        $institute = $request->user();
+        
+        // 1. Current Subscription
+        $subscription = $institute->subscriptions()
+            ->where('status', 'active')
+            ->where('end_date', '>', Carbon::now())
+            ->latest('end_date')
+            ->first();
+            
+        $enrolledCount = \App\Models\Student::where('institute_id', $institute->id)->count();
+
+        // 2. Plans
+        $plans = \App\Models\Plan::where('status', 1)->get();
+
+        // 3. History
+        $history = $institute->subscriptions()
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'subscription' => $subscription ? [
+                    'plan_name' => $subscription->plan_name,
+                    'status' => $subscription->status,
+                    'expires_at' => $subscription->end_date,
+                    'students_enrolled' => $enrolledCount,
+                    'student_limit' => 1000, // Fixed fallback for now
+                ] : [
+                    'plan_name' => 'No Active Plan',
+                    'status' => 'Inactive',
+                    'expires_at' => null,
+                    'students_enrolled' => $enrolledCount,
+                    'student_limit' => 0,
+                ],
+                'plans' => $plans,
+                'history' => $history
+            ]
+        ]);
+    }
 }

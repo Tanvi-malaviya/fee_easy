@@ -18,7 +18,7 @@
                 <h1 class="text-2xl font-bold text-slate-700 tracking-tight">Batch Resources</h1>
                 <p class="text-xs font-semibold text-slate-400 mt-1">Manage and distribute educational files, videos, and visual assets.</p>
             </div>
-            
+
             <button onclick="openUploadModal()" class="px-5 py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 Upload Resource
@@ -76,18 +76,18 @@
                 <!-- Attachments -->
                 <div>
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Attachments</label>
-                    
+
                     <!-- Drag & Drop Zone -->
                     <div id="drop-zone" class="border border-dashed border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50/30 group hover:border-[#a3360a]/30 hover:bg-slate-50/50 transition-all cursor-pointer relative">
                         <input type="file" id="res-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
-                        
+
                         <div class="h-6 w-6 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-2 group-hover:scale-110 transition-transform">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         </div>
-                        
+
                         <p class="text-xs font-black text-slate-800">Drag & Drop files here</p>
                         <p class="text-[10px] font-bold text-slate-400 mt-1 mb-4">MP4, PDF, or JPG/PNG (Max 50MB)</p>
-                        
+
                         <span class="px-5 py-2 border border-slate-200 text-slate-600 hover:border-[#a3360a] hover:text-[#a3360a] text-xs font-bold rounded-xl transition-all bg-white shadow-sm flex items-center gap-2">
                             Browse Files
                         </span>
@@ -232,7 +232,7 @@
     <script>
         const BATCH_ID = "{{ $id }}";
         const API_RESOURCES_URL = `/api/v1/institute/resources`;
-        
+
         let resources = [];
         let currentPage = 1;
         const itemsPerPage = 8; 
@@ -268,7 +268,7 @@
         function renderResources() {
             const container = document.getElementById('resources-grid');
             const totalPages = Math.ceil(resources.length / itemsPerPage) || 1;
-            
+
             if (currentPage > totalPages) {
                 currentPage = totalPages;
             }
@@ -365,7 +365,7 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const statusLabel = document.getElementById('selected-file-name');
-            
+
             if (file) {
                 selectedFile = file;
                 statusLabel.querySelector('span').innerText = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
@@ -494,7 +494,7 @@
 
             document.getElementById('view-title').innerText = res.title;
             document.getElementById('view-description').innerText = res.description || 'No description provided.';
-            
+
             const dateStr = new Date(res.created_at).toLocaleDateString('en-IN', {
                 day: 'numeric', month: 'short', year: 'numeric'
             });
@@ -528,7 +528,7 @@
             // Stop video playing if open
             const video = document.querySelector('#view-preview-container video');
             if (video) video.pause();
-            
+
             document.getElementById('view-modal').classList.replace('flex', 'hidden');
         }
 

@@ -89,13 +89,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks', [InstituteHomeworkController::class, 'store']);
             Route::get('/homeworks', [InstituteHomeworkController::class, 'index']);
             Route::get('/homeworks/{id}', [InstituteHomeworkController::class, 'show']);
+            Route::post('/homeworks/{id}/score', [InstituteHomeworkController::class, 'updateScore']);
             Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
+            Route::post('/notifications/mark-all-read', [InstituteNotificationController::class, 'markAllRead']);
 
             // Plan and Subscription routes
             Route::get('/plans', [PlanController::class, 'index']);
+            Route::get('/subscriptions/all-data', [InstituteSubscriptionController::class, 'allData']);
             Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
@@ -174,6 +177,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [InstituteBatchController::class, 'store']);
                 Route::get('/{id}', [InstituteBatchController::class, 'show']);
                 Route::put('/{id}', [InstituteBatchController::class, 'update']);
+                Route::post('/{id}/remove-student', [InstituteBatchController::class, 'removeStudent']);
+                Route::post('/{id}/assign-students', [InstituteBatchController::class, 'assignStudents']);
                 Route::delete('/{id}', [InstituteBatchController::class, 'destroy']);
             });
 
@@ -205,6 +210,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('resources')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'store']);
+                Route::get('/{id}/download', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'download']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'destroy']);
             });
         });
