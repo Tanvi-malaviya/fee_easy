@@ -4,22 +4,22 @@
     <div class="max-w-[1600px] mx-auto ">
 
         <!-- MAIN LIST VIEW -->
-        <div id="list-view" class="space-y-4 animate-in fade-in duration-500">
+        <div id="list-view" class="space-y-2 animate-in fade-in duration-500">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div class="pt-5">
-                    <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Batch Management</h1>
-                    <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">Manage academic cohorts &
+                <div class="pt-1">
+                    <h1 class="text-2xl font-bold text-slate-800 tracking-tight leading-tight">Batch Management</h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manage academic cohorts &
                         enrollment status.</p>
                 </div>
-
-                <div class="flex items-center gap-2 pt-5">
+                
+                <div class="flex items-center gap-2 pt-1">
                     <div
-                        class="bg-white px-5 py-3 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
+                        class="bg-white px-5 py-2 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
                         <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Batches</p>
                         <h3 id="stat-total-batches" class="text-lg font-bold text-slate-800">0</h3>
                     </div>
                     <div
-                        class="bg-white px-5 py-3 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
+                        class="bg-white px-5 py-2 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
                         <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Students</p>
                         <h3 id="stat-total-students" class="text-lg font-bold text-slate-800">0</h3>
                     </div>
@@ -27,7 +27,7 @@
             </div>
 
             <div
-                class="bg-white p-2 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-2">
+                class="bg-white p-1.5 rounded-[1rem] border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-2">
                 <div class="relative flex-1 group w-full md:w-auto flex items-center">
                     <input type="text" id="batch-search" placeholder="Search batches..." onkeydown="if(event.key === 'Enter') executeSearch()"
                         class="w-full pl-4 pr-24 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
@@ -145,6 +145,11 @@
                                     <input type="number" name="max_capacity" id="field-capacity" placeholder="30"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom / Venue</label>
+                                <input type="text" name="classroom" id="field-classroom" placeholder="e.g. Room 101, Main Hall"
+                                    class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                             </div>
                         </div>
 
@@ -350,9 +355,10 @@
             document.getElementById('field-subject').value = batch.subject;
             document.getElementById('field-fees').value = batch.fees || '';
             document.getElementById('field-description').value = batch.description || '';
-            document.getElementById('field-capacity').value = batch.max_capacity || 30;
-            document.getElementById('field-start').value = batch.start_time;
-            document.getElementById('field-end').value = batch.end_time;
+            document.getElementById('field-start').value = batch.start_time || '';
+            document.getElementById('field-end').value = batch.end_time || '';
+            document.getElementById('field-capacity').value = batch.max_capacity || '';
+            document.getElementById('field-classroom').value = batch.classroom || '';
             const days = batch.days || [];
             document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
         }
@@ -363,23 +369,46 @@
             const formData = new FormData(form);
             const id = formData.get('id');
             const days = Array.from(form.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+            
+            // Clean payload: remove days[] and ensure days is an array
             const payload = Object.fromEntries(formData.entries());
+            delete payload['days[]'];
             payload.days = days;
+            
             toggleSubmitLoading(true);
             try {
+                // Use method spoofing for PUT if ID exists
+                const method = id ? 'PUT' : 'POST';
                 const url = id ? `${API_URL}/${id}` : API_URL;
+                
                 const resp = await fetch(url, {
-                    method: id ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
-                    body: JSON.stringify(payload)
+                    method: 'POST', // Always use POST for spoofing
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-CSRF-TOKEN': CSRF_TOKEN, 
+                        'Accept': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        ...payload,
+                        _method: method // Laravel method spoofing
+                    })
                 });
+                
                 const result = await resp.json();
-                if (result.status === 'success') {
-                    showToast(result.message);
+                
+                if (resp.ok && result.status === 'success') {
+                    showToast(result.message || 'Batch saved successfully');
                     toggleFormView(false);
                     fetchBatches();
+                } else {
+                    // Handle validation errors or server errors
+                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat()[0] : 'Error saving batch');
+                    showToast(errorMsg, 'error');
                 }
-            } catch (error) { showToast('Error saving batch', 'error'); }
+            } catch (error) { 
+                console.error('Save Error:', error);
+                showToast('Network error or server unavailable', 'error'); 
+            }
             finally { toggleSubmitLoading(false); }
         });
 

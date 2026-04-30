@@ -1,12 +1,12 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="space-y-4 max-w-[1600px] mx-auto pb-6">
+    <div class="space-y-2 max-w-[1600px] mx-auto pb-2">
         <!-- Toast Notifications Container -->
         <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
         <!-- Premium Header & Action Row -->
-        <div class="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm flex flex-col lg:flex-row items-center gap-3 mb-3">
+        <div class="bg-white p-2 rounded-xl border border-slate-100 shadow-sm flex flex-col lg:flex-row items-center gap-3 mb-2">
             <!-- Title -->
             <div class="px-3 border-r border-slate-100 hidden lg:block">
                 <h1 class="text-xl font-bold text-slate-800 tracking-tight">Student Management</h1>
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Stats Row -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
             <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
                 <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -61,15 +61,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="h-9 w-9 bg-teal-50 text-teal-500 rounded-xl flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l9-5-9-5-9 5 9 5z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Graduating</p>
-                    <h3 id="stat-graduating" class="text-xl font-bold text-slate-800 leading-none">...</h3>
-                </div>
-            </div>
+
 
             <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
                 <div class="h-9 w-9 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
@@ -95,7 +87,7 @@
           
 
             <!-- Registry Grid Container -->
-            <div id="table-container" class="relative min-h-[400px]">
+            <div id="table-container" class="relative">
                 <div id="loading-spinner"
                     class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center transition-all duration-300">
                     <div class="flex flex-col items-center">
@@ -110,7 +102,7 @@
 
                 <!-- Pagination -->
                 <div id="pagination-container"
-                    class="mt-4 px-5 py-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between shadow-sm">
+                    class="mt-2 px-5 py-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between shadow-sm">
                     <!-- Pagination generated via JS -->
                 </div>
             </div>
@@ -253,9 +245,8 @@
                     if (result.status === 'success') {
                         const stats = result.data;
                         document.getElementById('stat-total-students').textContent = stats.students_count.toLocaleString();
-                        document.getElementById('stat-graduating').textContent = Math.floor(stats.students_count * 0.25).toLocaleString(); // Mock
-                        document.getElementById('stat-performance').textContent = '88.4%'; // Mock
-                        document.getElementById('stat-pending-fees').textContent = '₹' + stats.total_due_fees.toLocaleString();
+                        document.getElementById('stat-performance').textContent = stats.performance || '0%';
+                        document.getElementById('stat-pending-fees').textContent = '₹' + (stats.total_due_fees || 0).toLocaleString();
                     }
                 } catch (error) {
                     console.error('Error loading stats:', error);
@@ -278,6 +269,11 @@
                     if (result.status === 'success') {
                         renderStudents(result.data.items);
                         renderPagination(result.data);
+
+                        // Update Dashboard Stats from Real Data
+                        if (result.data.stats) {
+                            document.getElementById('stat-performance').textContent = result.data.stats.performance;
+                        }
                     }
                 } catch (error) {
                     showToast('Error loading students', 'error');

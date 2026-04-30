@@ -19,13 +19,16 @@ class InstituteHomeworkController extends Controller
 
         $homeworks = $request->user()
             ->homeworks()
-            ->with(['batch' => function($q) {
-                $q->withCount('students');
-            }])
-            ->withCount(['submissions' => function($q) {
-                $q->whereIn('status', ['Submitted', 'Late', 'Pending']);
-            }])
-            ->orderByDesc('due_date')
+            ->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
+            ->with([
+                'batch:id,name',
+                'submissions' => function($q) {
+                    $q->select('id', 'homework_id', 'student_id', 'score', 'status')
+                      ->with('student:id,name');
+                }
+            ])
+            ->withCount('submissions')
+            ->orderByDesc('created_at')
             ->get();
 
         return response()->json([
@@ -89,7 +92,16 @@ class InstituteHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $homework = Homework::with(['batch.students', 'submissions'])
+        $homework = Homework::select('id', 'batch_id', 'institute_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
+            ->with(['batch' => function($q) {
+                $q->select('id', 'name', 'subject');
+                $q->with(['students' => function($sq) {
+                    $sq->select('id', 'name', 'profile_image', 'batch_id');
+                }]);
+            }])
+            ->with(['submissions' => function($q) {
+                $q->select('id', 'homework_id', 'student_id', 'status', 'score');
+            }])
             ->where('id', $id)
             ->where('institute_id', $request->user()->id)
             ->first();
@@ -98,9 +110,51 @@ class InstituteHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
         }
 
+        // Convert attachment to full URL if exists
+        if ($homework->attachment) {
+            $homework->attachment = asset('storage/' . $homework->attachment);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $homework,
+        ]);
+    }
+
+    public function updateScore(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'student_id' => 'required|integer|exists:students,id',
+            'score' => 'required|numeric|min:0|max:10',
+        ]);
+
+        $homework = Homework::where('id', $id)
+            ->where('institute_id', $request->user()->id)
+            ->first();
+
+        if (!$homework) {
+            return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
+        }
+
+        $submission = $homework->submissions()->updateOrCreate(
+            ['student_id' => $request->student_id],
+            [
+                'score' => $request->score,
+                'status' => 'Submitted'
+            ]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Score updated successfully',
+            'data' => [
+                'id' => $submission->id,
+                'score' => $submission->score
+            ]
         ]);
     }
 

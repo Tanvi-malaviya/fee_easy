@@ -502,16 +502,20 @@
             btn.innerHTML = `<span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>`;
 
             try {
-                const promises = Array.from(selectedStudentIds).map(id => {
+                const studentsData = Array.from(selectedStudentIds).map(id => {
                     const fees = studentFees.get(id);
-                    const totalFee = (parseFloat(fees.tuition) || 0) + (parseFloat(fees.other) || 0);
-                    return fetch(`/api/v1/institute/students/${id}`, {
-                        method: 'POST',
-                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-                        body: JSON.stringify({ _method: 'PUT', batch_id: BATCH_ID, monthly_fee: totalFee })
-                    });
+                    return {
+                        id: id,
+                        fee: (parseFloat(fees.tuition) || 0) + (parseFloat(fees.other) || 0)
+                    };
                 });
-                await Promise.all(promises);
+
+                const response = await fetch(`/api/v1/institute/batches/${BATCH_ID}/assign-students`, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    body: JSON.stringify({ students: studentsData })
+                });
+                await response.json();
                 showToast(`Successfully enrolled scholars`, 'success');
                 closeEnrollModal();
                 fetchBatchData(); fetchStudents();
@@ -666,10 +670,10 @@
             const { id, name } = pendingStudentToRemove;
             if (!confirm(`Are you sure you want to remove ${name} from this batch?`)) return;
             try {
-                const response = await fetch(`/api/v1/institute/students/${id}`, {
+                const response = await fetch(`/api/v1/institute/batches/${BATCH_ID}/remove-student`, {
                     method: 'POST',
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-                    body: JSON.stringify({ _method: 'PUT', batch_id: null })
+                    body: JSON.stringify({ student_id: id })
                 });
                 if ((await response.json()).status === 'success') {
                     showToast(`${name} removed`, 'success'); fetchBatchData(); fetchStudents();

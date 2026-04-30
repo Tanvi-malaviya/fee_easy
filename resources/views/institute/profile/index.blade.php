@@ -359,14 +359,14 @@
         </div>
         
         <!-- Form -->
-        <form id="whatsapp-modal-form" class="pt-1 pb-4 px-4 space-y-3">
+        <form id="whatsapp-modal-form" class="pb-4 px-4 space-y-3">
             @csrf
-            <div id="wa-loader" class="py-6 flex flex-col items-center justify-center">
+            <div id="wa-loader" class="py-4 flex flex-col items-center justify-center">
                 <div class="h-4 w-4 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin"></div>
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Loading credentials...</p>
             </div>
 
-            <div id="wa-form-content" class="space-y-3 hidden">
+            <div id="wa-form-content" class="space-y-2 hidden">
                 <div class="space-y-1">
                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Phone Number</label>
                     <input type="text" name="phone_number" id="wa-phone_number" required class="input-wa" placeholder="e.g. 919876543210">

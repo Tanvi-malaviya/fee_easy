@@ -102,4 +102,25 @@ class InstituteResourceController extends Controller
             'message' => 'Resource deleted successfully.'
         ]);
     }
+
+    public function download(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $resource = Resource::where('id', $id)
+            ->where('institute_id', $request->user()->id)
+            ->first();
+
+        if (!$resource || !$resource->file_path) {
+            return response()->json(['status' => 'error', 'message' => 'Resource not found'], 404);
+        }
+
+        if (!Storage::disk('public')->exists($resource->file_path)) {
+            return response()->json(['status' => 'error', 'message' => 'File not found on server'], 404);
+        }
+
+        return Storage::disk('public')->download($resource->file_path, $resource->title);
+    }
 }

@@ -98,6 +98,19 @@ class InstituteStudentController extends Controller
             return $student;
         });
 
+        // Calculate Stats
+        $graduatingCount = Student::where('institute_id', $request->user()->id)
+            ->where(function($q) {
+                $q->where('standard', 'like', '%12%')
+                  ->orWhere('standard', 'like', '%Final%')
+                  ->orWhere('standard', 'like', '%Graduate%');
+            })
+            ->count();
+
+        $performanceAvg = \App\Models\HomeworkSubmission::whereHas('student', function($q) use ($request) {
+            $q->where('institute_id', $request->user()->id);
+        })->avg('score') ?? 0;
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -106,6 +119,10 @@ class InstituteStudentController extends Controller
                 'current_page' => $paginator->currentPage(),
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
+                'stats' => [
+                    'graduating' => $graduatingCount,
+                    'performance' => round($performanceAvg, 1) . '%'
+                ]
             ]
         ]);
     }
