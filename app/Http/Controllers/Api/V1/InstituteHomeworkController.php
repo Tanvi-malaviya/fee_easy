@@ -21,15 +21,51 @@ class InstituteHomeworkController extends Controller
             ->homeworks()
             ->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
             ->with([
-                'batch:id,name',
-                'submissions' => function($q) {
+                'batch' => function($q) {
+                    $q->select('id', 'name')->with('students:id,name,batch_id');
+                },
+                'submissions' => function ($q) {
                     $q->select('id', 'homework_id', 'student_id', 'score', 'status')
-                      ->with('student:id,name');
+                        ->with('student:id,name');
                 }
             ])
             ->withCount('submissions')
             ->orderByDesc('created_at')
             ->get();
+
+        // Transform to include pending students
+        $homeworks->each(function($homework) {
+            $submissions = $homework->submissions->keyBy('student_id');
+            $allSubmissions = [];
+
+            if ($homework->batch && $homework->batch->students) {
+                foreach ($homework->batch->students as $student) {
+                    if ($submissions->has($student->id)) {
+                        $sub = $submissions->get($student->id);
+                        $allSubmissions[] = $sub;
+                    } else {
+                        $allSubmissions[] = [
+                            'id' => null,
+                            'homework_id' => $homework->id,
+                            'student_id' => $student->id,
+                            'score' => 0,
+                            'status' => 'pending',
+                            'student' => [
+                                'id' => $student->id,
+                                'name' => $student->name,
+                                'profile_image_url' => $student->profile_image_url // Assuming this accessor exists
+                            ]
+                        ];
+                    }
+                }
+            }
+            
+            $homework->setRelation('submissions', collect($allSubmissions));
+            
+            if ($homework->attachment) {
+                $homework->attachment = asset('storage/' . $homework->attachment);
+            }
+        });
 
         return response()->json([
             'status' => 'success',
@@ -56,7 +92,7 @@ class InstituteHomeworkController extends Controller
             ->where('institute_id', $institute->id)
             ->first();
 
-        if (! $batch) {
+        if (!$batch) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Batch not found for this institute.',
@@ -93,15 +129,21 @@ class InstituteHomeworkController extends Controller
         }
 
         $homework = Homework::select('id', 'batch_id', 'institute_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
-            ->with(['batch' => function($q) {
-                $q->select('id', 'name', 'subject');
-                $q->with(['students' => function($sq) {
-                    $sq->select('id', 'name', 'profile_image', 'batch_id');
-                }]);
-            }])
-            ->with(['submissions' => function($q) {
-                $q->select('id', 'homework_id', 'student_id', 'status', 'score');
-            }])
+            ->with([
+                'batch' => function ($q) {
+                    $q->select('id', 'name', 'subject');
+                    $q->with([
+                        'students' => function ($sq) {
+                            $sq->select('id', 'name', 'profile_image', 'batch_id');
+                        }
+                    ]);
+                }
+            ])
+            ->with([
+                'submissions' => function ($q) {
+                    $q->select('id', 'homework_id', 'student_id', 'status', 'score');
+                }
+            ])
             ->where('id', $id)
             ->where('institute_id', $request->user()->id)
             ->first();
@@ -109,6 +151,39 @@ class InstituteHomeworkController extends Controller
         if (!$homework) {
             return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
         }
+
+        // Transform to include pending students
+        $submissions = $homework->submissions->keyBy('student_id');
+        $allSubmissions = [];
+
+        if ($homework->batch && $homework->batch->students) {
+            foreach ($homework->batch->students as $student) {
+                if ($submissions->has($student->id)) {
+                    $submission = $submissions->get($student->id);
+                    $submission->student = [
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'profile_image_url' => $student->profile_image_url
+                    ];
+                    $allSubmissions[] = $submission;
+                } else {
+                    $allSubmissions[] = [
+                        'id' => null,
+                        'homework_id' => $homework->id,
+                        'student_id' => $student->id,
+                        'score' => 0,
+                        'status' => 'pending',
+                        'student' => [
+                            'id' => $student->id,
+                            'name' => $student->name,
+                            'profile_image_url' => $student->profile_image_url
+                        ]
+                    ];
+                }
+            }
+        }
+
+        $homework->setRelation('submissions', collect($allSubmissions));
 
         // Convert attachment to full URL if exists
         if ($homework->attachment) {

@@ -67,7 +67,7 @@
             justify-content: space-between;
             margin-bottom: 0.75rem;
             position: relative;
-            padding: 0 4.5rem; /* Reduced padding for better alignment */
+            padding: 0 4.5rem;
         }
 
         .timeline-line {
@@ -78,7 +78,7 @@
             height: 2px;
             background: #f1f5f9;
             z-index: 0;
-            overflow: hidden; /* Ensure progress doesn't bleed out */
+            overflow: hidden;
         }
 
         .timeline-progress {
@@ -312,7 +312,7 @@
                             <span class="error-message" id="error-institute_name"></span>
                         </div>
                         <div>
-                            <label class="form-label">Admin Name</label>
+                            <label class="form-label">Owner Name</label>
                             <input type="text" name="name" class="input-field" placeholder="Name" required>
                             <span class="error-message" id="error-name"></span>
                         </div>
@@ -324,6 +324,7 @@
                         <div>
                             <label class="form-label">Password</label>
                             <input type="password" name="password" class="input-field" placeholder="••••" required>
+                            <span class="error-message" id="error-password"></span>
                         </div>
                         <div>
                             <label class="form-label">Confirm</label>
@@ -363,6 +364,9 @@
                         <div class="loader"></div>
                     </button>
                 </form>
+                <div class="footer-text">
+                    <p>Didn't receive? <a href="javascript:void(0)" onclick="resendOtp()">Resend OTP</a></p>
+                </div>
             </div>
 
             <!-- STEP 3: SETUP -->
@@ -430,7 +434,6 @@
 
         function setStep(stepNumber) {
             currentStep = stepNumber;
-            // Progress is now 100% relative to the line container itself
             const progress = ((stepNumber - 1) / 2) * 100;
             timelineProgress.style.width = progress + '%';
 
@@ -460,23 +463,38 @@
             const btn = document.getElementById('btn1');
             const loader = btn.querySelector('.loader');
             const span = btn.querySelector('span');
+            
             btn.disabled = true; loader.style.display = 'block'; span.style.opacity = '0.5';
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            
             try {
                 const formData = new FormData(e.target);
                 const response = await fetch("{{ route('institute.register') }}", {
-                    method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    method: 'POST', 
+                    body: formData, 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
+                
                 const data = await response.json();
-                if (response.ok) setStep(2);
-                else if (data.errors) {
-                    Object.keys(data.errors).forEach(key => {
-                        const errEl = document.getElementById('error-' + key);
-                        if (errEl) { errEl.innerText = data.errors[key][0]; errEl.style.display = 'block'; }
-                    });
+                
+                if (response.ok) {
+                    setStep(2);
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            const errEl = document.getElementById('error-' + key);
+                            if (errEl) { errEl.innerText = data.errors[key][0]; errEl.style.display = 'block'; }
+                        });
+                    } else if (data.message) {
+                        alert(data.message);
+                    }
                 }
-            } catch (error) { console.error(error); } 
-            finally { btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; }
+            } catch (error) { 
+                console.error('Fetch Error:', error);
+                alert('Something went wrong. Please check your connection.');
+            } finally { 
+                btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; 
+            }
         });
 
         const otpInputs = document.querySelectorAll('.otp-input');
@@ -493,20 +511,52 @@
             const btn = document.getElementById('btn2');
             const loader = btn.querySelector('.loader');
             const span = btn.querySelector('span');
+            
             btn.disabled = true; loader.style.display = 'block'; span.style.opacity = '0.5';
+            document.getElementById('error-otp').style.display = 'none';
+            
             try {
                 const formData = new FormData();
                 formData.append('otp', document.getElementById('fullOtp').value);
                 formData.append('_token', "{{ csrf_token() }}");
+                
                 const response = await fetch("{{ route('institute.verify-otp') }}", {
-                    method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    method: 'POST', 
+                    body: formData, 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    setStep(3);
+                } else {
+                    document.getElementById('error-otp').innerText = data.message || 'Invalid OTP';
+                    document.getElementById('error-otp').style.display = 'block';
+                }
+            } catch (error) { 
+                console.error('OTP Error:', error);
+                alert('Verification failed. Try again.');
+            } finally { 
+                btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; 
+            }
+        });
+
+        async function resendOtp() {
+            try {
+                const response = await fetch("{{ route('institute.resend-otp') }}", {
+                    method: 'POST',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    }
                 });
                 const data = await response.json();
-                if (response.ok) setStep(3);
-                else { document.getElementById('error-otp').innerText = data.message; document.getElementById('error-otp').style.display = 'block'; }
-            } catch (error) { console.error(error); }
-            finally { btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; }
-        });
+                alert(data.message);
+            } catch (error) {
+                alert('Failed to resend OTP.');
+            }
+        }
 
         document.getElementById('logoInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -526,13 +576,19 @@
             const btn = document.getElementById('btn3');
             const loader = btn.querySelector('.loader');
             const span = btn.querySelector('span');
+            
             btn.disabled = true; loader.style.display = 'block'; span.style.opacity = '0.5';
+            
             try {
                 const formData = new FormData(e.target);
                 const response = await fetch("{{ route('institute.setup-profile') }}", {
-                    method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    method: 'POST', 
+                    body: formData, 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
+                
                 const data = await response.json();
+                
                 if (response.ok) {
                     document.getElementById('setupForm').innerHTML = `
                         <div style="text-align: center; padding: 0.5rem 0;">
@@ -541,14 +597,22 @@
                             <p style="font-size: 0.75rem; color: #64748b; font-weight: 700;">Dashboard loading...</p>
                         </div>`;
                     setTimeout(() => window.location.href = data.redirect, 1500);
-                } else if (data.errors) {
-                    Object.keys(data.errors).forEach(key => {
-                        const errEl = document.getElementById('error-' + key);
-                        if (errEl) { errEl.innerText = data.errors[key][0]; errEl.style.display = 'block'; }
-                    });
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            const errEl = document.getElementById('error-' + key);
+                            if (errEl) { errEl.innerText = data.errors[key][0]; errEl.style.display = 'block'; }
+                        });
+                    } else {
+                        alert(data.message || 'Setup failed');
+                    }
                 }
-            } catch (error) { console.error(error); }
-            finally { btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; }
+            } catch (error) { 
+                console.error('Setup Error:', error);
+                alert('Something went wrong during setup.');
+            } finally { 
+                btn.disabled = false; loader.style.display = 'none'; span.style.opacity = '1'; 
+            }
         });
     </script>
 </body>
