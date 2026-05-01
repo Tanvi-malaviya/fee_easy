@@ -34,11 +34,29 @@ class InstituteAuthController extends Controller
      */
     public function showRegister()
     {
-        return view('institute.auth.register');
+        if (Auth::guard('institute')->check()) {
+            $user = Auth::guard('institute')->user();
+            
+            if ($user->email_verified_at && $user->isProfileComplete()) {
+                return redirect()->route('institute.dashboard');
+            }
+            
+            // Strict Flow: If unverified and page is refreshed, force re-registration
+            if (!$user->email_verified_at) {
+                Auth::guard('institute')->logout();
+                $user->delete(); // Clean up unverified record
+                return view('institute.auth.register', ['initialStep' => 1]);
+            }
+            
+            // If verified but profile incomplete, stay at Step 3
+            return view('institute.auth.register', ['initialStep' => 3]);
+        }
+        
+        return view('institute.auth.register', ['initialStep' => 1]);
     }
 
     /**
-     * Handle registration.
+     * Handle registration (AJAX support).
      */
     public function register(Request $request)
     {
@@ -62,23 +80,34 @@ class InstituteAuthController extends Controller
             'status' => 'active',
         ]);
 
-        Mail::to($institute->email)->send(new OtpMail($otp));
+        try {
+            Mail::to($institute->email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            \Log::error('Mail Error: ' . $e->getMessage());
+        }
 
         Auth::guard('institute')->login($institute);
 
-        return redirect()->route('institute.verify-otp');
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Registration successful. OTP sent to email.',
+            ]);
+        }
+
+        return redirect()->route('institute.register');
     }
 
     /**
-     * Show OTP verification form.
+     * Show OTP verification form (Redirect to unified register).
      */
     public function showVerifyOtp()
     {
-        return view('institute.auth.verify-otp');
+        return redirect()->route('institute.register');
     }
 
     /**
-     * Handle OTP verification.
+     * Handle OTP verification (AJAX support).
      */
     public function verifyOtp(Request $request)
     {
@@ -88,18 +117,67 @@ class InstituteAuthController extends Controller
 
         $user = Auth::guard('institute')->user();
 
-        if ($user->otp == $request->otp && $user->otp_expires_at->isFuture()) {
+        if ($user && $user->otp == $request->otp && $user->otp_expires_at->isFuture()) {
             $user->update([
                 'otp' => null,
                 'otp_expires_at' => null,
                 'email_verified_at' => Carbon::now(),
             ]);
 
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'OTP verified successfully.',
+                ]);
+            }
+
             return redirect()->route('institute.dashboard');
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The provided OTP is invalid or has expired.',
+            ], 422);
         }
 
         throw ValidationException::withMessages([
             'otp' => 'The provided OTP is invalid or has expired.',
+        ]);
+    }
+
+    /**
+     * Handle final account setup (Step 3).
+     */
+    public function setupProfile(Request $request)
+    {
+        if (!Auth::guard('institute')->check()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'phone' => ['required', 'string', 'max:15'],
+            'city' => ['required', 'string', 'max:100'],
+            'state' => ['required', 'string', 'max:100'],
+            'pincode' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string'],
+            'logo' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        $institute = Auth::guard('institute')->user();
+        $data = $request->only(['phone', 'city', 'state', 'pincode', 'address']);
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('institutes/logos', 'public');
+            $data['logo'] = $path;
+        }
+
+        $institute->update($data);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profile setup completed successfully.',
+            'redirect' => route('institute.dashboard')
         ]);
     }
 

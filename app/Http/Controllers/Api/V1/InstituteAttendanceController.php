@@ -23,17 +23,42 @@ class InstituteAttendanceController extends Controller
             'batch_id' => 'nullable|exists:batches,id'
         ]);
 
-        $query = Attendance::with(['student:id,name', 'batch:id,name'])
-            ->where('date', $request->date)
-            ->whereHas('batch', function($q) use ($request) {
-                $q->where('institute_id', $request->user()->id);
-            });
+        $institute = $request->user();
 
         if ($request->batch_id) {
-            $query->where('batch_id', $request->batch_id);
+            $batch = $institute->batches()->find($request->batch_id);
+            if (!$batch) {
+                return response()->json(['status' => 'error', 'message' => 'Batch not found'], 404);
+            }
+            // Get all students in the specific batch
+            $students = $batch->students()->select('id', 'name', 'phone', 'batch_id')->get();
+            $batchIds = [$batch->id];
+        } else {
+            // Get all students for the whole institute
+            $students = $institute->students()->select('id', 'name', 'phone', 'batch_id')->get();
+            $batchIds = $institute->batches()->pluck('id')->toArray();
         }
 
-        $records = $query->get();
+        // Get existing attendance for these batches and date
+        $attendanceRecords = Attendance::whereIn('batch_id', $batchIds)
+            ->where('date', $request->date)
+            ->get()
+            ->keyBy('student_id');
+
+        // Map students to include attendance status if it exists
+        $records = $students->map(function($student) use ($attendanceRecords) {
+            $record = $attendanceRecords->get($student->id);
+            return [
+                'student_id' => $student->id,
+                'student_name' => $student->name,
+                'phone' => $student->phone,
+                'batch_id' => $student->batch_id,
+                'status' => $record ? $record->status : null,
+                'marked_by' => $record ? $record->marked_by : null,
+                'attendance_id' => $record ? $record->id : null,
+                'date' => $record ? $record->date : ($attendanceRecords->isNotEmpty() ? null : null), // consistent
+            ];
+        });
 
         return response()->json([
             'status' => 'success',

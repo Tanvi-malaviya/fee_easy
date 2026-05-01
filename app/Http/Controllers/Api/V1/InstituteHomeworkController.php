@@ -128,8 +128,9 @@ class InstituteHomeworkController extends Controller
         }
 
         $request->validate([
-            'student_id' => 'required|integer|exists:students,id',
-            'score' => 'required|numeric|min:0|max:10',
+            'scores' => 'required|array',
+            'scores.*.student_id' => 'required|integer|exists:students,id',
+            'scores.*.score' => 'required|numeric|min:0',
         ]);
 
         $homework = Homework::where('id', $id)
@@ -140,21 +141,25 @@ class InstituteHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
         }
 
-        $submission = $homework->submissions()->updateOrCreate(
-            ['student_id' => $request->student_id],
-            [
-                'score' => $request->score,
-                'status' => 'Submitted'
-            ]
-        );
+        $savedSubmissions = [];
+        foreach ($request->scores as $scoreData) {
+            $submission = \App\Models\HomeworkSubmission::updateOrCreate(
+                [
+                    'homework_id' => $homework->id,
+                    'student_id' => $scoreData['student_id'],
+                ],
+                [
+                    'score' => $scoreData['score'],
+                    'status' => 'submitted',
+                ]
+            );
+            $savedSubmissions[] = $submission;
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Score updated successfully',
-            'data' => [
-                'id' => $submission->id,
-                'score' => $submission->score
-            ]
+            'message' => 'Scores updated successfully.',
+            'data' => $savedSubmissions,
         ]);
     }
 

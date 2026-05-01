@@ -18,13 +18,18 @@ class InstituteResourceController extends Controller
         }
 
         $request->validate([
-            'batch_id' => 'required|exists:batches,id'
+            'batch_id' => 'nullable|exists:batches,id'
         ]);
 
-        $resources = Resource::where('institute_id', $request->user()->id)
-            ->where('batch_id', $request->batch_id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Resource::where('institute_id', $request->user()->id)
+            ->with('batch:id,name')
+            ->orderBy('created_at', 'desc');
+
+        if ($request->batch_id) {
+            $query->where('batch_id', $request->batch_id);
+        }
+
+        $resources = $query->get();
 
         return response()->json([
             'status' => 'success',
