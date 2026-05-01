@@ -3,28 +3,25 @@
 namespace App\Http\Controllers\Web\Institute;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
-
 use App\Models\Institute;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class InstituteAuthController extends Controller
 {
     /**
-     * Show the institute login form.
+     * Show the login form.
      */
     public function showLogin()
     {
         if (Auth::guard('institute')->check()) {
-            if (Auth::guard('institute')->user()->email_verified_at) {
-                return redirect()->route('institute.dashboard');
-            }
-            return redirect()->route('institute.verify-otp');
+            return redirect()->route('institute.dashboard');
         }
         return view('institute.auth.login');
     }
@@ -41,16 +38,14 @@ class InstituteAuthController extends Controller
                 return redirect()->route('institute.dashboard');
             }
             
-            // Strict Flow: If unverified and page is refreshed, force re-registration
-            if (!$user->email_verified_at) {
-                Auth::guard('institute')->logout();
-                $user->delete(); // Clean up unverified record
-                return view('institute.auth.register', ['initialStep' => 1]);
-            }
-            
             // If verified but profile incomplete, stay at Step 3
-            return view('institute.auth.register', ['initialStep' => 3]);
+            if ($user->email_verified_at) {
+                return view('institute.auth.register', ['initialStep' => 3]);
+            }
         }
+
+        // Force reset registration flow on manual page refresh (GET request)
+        Session::forget(['registration_data', 'registration_otp', 'registration_otp_expires_at']);
         
         return view('institute.auth.register', ['initialStep' => 1]);
     }
@@ -60,129 +55,187 @@ class InstituteAuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'institute_name' => ['required', 'string', 'max:255'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:institutes'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $otp = rand(100000, 999999);
-
-        $institute = Institute::create([
-            'institute_name' => $request->institute_name,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => '', // Temporary empty phone
-            'password' => Hash::make($request->password),
-            'otp' => $otp,
-            'otp_expires_at' => Carbon::now()->addMinutes(10),
-            'status' => 'active',
-        ]);
-
         try {
-            Mail::to($institute->email)->send(new OtpMail($otp));
-        } catch (\Exception $e) {
-            \Log::error('Mail Error: ' . $e->getMessage());
-        }
+            $request->validate([
+                'institute_name' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:institutes'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
 
-        Auth::guard('institute')->login($institute);
+            $otp = rand(100000, 999999);
 
-        if ($request->ajax()) {
+            // Store registration data in session instead of database
+            Session::put('registration_data', [
+                'institute_name' => $request->institute_name,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            Session::put('registration_otp', $otp);
+            Session::put('registration_otp_expires_at', Carbon::now()->addMinutes(10));
+            Session::save(); // Explicitly save session for AJAX reliability
+
+            // Send OTP email
+            try {
+                Mail::to($request->email)->send(new OtpMail($otp));
+            } catch (\Exception $e) {
+                Log::error('Registration Mail Error: ' . $e->getMessage());
+                // We still proceed so the user can try to resend or see the error
+            }
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Registration successful. OTP sent to email.',
+                'message' => 'OTP sent to your email.',
             ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Registration Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong. Please try again.'
+            ], 500);
         }
-
-        return redirect()->route('institute.register');
     }
 
     /**
-     * Show OTP verification form (Redirect to unified register).
-     */
-    public function showVerifyOtp()
-    {
-        return redirect()->route('institute.register');
-    }
-
-    /**
-     * Handle OTP verification (AJAX support).
+     * Verify OTP and create the record (AJAX support).
      */
     public function verifyOtp(Request $request)
     {
-        $request->validate([
-            'otp' => ['required', 'numeric'],
-        ]);
-
-        $user = Auth::guard('institute')->user();
-
-        if ($user && $user->otp == $request->otp && $user->otp_expires_at->isFuture()) {
-            $user->update([
-                'otp' => null,
-                'otp_expires_at' => null,
-                'email_verified_at' => Carbon::now(),
+        try {
+            $request->validate([
+                'otp' => 'required|string|size:6',
             ]);
 
-            if ($request->ajax()) {
+            if (!Session::has('registration_data') || !Session::has('registration_otp')) {
                 return response()->json([
-                    'status' => 'success',
-                    'message' => 'OTP verified successfully.',
-                ]);
+                    'status' => 'error',
+                    'message' => 'Registration session expired. Please register again.'
+                ], 400);
             }
 
-            return redirect()->route('institute.dashboard');
-        }
+            $sessionOtp = Session::get('registration_otp');
+            $expiresAt = Session::get('registration_otp_expires_at');
 
-        if ($request->ajax()) {
+            if (Carbon::now()->greaterThan($expiresAt)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'OTP expired. Please resend.'
+                ], 400);
+            }
+
+            if ($request->otp != $sessionOtp) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid verification code.'
+                ], 400);
+            }
+
+            // OTP Valid - Now create the record in database
+            $data = Session::get('registration_data');
+            
+            $institute = Institute::create([
+                'institute_name' => $data['institute_name'],
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => '', 
+                'password' => $data['password'],
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]);
+
+            // Clear session
+            Session::forget(['registration_data', 'registration_otp', 'registration_otp_expires_at']);
+            Session::save();
+
+            Auth::guard('institute')->login($institute);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Email verified successfully.',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('OTP Verification Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'The provided OTP is invalid or has expired.',
-            ], 422);
+                'message' => 'Something went wrong.'
+            ], 500);
         }
-
-        throw ValidationException::withMessages([
-            'otp' => 'The provided OTP is invalid or has expired.',
-        ]);
     }
 
     /**
-     * Handle final account setup (Step 3).
+     * Resend OTP.
+     */
+    public function resendOtp(Request $request)
+    {
+        if (!Session::has('registration_data')) {
+            return response()->json(['status' => 'error', 'message' => 'Session expired.'], 400);
+        }
+
+        $email = Session::get('registration_data')['email'];
+        $otp = rand(100000, 999999);
+        
+        Session::put('registration_otp', $otp);
+        Session::put('registration_otp_expires_at', Carbon::now()->addMinutes(10));
+        Session::save();
+
+        try {
+            Mail::to($email)->send(new OtpMail($otp));
+            return response()->json(['status' => 'success', 'message' => 'New OTP sent.']);
+        } catch (\Exception $e) {
+            Log::error('Resend OTP Error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to send mail.'], 500);
+        }
+    }
+
+    /**
+     * Setup profile (Step 3).
      */
     public function setupProfile(Request $request)
     {
-        if (!Auth::guard('institute')->check()) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        try {
+            $request->validate([
+                'phone' => 'required|string|max:15',
+                'city' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'pincode' => 'required|string|max:10',
+                'address' => 'required|string',
+                'logo' => 'nullable|image|max:2048',
+            ]);
+
+            $institute = Auth::guard('institute')->user();
+            if (!$institute) {
+                return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+            }
+            
+            $data = $request->only(['phone', 'city', 'state', 'pincode', 'address']);
+            
+            if ($request->hasFile('logo')) {
+                $path = $request->file('logo')->store('institute_logos', 'public');
+                $data['logo'] = $path;
+            }
+
+            $institute->update($data);
+
+            return response()->json([
+                'status' => 'success',
+                'redirect' => route('institute.dashboard'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Profile Setup Error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong.'], 500);
         }
-
-        $request->validate([
-            'phone' => ['required', 'string', 'max:15'],
-            'city' => ['required', 'string', 'max:100'],
-            'state' => ['required', 'string', 'max:100'],
-            'pincode' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string'],
-            'logo' => ['nullable', 'image', 'max:2048'],
-        ]);
-
-        $institute = Auth::guard('institute')->user();
-        $data = $request->only(['phone', 'city', 'state', 'pincode', 'address']);
-
-        if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('institutes/logos', 'public');
-            $data['logo'] = $path;
-        }
-
-        $institute->update($data);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Profile setup completed successfully.',
-            'redirect' => route('institute.dashboard')
-        ]);
     }
 
     /**
-     * Handle the login request.
+     * Handle login.
      */
     public function login(Request $request)
     {
@@ -191,49 +244,24 @@ class InstituteAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::guard('institute')->attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::guard('institute')->attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
-
             return redirect()->intended(route('institute.dashboard'));
         }
 
-        throw ValidationException::withMessages([
-            'email' => __('auth.failed'),
-        ]);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
     /**
-     * Log the institute out.
+     * Handle logout.
      */
     public function logout(Request $request)
     {
-        if (Auth::guard('institute')->check()) {
-            Auth::guard('institute')->logout();
-        }
-
+        Auth::guard('institute')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('institute.login');
-    }
-    /**
-     * Update the institute administrator's password.
-     */
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'current_password' => ['required', 'current_password:institute'],
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
-        ]);
-
-        $user = Auth::guard('institute')->user();
-        $user->update([
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Password updated successfully'
-        ]);
     }
 }

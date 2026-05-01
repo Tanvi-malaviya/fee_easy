@@ -2,50 +2,32 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\DashboardController;
-use App\Http\Controllers\Web\InstituteController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
-// Admin Routes Group
-Route::prefix('admin')->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('login');
-    });
+// Admin Web Panel Routes (Jetstream/Auth)
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
 
-    require __DIR__ . '/auth.php';
-
-    Route::middleware(['auth', 'verified'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        // Admin UI Routes
-        Route::patch('institutes/{institute}/status', [InstituteController::class, 'updateStatus'])->name('institutes.status');
-        Route::resource('institutes', InstituteController::class);
-
-        // Phase 1 Routes
-        Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
-        Route::patch('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
-        Route::patch('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
-        Route::patch('subscriptions/{subscription}/cancel', [App\Http\Controllers\Web\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
-        Route::patch('subscriptions/{subscription}/activate', [App\Http\Controllers\Web\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
-        Route::patch('subscriptions/{subscription}/convert', [App\Http\Controllers\Web\SubscriptionController::class, 'convertToPaid'])->name('subscriptions.convert');
-        Route::patch('subscriptions/{subscription}/change-plan', [App\Http\Controllers\Web\SubscriptionController::class, 'changePlan'])->name('subscriptions.changePlan');
-        Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
-        Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
-        Route::post('revenue/record', [App\Http\Controllers\Web\RevenueController::class, 'storeManualPayment'])->name('revenue.store_manual');
-
-        // WhatsApp Management
-        Route::get('whatsapp', [App\Http\Controllers\Web\WhatsAppController::class, 'index'])->name('whatsapp.index');
-        Route::patch('whatsapp/{institute}/update', [App\Http\Controllers\Web\WhatsAppController::class, 'update'])->name('whatsapp.update');
-        Route::post('whatsapp/{institute}/verify', [App\Http\Controllers\Web\WhatsAppController::class, 'verify'])->name('whatsapp.verify');
-
-        // Broadcast Center
-        Route::get('broadcast', [App\Http\Controllers\Web\BroadcastController::class, 'index'])->name('broadcast.index');
-        Route::post('broadcast/send', [App\Http\Controllers\Web\BroadcastController::class, 'send'])->name('broadcast.send');
-
-        // System Settings
+    Route::prefix('admin')->group(function () {
+        // App Settings
         Route::get('settings', [App\Http\Controllers\Web\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings/update', [App\Http\Controllers\Web\SettingController::class, 'update'])->name('settings.update');
 
@@ -68,15 +50,17 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::post('/login', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'login']);
     });
 
+    // Unified Registration (Step 1 & Step 2)
     Route::get('/register', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'register']);
+    Route::post('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'verifyOtp'])->name('verify-otp');
+    Route::post('/resend-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resendOtp'])->name('resend-otp');
 
     // Authenticated Routes
     Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('auth:institute')->group(function () {
-        Route::get('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showVerifyOtp'])->name('verify-otp');
-        Route::post('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'verifyOtp']);
+        // Step 3: Setup Profile
         Route::post('/setup-profile', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'setupProfile'])->name('setup-profile');
 
         Route::middleware('verified_institute')->group(function () {
@@ -98,44 +82,39 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
                 Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
 
-                Route::get('/teachers', function () {
-                    return view('institute.teachers.index'); })->name('teachers.index');
+                // Batch Management
+                Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');
+                Route::get('/batches/{batch}/edit', [App\Http\Controllers\Web\Institute\BatchController::class, 'edit'])->name('batches.edit');
+                Route::get('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'show'])->name('batches.show');
+                Route::get('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'index'])->name('batches.index');
+                Route::post('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'store'])->name('batches.store');
+                Route::put('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'update'])->name('batches.update');
+                Route::delete('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'destroy'])->name('batches.destroy');
 
-                // Shell Routes for API-Driven Pages
-                Route::get('/batches', function () {
-                    return view('institute.batches.index'); })->name('batches.index');
-                Route::get('/batches/{id}', function ($id) {
-                    return view('institute.batches.show', compact('id')); })->name('batches.show');
-                Route::get('/batches/{id}/students', function ($id) {
-                    return view('institute.batches.students', compact('id')); })->name('batches.students');
-                Route::get('/batches/{id}/homework', function ($id) {
-                    return view('institute.batches.homework', compact('id')); })->name('batches.homework');
-                Route::get('/batches/{id}/homework/{homework_id}', function ($id, $homework_id) {
-                    return view('institute.batches.homework_show', compact('id', 'homework_id')); })->name('batches.homework.show');
-                Route::get('/batches/{id}/attendance-history', function ($id) {
-                    return view('institute.batches.attendance', compact('id')); })->name('batches.attendance');
-                Route::get('/batches/{id}/resources', function ($id) {
-                    return view('institute.batches.resources', compact('id')); })->name('batches.resources');
+                // Attendance Management
+                Route::get('/attendance/create', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'create'])->name('attendance.create');
+                Route::get('/attendance/{attendance}/edit', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'edit'])->name('attendance.edit');
+                Route::get('/attendance/{attendance}', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'show'])->name('attendance.show');
+                Route::get('/attendance', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'index'])->name('attendance.index');
+                Route::post('/attendance', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'store'])->name('attendance.store');
+                Route::put('/attendance/{attendance}', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'update'])->name('attendance.update');
+                Route::delete('/attendance/{attendance}', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'destroy'])->name('attendance.destroy');
 
-                Route::get('/attendance', function () {
-                    return view('institute.attendance.index'); })->name('attendance.index');
-                Route::get('/attendance/mark', function () {
-                    return view('institute.attendance.create'); })->name('attendance.create');
-                Route::get('/fees', function () {
-                    return view('institute.fees.index'); })->name('fees.index');
-                Route::get('/reports', function () {
-                    return view('institute.reports.index'); })->name('reports.index');
-                Route::get('/updates', function () {
-                    return view('institute.updates.index'); })->name('updates.index');
-                Route::get('/notifications', function () {
-                    return view('institute.notifications.index'); })->name('notifications.index');
-                Route::get('/plans', function () {
-                    return view('institute.plans.index'); })->name('plans.index');
-                Route::get('/whatsapp-settings', function () {
-                    return view('institute.whatsapp.index'); })->name('whatsapp.setup');
+                // Fee Management
+                Route::get('/fees/receipts/{receipt}', [App\Http\Controllers\Web\Institute\FeeController::class, 'showReceipt'])->name('fees.receipts.show');
+                Route::get('/fees/collect', [App\Http\Controllers\Web\Institute\FeeController::class, 'collect'])->name('fees.collect');
+                Route::get('/fees', [App\Http\Controllers\Web\Institute\FeeController::class, 'index'])->name('fees.index');
+                Route::post('/fees/collect', [App\Http\Controllers\Web\Institute\FeeController::class, 'store'])->name('fees.store');
+
+                // Daily Updates
+                Route::get('/updates', [App\Http\Controllers\Web\Institute\DailyUpdateController::class, 'index'])->name('updates.index');
+
+                // Reports
+                Route::get('/reports', [App\Http\Controllers\Web\Institute\ReportController::class, 'index'])->name('reports.index');
+
+                // Notifications
+                Route::get('/notifications', [App\Http\Controllers\Web\Institute\NotificationController::class, 'index'])->name('notifications.index');
             });
-            
-            Route::post('/profile/password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'updatePassword'])->name('profile.password.update');
         });
     });
 });
