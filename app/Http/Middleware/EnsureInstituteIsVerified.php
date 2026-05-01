@@ -16,7 +16,7 @@ class EnsureInstituteIsVerified
     public function handle(Request $request, Closure $next): Response
     {
         if (auth('institute')->check() && !auth('institute')->user()->email_verified_at) {
-            return redirect()->route('institute.verify-otp');
+            return redirect()->route('institute.register');
         }
 
         return $next($request);

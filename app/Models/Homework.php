@@ -20,6 +20,14 @@ class Homework extends Model
         'attachment',
     ];
 
+    public function getAttachmentAttribute($value)
+    {
+        if (!$value) return null;
+        // Encode spaces for browser compatibility
+        $encodedPath = str_replace(' ', '%20', $value);
+        return url('storage/' . $encodedPath);
+    }
+
     public function batch()
     {
         return $this->belongsTo(Batch::class);
