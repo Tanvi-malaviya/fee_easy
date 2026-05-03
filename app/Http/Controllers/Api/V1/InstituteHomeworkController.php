@@ -17,9 +17,14 @@ class InstituteHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $homeworks = $request->user()
-            ->homeworks()
-            ->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
+        $query = $request->user()
+            ->homeworks();
+
+        if ($request->has('batch_id')) {
+            $query->where('batch_id', $request->batch_id);
+        }
+
+        $homeworks = $query->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
             ->with([
                 'batch' => function($q) {
                     $q->select('id', 'name')->with('students:id,name,batch_id');
@@ -31,7 +36,7 @@ class InstituteHomeworkController extends Controller
             ])
             ->withCount('submissions')
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10);
 
         // Transform to include pending students
         $homeworks->each(function($homework) {
@@ -256,15 +261,23 @@ class InstituteHomeworkController extends Controller
             'grades' => 'required|array',
             'grades.*.student_id' => 'required|integer|exists:students,id',
             'grades.*.score' => 'nullable|numeric',
-            'grades.*.status' => 'required|in:Pending,Missing,Late,Submitted',
+            'grades.*.status' => 'required|string',
         ]);
 
         foreach ($request->grades as $gradeData) {
+            // Standardize status to Title Case for consistency
+            $status = ucfirst(strtolower($gradeData['status']));
+            
+            // Validate standardized status
+            if (!in_array($status, ['Pending', 'Missing', 'Late', 'Submitted'])) {
+                continue;
+            }
+
             $homework->submissions()->updateOrCreate(
                 ['student_id' => $gradeData['student_id']],
                 [
                     'score' => $gradeData['score'],
-                    'status' => $gradeData['status'],
+                    'status' => $status,
                 ]
             );
         }

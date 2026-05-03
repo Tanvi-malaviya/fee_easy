@@ -2,9 +2,9 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-6 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto pt-2 px-2 sm:px-6">
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+        <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-[#ff6600] transition-colors">Batches</a>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
             <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch Details</a>
@@ -13,7 +13,7 @@
         </nav>
 
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
             <div>
                 <h1 class="text-2xl font-bold text-slate-700 tracking-tight">Batch Resources</h1>
                 <p class="text-xs font-semibold text-slate-400 mt-1">Manage and distribute educational files, videos, and visual assets.</p>

@@ -1,7 +1,7 @@
 @extends('layouts.institute')
 
 @section('content')
-<div class="max-w-[1200px] mx-auto pb-6 pt-6">
+<div class="max-w-[1200px] mx-auto pb-6 pt-2">
 
     <!-- Premium Profile Header -->
     <div class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 overflow-hidden relative mb-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -236,15 +236,15 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                         <input type="text" name="phone" id="field-phone" placeholder="Phone Number" class="input">
                     </div>
-                    <div class="md:col-span-2 space-y-1">
+                    <div class="md:col-span-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</label>
                         <input type="text" name="address" id="field-address" placeholder="Flat, House no., Building" class="input">
                     </div>
-                    <div class="space-y-1">
+                    <div class="">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City</label>
                         <input type="text" name="city" id="field-city" placeholder="City" class="input">
                     </div>
-                    <div class="space-y-1">
+                    <div class="">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">State</label>
                         <input type="text" name="state" id="field-state" placeholder="State" class="input">
                     </div>
@@ -268,7 +268,7 @@
 <div id="password-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <!-- Header -->
-        <div class="py-2 px-4 border-b border-slate-100 flex items-start justify-between relative">
+        <div class="py-1.5 px-4 border-b border-slate-100 flex items-start justify-between relative">
             <div>
                 <h3 class="text-base font-bold text-slate-800 leading-tight">Update Password</h3>
                 <p class="text-[10px] text-slate-400 mt-0.5">Ensure your account stays secure with a strong password.</p>
@@ -279,7 +279,7 @@
         </div>
         
         <!-- Form -->
-        <form id="password-form" class="pt-1 pb-4 px-4 space-y-3">
+        <form id="password-form" class="pt-0 pb-4 px-4 space-y-2">
             @csrf
             
             <!-- Current Password -->
@@ -294,7 +294,7 @@
             </div>
 
             <!-- New Password -->
-            <div class="space-y-1">
+            <div class="">
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -309,7 +309,7 @@
             </div>
 
             <!-- Confirm New Password -->
-            <div class="space-y-1">
+            <div class="">
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

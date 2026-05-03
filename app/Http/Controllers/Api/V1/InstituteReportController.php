@@ -320,10 +320,6 @@ class InstituteReportController extends Controller
             $globalAvg = $globalAvg * 10;
         }
 
-        $summary = [
-            'average_performance' => $globalAvg ? round($globalAvg, 2) . '%' : '0%',
-        ];
-
         $batchesQuery = Batch::where('institute_id', $institute_id);
         if ($request->filled('batch_id')) {
             $batchesQuery->where('id', $request->batch_id);
@@ -375,13 +371,10 @@ class InstituteReportController extends Controller
             ];
         }
 
-        $responseData = [
-            'summary' => $summary,
-            'batches' => $batchesData,
-            'trends' => $trends
-        ];
-
         $studentsData = [];
+        $passCount = 0;
+        $needsAttentionCount = 0;
+
         foreach ($batches as $batch) {
             $batchStudents = Student::where('batch_id', $batch->id)->get();
             foreach ($batchStudents as $stu) {
@@ -394,6 +387,14 @@ class InstituteReportController extends Controller
                 $stuAvg = $stuSubmissions->avg('score');
                 if ($stuAvg > 0 && $stuAvg <= 10) {
                     $stuAvg = $stuAvg * 10;
+                }
+                
+                $finalScore = $stuAvg ? round($stuAvg, 2) : 0;
+                
+                if ($finalScore >= 50) {
+                    $passCount++;
+                } else {
+                    $needsAttentionCount++;
                 }
 
                 $logsForStudent = Attendance::where('student_id', $stu->id);
@@ -409,12 +410,28 @@ class InstituteReportController extends Controller
                     'student_id' => $stu->id,
                     'student_name' => $stu->name,
                     'batch_name' => $batch->name,
-                    'avg_score' => $stuAvg ? round($stuAvg, 2) : 0,
+                    'avg_score' => $finalScore,
                     'avg_attendance' => $attPct
                 ];
             }
         }
-        $responseData['student_roster'] = $studentsData;
+
+        $totalStudentsCount = count($studentsData);
+        $passPercentage = $totalStudentsCount > 0 ? round(($passCount / $totalStudentsCount) * 100, 1) : 0;
+        
+        $summary = [
+            'average_performance' => $globalAvg ? round($globalAvg, 2) . '%' : '0%',
+            'pass_percentage' => $passPercentage . '%',
+            'needs_attention' => $needsAttentionCount,
+            'average_grade' => $this->calculateGrade($globalAvg),
+        ];
+
+        $responseData = [
+            'summary' => $summary,
+            'batches' => $batchesData,
+            'trends' => $trends,
+            'student_roster' => $studentsData
+        ];
 
         if ($request->filled('batch_id')) {
             $legacyStudents = [];
@@ -432,6 +449,18 @@ class InstituteReportController extends Controller
             'status' => 'success',
             'data' => $responseData,
         ]);
+    }
+
+    private function calculateGrade($score)
+    {
+        if (!$score) return 'N/A';
+        if ($score >= 90) return 'A+';
+        if ($score >= 80) return 'A';
+        if ($score >= 70) return 'B+';
+        if ($score >= 60) return 'B';
+        if ($score >= 50) return 'C';
+        if ($score >= 35) return 'D';
+        return 'E';
     }
 
     public function exportPerformanceReport(Request $request)

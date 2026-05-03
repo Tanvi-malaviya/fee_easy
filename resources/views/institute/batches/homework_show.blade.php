@@ -135,8 +135,17 @@
                                 status: isPastDue ? 'Missing' : 'Pending',
                                 score: 0
                             };
-                        } else if (submissionsMap[student.id].score === null) {
-                            submissionsMap[student.id].score = 0;
+                        } else {
+                            // Standardize incoming status
+                            const s = submissionsMap[student.id].status.toLowerCase();
+                            if (s === 'submitted') submissionsMap[student.id].status = 'Submitted';
+                            else if (s === 'pending') submissionsMap[student.id].status = 'Pending';
+                            else if (s === 'missing') submissionsMap[student.id].status = 'Missing';
+                            else if (s === 'late') submissionsMap[student.id].status = 'Late';
+
+                            if (submissionsMap[student.id].score === null) {
+                                submissionsMap[student.id].score = 0;
+                            }
                         }
                     });
 
@@ -244,9 +253,9 @@
             const total = students.length;
 
             students.forEach(student => {
-                const status = submissionsMap[student.id].status;
-                if (status === 'Submitted' || status === 'Late') submittedCount++;
-                else if (status === 'Missing') missingCount++;
+                const status = (submissionsMap[student.id].status || '').toLowerCase();
+                if (status === 'submitted' || status === 'late') submittedCount++;
+                else if (status === 'missing') missingCount++;
                 else pendingCount++;
             });
 
@@ -260,11 +269,14 @@
             // Filter students for grid
             let filteredStudents = students;
             if (currentFilter === 'submitted') {
-                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Submitted' || submissionsMap[s.id].status === 'Late');
+                filteredStudents = students.filter(s => {
+                    const status = (submissionsMap[s.id].status || '').toLowerCase();
+                    return status === 'submitted' || status === 'late';
+                });
             } else if (currentFilter === 'pending') {
-                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Pending');
+                filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'pending');
             } else if (currentFilter === 'missing') {
-                filteredStudents = students.filter(s => submissionsMap[s.id].status === 'Missing');
+                filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'missing');
             }
 
             const subPct = total ? (submittedCount / total) * 100 : 0;
@@ -287,10 +299,11 @@
                 const sub = submissionsMap[student.id];
                 const isMissing = sub.status === 'Missing';
 
+                const status = (sub.status || '').toLowerCase();
                 let statusBadge = '';
-                if (sub.status === 'Submitted') statusBadge = '<span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-bold uppercase tracking-widest">Submitted</span>';
-                else if (sub.status === 'Late') statusBadge = '<span class="px-2.5 py-1 bg-orange-50 text-orange-600 rounded-full text-[9px] font-bold uppercase tracking-widest">Late</span>';
-                else if (sub.status === 'Missing') statusBadge = '<span class="px-2.5 py-1 bg-rose-600 text-white rounded-full text-[9px] font-bold uppercase tracking-widest">Missing</span>';
+                if (status === 'submitted') statusBadge = '<span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-bold uppercase tracking-widest">Submitted</span>';
+                else if (status === 'late') statusBadge = '<span class="px-2.5 py-1 bg-orange-50 text-orange-600 rounded-full text-[9px] font-bold uppercase tracking-widest">Late</span>';
+                else if (status === 'missing') statusBadge = '<span class="px-2.5 py-1 bg-rose-600 text-white rounded-full text-[9px] font-bold uppercase tracking-widest">Missing</span>';
                 else statusBadge = '<span class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[9px] font-bold uppercase tracking-widest">Pending</span>';
 
                 const borderClass = isMissing ? 'border-rose-200' : 'border-slate-100';
