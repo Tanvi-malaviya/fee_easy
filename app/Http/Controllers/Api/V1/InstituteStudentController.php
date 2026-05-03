@@ -90,7 +90,7 @@ class InstituteStudentController extends Controller
             ]);
         }
 
-        $paginator = $query->paginate(10);
+        $paginator = $query->paginate(20);
 
         $items = collect($paginator->items())->map(function ($student) {
             $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');

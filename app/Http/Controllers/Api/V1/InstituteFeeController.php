@@ -50,10 +50,12 @@ class InstituteFeeController extends Controller
             return $fee;
         });
 
-
         $currentMonthTotal = Fee::where('institute_id', $request->user()->id)
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
+            ->sum('paid_amount');
+
+        $totalCollected = Fee::where('institute_id', $request->user()->id)
             ->sum('paid_amount');
 
         return response()->json([
@@ -65,6 +67,7 @@ class InstituteFeeController extends Controller
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
                 'current_month_total' => $currentMonthTotal,
+                'total_collected' => $totalCollected,
             ]
         ]);
     }
@@ -151,6 +154,7 @@ class InstituteFeeController extends Controller
             'data' => $fees
         ]);
     }
+
     /**
      * Export fee records as PDF with optional filters.
      */

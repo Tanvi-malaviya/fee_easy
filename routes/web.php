@@ -68,6 +68,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 return view('institute.profile.index'); })->name('profile.index');
             Route::get('/profile/edit', function () {
                 return view('institute.profile.edit'); })->name('profile.edit');
+            Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
+            Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
             Route::middleware('profile_complete')->group(function () {
                 Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
@@ -85,6 +87,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');
                 Route::get('/batches/{batch}/edit', [App\Http\Controllers\Web\Institute\BatchController::class, 'edit'])->name('batches.edit');
+                Route::get('/batches/{batch}/students', [App\Http\Controllers\Web\Institute\BatchController::class, 'students'])->name('batches.students');
+                Route::get('/batches/{batch}/homework/{homework}', [App\Http\Controllers\Web\Institute\BatchController::class, 'homeworkShow'])->name('batches.homework.show');
+                Route::get('/batches/{batch}/homework', [App\Http\Controllers\Web\Institute\BatchController::class, 'homework'])->name('batches.homework');
+                Route::get('/batches/{batch}/attendance', [App\Http\Controllers\Web\Institute\BatchController::class, 'attendance'])->name('batches.attendance');
+                Route::get('/batches/{batch}/resources', [App\Http\Controllers\Web\Institute\BatchController::class, 'resources'])->name('batches.resources');
                 Route::get('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'show'])->name('batches.show');
                 Route::get('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'index'])->name('batches.index');
                 Route::post('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'store'])->name('batches.store');
@@ -111,6 +118,9 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Reports
                 Route::get('/reports', [App\Http\Controllers\Web\Institute\ReportController::class, 'index'])->name('reports.index');
+
+                // Subscription Plans
+                Route::get('/plans', [App\Http\Controllers\Web\Institute\PlanController::class, 'index'])->name('plans.index');
 
                 // Notifications
                 Route::get('/notifications', [App\Http\Controllers\Web\Institute\NotificationController::class, 'index'])->name('notifications.index');

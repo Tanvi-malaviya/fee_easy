@@ -6,7 +6,7 @@
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-3"></div>
 
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2  pt-3 pl-3 pr-3 rounded-xl ">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pl-1 pr-3 rounded-xl ">
         <div>
             <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">Financial Ledger</h1>
             <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage fee collections and student financial accounts.</p>
@@ -64,7 +64,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="p-2 bg-white rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+    <div id="pagination-bar" class="hidden p-2 bg-white rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Showing <span id="current-range" class="text-slate-700">0-0</span> of <span id="total-records" class="text-slate-700">0</span></p>
         <div class="flex items-center gap-1">
             <button id="prev-page" onclick="changePage(-1)" class="h-7 px-2 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Prev</button>
@@ -77,8 +77,8 @@
 <!-- Create Fee Modal -->
 <div id="fee-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
     <div onclick="closeFeeModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-    <div class="bg-white w-full max-w-md rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-4">
+    <div class="bg-white w-[92%] sm:w-full max-w-md rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div class="p-5 sm:p-6">
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h2 class="text-lg font-extrabold text-slate-800 tracking-tight">Add Transaction</h2>
@@ -113,17 +113,14 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
-                    <input type="date" name="date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
+                    <input type="date" name="date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
                 </div>
-
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Amount</label>
                     <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
                 </div>
-
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
                     <div class="flex items-center gap-1 p-1 bg-slate-50 border border-slate-100 rounded-lg">
@@ -137,7 +134,6 @@
                         </label>
                     </div>
                 </div>
-
                 <div class="pt-3 border-t border-slate-50 flex items-center justify-end space-x-2">
                     <button type="button" onclick="closeFeeModal()" class="px-4 py-1.5 text-xs font-bold text-slate-400">Cancel</button>
                     <button type="submit" class="px-5 py-1.5 bg-[#f97316] text-white rounded-lg font-bold text-xs shadow-md hover:bg-[#ea580c] transition-all flex items-center">
@@ -158,7 +154,7 @@
     let allBatches = [];
 
     document.addEventListener('DOMContentLoaded', () => {
-        fetchStudents();
+        // fetchStudents(); // Optimized: Now lazy-loaded when modal opens
         fetchBatches();
         loadAllFees(1);
         setupStudentSearch();
@@ -286,6 +282,11 @@
         document.getElementById('fee-modal').classList.remove('hidden');
         document.getElementById('fee-form').reset();
         clearStudentSelection();
+        
+        // Optimized: Lazy load students only if list is empty
+        if (allStudents.length === 0) {
+            fetchStudents();
+        }
     }
 
     function closeFeeModal() { document.getElementById('fee-modal').classList.add('hidden'); }
@@ -307,12 +308,10 @@
             if (res.status === 'success') {
                 renderFees(res.data.items);
                 updatePagination(res.data);
-            }
-
-            const statsResp = await fetch("/api/v1/institute/reports/dashboard", { headers: { 'Accept': 'application/json' } });
-            const statsRes = await statsResp.json();
-            if (statsRes.status === 'success') {
-                updateStats(statsRes.data);
+                // Optimized: Update stats from the same fees API response
+                if (res.data.total_collected !== undefined) {
+                    updateStats({ total_paid_fees: res.data.total_collected });
+                }
             }
         } catch (e) { showToast('Load error', 'error'); }
         finally { toggleLoader(false); }
@@ -326,6 +325,15 @@
     }
 
     function updatePagination(data) {
+        const bar = document.getElementById('pagination-bar');
+        if (data.last_page > 1) {
+            bar.classList.remove('hidden');
+            bar.classList.add('flex');
+        } else {
+            bar.classList.add('hidden');
+            bar.classList.remove('flex');
+        }
+
         totalPages = data.last_page;
         document.getElementById('total-records').innerText = data.total;
         

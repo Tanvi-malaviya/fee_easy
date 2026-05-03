@@ -102,7 +102,7 @@
 
                 <!-- Pagination -->
                 <div id="pagination-container"
-                    class="mt-2 px-5 py-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between shadow-sm">
+                    class="mt-2 px-5 py-3 bg-white rounded-xl border border-slate-100 hidden items-center justify-between shadow-sm">
                     <!-- Pagination generated via JS -->
                 </div>
             </div>
@@ -456,9 +456,13 @@
             function renderPagination(data) {
                 const container = document.getElementById('pagination-container');
                 if (!data.links || data.last_page <= 1) {
-                    container.innerHTML = `<span class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Showing ${data.total} students</span>`;
+                    container.classList.add('hidden');
+                    container.classList.remove('flex');
                     return;
                 }
+
+                container.classList.remove('hidden');
+                container.classList.add('flex');
 
                 let html = `<div class="flex items-center gap-2">`;
 

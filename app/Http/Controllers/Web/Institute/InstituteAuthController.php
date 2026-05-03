@@ -21,7 +21,10 @@ class InstituteAuthController extends Controller
     public function showLogin()
     {
         if (Auth::guard('institute')->check()) {
-            return redirect()->route('institute.dashboard');
+            $user = Auth::guard('institute')->user();
+            if ($user->email_verified_at && $user->isProfileComplete()) {
+                return redirect()->route('institute.dashboard');
+            }
         }
         return view('institute.auth.login');
     }
@@ -34,13 +37,21 @@ class InstituteAuthController extends Controller
         if (Auth::guard('institute')->check()) {
             $user = Auth::guard('institute')->user();
             
+            // If already complete, go to dashboard
             if ($user->email_verified_at && $user->isProfileComplete()) {
                 return redirect()->route('institute.dashboard');
             }
             
-            // If verified but profile incomplete, stay at Step 3
+            // If verified but profile incomplete, show Step 3 (Setup)
             if ($user->email_verified_at) {
                 return view('institute.auth.register', ['initialStep' => 3]);
+            }
+
+            // If logged in but NOT verified (e.g. from a manual DB entry or interrupted flow)
+            // We should ideally send them an OTP here or let them see a "Verify OTP" step
+            // For now, let's allow them to see Step 2 if we have session data, else Step 1
+            if (Session::has('registration_data')) {
+                return view('institute.auth.register', ['initialStep' => 2]);
             }
         }
 

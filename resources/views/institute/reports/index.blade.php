@@ -7,7 +7,7 @@
 @section('content')
     <div class="space-y-1 max-w-[1600px] mx-auto pb-5 px-4 animate-in fade-in duration-500">
         <!-- Page Header -->
-        <div id="header-container" class="mb-2 mt-4">
+        <div id="header-container" class="mt-1">
             <div id="breadcrumb" class="hidden items-center gap-2">
                 <button onclick="exitDrillDown()"
                     class="text-[10px] font-bold text-slate-400 uppercase tracking-wider hover:text-[#ff6c00] transition-colors flex items-center gap-1">
@@ -340,16 +340,12 @@
         </div>
 
         <!-- Section: Attendance -->
-        <div id="section-attendance" class="tab-section space-y-4 hidden">
-            <div class="flex items-center justify-between mb-2">
-                <div>
-                    <span class="text-[9px] font-bold text-[#ff6c00] uppercase tracking-wider block">Academic
-                        Insights</span>
-                    <h2 class="text-xl font-black text-slate-800 tracking-tight leading-tight mt-0.5">Attendance Summary
-                        Report</h2>
-                    <p class="text-[11px] font-medium text-slate-400 mt-1">Real-time engagement analysis for the academic
-                        term.</p>
-                </div>
+            <div id="section-attendance" class="tab-section space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-[580] text-slate-800 tracking-tight">Attendance Summary Report</h2>
+                        <p class="text-xs font-medium text-slate-400 mt-0.5">Real-time engagement analysis for the academic term.</p>
+                    </div>
                 <div class="flex items-center gap-2">
                     <button onclick="exportAttendance()"
                         class="px-3.5 py-2 bg-white border border-slate-100 text-slate-600 rounded-xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5">
@@ -358,14 +354,6 @@
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Export PDF
-                    </button>
-                    <button onclick="showToast('Scheduling is available on Enterprise tiers.', 'info')"
-                        class="px-3.5 py-2 bg-[#ff6c00] hover:bg-[#ff8c33] text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Schedule Report
                     </button>
                 </div>
             </div>
@@ -603,7 +591,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Drill-down View: Student Data -->
     <div id="section-drilldown" class="hidden space-y-3">
@@ -632,15 +619,11 @@
             <!-- Student cards injected here -->
         </div>
     </div>
-
-    <!-- Section: Performance -->
     <div id="section-performance" class="tab-section hidden space-y-4">
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between">
             <div>
-                <span class="text-[9px] font-bold text-[#ff6c00] uppercase tracking-wider block">Academic Insights</span>
-                <h2 class="text-xl font-black text-slate-800 tracking-tight leading-tight mt-0.5">Student Performance Report
-                </h2>
-                <p class="text-[11px] font-medium text-slate-400 mt-1">Holistic assessment breakdown and tracking.</p>
+                <h2 class="text-xl font-[580] text-slate-800 tracking-tight">Student Performance Report</h2>
+                <p class="text-xs font-medium text-slate-400 mt-0.5">Holistic assessment breakdown and tracking.</p>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="showToast('Generation is processing...', 'info')"
@@ -662,7 +645,7 @@
                                 d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 14zm0 0l-6.16-3.422a12.083 12.083 0 00-.665 6.479A11.952 11.952 0 0012 14z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mt-2">A-</h3>
+                    <h3 id="perf-avg-grade" class="text-xl font-extrabold text-slate-800 mt-2">N/A</h3>
                     <p class="text-[9px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -682,9 +665,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mt-2">94.2%</h3>
+                    <h3 id="perf-pass-pct" class="text-xl font-extrabold text-slate-800 mt-2">0%</h3>
                     <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
-                        <div class="bg-emerald-500 h-full rounded-full" style="width: 94.2%"></div>
+                        <div id="perf-pass-bar" class="bg-emerald-500 h-full rounded-full" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -700,7 +683,7 @@
                         </svg>
                     </div>
                     <h3 id="perf-top-batch" class="text-sm font-extrabold text-slate-800 mt-2">N/A</h3>
-                    <p class="text-[9px] text-slate-400 font-bold mt-1">Avg. Score: 89.5/100</p>
+                    <p id="perf-top-batch-score" class="text-[9px] text-slate-400 font-bold mt-1">Avg. Score: 0/100</p>
                 </div>
             </div>
 
@@ -708,7 +691,7 @@
             <div class="bg-rose-50/30 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col justify-between">
                 <div>
                     <p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Needs Attention</p>
-                    <h3 class="text-xl font-extrabold text-rose-600 mt-2">12</h3>
+                    <h3 id="perf-needs-attention" class="text-xl font-extrabold text-rose-600 mt-2">0</h3>
                     <p class="text-[9px] text-slate-400 font-bold mt-1">Students below 50% avg.</p>
                 </div>
             </div>
@@ -789,10 +772,9 @@
                         class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Next</button>
                 </div>
             </div>
-        </div>
     </div>
-    </div>
-    </div>
+</div>
+</div>
 
 
     <script>
@@ -844,6 +826,12 @@
 
                     globalPerformanceData.sort((a, b) => b.score - a.score);
                     globalPerformanceData.forEach((s, i) => s.rank = i + 1);
+
+                    const summary = result.data.summary || {};
+                    document.getElementById('perf-avg-grade').innerText = summary.average_grade || 'N/A';
+                    document.getElementById('perf-pass-pct').innerText = summary.pass_percentage || '0%';
+                    document.getElementById('perf-pass-bar').style.width = summary.pass_percentage || '0%';
+                    document.getElementById('perf-needs-attention').innerText = summary.needs_attention || '0';
 
                     renderPerformanceRanking();
 
@@ -965,6 +953,7 @@
                     }
                 }
                 document.getElementById('perf-top-batch').innerText = topBatch;
+                document.getElementById('perf-top-batch-score').innerText = `Avg. Score: ${topAvg.toFixed(1)}/100`;
             }
 
             if (pageData.length > 0) {

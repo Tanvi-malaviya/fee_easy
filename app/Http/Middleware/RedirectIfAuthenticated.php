@@ -22,6 +22,11 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 if ($guard === 'institute') {
+                    $user = Auth::guard('institute')->user();
+                    if (!$user->email_verified_at || !$user->isProfileComplete()) {
+                        // Let them hit the controller which handles partial states better
+                        return $next($request);
+                    }
                     return redirect()->route('institute.dashboard');
                 }
                 return redirect(RouteServiceProvider::HOME);

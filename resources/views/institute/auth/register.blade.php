@@ -248,6 +248,7 @@
 
         .footer-text { text-align: center; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #f1f5f9; }
         .footer-text p { font-size: 0.7rem; font-weight: 600; color: #94a3b8; }
+        .footer-text a { color: #FF6B00; text-decoration: none; font-weight: 800; cursor: pointer; position: relative; z-index: 102; }
         
         .success-checkmark {
             width: 50px;
@@ -336,8 +337,8 @@
                         <div class="loader"></div>
                     </button>
                 </form>
-                <div class="footer-text">
-                    <p>Have an account? <a href="{{ route('institute.login') }}">Log In</a></p>
+                <div class="footer-text" style="position: relative; z-index: 100;">
+                    <p>Have an account? <a href="{{ route('institute.login') }}" style="color: #FF6B00; text-decoration: none; font-weight: 800; position: relative; z-index: 101;">Log In</a></p>
                 </div>
             </div>
 
