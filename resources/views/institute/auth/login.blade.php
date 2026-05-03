@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Institute Login - FeeEasy</title>
+    <title>Institute Login - Tuoora</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,7 +47,7 @@
         .login-card {
             background: #ffffff;
             border-radius: 1.5rem;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
             border: 1px solid #f1f5f9;
             text-align: center;
@@ -57,7 +57,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.2rem;
         }
 
         .logo-box img {
@@ -81,7 +81,7 @@
             color: #FF6B00;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .form-group {
@@ -238,7 +238,7 @@
                 <div class="logo-box">
                     <img src="{{ asset('images/turooa.png') }}" alt="Logo">
                 </div>
-                <h1>FeeEasy</h1>
+                <!-- <h1>Tuoora</h1> -->
                 <p>Management System</p>
             </div>
 
@@ -274,7 +274,7 @@
                         <input type="checkbox" name="remember">
                         <span>Remember Me</span>
                     </label>
-                    <a href="#" class="forgot-link">Forgot Password?</a>
+                    <a href="{{ route('institute.password.request') }}" class="forgot-link">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="submit-btn">
