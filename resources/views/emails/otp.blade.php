@@ -3,7 +3,7 @@
 
 Hello,
 
-Thank you for registering with **FeeEasy**. Please use the following code to verify your account and access your dashboard:
+Thank you for registering with **Tuoora**. Please use the following code to verify your account and access your dashboard:
 
 <x-mail::panel>
 # {{ $otp }}

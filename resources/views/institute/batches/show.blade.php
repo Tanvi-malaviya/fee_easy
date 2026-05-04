@@ -4,10 +4,10 @@
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
     <div class="max-w-[1400px] mx-auto pb-4 px-4 sm:px-6">
         <!-- Breadcrumb & Actions -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2 mt-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2 mt-3">
             <div>
                 <a href="{{ route('institute.batches.index') }}"
-                    class="inline-flex items-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] hover:text-blue-600 transition-colors group mb-3">
+                    class="inline-flex items-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] hover:text-blue-600 transition-colors group mb-1">
                     <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
@@ -15,7 +15,7 @@
                     Back to Batches
                 </a>
                 <div class="flex items-center gap-4">
-                    <h1 id="batch-name-heading" class="text-3xl md:text-4xl font-bold text-slate-700 tracking-tight">Loading
+                    <h1 id="batch-name-heading" class="text-3xl md:text-3xl font-medium text-slate-700 tracking-tight">Loading
                         Batch...</h1>
                 </div>
                 <p class="text-sm font-bold text-slate-400 mt-2 flex items-center gap-2">

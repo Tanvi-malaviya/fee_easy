@@ -59,6 +59,12 @@ Route::prefix('institute')->name('institute.')->group(function () {
     // Authenticated Routes
     Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
 
+    // Password Reset Routes
+    Route::get('/forgot-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resetPassword'])->name('password.update');
+
     Route::middleware('auth:institute')->group(function () {
         // Step 3: Setup Profile
         Route::post('/setup-profile', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'setupProfile'])->name('setup-profile');

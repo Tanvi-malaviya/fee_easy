@@ -275,4 +275,77 @@ class InstituteAuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('institute.login');
     }
+
+    /**
+     * Show Forgot Password Form
+     */
+    public function showForgotPassword()
+    {
+        return view('institute.auth.forgot-password');
+    }
+
+    /**
+     * Send Reset Link (Using OTP for simplicity like registration)
+     */
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:institutes,email']);
+        
+        $otp = rand(100000, 999999);
+        Session::put('reset_email', $request->email);
+        Session::put('reset_otp', $otp);
+        Session::put('reset_otp_expires_at', Carbon::now()->addMinutes(15));
+        Session::save();
+        
+        try {
+            Mail::raw("Your Tuoora password reset code is: $otp", function($message) use ($request) {
+                $message->to($request->email)->subject('Password Reset Code - Tuoora');
+            });
+            return response()->json(['status' => 'success', 'message' => 'OTP sent to your email.']);
+        } catch (\Exception $e) {
+            Log::error('Password Reset Mail Error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to send email.'], 500);
+        }
+    }
+
+    /**
+     * Show Reset Password Form
+     */
+    public function showResetPassword(Request $request, $token = null)
+    {
+        return view('institute.auth.reset-password');
+    }
+
+    /**
+     * Handle Password Reset
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if (!Session::has('reset_email') || !Session::has('reset_otp')) {
+            return response()->json(['status' => 'error', 'message' => 'Session expired.'], 400);
+        }
+
+        if (Carbon::now()->greaterThan(Session::get('reset_otp_expires_at'))) {
+            return response()->json(['status' => 'error', 'message' => 'OTP expired.'], 400);
+        }
+
+        if ($request->otp != Session::get('reset_otp')) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid code.'], 400);
+        }
+
+        $institute = Institute::where('email', Session::get('reset_email'))->first();
+        if ($institute) {
+            $institute->update(['password' => Hash::make($request->password)]);
+            Session::forget(['reset_email', 'reset_otp', 'reset_otp_expires_at']);
+            Session::save();
+            return response()->json(['status' => 'success', 'message' => 'Password reset successfully.']);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
+    }
 }

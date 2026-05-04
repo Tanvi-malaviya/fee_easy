@@ -3,12 +3,12 @@
 @section('content')
     <div class="max-w-6xl mx-auto">
         <form action="{{ route('institute.students.update', $student->id) }}" method="POST" enctype="multipart/form-data"
-            class="space-y-3 pt-2">
+            class="space-y-2">
             @csrf
             @method('PUT')
 
             <!-- Basic Information & Identity -->
-            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-4">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-3">
                 <div class="flex flex-col lg:flex-row gap-5">
                     <!-- Photo Column -->
                     <div class="flex flex-col items-center flex-none">

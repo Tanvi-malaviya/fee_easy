@@ -366,7 +366,8 @@
                     </button>
                 </form>
                 <div class="footer-text">
-                    <p>Didn't receive? <a href="javascript:void(0)" onclick="resendOtp()">Resend OTP</a></p>
+                    <p>Didn't receive? <a href="javascript:void(0)" id="resendLink" onclick="resendOtp()">Resend OTP</a></p>
+                    <span id="resendStatus" style="font-size: 0.6rem; margin-top: 0.25rem; display: block;"></span>
                 </div>
             </div>
 
@@ -544,6 +545,14 @@
         });
 
         async function resendOtp() {
+            const link = document.getElementById('resendLink');
+            const status = document.getElementById('resendStatus');
+            
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+            status.innerText = 'Sending...';
+            status.style.color = '#64748b';
+
             try {
                 const response = await fetch("{{ route('institute.resend-otp') }}", {
                     method: 'POST',
@@ -553,9 +562,34 @@
                     }
                 });
                 const data = await response.json();
-                alert(data.message);
+                
+                if (response.ok) {
+                    status.innerText = 'New OTP sent to your email!';
+                    status.style.color = '#22c55e';
+                    // Disable for 30 seconds
+                    let timeLeft = 30;
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            link.style.pointerEvents = 'auto';
+                            link.style.opacity = '1';
+                            status.innerText = '';
+                        } else {
+                            link.innerText = `Resend OTP (${timeLeft}s)`;
+                        }
+                    }, 1000);
+                } else {
+                    status.innerText = data.message || 'Failed to send OTP.';
+                    status.style.color = '#ef4444';
+                    link.style.pointerEvents = 'auto';
+                    link.style.opacity = '1';
+                }
             } catch (error) {
-                alert('Failed to resend OTP.');
+                status.innerText = 'Error sending OTP. Try again.';
+                status.style.color = '#ef4444';
+                link.style.pointerEvents = 'auto';
+                link.style.opacity = '1';
             }
         }
 

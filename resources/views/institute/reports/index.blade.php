@@ -626,9 +626,13 @@
                 <p class="text-xs font-medium text-slate-400 mt-0.5">Holistic assessment breakdown and tracking.</p>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="showToast('Generation is processing...', 'info')"
-                    class="px-3.5 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5">
-                    Generate Batch Report
+                <button onclick="exportPerformance()"
+                    class="px-3.5 py-2 bg-white border border-slate-100 text-slate-600 rounded-xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export PDF
                 </button>
             </div>
         </div>
@@ -1218,17 +1222,32 @@
             const calendarContainer = document.getElementById('calendar-days');
             if (calendarContainer) {
                 let html = '';
-                html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">28</div>`;
-                html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">29</div>`;
-                html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">30</div>`;
+                
+                let monthSelected = parseInt(document.getElementById('filter-att-month').value) || (new Date().getMonth() + 1);
+                let currentYear = new Date().getFullYear();
+                
+                // Calculate first day of the month (0=Sun, 1=Mon, ..., 6=Sat)
+                const firstDayDate = new Date(currentYear, monthSelected - 1, 1);
+                const firstDayIdx = firstDayDate.getDay(); 
+                
+                // Adjust offset for Mon-Sun grid
+                // Mon=0, Tue=1, ..., Sat=5, Sun=6
+                const offset = (firstDayIdx === 0) ? 6 : (firstDayIdx - 1);
+                
+                // Previous month days for padding
+                const prevMonthLastDate = new Date(currentYear, monthSelected - 1, 0).getDate();
+                for (let i = offset - 1; i >= 0; i--) {
+                    html += `<div class="bg-slate-50/60 text-slate-300 py-2.5 rounded-xl">${prevMonthLastDate - i}</div>`;
+                }
 
                 const dayStatusMap = {};
                 if (globalAttendanceData.attendance) {
                     globalAttendanceData.attendance.forEach(att => {
                         let dateStr = att.date || att.created_at || '';
                         if (dateStr) {
-                            let dayNum = parseInt(dateStr.split('-')[2]);
-                            if (!isNaN(dayNum)) {
+                            let dateObj = new Date(dateStr);
+                            if (dateObj.getMonth() + 1 === monthSelected) {
+                                let dayNum = dateObj.getDate();
                                 if (!dayStatusMap[dayNum]) dayStatusMap[dayNum] = { present: 0, absent: 0, leave: 0 };
                                 let st = (att.status || 'present').toLowerCase();
                                 if (st === 'present') dayStatusMap[dayNum].present++;
@@ -1239,19 +1258,10 @@
                     });
                 }
 
-                let monthSelected = parseInt(document.getElementById('filter-att-month').value);
-                let currentYear = new Date().getFullYear();
-                let daysInMonth = 30;
-                if (monthSelected > 0) {
-                    daysInMonth = new Date(currentYear, monthSelected, 0).getDate();
-                }
+                let daysInMonth = new Date(currentYear, monthSelected, 0).getDate();
 
                 for (let day = 1; day <= daysInMonth; day++) {
-                    let weekday = (day + 3) % 7;
-                    if (weekday === 0) weekday = 7;
-
                     let colorClass = 'bg-slate-50 text-slate-300';
-
                     if (dayStatusMap[day]) {
                         const counts = dayStatusMap[day];
                         if (counts.absent > 0 && counts.present === 0) {
@@ -1261,8 +1271,6 @@
                         } else {
                             colorClass = 'bg-orange-500 text-white shadow-sm';
                         }
-                    } else {
-                        colorClass = 'bg-slate-50 text-slate-300';
                     }
                     html += `<div class="${colorClass} py-2.5 rounded-xl">${day}</div>`;
                 }
@@ -1464,6 +1472,13 @@
             if (month) params.push(`month=${month}`);
             if (params.length > 0) url += `?${params.join('&')}`;
 
+            window.location.href = url;
+        }
+
+        function exportPerformance() {
+            const batchId = document.getElementById('filter-att-batch').value;
+            let url = `/api/v1/institute/reports/performance/export`;
+            if (batchId) url += `?batch_id=${batchId}`;
             window.location.href = url;
         }
     </script>

@@ -2,7 +2,7 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-6 pb-24 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto pt-2 pb-24 px-4 sm:px-6">
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-[#ff6600] transition-colors">Batches</a>
@@ -13,7 +13,7 @@
         </nav>
 
         <!-- Header & Date Picker -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
             <div>
                 <h1 id="header-batch-name" class="text-2xl font-bold text-slate-900 tracking-tight">Loading Batch...</h1>
                 <p id="header-batch-subject" class="text-xs font-semibold text-slate-400 mt-1">Fetching details...</p>

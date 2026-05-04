@@ -37,7 +37,7 @@
                     </button>
                 </div>
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <button
+                    <button onclick="exportBatches()"
                         class="h-10 px-4 bg-white border border-slate-100 text-slate-500 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-50 transition-all flex items-center gap-2">Export</button>
                     <button onclick="toggleFormView(true)"
                         class="h-10 px-5 bg-primary2 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:scale-[1.02] transition-transform flex items-center gap-2 whitespace-nowrap">
@@ -47,7 +47,7 @@
             </div>
 
             <div id="batch-grid"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 relative items-start">
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 relative items-start">
                 <div id="loading-spinner"
                     class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-[1rem]">
                     <div class="h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
@@ -226,6 +226,14 @@
             fetchBatches(1);
         }
 
+        function exportBatches() {
+            window.location.href = `${API_URL}/export?api_token=${CSRF_TOKEN}`; // If using token in URL or just a simple GET
+            // For Sanctum, a simple window.open might work if cookies are used, 
+            // or we might need to handle it via fetch if custom headers are needed.
+            // Since it's a GET request to a stream, window.open is easiest.
+            window.open(`${API_URL}/export`, '_blank');
+        }
+
         function renderBatches(items) {
             const container = document.getElementById('batch-grid');
             if (items.length === 0) {
@@ -270,7 +278,7 @@
                         <p class="text-[10px] font-bold text-slate-400 line-clamp-2 mb-4 leading-relaxed">${batch.description || 'No description provided.'}</p>
                         <div class="space-y-2 mb-4 text-slate-500">
                             <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-[10px] font-bold">${batch.start_time || '--'} - ${batch.end_time || '--'}</span></div>
-                            <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('<span class="text-slate-300">,</span>')}</div></div>
+                            <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('')}</div></div>
                         </div>
                         <div class="flex items-center justify-between mb-1.5">${statusBadge}<span class="text-[9px] font-bold text-slate-800">${studentsCount}/${maxCapacity} Students</span></div>
                         <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden"><div class="h-full bg-primary transition-all duration-500" style="width: ${progress}%"></div></div>
@@ -281,10 +289,11 @@
 
         function renderPagination(data) {
             const container = document.getElementById('pagination-container');
-            if (!data || data.total === 0) {
-                container.innerHTML = `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">No Batches Found</span>`;
+            if (!data || data.last_page <= 1) {
+                container.classList.add('hidden');
                 return;
             }
+            container.classList.remove('hidden');
 
             let html = `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Showing ${data.from || 0} to ${data.to || 0} of ${data.total} entries</span>`;
             html += `<div class="flex items-center gap-1">`;

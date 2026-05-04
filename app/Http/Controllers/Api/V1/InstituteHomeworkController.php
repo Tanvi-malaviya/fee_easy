@@ -27,7 +27,7 @@ class InstituteHomeworkController extends Controller
         $homeworks = $query->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
             ->with([
                 'batch' => function($q) {
-                    $q->select('id', 'name')->with('students:id,name,batch_id');
+                    $q->select('id', 'name')->withCount('students')->with('students:id,name,batch_id');
                 },
                 'submissions' => function ($q) {
                     $q->select('id', 'homework_id', 'student_id', 'score', 'status')
