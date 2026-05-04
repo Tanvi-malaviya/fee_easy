@@ -173,6 +173,7 @@ Route::prefix('v1')->group(function () {
 
             // Batch Management
             Route::prefix('batches')->group(function () {
+                Route::get('/export', [InstituteBatchController::class, 'export']);
                 Route::get('/', [InstituteBatchController::class, 'index']);
                 Route::post('/', [InstituteBatchController::class, 'store']);
                 Route::get('/{id}', [InstituteBatchController::class, 'show']);

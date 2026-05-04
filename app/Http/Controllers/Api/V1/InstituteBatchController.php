@@ -7,6 +7,8 @@ use App\Models\Batch;
 use App\Models\Institute;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class InstituteBatchController extends Controller
 {
     /**
@@ -31,7 +33,8 @@ class InstituteBatchController extends Controller
             });
         }
 
-        $batches = $query->get();
+        $perPage = 10;
+        $batches = $query->paginate($perPage);
 
         // Calculate total paid and expected for each batch
         foreach ($batches as $batch) {
@@ -43,11 +46,13 @@ class InstituteBatchController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
-                'items' => $batches,
-                'total' => $batches->count(),
-                'current_page' => 1,
-                'last_page' => 1,
-                'per_page' => $batches->count(),
+                'items' => $batches->items(),
+                'total' => $batches->total(),
+                'current_page' => $batches->currentPage(),
+                'last_page' => $batches->lastPage(),
+                'per_page' => $batches->perPage(),
+                'from' => $batches->firstItem(),
+                'to' => $batches->lastItem(),
             ]
         ]);
     }
@@ -204,6 +209,20 @@ class InstituteBatchController extends Controller
             'status' => 'success',
             'message' => 'Batch deleted successfully'
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $batches = Batch::where('institute_id', $request->user()->id)
+            ->withCount('students')
+            ->get();
+
+        $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches'));
+        return $pdf->download('batches_report_' . date('Y-m-d') . '.pdf');
     }
 
     public function removeStudent(Request $request, $id)

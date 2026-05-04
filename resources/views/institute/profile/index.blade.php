@@ -142,7 +142,7 @@
                         <span id="badge-sub-status" class="text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100">
                             Active Plan
                         </span>
-                        <h3 id="plan-title" class="text-xl font-[550] text-slate-800 tracking-tight mt-2">Loading Plan...</h3>
+                        <h3 id="plan-title" class="text-xl font-[550] text-slate-800 tracking-tight mt-2">Active Subscription</h3>
                         <p id="plan-tier" class="text-[11px] text-slate-400 font-medium mt-0.5">Tier: Standard</p>
                     </div>
                     <div class="h-10 w-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">

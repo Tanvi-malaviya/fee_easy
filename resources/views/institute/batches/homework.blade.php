@@ -58,7 +58,7 @@
         </div>
 
         <!-- Homework Grid -->
-        <div id="homework-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div id="homework-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             <!-- Loading State -->
             <div class="col-span-full py-32 text-center">
                 <div class="inline-block h-10 w-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin">
@@ -390,39 +390,39 @@
                 const randomIcon = icons[hw.id % icons.length];
 
                 return `
-                                    <div class="group bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-300 relative cursor-pointer flex flex-col" onclick="window.location.href='/institute/batches/${BATCH_ID}/homework/${hw.id}'">
-                                        <div class="flex items-start justify-between mb-3">
-                                            <div class="h-9 w-9 rounded-xl ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
+                                    <div class="group bg-white rounded-2xl border border-slate-100 p-3 hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-300 relative cursor-pointer flex flex-col" onclick="window.location.href='/institute/batches/${BATCH_ID}/homework/${hw.id}'">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="h-8 w-8 rounded-xl ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
                                             </div>
-                                            <span class="px-2 py-0.5 ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} rounded text-[8px] font-black uppercase tracking-wider">
+                                            <span class="px-2 py-0.5 ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} rounded text-[7px] font-black uppercase tracking-wider">
                                                 ${isActive ? 'Active' : 'Closed'}
                                             </span>
                                         </div>
 
-                                        <h4 class="text-[13px] font-black text-slate-800 leading-tight mb-1 truncate" title="${hw.title}">${hw.title}</h4>
-                                        <p class="text-[10px] font-bold text-slate-400 mb-4 truncate uppercase tracking-tight">${currentBatch.name}</p>
+                                        <h4 class="text-[12px] font-black text-slate-800 leading-tight mb-0.5 truncate" title="${hw.title}">${hw.title}</h4>
+                                        <p class="text-[9px] font-bold text-slate-400 mb-3 truncate uppercase tracking-tight">${currentBatch.name}</p>
 
-                                        <div class="space-y-3 mt-auto">
+                                        <div class="space-y-2 mt-auto">
                                             <div class="flex items-center justify-between">
-                                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Due</p>
-                                                <p class="text-[10px] font-black text-slate-700">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Due</p>
+                                                <p class="text-[9px] font-black text-slate-700">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                                             </div>
 
                                             <div>
-                                                <div class="flex items-center justify-between mb-1.5">
-                                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Submissions</p>
-                                                    <p class="text-[10px] font-black text-slate-800">${submissions}/${total}</p>
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Submissions</p>
+                                                    <p class="text-[9px] font-black text-slate-800">${submissions}/${total}</p>
                                                 </div>
-                                                <div class="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                                                <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
                                                     <div class="h-full ${isActive ? 'bg-[#ff6600]' : 'bg-slate-400'} rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
                                                 </div>
                                             </div>
 
                                             <div class=" flex items-center justify-between">
-                                                 <p class="text-[9px] font-black ${isActive ? 'text-[#ff6600]' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
-                                                 <div class="h-6 w-6 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
+                                                 <p class="text-[8px] font-black ${isActive ? 'text-[#ff6600]' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
+                                                 <div class="h-5 w-5 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                                                  </div>
                                             </div>
                                         </div>
