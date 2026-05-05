@@ -19,26 +19,49 @@ Route::get('/', function () {
 });
 
 // Admin Web Panel Routes (Jetstream/Auth)
-Route::middleware([
+Route::middleware(array_filter([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-])->group(function () {
+]))->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('admin')->group(function () {
+        // Institutes Management
+        Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
+        Route::post('institutes/{institute}/status', [App\Http\Controllers\Web\InstituteController::class, 'updateStatus'])->name('institutes.status');
+
+        // Subscription Management
+        Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
+        Route::post('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
+
+        // Plan Management
+        Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
+
+        // Revenue Analysis
+        Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
+        Route::post('revenue/manual-payment', [App\Http\Controllers\Web\RevenueController::class, 'storeManualPayment'])->name('revenue.store_manual');
+
+        // Broadcast Center
+        Route::get('broadcast', [App\Http\Controllers\Web\BroadcastController::class, 'index'])->name('broadcast.index');
+        Route::post('broadcast/send', [App\Http\Controllers\Web\BroadcastController::class, 'send'])->name('broadcast.send');
+
+        // WhatsApp Management
+        Route::get('whatsapp', [App\Http\Controllers\Web\WhatsAppController::class, 'index'])->name('whatsapp.index');
+        Route::post('whatsapp/{institute}/update', [App\Http\Controllers\Web\WhatsAppController::class, 'update'])->name('whatsapp.update');
+        Route::post('whatsapp/{institute}/verify', [App\Http\Controllers\Web\WhatsAppController::class, 'verify'])->name('whatsapp.verify');
+
         // App Settings
         Route::get('settings', [App\Http\Controllers\Web\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings/update', [App\Http\Controllers\Web\SettingController::class, 'update'])->name('settings.update');
 
         // Activity Monitoring
         Route::get('activities', [App\Http\Controllers\Web\ActivityController::class, 'index'])->name('activity.index');
-    });
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Profile Management
+        Route::get('profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 });
 
@@ -71,9 +94,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
         Route::middleware('verified_institute')->group(function () {
             Route::get('/profile', function () {
-                return view('institute.profile.index'); })->name('profile.index');
+                return view('institute.profile.index');
+            })->name('profile.index');
             Route::get('/profile/edit', function () {
-                return view('institute.profile.edit'); })->name('profile.edit');
+                return view('institute.profile.edit');
+            })->name('profile.edit');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
@@ -133,4 +158,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
             });
         });
     });
+});
+
+Route::prefix('admin')->group(function () {
+    require __DIR__.'/auth.php';
 });

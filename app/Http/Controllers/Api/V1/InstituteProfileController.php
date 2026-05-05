@@ -94,6 +94,7 @@ class InstituteProfileController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Profile updated successfully',
+            'is_profile_setup' => true,
             'data' => $institute
         ]);
     }
