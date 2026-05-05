@@ -49,11 +49,15 @@ use App\Http\Controllers\Api\V1\InstituteLeadController;
 use App\Http\Controllers\Api\V1\InstituteProfileController;
 use App\Http\Controllers\Api\V1\PublicVerificationController;
 
+use App\Http\Controllers\Api\DemoRequestController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes - Version 1 (v1)
 |--------------------------------------------------------------------------
 */
+
+Route::post('/book-demo', [DemoRequestController::class, 'store']);
 
 Route::prefix('v1')->group(function () {
 

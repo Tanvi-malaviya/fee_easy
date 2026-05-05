@@ -266,25 +266,38 @@
             <!-- Logo -->
             <div class="h-20 flex items-center border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-10 transition-all duration-300"
                 :class="sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-4'">
-                
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 overflow-hidden">
-                    <div class="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg shadow-indigo-500/10 border border-gray-800 shrink-0">
+
+                <a href="{{ route('dashboard') }}"
+                    class="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 overflow-hidden">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg shadow-indigo-500/10 border border-gray-800 shrink-0">
                         <img src="{{ url('assets/images/logo.png') }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
-                    <div x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0 -translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col">
-                        <span class="text-sm font-black text-white tracking-tight leading-none uppercase">{{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}</span>
-                        <span class="text-[8px] font-bold text-indigo-400 uppercase tracking-[0.3em] mt-1">Management</span>
+                    <div x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-300 delay-100"
+                        x-transition:enter-start="opacity-0 -translate-x-2"
+                        x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col">
+                        <span
+                            class="text-sm font-black text-white tracking-tight leading-none uppercase">{{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}</span>
+                        <span
+                            class="text-[8px] font-bold text-indigo-400 uppercase tracking-[0.3em] mt-1">Management</span>
                     </div>
                 </a>
 
                 <!-- Desktop Collapse Button (Only visible when expanded) -->
-                <button @click="toggleCollapse()" x-show="!sidebarCollapsed" class="hidden lg:block text-gray-500 hover:text-white transition-colors p-1 hover:bg-gray-800 rounded-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+                <button @click="toggleCollapse()" x-show="!sidebarCollapsed"
+                    class="hidden lg:block text-gray-500 hover:text-white transition-colors p-1 hover:bg-gray-800 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                    </svg>
                 </button>
 
                 <!-- Small overlay button to expand when collapsed -->
-                <button @click="toggleCollapse()" x-show="sidebarCollapsed" class="absolute -right-3 top-7 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition lg:flex hidden border-2 border-gray-900 z-50">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7"></path></svg>
+                <button @click="toggleCollapse()" x-show="sidebarCollapsed"
+                    class="absolute -right-3 top-7 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition lg:flex hidden border-2 border-gray-900 z-50">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7"></path>
+                    </svg>
                 </button>
             </div>
 
@@ -408,12 +421,15 @@
                 <div class="space-y-1">
                     <a href="{{ route('profile.edit') }}" @click="handleNavigation()"
                         class="flex items-center px-4 py-2 text-[13px] font-medium {{ request()->routeIs('profile.edit') ? 'text-indigo-400 bg-indigo-500/10' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} rounded-lg transition-colors group relative overflow-hidden">
-                        <svg class="w-4 h-4 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <svg class="w-4 h-4 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">My Profile</span>
                         @if(request()->routeIs('profile.edit'))
-                            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-indigo-500 rounded-r-full"></div>
+                            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-indigo-500 rounded-r-full">
+                            </div>
                         @endif
                     </a>
 

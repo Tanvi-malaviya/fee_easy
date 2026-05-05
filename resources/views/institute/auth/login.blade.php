@@ -256,7 +256,7 @@
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
                     <div class="input-wrapper">
-                        <input type="email" name="email" required value="{{ old('email') }}" class="input-field" placeholder="admin@institute.com">
+                        <input type="email" name="email" required value="{{ $email ?? old('email') }}" class="input-field" placeholder="admin@institute.com">
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
                 </div>
@@ -264,14 +264,14 @@
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" required class="input-field" placeholder="••••••••">
+                        <input type="password" name="password" required value="{{ $password ?? '' }}" class="input-field" placeholder="••••••••">
                         <i class="fas fa-lock input-icon"></i>
                     </div>
                 </div>
 
                 <div class="options-row">
                     <label class="remember-me">
-                        <input type="checkbox" name="remember">
+                        <input type="checkbox" name="remember" {{ isset($remember) && $remember ? 'checked' : '' }}>
                         <span>Remember Me</span>
                     </label>
                     <a href="{{ route('institute.password.request') }}" class="forgot-link">Forgot Password?</a>
