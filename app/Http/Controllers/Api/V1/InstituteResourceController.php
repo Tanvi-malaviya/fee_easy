@@ -48,7 +48,7 @@ class InstituteResourceController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'file_type' => 'required|in:document,video,image',
-            'file' => 'required|file|max:51200', // Max 50MB
+            'file' => 'required|file|max:1024000', // Max 1GB (adjusted from 50MB)
         ]);
 
         $institute = $request->user();
