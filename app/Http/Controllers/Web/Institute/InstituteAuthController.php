@@ -26,7 +26,12 @@ class InstituteAuthController extends Controller
                 return redirect()->route('institute.dashboard');
             }
         }
-        return view('institute.auth.login');
+
+        $email = request()->cookie('institute_email');
+        $password = request()->cookie('institute_password');
+        $remember = $email ? true : false;
+
+        return view('institute.auth.login', compact('email', 'password', 'remember'));
     }
 
     /**
@@ -255,8 +260,19 @@ class InstituteAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::guard('institute')->attempt($credentials, $request->remember)) {
+        $remember = $request->boolean('remember');
+
+        if (Auth::guard('institute')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            if ($remember) {
+                \Illuminate\Support\Facades\Cookie::queue('institute_email', $request->email, 43200);
+                \Illuminate\Support\Facades\Cookie::queue('institute_password', $request->password, 43200);
+            } else {
+                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('institute_email'));
+                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('institute_password'));
+            }
+
             return redirect()->intended(route('institute.dashboard'));
         }
 

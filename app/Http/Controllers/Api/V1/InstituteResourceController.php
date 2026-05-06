@@ -47,7 +47,7 @@ class InstituteResourceController extends Controller
             'batch_id' => 'required|exists:batches,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file_type' => 'required|in:document,video,image',
+            'file_type' => 'nullable|in:document,video,image',
             'file' => 'required|file|max:1024000', // Max 1GB (adjusted from 50MB)
         ]);
 
@@ -55,6 +55,17 @@ class InstituteResourceController extends Controller
         
         if ($request->hasFile('file')) {
             $file = $request->file('file');
+            
+            // Auto-detect file type based on mime type
+            $mimeType = $file->getMimeType();
+            $fileType = 'document'; // Default
+            
+            if (str_starts_with($mimeType, 'video/')) {
+                $fileType = 'video';
+            } elseif (str_starts_with($mimeType, 'image/')) {
+                $fileType = 'image';
+            }
+
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('batch_resources', $filename, 'public');
             $size = round($file->getSize() / 1024 / 1024, 2) . ' MB';
@@ -65,7 +76,7 @@ class InstituteResourceController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'file_path' => $path,
-                'file_type' => $request->file_type,
+                'file_type' => $fileType,
                 'file_size' => $size,
             ]);
 
