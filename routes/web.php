@@ -155,6 +155,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Notifications
                 Route::get('/notifications', [App\Http\Controllers\Web\Institute\NotificationController::class, 'index'])->name('notifications.index');
+
+                // Staff Management
+                Route::get('/staff', [App\Http\Controllers\Web\Institute\StaffController::class, 'index'])->name('staff.index');
+                Route::post('/staff', [App\Http\Controllers\Web\Institute\StaffController::class, 'store'])->name('staff.store');
+                Route::delete('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'destroy'])->name('staff.destroy');
             });
         });
     });

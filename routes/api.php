@@ -42,7 +42,10 @@ use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
-use App\Http\Controllers\Api\V1\InstituteNoteController;
+use App\Http\Controllers\Api\V1\NoteController;
+use App\Http\Controllers\Api\V1\NoteCategoryController;
+use App\Http\Controllers\Api\V1\NoteChecklistController;
+use App\Http\Controllers\Api\V1\NoteImageController;
 use App\Http\Controllers\Api\V1\InstituteTeacherController;
 use App\Http\Controllers\Api\V1\InstituteExpenseController;
 use App\Http\Controllers\Api\V1\InstituteLeadController;
@@ -108,13 +111,22 @@ Route::prefix('v1')->group(function () {
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 
-            // Notes routes
+            // Clean Rich Notes Module
             Route::prefix('notes')->group(function () {
-                Route::get('/', [InstituteNoteController::class, 'index']);
-                Route::post('/', [InstituteNoteController::class, 'store']);
-                Route::put('/{id}', [InstituteNoteController::class, 'update']);
-                Route::delete('/{id}', [InstituteNoteController::class, 'destroy']);
+                Route::get('/', [NoteController::class, 'index']);
+                Route::post('/', [NoteController::class, 'store']);
+                Route::get('/{id}', [NoteController::class, 'show']);
+                Route::put('/{id}', [NoteController::class, 'update']);
+                Route::delete('/{id}', [NoteController::class, 'destroy']);
+                
+                // Actions
+                Route::post('/{id}/bookmark', [NoteController::class, 'bookmark']);
+                Route::post('/checklists/{id}/toggle', [NoteController::class, 'toggleChecklist']);
+                Route::delete('/checklists/{id}', [NoteController::class, 'destroyChecklist']);
             });
+
+            Route::get('/note-categories', [NoteCategoryController::class, 'index']);
+            Route::post('/note-categories', [NoteCategoryController::class, 'store']);
 
             // Teacher Management & Attendance
             Route::prefix('teachers')->group(function () {
@@ -128,8 +140,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/attendance', [InstituteTeacherController::class, 'markAttendance']);
             });
 
-            // Institute Expense
             Route::prefix('expenses')->group(function () {
+                Route::get('/dashboard', [InstituteExpenseController::class, 'dashboard']);
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
                 Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);

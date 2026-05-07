@@ -1,0 +1,108 @@
+/* Brand Colors and Variables */
+:root {
+    --brand-50: #fff7ed;
+    --brand-100: #ffedd5;
+    --brand-200: #fed7aa;
+    --brand-300: #fdba74;
+    --brand-400: #fb923c;
+    --brand-500: #f97316;
+    --brand-600: #ea580c;
+    --brand-700: #c2410c;
+    --brand-800: #A8440B; /* Core brand color */
+    --brand-900: #7c2d12;
+    
+    --primary: #FF6B00;
+}
+
+/* Brand Button (Primary Action) */
+.btn-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    white-space: nowrap;
+    background-color: var(--brand-800);
+    color: white !important;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(168, 68, 11, 0.15);
+}
+
+.btn-brand:hover {
+    background-color: var(--brand-900);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(168, 68, 11, 0.2);
+}
+
+.btn-brand:active {
+    transform: scale(0.96);
+}
+
+/* White Button (Secondary Action) */
+.btn-white {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    background-color: white;
+    color: #64748b; /* slate-500 */
+    border: 1px solid #f1f5f9; /* slate-100 */
+    border-radius: 0.75rem;
+}
+
+.btn-white:hover {
+    background-color: #f8fafc; /* slate-50 */
+    border-color: #e2e8f0;
+    color: #334155; /* slate-700 */
+}
+
+/* Sizes */
+.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.625rem; height: 2.25rem; }
+.btn-md { padding: 0.5rem 1.25rem; font-size: 0.75rem; height: 2.5rem; }
+.btn-lg { padding: 0.75rem 1.5rem; font-size: 0.875rem; height: 3rem; }
+
+/* Tab System */
+.tab-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-item {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.tab-item.active {
+    background-color: var(--brand-800);
+    color: white !important;
+    box-shadow: 0 4px 6px -1px rgba(168, 68, 11, 0.1);
+}
+
+.tab-item.inactive {
+    background-color: #f1f5f9;
+    color: #64748b !important;
+}
+
+.tab-item.inactive:hover {
+    background-color: #e2e8f0;
+    color: #475569 !important;
+}
