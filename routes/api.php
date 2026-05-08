@@ -253,6 +253,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('attendance')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'store']);
+                Route::delete('/{id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'destroy']);
                 Route::get('/export', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'export']);
             });
 

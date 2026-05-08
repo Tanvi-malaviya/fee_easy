@@ -15,7 +15,7 @@ class StaffAttendanceController extends Controller
     public function index(Request $request)
     {
         $instituteId = $request->user()->id;
-        $query = StaffAttendance::where('institute_id', $instituteId)->with('staff:id,full_name,employee_id');
+        $query = StaffAttendance::where('institute_id', $instituteId)->with(['staff:id,full_name,employee_id,staff_department_id', 'staff.department:id,name']);
 
         if ($request->has('date')) {
             $query->where('date', $request->date);
@@ -64,6 +64,10 @@ class StaffAttendanceController extends Controller
             'attendances.*.status' => 'required|in:Present,Absent,Half Day,Late,Holiday',
             'attendances.*.note' => 'nullable|string',
             'date' => 'required|date|before_or_equal:today'
+        ], [
+            'attendances.*.staff_id.required' => 'Please select a staff member.',
+            'date.required' => 'Attendance date is required.',
+            'date.before_or_equal' => 'Attendance date cannot be in the future.'
         ]);
 
         if ($validator->fails()) {
@@ -74,17 +78,33 @@ class StaffAttendanceController extends Controller
         $savedStaff = [];
 
         foreach ($request->attendances as $att) {
-            $attendance = StaffAttendance::updateOrCreate(
-                [
+            $attendance = null;
+            
+            // If ID is provided, try to find the specific record first
+            if (!empty($att['id'])) {
+                $attendance = StaffAttendance::where('institute_id', $instituteId)->find($att['id']);
+            }
+
+            if ($attendance) {
+                $attendance->update([
                     'staff_id' => $att['staff_id'],
                     'date' => $date,
-                    'institute_id' => $instituteId
-                ],
-                [
                     'status' => $att['status'],
                     'note' => $att['note'] ?? null
-                ]
-            );
+                ]);
+            } else {
+                $attendance = StaffAttendance::updateOrCreate(
+                    [
+                        'staff_id' => $att['staff_id'],
+                        'date' => $date,
+                        'institute_id' => $instituteId
+                    ],
+                    [
+                        'status' => $att['status'],
+                        'note' => $att['note'] ?? null
+                    ]
+                );
+            }
             
             // Get staff details for response
             $staff = $attendance->staff;
@@ -124,5 +144,21 @@ class StaffAttendanceController extends Controller
         ]);
 
         return $pdf->download('staff_attendance_' . date('Y-m-d') . '.pdf');
+    }
+    /**
+     * Remove the specified attendance record.
+     */
+    public function destroy(Request $request, $id)
+    {
+        $instituteId = $request->user()->id;
+        $attendance = StaffAttendance::where('institute_id', $instituteId)->find($id);
+
+        if (!$attendance) {
+            return response()->json(['status' => 'error', 'message' => 'Attendance record not found'], 404);
+        }
+
+        $attendance->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Attendance record deleted successfully']);
     }
 }

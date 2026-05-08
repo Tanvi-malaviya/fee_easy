@@ -29,8 +29,8 @@ class Staff extends Model
 
     public function getProfileUrlAttribute()
     {
-        return $this->profile_image 
-            ? url('storage/' . $this->profile_image) 
+        return $this->profile_image
+            ? url('storage/' . $this->profile_image)
             : null;
     }
 
@@ -47,5 +47,15 @@ class Staff extends Model
     public function department()
     {
         return $this->belongsTo(StaffDepartment::class, 'staff_department_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(StaffAttendance::class);
+    }
+
+    public function salaries()
+    {
+        return $this->hasMany(StaffSalary::class);
     }
 }

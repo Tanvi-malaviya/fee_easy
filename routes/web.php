@@ -159,6 +159,9 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 // Staff Management
                 Route::get('/staff', [App\Http\Controllers\Web\Institute\StaffController::class, 'index'])->name('staff.index');
                 Route::post('/staff', [App\Http\Controllers\Web\Institute\StaffController::class, 'store'])->name('staff.store');
+                Route::get('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'show'])->name('staff.show');
+                Route::get('/staff/{staff}/edit', [App\Http\Controllers\Web\Institute\StaffController::class, 'edit'])->name('staff.edit');
+                Route::put('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'update'])->name('staff.update');
                 Route::delete('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'destroy'])->name('staff.destroy');
             });
         });
@@ -166,5 +169,5 @@ Route::prefix('institute')->name('institute.')->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    require __DIR__.'/auth.php';
+    require __DIR__ . '/auth.php';
 });

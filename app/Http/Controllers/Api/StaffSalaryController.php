@@ -26,6 +26,14 @@ class StaffSalaryController extends Controller
             $query->where('year', $request->year);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('staff', function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('employee_id', 'like', "%{$search}%");
+            });
+        }
+
         $salaries = $query->orderBy('payment_date', 'desc')->paginate($request->get('per_page', 15));
 
         return response()->json([

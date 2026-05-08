@@ -25,7 +25,7 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $institute = Auth::guard('institute')->user();
-        
+
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:staff,email',
@@ -35,6 +35,12 @@ class StaffController extends Controller
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric|min:0',
             'profile_image' => 'nullable|image|max:2048',
+        ], [
+            'staff_role_id.required' => 'staff role is required',
+            'staff_department_id.required' => 'staff department is required',
+        ], [
+            'staff_role_id' => 'staff role',
+            'staff_department_id' => 'staff department',
         ]);
 
         $validated['institute_id'] = $institute->id;
@@ -70,9 +76,76 @@ class StaffController extends Controller
 
         $staff->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Staff member deleted successfully'
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Staff member deleted successfully'
+            ]);
+        }
+
+        return redirect()->route('institute.staff.index')->with('success', 'Staff member deleted successfully');
+    }
+
+    public function show($id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::with(['role', 'department', 'attendances', 'salaries'])
+            ->where('institute_id', $institute->id)
+            ->findOrFail($id);
+
+        return view('institute.staff.show', compact('staff'));
+    }
+
+    public function edit($id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+        $roles = StaffRole::where('institute_id', $institute->id)->get();
+        $departments = StaffDepartment::where('institute_id', $institute->id)->get();
+
+        return view('institute.staff.edit', compact('staff', 'roles', 'departments'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:staff,email,' . $id,
+            'phone' => 'nullable|string|max:20',
+            'staff_role_id' => 'required|exists:staff_roles,id',
+            'staff_department_id' => 'required|exists:staff_departments,id',
+            'employment_type' => 'required|in:Salary,Hourly',
+            'base_salary' => 'required|numeric|min:0',
+            'profile_image' => 'nullable|image|max:2048',
+        ], [
+            'staff_role_id.required' => 'staff role is required',
+            'staff_department_id.required' => 'staff department is required',
+        ], [
+            'staff_role_id' => 'staff role',
+            'staff_department_id' => 'staff department',
         ]);
+
+        if ($request->hasFile('profile_image')) {
+            if ($staff->profile_image) {
+                Storage::disk('public')->delete($staff->profile_image);
+            }
+            $path = $request->file('profile_image')->store('staff_profiles', 'public');
+            $validated['profile_image'] = $path;
+        }
+
+        $staff->update($validated);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Staff updated successfully',
+                'data' => $staff
+            ]);
+        }
+
+        return redirect()->route('institute.staff.show', $staff->id)->with('success', 'Staff updated successfully');
     }
 }

@@ -17,7 +17,7 @@ class StaffController extends Controller
     public function index(Request $request)
     {
         $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
-        
+
         if (!$instituteId) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
@@ -27,15 +27,20 @@ class StaffController extends Controller
         // Search by name or employee ID
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('full_name', 'like', "%$search%")
-                  ->orWhere('employee_id', 'like', "%$search%");
+                    ->orWhere('employee_id', 'like', "%$search%");
             });
         }
 
         // Filter by role
         if ($request->filled('role_id')) {
             $query->where('staff_role_id', $request->role_id);
+        }
+
+        // Filter by department
+        if ($request->filled('department_id')) {
+            $query->where('staff_department_id', $request->department_id);
         }
 
         $staff = $query->latest()->paginate($request->get('per_page', 10));
@@ -60,7 +65,7 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
-        
+
         if (!$instituteId) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
@@ -120,7 +125,7 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
-        
+
         if (!$instituteId) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
@@ -210,7 +215,7 @@ class StaffController extends Controller
     public function storeRole(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        
+
         $role = StaffRole::create([
             'name' => $request->name,
             'institute_id' => auth('institute')->id()

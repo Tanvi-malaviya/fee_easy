@@ -32,7 +32,7 @@
             @foreach($attendances as $att)
             <tr>
                 <td>{{ $att->date }}</td>
-                <td>{{ $att->staff->employee_id }}</td>
+                <td>{{ $att->staff->employee_id ?: 'STF-' . $att->staff->id }}</td>
                 <td>{{ $att->staff->full_name }}</td>
                 <td>{{ $att->status }}</td>
                 <td>{{ $att->note ?? '-' }}</td>

@@ -1,6 +1,45 @@
 @extends('layouts.institute')
 
 @section('content')
+    <style>
+        /* Hide number input spinners */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        /* Toast Notification Styles */
+        #toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            pointer-events: auto;
+            animation: toast-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
+        }
+
+        .toast-item.fade-out {
+            opacity: 0;
+            transform: translateX(20px) scale(0.95);
+        }
+
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateX(40px) scale(0.9); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+    </style>
     <div class="max-w-7xl mx-auto ">
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
@@ -11,9 +50,9 @@
 
 
         </div>
-        
+
         <!-- Navigation & Actions -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-1">
             <div class="flex items-center gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
                 <button onclick="switchTab('staff')" id="tab-staff"
                     class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all bg-[#A8440B] text-white shadow-lg shadow-amber-900/10">
@@ -29,99 +68,158 @@
                 </button>
             </div>
 
-            <div id="staff-actions">
-                <button onclick="openAddModal()"
-                    class="px-5 py-2 bg-[#A8440B] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:translate-y-[-1px] shadow-lg shadow-amber-900/10 active:scale-95 transition-all">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Staff
-                </button>
-            </div>
-            <div id="attendance-actions" class="hidden">
-                <button class="px-5 py-2 bg-[#A8440B] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:translate-y-[-1px] shadow-lg shadow-amber-900/10 active:scale-95 transition-all">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Log Attendance
-                </button>
-            </div>
+
+
         </div>
 
 
 
 
-    <!-- Staff Management View -->
-    <div id="staff-view">
-        <!-- Search & Filter Bar -->
-        <div class="bg-white rounded-2xl border border-slate-100 p-2 mb-8 flex flex-wrap items-center gap-2">
-            <div class="flex-1 min-w-[200px] relative group">
-                <input type="text" id="staff-search" placeholder="Search staff..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-medium focus:ring-2 focus:ring-brand-800/20 transition-all outline-none">
-                <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400 group-focus-within:text-brand-800 transition-colors"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        <!-- Staff Management View -->
+        <div id="staff-view">
+            <!-- Search & Filter Bar -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-2 mb-2 flex flex-wrap items-center gap-2">
+                <div class="flex-1 min-w-[300px] flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <input type="text" id="staff-search" placeholder="Search staff name or department..."
+                            class="w-full pl-10 pr-24 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:border-[#A8440B] transition-all outline-none">
+                        <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <button onclick="fetchStaff(1)"
+                            class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-[#A8440B] text-white rounded-lg text-[10px] font-bold hover:bg-[#8e3a09] transition-colors">
+                            Search
+                        </button>
+                    </div>
+
+                    <button onclick="openAddModal()"
+                        class="px-4 py-2.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:translate-y-[-1px] shadow-lg shadow-amber-900/10 active:scale-95 transition-all whitespace-nowrap shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Staff
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-visible flex-wrap">
+                    <!-- Custom Role Dropdown -->
+                    <div class="relative" id="role-dropdown-container">
+                        <button type="button" onclick="toggleCustomDropdown('role')" id="role-dropdown-btn"
+                            class="flex items-center justify-between gap-3 px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black text-slate-600 hover:border-[#A8440B] transition-all min-w-[130px]">
+                            <span id="selected-role-label">All Roles</span>
+                            <svg class="w-3 h-3 text-slate-400 transition-transform duration-200" id="role-chevron"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="role-dropdown-menu"
+                            class="absolute right-0 z-[100] mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                            <div class="py-1 max-h-60 overflow-y-auto no-scrollbar">
+                                <button type="button" onclick="selectCustomOption('role', '', 'All Roles')"
+                                    class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] transition-colors border-b border-slate-50 last:border-0">All
+                                    Roles</button>
+                                @foreach($roles as $role)
+                                    <button type="button"
+                                        onclick="selectCustomOption('role', '{{ $role->id }}', '{{ $role->name }}')"
+                                        class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] transition-colors border-b border-slate-50 last:border-0">{{ $role->name }}</button>
+                                @endforeach
+                            </div>
+                        </div>
+                        <input type="hidden" id="role-filter" value="">
+                    </div>
+
+                    <!-- Custom Department Dropdown -->
+                    <div class="relative" id="dept-dropdown-container">
+                        <button type="button" onclick="toggleCustomDropdown('dept')" id="dept-dropdown-btn"
+                            class="flex items-center justify-between gap-3 px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black text-slate-600 hover:border-[#A8440B] transition-all min-w-[150px]">
+                            <span id="selected-dept-label">All Departments</span>
+                            <svg class="w-3 h-3 text-slate-400 transition-transform duration-200" id="dept-chevron"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="dept-dropdown-menu"
+                            class="absolute right-0 z-[100] mt-2 w-56 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                            <div class="py-1 max-h-60 overflow-y-auto no-scrollbar">
+                                <button type="button" onclick="selectCustomOption('dept', '', 'All Departments')"
+                                    class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] transition-colors border-b border-slate-50 last:border-0">All
+                                    Departments</button>
+                                @foreach($departments as $dept)
+                                    <button type="button"
+                                        onclick="selectCustomOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                        class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] transition-colors border-b border-slate-50 last:border-0">{{ $dept->name }}</button>
+                                @endforeach
+                            </div>
+                        </div>
+                        <input type="hidden" id="dept-filter" value="">
+                    </div>
+                </div>
             </div>
 
-            <button id="search-btn" onclick="fetchStaff()"
-                class="px-5 py-2.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold hover:bg-[#8e3a09] transition-all shadow-sm">SEARCH</button>
-
-            <div class="h-8 w-px bg-slate-100 mx-2"></div>
-
-            <select id="role-filter" onchange="fetchStaff()"
-                class="bg-slate-50 border-none rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-brand-800/20 outline-none">
-                <option value="">Role: All</option>
-                @foreach ($roles as $role)
-                    <option value="{{ $role->id }}">{{ $role->name }}</option>
-                @endforeach
-            </select>
-
-            <button
-                class="px-5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                FILTERS
-            </button>
-        </div>
-
-        <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative min-h-[200px]">
-            <!-- Loading Spinner -->
-            <div id="loading-spinner"
-                class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
-                <div class="h-10 w-10 border-4 border-slate-100 border-t-brand-800 rounded-full animate-spin"></div>
+            <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative min-h-[200px]">
+                <!-- Loading Spinner -->
+                <div id="loading-spinner"
+                    class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
+                    <div class="h-10 w-10 border-4 border-slate-100 border-t-brand-800 rounded-full animate-spin"></div>
+                </div>
+                <!-- Dynamic Content -->
             </div>
-            <!-- Dynamic Content -->
-        </div>
 
-        <div id="pagination-container" class="mt-8"></div>
-    </div>
+            <div id="pagination-container" class="mt-8"></div>
+        </div>
 
         <!-- Attendance Management View -->
         <div id="attendance-view" class="hidden">
             <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
                 <!-- Table Header Actions -->
                 <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex-1 min-w-[300px] relative">
-                        <input type="text" placeholder="Search staff name or department..."
-                            class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-brand-800 transition-all">
-                        <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                    <div class="flex-1 min-w-[400px] flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <input type="text" id="attendance-search-input" placeholder="Search staff name or department..."
+                                class="w-full pl-10 pr-24 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-[#A8440B] transition-all">
+                            <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            Filter by Date
-                        </button>
-                        <button class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                            <button onclick="fetchAttendance(1)"
+                                class="absolute right-1.5 top-1 bottom-1 px-3 bg-[#A8440B] text-white rounded-md text-[10px] font-bold hover:bg-[#8e3a09] transition-colors">
+                                Search
+                            </button>
+                        </div>
+
+                        <button onclick="openAttendanceModal()"
+                            class="px-4 py-2 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Log Attendance
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <input type="date" id="attendance-filter-date" onchange="fetchAttendance()"
+                                class="absolute opacity-0 pointer-events-none">
+                            <button onclick="document.getElementById('attendance-filter-date').showPicker()"
+                                class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                                </svg>
+                                <span id="attendance-filter-label">Filter by Date</span>
+                            </button>
+                        </div>
+                        <button onclick="exportAttendance()"
+                            class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                             Export
                         </button>
@@ -129,53 +227,207 @@
                 </div>
 
                 <!-- Attendance Table -->
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto relative">
+                    <div id="attendance-loader"
+                        class="absolute inset-0 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center z-10">
+                        <div class="h-10 w-10 border-4 border-slate-100 border-t-[#A8440B] rounded-full animate-spin"></div>
+                    </div>
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/50">
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Staff Name</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Department</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Action</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Staff
+                                    Name</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    Department</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date
+                                </th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status
+                                </th>
+                                <th
+                                    class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
+                                    Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">JD</div>
-                                        <span class="text-xs font-bold text-slate-700">Julian Drumm</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-xs font-medium text-slate-500">EMP-2045</td>
-                                <td class="px-6 py-4 text-xs font-medium text-slate-500">Administrative Affairs</td>
-                                <td class="px-6 py-4 text-xs font-medium text-slate-500">Oct 24, 2024</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase tracking-wider">Present</span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <button class="p-1 hover:bg-slate-100 rounded transition-all text-slate-400">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                                    </button>
-                                </td>
-                            </tr>
+                        <tbody id="attendance-table-body" class="divide-y divide-slate-100">
+                            <!-- Dynamic Content -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Table Footer -->
-                <div class="p-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[10px] font-medium text-slate-400">Showing 1-10 of 1284 entries</span>
-                    <div class="flex items-center gap-2">
-                        <button class="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 hover:bg-slate-50">Previous</button>
-                        <button class="h-8 w-8 bg-[#A8440B] text-white rounded-lg text-[10px] font-bold">1</button>
-                        <button class="h-8 w-8 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-slate-100">2</button>
-                        <button class="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-slate-50">Next</button>
-                    </div>
+                <div id="attendance-pagination-container"
+                    class="p-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
+                    <!-- Dynamic Pagination -->
                 </div>
             </div>
+        </div>
+
+        <!-- Salary Management View -->
+        <div id="salary-view" class="hidden">
+            <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+                <!-- Table Header Actions -->
+                <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex-1 min-w-[400px] flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <input type="text" id="salary-search-input" placeholder="Search staff name..."
+                                class="w-full pl-10 pr-24 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:border-[#A8440B] transition-all outline-none">
+                            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <button onclick="fetchSalaries(1)"
+                                class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-[#A8440B] text-white rounded-lg text-[10px] font-bold hover:bg-[#8e3a09] transition-colors">
+                                Search
+                            </button>
+                        </div>
+
+                        <button onclick="openSalaryModal()"
+                            class="px-4 py-2.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Add Salary
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <input type="month" id="salary-filter-month" onchange="fetchSalaries()"
+                                class="absolute opacity-0 pointer-events-none">
+                            <button onclick="document.getElementById('salary-filter-month').showPicker()"
+                                class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                                </svg>
+                                <span id="salary-filter-label">Filter by Month</span>
+                            </button>
+                        </div>
+                        <button onclick="exportSalaries()"
+                            class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Salary Table -->
+                <div class="overflow-x-auto relative">
+                    <div id="salary-loader"
+                        class="absolute inset-0 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center z-10">
+                        <div class="h-10 w-10 border-4 border-slate-100 border-t-[#A8440B] rounded-full animate-spin"></div>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50">
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Staff
+                                    Name</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Employee
+                                    ID</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date
+                                </th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payment
+                                    Mode</th>
+                                <th
+                                    class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right">
+                                    Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salary-table-body" class="divide-y divide-slate-100">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer/Pagination -->
+                <div id="salary-pagination-container"
+                    class="p-4 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between">
+                    <!-- Pagination -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-[150] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[380px] bg-white rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <!-- Close Button -->
+            <button onclick="closeDeleteModal()"
+                class="absolute top-3 right-3 h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all z-10">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="p-5">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="h-12 w-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center shrink-0 border border-rose-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 tracking-tight">Delete Staff</h3>
+                        <p class="text-[11px] font-semibold text-rose-600">Irreversible Action</p>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                    Are you sure you want to delete the staff member "<span id="delete-staff-name"
+                        class="font-bold text-slate-900"></span>"?
+                </p>
+
+                <!-- Data Loss Warning Box -->
+                <div class="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
+                    <p class="text-[10px] font-bold text-slate-500 mb-2">Data to be permanently lost:</p>
+                    <ul class="space-y-1.5">
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Attendance records and history
+                        </li>
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Salary and payment documentation
+                        </li>
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Profile data and portal access
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button id="confirm-delete-btn" onclick="confirmDeleteStaff()"
+                        class="flex-1 py-3 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 active:scale-[0.98]">
+                        Delete Staff
+                    </button>
+                    <button onclick="closeDeleteModal()"
+                        class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all active:scale-[0.98]">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+
         </div>
     </div>
 
@@ -230,28 +482,65 @@
                             <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Full Name</label>
                             <input type="text" name="full_name" id="field-name" required placeholder="e.g. Jonathan Smith"
                                 class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
+                            <span id="error-full_name" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Role</label>
-                                <select name="staff_role_id" id="field-role" required
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all appearance-none cursor-pointer">
-                                    <option value="">Select Role</option>
-                                    @foreach($roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="relative group" id="modal-role-dropdown">
+                                    <button type="button" onclick="toggleModalSelect('role')" id="modal-role-btn"
+                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
+                                        <span id="modal-role-label">Select Role</span>
+                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div id="modal-role-menu"
+                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                            @foreach($roles as $role)
+                                                <button type="button"
+                                                    onclick="selectModalOption('role', '{{ $role->id }}', '{{ $role->name }}')"
+                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                    {{ $role->name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="staff_role_id" id="field-role" required>
+                                </div>
+                                <span id="error-staff_role_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
-                                <select name="staff_department_id" id="field-dept" required
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all appearance-none cursor-pointer">
-                                    <option value="">Select Department</option>
-                                    @foreach($departments as $dept)
-                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="relative group" id="modal-dept-dropdown">
+                                    <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
+                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
+                                        <span id="modal-dept-label">Select Department</span>
+                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div id="modal-dept-menu"
+                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                            @foreach($departments as $dept)
+                                                <button type="button"
+                                                    onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                    {{ $dept->name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="staff_department_id" id="field-dept" required>
+                                </div>
+                                <span id="error-staff_department_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                         </div>
 
@@ -260,6 +549,7 @@
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Email Address</label>
                                 <input type="email" name="email" id="field-email" required placeholder="j.smith@company.com"
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
+                                <span id="error-email" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Phone Number</label>
@@ -277,14 +567,17 @@
                                         <input type="radio" name="employment_type" id="employment-salary" value="Salary"
                                             checked class="hidden peer">
                                         <div
-                                            class="py-1.5 rounded-md text-[10px] font-bold text-slate-500 peer-checked:bg-white peer-checked:text-brand-800 peer-checked:shadow-sm transition-all text-center">
+                                            class="py-1.5 rounded-md text-[10px] font-bold text-slate-500 peer-checked:bg-white 
+                                                    peer-checked:text-[#A8440B]
+                                                    peer-checked:text-brand-800 peer-checked:shadow-sm transition-all text-center">
                                             Salary</div>
                                     </label>
                                     <label class="flex-1 cursor-pointer">
                                         <input type="radio" name="employment_type" id="employment-hourly" value="Hourly"
                                             class="hidden peer">
-                                        <div
-                                            class="py-1.5 rounded-md text-[10px] font-bold text-slate-500 peer-checked:bg-white peer-checked:text-brand-800 peer-checked:shadow-sm transition-all text-center">
+                                        <div class="py-1.5 rounded-md text-[10px] font-bold text-slate-500 peer-checked:bg-white 
+                                                    peer-checked:text-[#A8440B]
+                                                                peer-checked:shadow-sm transition-all text-center">
                                             Hourly</div>
                                     </label>
                                 </div>
@@ -315,6 +608,296 @@
         </div>
     </div>
 
+    <!-- Log Attendance Modal -->
+    <div id="log-attendance-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAttendanceModal()">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[380px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-6 pt-3 pb-1 flex items-center justify-between border-b border-slate-50">
+                <h1 class="text-base font-bold text-slate-800 tracking-tight">Log Attendance</h1>
+                <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-6 pb-6">
+                <form id="log-attendance-form" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="id" id="attendance-id-input">
+                    <!-- Select Staff Member -->
+                    <div class="relative" id="attendance-staff-dropdown-container">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Select
+                            Staff Member</label>
+                        <input type="hidden" name="staff_id" id="attendance-staff-select">
+                        <div id="attendance-staff-trigger" onclick="toggleStaffDropdown()"
+                            class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:border-[#A8440B] outline-none transition-all cursor-pointer text-slate-700 flex items-center justify-between group">
+                            <span id="attendance-staff-label" class="text-slate-400">Choose a staff member...</span>
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-[#A8440B] transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div id="attendance-staff-menu"
+                            class="absolute left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-[110] hidden overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div class="p-2 border-b border-slate-50">
+                                <input type="text" id="attendance-staff-search" placeholder="Search staff..."
+                                    oninput="filterStaffOptions()"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border-none rounded-lg text-xs outline-none focus:ring-0 placeholder:text-slate-300">
+                            </div>
+                            <div id="attendance-staff-options" class="max-h-[180px] overflow-y-auto py-1 custom-scrollbar">
+                                <!-- Options will be rendered here -->
+                                <div class="px-4 py-2 text-xs text-slate-400">Loading staff...</div>
+                            </div>
+                        </div>
+                        <span id="error-attendance-staff" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                    </div>
+
+                    <!-- Select Date -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Select
+                            Date</label>
+                        <div class="relative">
+                            <input type="date" name="date" id="attendance-date" required value="{{ date('Y-m-d') }}"
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:border-[#A8440B] outline-none transition-all text-slate-700">
+                            <span id="error-attendance-date" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Status -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Attendance
+                            Status</label>
+                        <div class="flex gap-3">
+                            <input type="hidden" name="status" id="attendance-status-input" value="Present">
+                            <button type="button" onclick="setAttendanceStatus('Present')" id="status-present-btn"
+                                class="flex-1 py-3 px-4 rounded-xl border-2 border-[#A8440B] bg-orange-50 text-[#A8440B] text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Present
+                            </button>
+                            <button type="button" onclick="setAttendanceStatus('Absent')" id="status-absent-btn"
+                                class="flex-1 py-3 px-4 rounded-xl border-2 border-slate-100 text-slate-400 text-xs font-bold flex items-center justify-center gap-2 transition-all hover:bg-slate-50">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Absent
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div>
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Additional
+                            Notes</label>
+                        <textarea name="note" id="attendance-note" placeholder="Any comments or reasons for absence..."
+                            class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:border-[#A8440B] outline-none transition-all placeholder:text-slate-300 min-h-[80px] resize-none text-slate-700"></textarea>
+                    </div>
+
+                    <!-- Log Button -->
+                    <div class="pt-1">
+                        <button type="submit" id="log-attendance-btn"
+                            class="w-full py-3.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7m-14 0l4 4L19 7" />
+                            </svg>
+                            Log Attendance
+                        </button>
+                        <button type="button" onclick="closeAttendanceModal()"
+                            class="w-full mt-3 text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors text-center">
+                            Cancel and close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Salary Modal -->
+    <div id="salary-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeSalaryModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row transition-all scale-95 opacity-0 duration-300"
+                id="salary-modal-content">
+
+                <!-- Left Section: Form -->
+                <div class="flex-1 p-6 md:p-8 border-r border-slate-100">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800" id="salary-modal-title">Add Salary</h3>
+                            <p class="text-slate-400 text-xs mt-1">Record a new salary payment for your staff.</p>
+                        </div>
+                        <button onclick="closeSalaryModal()"
+                            class="text-slate-400 hover:text-slate-600 transition-all p-2 hover:bg-slate-50 rounded-lg md:hidden">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form id="salary-form" class="space-y-5">
+                        @csrf
+                        <input type="hidden" name="salary_id" id="salary_id_input">
+
+                        <!-- Staff Member -->
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Select Staff
+                                Member</label>
+                            <div class="relative" id="salary-staff-dropdown-container">
+                                <button type="button" onclick="toggleSalaryStaffDropdown()" id="salary-staff-selector"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 hover:border-[#A8440B] transition-all">
+                                    <span id="selected-salary-staff-name" class="text-slate-400">Choose a staff
+                                        member...</span>
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                                        id="salary-staff-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <input type="hidden" name="staff_id" id="salary_staff_id_input">
+
+                                <div id="salary-staff-dropdown"
+                                    class="absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="p-2 border-b border-slate-50">
+                                        <input type="text" id="salary-staff-search" placeholder="Search staff..."
+                                            oninput="filterSalaryStaffOptions(this.value)"
+                                            class="w-full px-3 py-2 bg-slate-50 border-none rounded-lg text-xs outline-none focus:ring-1 focus:ring-[#A8440B]/20">
+                                    </div>
+                                    <div class="max-h-48 overflow-y-auto custom-scrollbar" id="salary-staff-options">
+                                        <!-- Options injected via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Payment
+                                    Date</label>
+                                <input type="date" name="payment_date" id="salary_payment_date"
+                                    onchange="updateSalaryPreview()"
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#A8440B] transition-all">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Salary
+                                    Amount</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-2.5 text-slate-400 text-xs">$</span>
+                                    <input type="number" name="base_salary" id="salary_base_amount"
+                                        oninput="updateSalaryPreview()" placeholder="0.00"
+                                        class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#A8440B] transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Payment
+                                Method</label>
+                            <div class="flex p-1 bg-slate-100 rounded-xl gap-1">
+                                <button type="button" onclick="setSalaryMethod('Cash')" id="salary-method-cash"
+                                    class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 bg-white text-[#A8440B] shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    Cash
+                                </button>
+                                <button type="button" onclick="setSalaryMethod('Online')" id="salary-method-online"
+                                    class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-2 text-slate-500 hover:text-[#A8440B]">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    Online
+                                </button>
+                                <input type="hidden" name="payment_method" id="salary_payment_method_input" value="Cash">
+                                <input type="hidden" name="status" id="salary_status_input" value="Paid">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Notes</label>
+                            <textarea name="note" id="salary_note" rows="3"
+                                placeholder="Add any special remarks or bonus details..."
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#A8440B] transition-all resize-none"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Section: Summary -->
+                <div class="w-full md:w-[320px] bg-slate-50 p-6 md:p-8 flex flex-col">
+                    <div class="flex items-center justify-between mb-8">
+                        <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Review Summary</h4>
+                        <button onclick="closeSalaryModal()"
+                            class="text-slate-400 hover:text-slate-600 transition-all hidden md:block">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6">
+                        <div class="space-y-3 mb-5 border-b border-slate-100 pb-5">
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400 font-medium">Base Salary</span>
+                                <span class="text-slate-800 font-bold" id="preview-base-salary">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400 font-medium">Deductions</span>
+                                <span class="text-rose-500 font-bold" id="preview-deductions">-$0.00</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total
+                                Disbursement</span>
+                            <div class="text-3xl font-black text-[#A8440B]" id="preview-total-disbursement">$0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex gap-3 mb-auto">
+                        <div class="shrink-0 text-emerald-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <p class="text-[10px] text-emerald-800 font-medium leading-relaxed">
+                            This record will be synced with the <strong>Internal Audit</strong> logs immediately upon
+                            saving.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 space-y-3">
+                        <button onclick="saveSalaryRecord()" id="save-salary-btn"
+                            class="w-full py-3.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            Save Salary Record
+                        </button>
+                        <button onclick="closeSalaryModal()"
+                            class="w-full py-3 text-slate-400 hover:text-slate-600 text-xs font-bold transition-all">
+                            Cancel & Exit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "{{ url('api/v1/institute/staff') }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -322,29 +905,38 @@
         window.switchTab = (tab) => {
             const staffView = document.getElementById('staff-view');
             const attendanceView = document.getElementById('attendance-view');
+            const salaryView = document.getElementById('salary-view'); // Assuming this exists or will exist
             const staffBtn = document.getElementById('tab-staff');
             const attendanceBtn = document.getElementById('tab-attendance');
-            const staffActions = document.getElementById('staff-actions');
-            const attendanceActions = document.getElementById('attendance-actions');
+            const salaryBtn = document.getElementById('tab-salary');
+
+            // Reset All
+            staffView.classList.add('hidden');
+            attendanceView.classList.add('hidden');
+            if (salaryView) salaryView.classList.add('hidden');
+
+            [staffBtn, attendanceBtn, salaryBtn].forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('bg-[#A8440B]', 'text-white', 'shadow-lg');
+                    btn.classList.add('text-slate-500');
+                }
+            });
 
             if (tab === 'staff') {
                 staffView.classList.remove('hidden');
-                attendanceView.classList.add('hidden');
-                staffActions.classList.remove('hidden');
-                attendanceActions.classList.add('hidden');
                 staffBtn.classList.add('bg-[#A8440B]', 'text-white', 'shadow-lg');
                 staffBtn.classList.remove('text-slate-500');
-                attendanceBtn.classList.remove('bg-[#A8440B]', 'text-white', 'shadow-lg');
-                attendanceBtn.classList.add('text-slate-500');
+                fetchStaff();
             } else if (tab === 'attendance') {
-                staffView.classList.add('hidden');
                 attendanceView.classList.remove('hidden');
-                staffActions.classList.add('hidden');
-                attendanceActions.classList.remove('hidden');
                 attendanceBtn.classList.add('bg-[#A8440B]', 'text-white', 'shadow-lg');
                 attendanceBtn.classList.remove('text-slate-500');
-                staffBtn.classList.remove('bg-[#A8440B]', 'text-white', 'shadow-lg');
-                staffBtn.classList.add('text-slate-500');
+                fetchAttendance();
+            } else if (tab === 'salary') {
+                if (salaryView) salaryView.classList.remove('hidden');
+                salaryBtn.classList.add('bg-[#A8440B]', 'text-white', 'shadow-lg');
+                salaryBtn.classList.remove('text-slate-500');
+                fetchSalaries();
             }
         };
 
@@ -359,9 +951,51 @@
                 if (e.key === 'Enter') fetchStaff();
             });
 
-            searchBtn.addEventListener('click', () => fetchStaff());
-            roleFilter.addEventListener('change', () => fetchStaff());
+            const salarySearchInput = document.getElementById('salary-search-input');
+            if (salarySearchInput) {
+                salarySearchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') fetchSalaries();
+                });
+            }
+
+            // Close custom dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#role-dropdown-container')) {
+                    document.getElementById('role-dropdown-menu')?.classList.add('hidden');
+                    document.getElementById('role-chevron')?.classList.remove('rotate-180');
+                }
+                if (!e.target.closest('#dept-dropdown-container')) {
+                    document.getElementById('dept-dropdown-menu')?.classList.add('hidden');
+                    document.getElementById('dept-chevron')?.classList.remove('rotate-180');
+                }
+            });
         });
+
+        // Custom Dropdown Logic
+        window.toggleCustomDropdown = (type) => {
+            const menu = document.getElementById(`${type}-dropdown-menu`);
+            const chevron = document.getElementById(`${type}-chevron`);
+            const isHidden = menu.classList.contains('hidden');
+
+            // Close other dropdowns first
+            document.getElementById('role-dropdown-menu')?.classList.add('hidden');
+            document.getElementById('dept-dropdown-menu')?.classList.add('hidden');
+            document.getElementById('role-chevron')?.classList.remove('rotate-180');
+            document.getElementById('dept-chevron')?.classList.remove('rotate-180');
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            }
+        };
+
+        window.selectCustomOption = (type, value, label) => {
+            document.getElementById(`${type}-filter`).value = value;
+            document.getElementById(`selected-${type}-label`).textContent = label;
+            document.getElementById(`${type}-dropdown-menu`).classList.add('hidden');
+            document.getElementById(`${type}-chevron`).classList.remove('rotate-180');
+            fetchStaff(1);
+        };
 
         async function fetchStaff(page = 1) {
             const grid = document.getElementById('staff-grid');
@@ -372,7 +1006,8 @@
             if (!grid || !loader) return;
 
             const search = searchInput ? searchInput.value : '';
-            const roleId = roleFilter ? roleFilter.value : '';
+            const roleId = document.getElementById('role-filter')?.value || '';
+            const deptId = document.getElementById('dept-filter')?.value || '';
 
             loader.classList.remove('hidden');
 
@@ -381,7 +1016,9 @@
                     page: page,
                     search: search,
                     role_id: roleId,
-                    per_page: 12
+                    department_id: deptId,
+                    per_page: 12,
+                    _t: new Date().getTime()
                 });
 
                 const response = await fetch(`${API_URL}?${params}`, {
@@ -413,238 +1050,1056 @@
 
             // Preserve the loading spinner
             const loaderHtml = `
-                <div id="loading-spinner" class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
-                    <div class="h-10 w-10 border-4 border-slate-100 border-t-brand-800 rounded-full animate-spin"></div>
-                </div>
-            `;
+                                    <div id="loading-spinner" class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
+                                        <div class="h-10 w-10 border-4 border-slate-100 border-t-brand-800 rounded-full animate-spin"></div>
+                                    </div>
+                            `;
 
-            if (staffMembers.length === 0) {
-                grid.innerHTML = loaderHtml + `
-                    <div class="col-span-full py-20 flex flex-col items-center text-center bg-white rounded-3xl border border-slate-100 w-full">
-                        <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-1">No staff members found</h3>
-                        <p class="text-sm text-slate-400">Try adjusting your filters or add a new staff member.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const cardsHtml = staffMembers.map(staff => {
-                const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
-                const statusColor = staff.status === 'active' || staff.status === 1 ? 'bg-emerald-500' : 'bg-slate-300';
-
-                return `
-                    <div class="bg-white rounded-[1.5rem] border border-slate-200/60 p-4 flex flex-col items-center text-center group hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 h-fit relative">
-                        <!-- Floating Delete Button -->
-                        <button onclick="deleteStaff(${staff.id}, '${staff.full_name.replace(/'/g, "\\'")}')"
-                            class="absolute top-3 right-3 p-1.5 bg-rose-50 text-rose-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-sm">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-
-                        <div class="relative mb-3">
-                            <div class="h-24 w-24 rounded-full border-2 border-slate-100 overflow-hidden p-1 bg-white">
-                                <img src="${profileImg}" alt="${staff.full_name}" class="h-full w-full object-cover rounded-full">
-                            </div>
-                            <div class="absolute bottom-1 right-1 h-3.5 w-3.5 ${statusColor} border-2 border-white rounded-full"></div>
-                        </div>
-
-                        <h3 class="text-sm font-bold text-slate-800 leading-tight mb-0.5">${staff.full_name}</h3>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">${staff.role ? staff.role.name : 'Staff Member'}</p>
-
-                        <div class="flex items-center gap-2 w-full">
-                            <a href="#" class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all text-center">Profile</a>
-                            <button onclick='openEditModal(${JSON.stringify(staff).replace(/'/g, "&apos;")})' 
-                                class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all">Edit</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            grid.innerHTML = loaderHtml + cardsHtml;
-        }
-
-        function renderPagination(pagination) {
-            const container = document.getElementById('pagination-container');
-            if (!pagination || pagination.last_page <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-
-            const from = (pagination.current_page - 1) * pagination.per_page + 1;
-            const to = Math.min(pagination.current_page * pagination.per_page, pagination.total);
-
-            let html = `
-                    <p class="text-xs font-medium text-slate-400">
-                        Showing ${from} to ${to} of ${pagination.total} staff members
-                    </p>
-                    <div class="flex items-center gap-2">
-                `;
-
-            // Previous Button
-            html += `
-                    <button onclick="fetchStaff(${pagination.current_page - 1})" ${pagination.current_page === 1 ? 'disabled' : ''} 
-                        class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        Previous
-                    </button>
-                `;
-
-            // Page Numbers (Simplified)
-            for (let i = 1; i <= pagination.last_page; i++) {
-                if (i === pagination.current_page) {
-                    html += `<span class="h-8 w-8 flex items-center justify-center rounded-lg bg-brand-800 text-white text-xs font-bold shadow-md shadow-amber-900/20">${i}</span>`;
-                } else if (i <= 3 || i > pagination.last_page - 1 || (i >= pagination.current_page - 1 && i <= pagination.current_page + 1)) {
-                    html += `<button onclick="fetchStaff(${i})" class="h-8 w-8 flex items-center justify-center rounded-lg bg-white border border-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-all">${i}</button>`;
-                } else if (i === 4 || i === pagination.last_page - 1) {
-                    html += `<span class="text-slate-300">...</span>`;
-                }
-            }
-
-            // Next Button
-            html += `
-                    <button onclick="fetchStaff(${pagination.current_page + 1})" ${pagination.current_page === pagination.last_page ? 'disabled' : ''} 
-                        class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        Next
-                    </button>
-                `;
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        // Modal Functions
-        window.previewImage = (input) => {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => document.getElementById('image-preview').src = e.target.result;
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-
-        window.openAddModal = () => {
-            document.getElementById('modal-title').innerText = 'Add Staff Member';
-            document.getElementById('add-staff-form').reset();
-            document.getElementById('staff_id').value = '';
-            document.getElementById('image-preview').src = 'https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true';
-            document.getElementById('add-staff-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.openEditModal = (staff) => {
-            document.getElementById('modal-title').innerText = 'Edit Staff Member';
-            document.getElementById('add-staff-form').reset();
-
-            document.getElementById('staff_id').value = staff.id;
-            document.getElementById('field-name').value = staff.full_name;
-            document.getElementById('field-role').value = staff.staff_role_id;
-            document.getElementById('field-dept').value = staff.staff_department_id;
-            document.getElementById('field-email').value = staff.email;
-            document.getElementById('field-phone').value = staff.phone || '';
-
-            if (staff.employment_type === 'Hourly') {
-                document.getElementById('employment-hourly').checked = true;
-            } else {
-                document.getElementById('employment-salary').checked = true;
-            }
-
-            document.getElementById('field-salary').value = staff.base_salary;
-
-            const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
-            document.getElementById('image-preview').src = profileImg;
-
-            document.getElementById('add-staff-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.closeAddModal = () => {
-            document.getElementById('add-staff-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        };
-
-        // Form Submission
-        const addForm = document.getElementById('add-staff-form');
-        addForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(addForm);
-            const staffId = document.getElementById('staff_id').value;
-            const submitBtn = document.getElementById('submit-btn');
-            const originalText = submitBtn.innerText;
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Saving...';
-
-            try {
-                // If editing, use PUT spoofing
-                if (staffId) {
-                    formData.append('_method', 'PUT');
-                }
-
-                const url = staffId ? `${API_URL}/${staffId}` : API_URL;
-                const response = await fetch(url, {
-                    method: 'POST', // Use POST for both (PUT is spoofed)
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN
-                    }
-                });
-
-                const result = await response.json();
-
-                if (response.status === 422) {
-                    if (result.errors) {
-                        Object.keys(result.errors).forEach(key => {
-                            const errorEl = document.getElementById(`error-${key}`);
-                            if (errorEl) errorEl.innerText = result.errors[key][0];
-                        });
-                    }
+                if (staffMembers.                            length === 0) {
+                    grid.innerHTML = loaderHtml + `
+                                        <div class="col-span-full py-20 flex flex-col items-center text-center bg-white rounded-3xl border border-slate-100 w-full">
+                                            <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-slate-800 mb-1">No staff members found</h3>
+                                            <p class="text-sm text-slate-400">Try adjusting your filters or add a new staff member.</p>
+                                        </div>
+                                    `;
                     return;
                 }
 
-                if (result.status === 'success') {
-                    closeAddModal();
-                    fetchStaff();
-                } else {
-                    alert(result.message || 'Something went wrong');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Something went wrong. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
+                const cardsHtml = staffMembers.map(staff => {
+                    const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+                    const statusColor = staff.status === 'active' || staff.status === 1 ? 'bg-emerald-500' : 'bg-slate-300';
+
+                    return `
+                                        <div class="bg-white rounded-[1rem] border border-slate-200/60 p-4 flex flex-col items-center text-center group hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 h-fit relative">
+                                            <!-- Floating Delete Button -->
+                                            <button onclick="deleteStaff(${staff.id}, '${staff.full_name.replace(/'/g, "\\'")}')"
+                                                class="absolute top-3 right-3 p-1.5 bg-rose-50 text-rose-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+
+                                            <div class="relative mb-3">
+                                                <div class="h-24 w-24 rounded-full border-2 border-slate-100 overflow-hidden p-1 bg-white">
+                                                    <img src="${profileImg}" alt="${staff.full_name}" class="h-full w-full object-cover rounded-full">
+                                                </div>
+                                                <div class="absolute bottom-1 right-1 h-3.5 w-3.5 ${statusColor} border-2 border-white rounded-full"></div>
+                                            </div>
+
+                                            <h3 class="text-sm font-bold text-slate-800 leading-tight mb-0.5">${staff.full_name}</h3>
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">${staff.role ? staff.role.name : 'Staff Member'}</p>
+
+                                            <div class="flex items-center gap-2 w-full">
+                                                <a href="{{ url('institute/staff') }}/${staff.id}" class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all text-center">Profile</a>
+                                                <button onclick='openEditModal(${JSON.stringify(staff).replace(/'/g, "&apos;")})' 
+                                                    class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all">Edit</button>
+                                            </div>
+                                        </div>
+                                    `;
+                }).join('');
+
+                grid.innerHTML = loaderHtml + cardsHtml;
             }
-        });
 
-        // Delete Function
-        window.deleteStaff = async (id, name) => {
-            if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+            function renderPagination(pagination) {
+                const container = document.getElementById('pagination-container');
+                if (!pagination || pagination.last_page <= 1) {
+                    container.innerHTML = '';
+                    return;
+                }
 
-            try {
-                const response = await fetch(`{{ url('institute/staff') }}/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+                const from = (pagination.current_page - 1) * pagination.per_page + 1;
+                const to = Math.min(pagination.current_page * pagination.per_page, pagination.total);
+
+                let html = `
+                                        <p class="text-xs font-medium text-slate-400">
+                                            Showing ${from} to ${to} of ${pagination.total} staff members
+                                        </p>
+                                        <div class="flex items-center gap-2">
+                                    `;
+
+                // Previous Button
+                html += `
+                                        <button onclick="fetchStaff(${pagination.current_page - 1})" ${pagination.current_page === 1 ? 'disabled' : ''} 
+                                            class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                            Previous
+                                        </button>
+                                    `;
+
+                // Page Numbers (Simplified)
+                for (let i = 1; i <= pagination.last_page; i++) {
+                    if (i === pagination.current_page) {
+                        html += `<span class="h-8 w-8 flex items-center justify-center rounded-lg bg-brand-800 text-white text-xs font-bold shadow-md shadow-amber-900/20">${i}</span>`;
+                    } else if (i <= 3 || i > pagination.last_page - 1 || (i >= pagination.current_page - 1 && i <= pagination.current_page + 1)) {
+                        html += `<button onclick="fetchStaff(${i})" class="h-8 w-8 flex items-center justify-center rounded-lg bg-white border border-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-all">${i}</button>`;
+                    } else if (i === 4 || i === pagination.last_page - 1) {
+                        html += `<span class="text-slate-300">...</span>`;
                     }
+                }
+
+                // Next Button
+                html += `
+                                        <button onclick="fetchStaff(${pagination.current_page + 1})" ${pagination.current_page === pagination.last_page ? 'disabled' : ''} 
+                                            class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                            Next
+                                        </button>
+                                    `;
+
+                html += `</div>`;
+                container.innerHTML = html;
+            }
+
+            // Modal Functions
+            window.previewImage = (input) => {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => document.getElementById('image-preview').src = e.target.result;
+                    reader.readAsDataURL(input.files[0]);
+                }
+            };
+
+            window.toggleModalSelect = (type) => {
+                const menu = document.getElementById(`modal-${type}-menu`);
+                const isHidden = menu.classList.contains('hidden');
+
+                // Close all other modal selects first
+                ['role', 'dept'].forEach(t => {
+                    const m = document.getElementById(`modal-${t}-menu`);
+                    if (m) m.classList.add('hidden');
                 });
 
-                if (response.ok) {
-                    fetchStaff(); // Refresh list via API
-                } else {
-                    alert('Error deleting staff member');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error deleting staff member');
+            };
+
+            window.selectModalOption = (type, value, label) => {
+                document.getElementById(`field-${type}`).value = value;
+                document.getElementById(`modal-${type}-label`).innerText = label;
+                document.getElementById(`modal-${type}-menu`).classList.add('hidden');
+            };
+
+            window.openAddModal = () => {
+                document.getElementById('modal-title').innerText = 'Add Staff Member';
+                document.getElementById('add-staff-form').reset();
+                document.getElementById('staff_id').value = '';
+                document.getElementById('image-preview').src = 'https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true';
+
+                // Reset custom selects
+                document.getElementById('field-role').value = '';
+                document.getElementById('modal-role-label').innerText = 'Select Role';
+                document.getElementById('field-dept').value = '';
+                document.getElementById('modal-dept-label').innerText = 'Select Department';
+
+                document.getElementById('add-staff-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.openEditModal = (staff) => {
+                document.getElementById('modal-title').innerText = 'Edit Staff Member';
+                document.getElementById('add-staff-form').reset();
+
+                document.getElementById('staff_id').value = staff.id;
+                document.getElementById('field-name').value = staff.full_name;
+                document.getElementById('field-email').value = staff.email;
+                document.getElementById('field-phone').value = staff.phone || '';
+
+                // Set custom select values
+                document.getElementById('field-role').value = staff.staff_role_id;
+                document.getElementById('modal-role-label').innerText = staff.role ? staff.role.name : 'Select Role';
+                document.getElementById('field-dept').value = staff.staff_department_id;
+                document.getElementById('modal-dept-label').innerText = staff.department ? staff.department.name : 'Select Department';
+
+                if (staff.employment_type === 'Hourly') {
+                    document.getElementById('employment-hourly').checked = true;
+                } else {
+                    document.getElementById('employment-salary').checked = true;
+                }
+
+                document.getElementById('field-salary').value = staff.base_salary;
+
+                const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+                document.getElementById('image-preview').src = profileImg;
+
+                document.getElementById('add-staff-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.closeAddModal = () => {
+                document.getElementById('add-staff-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            };
+
+            // Form Submission
+            const addForm = document.getElementById('add-staff-form');
+            addForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Clear previous errors
+                document.querySelectorAll('[id^="error-"]').forEach(el => el.innerText = '');
+
+                const formData = new FormData(addForm);
+                const staffId = document.getElementById('staff_id').value;
+                const submitBtn = document.getElementById('submit-btn');
+                const originalText = submitBtn.innerText;
+
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Saving...';
+
+                try {
+                    // If editing, use PUT spoofing
+                    if (staffId) {
+                        formData.append('_method', 'PUT');
+                    }
+
+                    const url = staffId ? `${API_URL}/${staffId}` : API_URL;
+                    const response = await fetch(url, {
+                        method: 'POST', // Use POST for both (PUT is spoofed)
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.status === 422) {
+                        if (result.errors) {
+                            Object.keys(result.errors).forEach(key => {
+                                const errorEl = document.getElementById(`error-${key}`);
+                                if (errorEl) {
+                                    let errorMsg = result.errors[key][0];
+                                    // Clean messages
+                                    errorMsg = errorMsg.replace('staff role id', 'staff role')
+                                                       .replace('staff department id', 'staff department');
+                                    errorEl.innerText = errorMsg;
+                                }
+                            });
+                        }
+                        return;
+                    }
+
+                    if (result.status === 'success') {
+                        closeAddModal();
+                        fetchStaff();
+                    } else {
+                        showToast(result.message || 'Something went wrong', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Something went wrong. Please try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
+                }
+            });
+
+            // Delete Function
+            let staffToDeleteId = null;
+
+            window.deleteStaff = (id, name) => {
+                staffToDeleteId = id;
+                document.getElementById('delete-staff-name').innerText = name;
+                document.getElementById('delete-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.closeDeleteModal = () => {
+                document.getElementById('delete-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                staffToDeleteId = null;
+            };
+
+            window.confirmDeleteStaff = async () => {
+                if (!staffToDeleteId) return;
+
+                const btn = document.getElementById('confirm-delete-btn');
+                const originalText = btn.innerText;
+                btn.disabled = true;
+                btn.innerText = 'Deleting...';
+
+                try {
+                    const response = await fetch(`{{ url('institute/staff') }}/${staffToDeleteId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        closeDeleteModal();
+                        fetchStaff();
+                    } else {
+                        showToast('Error deleting staff member', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Error deleting staff member', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            };
+            window.toggleStaffDropdown = () => {
+                const menu = document.getElementById('attendance-staff-menu');
+                menu.classList.toggle('hidden');
+            };
+
+            window.selectStaffOption = (id, name) => {
+                document.getElementById('attendance-staff-select').value = id;
+                document.getElementById('attendance-staff-label').innerText = name;
+                document.getElementById('attendance-staff-label').classList.remove('text-slate-400');
+                document.getElementById('attendance-staff-label').classList.add('text-slate-700');
+                document.getElementById('attendance-staff-menu').classList.add('hidden');
+            };
+
+            window.filterStaffOptions = () => {
+                const search = document.getElementById('attendance-staff-search').value.toLowerCase();
+                const options = document.querySelectorAll('.attendance-staff-option');
+                options.forEach(opt => {
+                    const name = opt.innerText.toLowerCase();
+                    opt.style.display = name.includes(search) ? 'block' : 'none';
+                });
+            };
+
+            // Attendance Modal Functions
+            window.openAttendanceModal = async () => {
+                document.getElementById('log-attendance-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Reset form
+                document.getElementById('log-attendance-form').reset();
+                document.getElementById('attendance-id-input').value = '';
+                document.getElementById('attendance-staff-select').value = '';
+                document.getElementById('attendance-staff-label').innerText = 'Choose a staff member...';
+                document.getElementById('attendance-staff-label').classList.add('text-slate-400');
+                document.getElementById('attendance-date').value = new Date().toISOString().split('T')[0];
+                setAttendanceStatus('Present');
+
+                // Fetch staff list
+                const optionsContainer = document.getElementById('attendance-staff-options');
+                optionsContainer.innerHTML = '<div class="px-4 py-2 text-xs text-slate-400 italic">Loading staff list...</div>';
+
+                try {
+                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        if (result.data.length === 0) {
+                            optionsContainer.innerHTML = '<div class="px-4 py-2 text-xs text-slate-400">No staff members found</div>';
+                        } else {
+                            optionsContainer.innerHTML = result.data.map(staff => `
+                                <div onclick="selectStaffOption('${staff.id}', '${staff.full_name}')" 
+                                     class="attendance-staff-option px-4 py-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] cursor-pointer transition-colors border-b border-slate-50 last:border-0">
+                                    ${staff.full_name} <span class="text-[10px] text-slate-400 ml-1">(${staff.employee_id || 'No ID'})</span>
+                                </div>
+                            `).join('');
+                        }
+                    } else {
+                        optionsContainer.innerHTML = '<div class="px-4 py-2 text-xs text-rose-500">Failed to load staff</div>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching staff list:', error);
+                    optionsContainer.innerHTML = '<div class="px-4 py-2 text-xs text-rose-500">Error loading staff list</div>';
+                }
+            };
+
+            window.closeAttendanceModal = () => {
+                document.getElementById('log-attendance-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            };
+
+            window.setAttendanceStatus = (status) => {
+                document.getElementById('attendance-status-input').value = status;
+                const presentBtn = document.getElementById('status-present-btn');
+                const absentBtn = document.getElementById('status-absent-btn');
+
+                if (status === 'Present') {
+                    presentBtn.classList.add('border-[#A8440B]', 'bg-orange-50', 'text-[#A8440B]');
+                    presentBtn.classList.remove('border-slate-100', 'text-slate-400');
+                    absentBtn.classList.remove('border-[#A8440B]', 'bg-orange-50', 'text-[#A8440B]');
+                    absentBtn.classList.add('border-slate-100', 'text-slate-400');
+                } else {
+                    absentBtn.classList.add('border-[#A8440B]', 'bg-orange-50', 'text-[#A8440B]');
+                    absentBtn.classList.remove('border-slate-100', 'text-slate-400');
+                    presentBtn.classList.remove('border-[#A8440B]', 'bg-orange-50', 'text-[#A8440B]');
+                    presentBtn.classList.add('border-slate-100', 'text-slate-400');
+                }
+            };
+
+            const attendanceForm = document.getElementById('log-attendance-form');
+            async function fetchAttendance(page = 1) {
+                const tbody = document.getElementById('attendance-table-body');
+                const loader = document.getElementById('attendance-loader');
+                if (!tbody || !loader) return;
+
+                const search = document.getElementById('attendance-search-input').value;
+                const date = document.getElementById('attendance-filter-date').value;
+                const filterLabel = document.getElementById('attendance-filter-label');
+
+                if (date) {
+                    const dateObj = new Date(date);
+                    filterLabel.textContent = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                } else {
+                    filterLabel.textContent = 'Filter by Date';
+                }
+
+                loader.classList.remove('hidden');
+
+                try {
+                    let url = `{{ url('api/v1/institute/attendance') }}?page=${page}`;
+                    if (search) url += `&search=${encodeURIComponent(search)}`;
+                    if (date) url += `&date=${date}`;
+
+                    const response = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        renderAttendance(result.data);
+                        renderAttendancePagination(result.pagination);
+                    }
+                } catch (error) {
+                    console.error('Error fetching attendance:', error);
+                } finally {
+                    loader.classList.add('hidden');
+                }
             }
-        };
-    </script>
+
+            // Attendance Search Listener (Manual trigger via button or Enter key)
+            document.getElementById('attendance-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    fetchAttendance(1);
+                }
+            });
+
+            window.exportAttendance = () => {
+                const date = document.getElementById('attendance-filter-date').value;
+                let url = `{{ url('api/v1/institute/attendance/export') }}`;
+                if (date) url += `?date=${date}`;
+
+                window.location.href = url;
+            };
+
+            function renderAttendance(data) {
+                const tbody = document.getElementById('attendance-table-body');
+                if (!tbody) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <div class="h-14 w-14 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
+                                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                        </svg>
+                                                    </div>
+                                                    <h3 class="text-sm font-bold text-slate-800">No attendance records found</h3>
+                                                    <p class="text-xs text-slate-400">Log attendance to see entries here.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                    const pagContainer = document.getElementById('attendance-pagination-container');
+                    if (pagContainer) pagContainer.classList.add('hidden');
+                    return;
+                }
+                const pagContainer = document.getElementById('attendance-pagination-container');
+                if (pagContainer) pagContainer.classList.remove('hidden');
+
+                tbody.innerHTML = data.map(item => {
+                    const staff = item.staff || {};
+                    const dept = staff.department ? staff.department.name : 'N/A';
+                    const initial = staff.full_name ? staff.full_name.charAt(0).toUpperCase() : '?';
+                    const statusClass = item.status === 'Present' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
+
+                    // Format date: Oct 24, 2024
+                    const dateObj = new Date(item.date);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                    return `
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="h-7 w-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">${initial}</div>
+                                                    <span class="text-xs font-bold text-slate-700">${staff.full_name || 'Unknown'}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-medium text-slate-500">${dept}</td>
+                                            <td class="px-4 py-3 text-xs font-medium text-slate-500">${formattedDate}</td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-2 py-0.5 rounded-full ${statusClass} text-[9px] font-bold uppercase tracking-wider">${item.status}</span>
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <button onclick='openEditAttendanceModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' 
+                                                        class="p-1.5 hover:bg-amber-50 text-amber-600 rounded-lg transition-all" title="Edit">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button onclick="deleteAttendance(${item.id})" 
+                                                        class="p-1.5 hover:bg-rose-50 text-rose-500 rounded-lg transition-all" title="Delete">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                }).join('');
+            }
+
+            function renderAttendancePagination(pagination) {
+                const container = document.getElementById('attendance-pagination-container');
+                if (!container) return;
+
+                if (!pagination || pagination.last_page <= 1) {
+                    container.innerHTML = `<span class="text-[10px] font-medium text-slate-400">Showing all records</span>`;
+                    return;
+                }
+
+                const from = (pagination.current_page - 1) * pagination.per_page + 1;
+                const to = Math.min(pagination.current_page * pagination.per_page, pagination.total);
+
+                let html = `
+                                    <span class="text-[10px] font-medium text-slate-400">Showing ${from}-${to} of ${pagination.total} entries</span>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="fetchAttendance(${pagination.current_page - 1})" ${pagination.current_page === 1 ? 'disabled' : ''} 
+                                            class="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 hover:bg-slate-50 disabled:opacity-50">Previous</button>
+                                `;
+
+                for (let i = 1; i <= pagination.last_page; i++) {
+                    if (i === pagination.current_page) {
+                        html += `<button class="h-8 w-8 bg-[#A8440B] text-white rounded-lg text-[10px] font-bold">${i}</button>`;
+                    } else {
+                        html += `<button onclick="fetchAttendance(${i})" class="h-8 w-8 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-slate-100">${i}</button>`;
+                    }
+                }
+
+                html += `
+                                        <button onclick="fetchAttendance(${pagination.current_page + 1})" ${pagination.current_page === pagination.last_page ? 'disabled' : ''} 
+                                            class="px-3 py-1.5 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Next</button>
+                                    </div>
+                                `;
+
+                container.innerHTML = html;
+            }
+
+            attendanceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('log-attendance-btn');
+                const originalText = submitBtn.innerHTML;
+
+                const formData = {
+                    date: document.getElementById('attendance-date').value,
+                    attendances: [
+                        {
+                            id: document.getElementById('attendance-id-input').value,
+                            staff_id: document.getElementById('attendance-staff-select').value,
+                            status: document.getElementById('attendance-status-input').value,
+                            note: document.getElementById('attendance-note').value
+                        }
+                    ]
+                };
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Logging...';
+
+                try {
+                    const response = await fetch("{{ url('api/v1/institute/attendance') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    // Clear previous errors
+                    document.querySelectorAll('[id^="error-attendance-"]').forEach(el => el.innerText = '');
+
+                    const result = await response.json();
+
+                    if (response.status === 422) {
+                        if (result.errors) {
+                            Object.keys(result.errors).forEach(key => {
+                                // Map technical keys to UI spans
+                                if (key.includes('staff_id')) {
+                                    const errEl = document.getElementById('error-attendance-staff');
+                                    if (errEl) errEl.innerText = result.errors[key][0];
+                                }
+                                if (key === 'date') {
+                                    const errEl = document.getElementById('error-attendance-date');
+                                    if (errEl) errEl.innerText = result.errors[key][0];
+                                }
+                            });
+                        }
+                        return;
+                    }
+
+                    if (result.message === 'Attendance logged successfully') {
+                        closeAttendanceModal();
+                        // Refresh the attendance list
+                        fetchAttendance();
+                        showToast('Attendance logged successfully!', 'success');
+                    } else {
+                        showToast(result.message || 'Something went wrong', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Something went wrong. Please try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const container = document.getElementById('attendance-staff-dropdown-container');
+                const menu = document.getElementById('attendance-staff-menu');
+                if (container && !container.contains(e.target)) {
+                    if (menu) menu.classList.add('hidden');
+                }
+            });
+
+            window.selectStaff = (id, name) => {
+                document.getElementById('attendance-staff-select').value = id;
+                document.getElementById('attendance-staff-label').textContent = name;
+                document.getElementById('attendance-staff-label').classList.remove('text-slate-400');
+                document.getElementById('attendance-staff-label').classList.add('text-slate-700');
+                document.getElementById('attendance-staff-menu').classList.add('hidden');
+            }
+
+            window.filterStaffOptions = () => {
+                const search = document.getElementById('attendance-staff-search').value.toLowerCase();
+                renderStaffOptions(staffListData.filter(s => s.full_name.toLowerCase().includes(search)));
+            }
+
+            function renderStaffOptions(data) {
+                const container = document.getElementById('attendance-staff-options');
+                if (!container) return;
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="px-4 py-2 text-xs text-slate-400 text-center">No staff found</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(staff => `
+                                    <div onclick="selectStaff(${staff.id}, '${staff.full_name}')" 
+                                        class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] cursor-pointer transition-colors font-medium">
+                                        ${staff.full_name}
+                                    </div>
+                                `).join('');
+            }
+
+            window.openEditAttendanceModal = (item) => {
+                document.getElementById('log-attendance-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Set form data
+                document.getElementById('attendance-id-input').value = item.id;
+                document.getElementById('attendance-date').value = item.date;
+                document.getElementById('attendance-note').value = item.note || '';
+                setAttendanceStatus(item.status);
+
+                // Set staff label and value
+                if (item.staff) {
+                    selectStaff(item.staff_id, item.staff.full_name);
+                }
+
+                // Load staff if list is empty
+                if (staffListData.length === 0) {
+                    fetchStaffForAttendance();
+                }
+            };
+
+            async function fetchStaffForAttendance() {
+                try {
+                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}?_t=" + new Date().getTime(), {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        staffListData = result.data;
+                        renderStaffOptions(staffListData);
+                    }
+                } catch (error) {
+                    console.error('Error fetching staff list:', error);
+                }
+            }
+
+            window.deleteAttendance = async (id) => {
+                if (!confirm('Are you sure you want to delete this attendance record?')) return;
+
+                try {
+                    const response = await fetch(`{{ url('api/v1/institute/attendance') }}/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        fetchAttendance();
+                    } else {
+                        showToast('Error deleting attendance record', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Error deleting attendance record', 'error');
+                } finally {
+                }
+            };
+
+            // Initialize staff list when page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                fetchStaffForAttendance();
+            });
+
+
+
+            // Salary Management Logic
+            let salaryStaffListData = [];
+
+            async function fetchSalaries(page = 1) {
+                const tbody = document.getElementById('salary-table-body');
+                const loader = document.getElementById('salary-loader');
+                if (!tbody || !loader) return;
+
+                const search = document.getElementById('salary-search-input').value;
+                const monthVal = document.getElementById('salary-filter-month').value;
+                const filterLabel = document.getElementById('salary-filter-label');
+
+                if (monthVal) {
+                    const dateObj = new Date(monthVal + '-01');
+                    filterLabel.textContent = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                } else {
+                    filterLabel.textContent = 'Filter by Month';
+                }
+
+                loader.classList.remove('hidden');
+
+                try {
+                    let url = `{{ url('api/v1/institute/salaries') }}?page=${page}`;
+                    if (search) url += `&search=${encodeURIComponent(search)}`;
+                    if (monthVal) {
+                        const [year, month] = monthVal.split('-');
+                        url += `&month=${month}&year=${year}`;
+                    }
+
+                    const response = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        renderSalaries(result.data);
+                        renderSalaryPagination(result.pagination);
+                    }
+                } catch (error) {
+                    console.error('Error fetching salaries:', error);
+                } finally {
+                    loader.classList.add('hidden');
+                }
+            }
+
+            function renderSalaries(data) {
+                const tbody = document.getElementById('salary-table-body');
+                if (!tbody) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs italic">No salary records found</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(item => `
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
+                                                    ${item.staff.full_name.charAt(0)}
+                                                </div>
+                                                <div class="font-bold text-slate-700 text-xs">${item.staff.full_name}</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-xs font-bold text-slate-500">${item.staff.employee_id || 'STF-' + item.staff.id}</td>
+                                        <td class="px-4 py-3 text-xs text-slate-500">${new Date(item.payment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="flex items-center gap-1.5 text-[10px] font-bold ${item.payment_method === 'Online' ? 'text-blue-600' : 'text-amber-600'}">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${item.payment_method === 'Online' ? 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' : 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'}" /></svg>
+                                                ${item.payment_method}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-xs font-black text-slate-800 text-right">$${parseFloat(item.net_salary).toLocaleString()}</td>
+                                    </tr>
+                                `).join('');
+            }
+
+            function renderSalaryPagination(pagination) {
+                const container = document.getElementById('salary-pagination-container');
+                if (!container) return;
+
+                if (pagination.last_page <= 1) {
+                    container.innerHTML = `<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Showing all records</span>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Page ${pagination.current_page} of ${pagination.last_page}</span>
+                                    <div class="flex items-center gap-1">
+                                        ${pagination.current_page > 1 ? `<button onclick="fetchSalaries(${pagination.current_page - 1})" class="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>` : ''}
+                                        ${pagination.current_page < pagination.last_page ? `<button onclick="fetchSalaries(${pagination.current_page + 1})" class="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>` : ''}
+                                    </div>
+                                `;
+            }
+
+            window.openSalaryModal = (item = null) => {
+                const modal = document.getElementById('salary-modal');
+                const content = document.getElementById('salary-modal-content');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+
+                document.getElementById('salary-form').reset();
+                document.getElementById('salary_id_input').value = '';
+                document.getElementById('salary-modal-title').textContent = 'Add Salary';
+                document.getElementById('selected-salary-staff-name').textContent = 'Choose a staff member...';
+                document.getElementById('selected-salary-staff-name').classList.add('text-slate-400');
+
+                if (item) {
+                    document.getElementById('salary-modal-title').textContent = 'Edit Salary';
+                    document.getElementById('salary_id_input').value = item.id;
+                    document.getElementById('salary_staff_id_input').value = item.staff_id;
+                    document.getElementById('selected-salary-staff-name').textContent = item.staff.full_name;
+                    document.getElementById('selected-salary-staff-name').classList.remove('text-slate-400');
+                    document.getElementById('salary_payment_date').value = item.payment_date;
+                    document.getElementById('salary_base_amount').value = item.base_salary;
+                    document.getElementById('salary_note').value = item.note || '';
+                    setSalaryMethod(item.payment_method);
+                } else {
+                    document.getElementById('salary_payment_date').value = new Date().toISOString().split('T')[0];
+                }
+
+                updateSalaryPreview();
+                fetchStaffForSalary();
+            };
+
+            window.closeSalaryModal = () => {
+                const modal = document.getElementById('salary-modal');
+                const content = document.getElementById('salary-modal-content');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+
+            window.toggleSalaryStaffDropdown = () => {
+                const dropdown = document.getElementById('salary-staff-dropdown');
+                const chevron = document.getElementById('salary-staff-chevron');
+                dropdown.classList.toggle('hidden');
+                chevron.classList.toggle('rotate-180');
+            };
+
+            window.filterSalaryStaffOptions = (search) => {
+                const filtered = salaryStaffListData.filter(s => s.full_name.toLowerCase().includes(search.toLowerCase()));
+                renderSalaryStaffOptions(filtered);
+            };
+
+            function renderSalaryStaffOptions(data) {
+                const container = document.getElementById('salary-staff-options');
+                if (!container) return;
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="px-4 py-2 text-xs text-slate-400 text-center">No staff found</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(staff => `
+                                    <div onclick="selectSalaryStaff(${staff.id}, '${staff.full_name}', ${staff.base_salary || 0})" 
+                                        class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] cursor-pointer transition-colors font-medium">
+                                        ${staff.full_name}
+                                    </div>
+                                `).join('');
+            }
+
+            window.selectSalaryStaff = (id, name, baseSalary) => {
+                document.getElementById('salary_staff_id_input').value = id;
+                document.getElementById('selected-salary-staff-name').textContent = name;
+                document.getElementById('selected-salary-staff-name').classList.remove('text-slate-400');
+
+                if (!document.getElementById('salary_id_input').value) {
+                    document.getElementById('salary_base_amount').value = baseSalary;
+                }
+
+                toggleSalaryStaffDropdown();
+                updateSalaryPreview();
+            };
+
+            async function fetchStaffForSalary() {
+                if (salaryStaffListData.length > 0) return;
+                try {
+                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}?_t=" + new Date().getTime(), {
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        salaryStaffListData = result.data;
+                        renderSalaryStaffOptions(salaryStaffListData);
+                    }
+                } catch (error) { console.error('Error:', error); }
+            }
+
+            window.setSalaryMethod = (method) => {
+                document.getElementById('salary_payment_method_input').value = method;
+                const cashBtn = document.getElementById('salary-method-cash');
+                const onlineBtn = document.getElementById('salary-method-online');
+
+                if (method === 'Cash') {
+                    cashBtn.classList.add('bg-white', 'text-[#A8440B]', 'shadow-sm');
+                    cashBtn.classList.remove('text-slate-500', 'hover:text-[#A8440B]');
+                    onlineBtn.classList.remove('bg-white', 'text-[#A8440B]', 'shadow-sm');
+                    onlineBtn.classList.add('text-slate-500', 'hover:text-[#A8440B]');
+                } else {
+                    onlineBtn.classList.add('bg-white', 'text-[#A8440B]', 'shadow-sm');
+                    onlineBtn.classList.remove('text-slate-500', 'hover:text-[#A8440B]');
+                    cashBtn.classList.remove('bg-white', 'text-[#A8440B]', 'shadow-sm');
+                    cashBtn.classList.add('text-slate-500', 'hover:text-[#A8440B]');
+                }
+            };
+
+            window.updateSalaryPreview = () => {
+                const base = parseFloat(document.getElementById('salary_base_amount').value) || 0;
+                const deductions = 0; // Future enhancement
+                const total = base - deductions;
+
+                document.getElementById('preview-base-salary').textContent = `$${base.toLocaleString()}`;
+                document.getElementById('preview-deductions').textContent = `-$${deductions.toLocaleString()}`;
+                document.getElementById('preview-total-disbursement').textContent = `$${total.toLocaleString()}`;
+            };
+
+            window.saveSalaryRecord = async () => {
+                const form = document.getElementById('salary-form');
+                const btn = document.getElementById('save-salary-btn');
+                const formData = new FormData(form);
+
+                btn.disabled = true;
+                btn.innerHTML = `<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
+
+                try {
+                    const response = await fetch("{{ url('api/v1/institute/salaries') }}", {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        closeSalaryModal();
+                        fetchSalaries();
+                    } else {
+                        showToast(result.message || 'Error saving salary record', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An unexpected error occurred', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg> Save Salary Record`;
+                }
+            };
+
+            window.exportSalaries = () => {
+                const monthVal = document.getElementById('salary-filter-month').value;
+                let url = `{{ url('api/v1/institute/salaries/export') }}`;
+                if (monthVal) {
+                    const [year, month] = monthVal.split('-');
+                    url += `?month=${month}&year=${year}`;
+                }
+                window.location.href = url;
+            };
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const container = document.getElementById('salary-staff-dropdown-container');
+                const menu = document.getElementById('salary-staff-dropdown');
+                const chevron = document.getElementById('salary-staff-chevron');
+                if (container && !container.contains(e.target)) {
+                    if (menu) menu.classList.add('hidden');
+                    if (chevron) chevron.classList.remove('rotate-180');
+                }
+            });
+            // Global Toast Function
+            window.showToast = (message, type = 'success') => {
+                const container = document.getElementById('toast-container');
+                if (!container) return;
+
+                const toast = document.createElement('div');
+                toast.className = 'toast-item';
+                
+                const icon = type === 'success' 
+                    ? '<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>'
+                    : '<svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+                const bgClass = type === 'success' ? 'bg-emerald-50/80' : 'bg-rose-50/80';
+                const borderClass = type === 'success' ? 'border-emerald-100' : 'border-rose-100';
+                const title = type === 'success' ? 'Success' : 'Attention';
+
+                toast.innerHTML = `
+                    <div class="flex items-center gap-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-3.5 shadow-2xl shadow-slate-200/50 min-w-[300px]">
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full ${bgClass} border ${borderClass} flex items-center justify-center">
+                            ${icon}
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[11px] font-black text-slate-800 uppercase tracking-wider">${title}</p>
+                            <p class="text-xs text-slate-500 font-medium leading-tight mt-0.5">${message}</p>
+                        </div>
+                        <button onclick="this.closest('.toast-item').remove()" class="text-slate-300 hover:text-slate-500 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(toast);
+
+                // Auto remove
+                setTimeout(() => {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            };
+        </script>
+        <div id="toast-container"></div>
 @endsection
