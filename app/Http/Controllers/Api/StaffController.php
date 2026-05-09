@@ -81,7 +81,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,NULL,id,institute_id,' . $instituteId,
+            'email' => 'required|email:rfc,dns|unique:staff,email,NULL,id,institute_id,' . $instituteId,
             'staff_role_id' => 'required|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'required|exists:staff_departments,id,institute_id,' . $instituteId,
             'employment_type' => 'required|in:Salary,Hourly',
@@ -147,7 +147,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
+            'email' => 'sometimes|required|email:rfc,dns|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
             'staff_role_id' => 'sometimes|required|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'sometimes|required|exists:staff_departments,id,institute_id,' . $instituteId,
             'employment_type' => 'sometimes|required|in:Salary,Hourly',

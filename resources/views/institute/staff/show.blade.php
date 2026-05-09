@@ -369,37 +369,11 @@
                 <h3 class="text-xl font-bold text-slate-800 tracking-tight">Salary History</h3>
             </div>
 
-            <div class="space-y-4 mb-6 flex-1 overflow-y-auto max-h-[450px] pr-2 no-scrollbar">
-                @forelse($staff->salaries->sortByDesc('payment_date') as $salary)
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 group/salary hover:bg-white hover:border-brand-800 transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col">
-                                <h4 class="text-sm font-bold text-slate-800 mb-1">{{ date('F Y', strtotime($salary->payment_date)) }}</h4>
-                                <p class="text-[11px] font-medium text-slate-400">Paid on {{ date('d M, Y', strtotime($salary->payment_date)) }}</p>
-                            </div>
-                            <div class="flex flex-col items-end gap-1">
-                                <span class="text-sm font-bold text-slate-800">₹{{ number_format($salary->amount ?? $staff->base_salary, 2) }}</span>
-                                <div class="flex items-center gap-1 px-2 py-0.5 {{ $salary->payment_method == 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-emerald-50 text-emerald-500' }} rounded text-[9px] font-bold uppercase tracking-widest">
-                                    @if($salary->payment_method == 'Online')
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
-                                    @else
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                    @endif
-                                    {{ $salary->payment_method ?? 'CASH' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="flex flex-col items-center justify-center py-10 text-center">
-                        <div class="h-12 w-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p class="text-[11px] font-bold text-slate-400">No payment records yet.</p>
-                    </div>
-                @endforelse
+            <div id="salary-history-container" class="space-y-4 mb-6 flex-1 overflow-y-auto max-h-[450px] pr-2 no-scrollbar">
+                <div class="flex flex-col items-center justify-center py-10 text-center animate-pulse">
+                    <div class="h-8 w-8 border-3 border-slate-100 border-t-brand-800 rounded-full animate-spin mx-auto mb-3"></div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Loading Records...</p>
+                </div>
             </div>
 
             <button class="w-full py-4 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-sm">
@@ -587,42 +561,100 @@
             }
         });
 
-        const attendances = @json($staff->attendances);
+        const staffId = "{{ $staff->id }}";
+        let currentAttendances = [];
+
+        async function fetchAttendance() {
+            const monthIndex = monthSelect.selectedIndex + 1;
+            const year = yearSelect.value;
+            
+            calendarContainer.innerHTML = '<div class="col-span-7 py-10 text-center"><div class="h-6 w-6 border-2 border-slate-100 border-t-brand-800 rounded-full animate-spin mx-auto mb-2"></div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Updating...</p></div>';
+
+            try {
+                const response = await fetch(`/api/v1/institute/attendance/${staffId}?month=${monthIndex}&year=${year}`, {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                });
+                const result = await response.json();
+                currentAttendances = result.data || [];
+                renderCalendar();
+            } catch (error) {
+                console.error('Error fetching attendance:', error);
+            }
+        }
+
+        async function fetchSalaries() {
+            const salaryContainer = document.getElementById('salary-history-container');
+            
+            try {
+                const response = await fetch(`/api/v1/institute/salaries/${staffId}`, {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                });
+                const result = await response.json();
+                const salaries = result.data || [];
+
+                if (salaries.length === 0) {
+                    salaryContainer.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-10 text-center">
+                            <div class="h-12 w-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">No payment records yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                salaryContainer.innerHTML = salaries.map(salary => `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 group/salary hover:bg-white hover:border-brand-800 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <h4 class="text-sm font-bold text-slate-800 mb-1">${new Date(salary.payment_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h4>
+                                <p class="text-[11px] font-medium text-slate-400">Paid on ${new Date(salary.payment_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="text-sm font-bold text-slate-800">₹${parseFloat(salary.net_salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <div class="flex items-center gap-1 px-2 py-0.5 ${salary.payment_method === 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-emerald-50 text-emerald-500'} rounded text-[9px] font-bold uppercase tracking-widest">
+                                    ${salary.payment_method === 'Online' ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>' : '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>'}
+                                    ${salary.payment_method || 'CASH'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching salaries:', error);
+            }
+        }
+
         const monthSelect = document.getElementById('month-select');
         const yearSelect = document.getElementById('year-select');
         const calendarContainer = document.getElementById('attendance-calendar');
 
         function renderCalendar() {
-            const month = monthSelect.value;
             const year = parseInt(yearSelect.value);
             const monthIndex = monthSelect.selectedIndex;
 
-            // Clear existing dates (keep labels)
-            const labels = calendarContainer.querySelectorAll('.tracking-widest');
             calendarContainer.innerHTML = '';
-            labels.forEach(l => {
-                if (l.innerText.length === 3) calendarContainer.appendChild(l);
+            ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].forEach(day => {
+                calendarContainer.innerHTML += `<div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center py-1">${day}</div>`;
             });
 
             const firstDay = new Date(year, monthIndex, 1).getDay();
             const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-            const prevMonthDays = new Date(year, monthIndex, 0).getDate();
             const adjustedFirstDay = firstDay === 0 ? 7 : firstDay;
 
-            // Fill previous month days (greyed out)
             for (let i = 0; i < adjustedFirstDay - 1; i++) {
                 const dayNum = new Date(year, monthIndex, 0).getDate() - (adjustedFirstDay - 2) + i;
                 calendarContainer.innerHTML += `<div class="aspect-[2/1] flex items-center justify-center text-[10px] font-bold text-slate-200 bg-slate-50/30 rounded-lg">${dayNum}</div>`;
             }
 
-            // Current month days
             const today = new Date();
             const isCurrentMonth = today.getMonth() === monthIndex && today.getFullYear() === year;
             const todayDate = today.getDate();
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const attendance = attendances.find(a => a.date === dateStr);
+                const attendance = currentAttendances.find(a => a.date === dateStr);
 
                 let statusClasses = 'bg-slate-50 text-slate-400 hover:bg-slate-100';
                 if (attendance) {
@@ -630,6 +662,10 @@
                         statusClasses = 'bg-green-100 text-green-700 border-2 border-green-500';
                     } else if (attendance.status === 'Absent') {
                         statusClasses = 'bg-red-500 text-white border-2 border-red-700';
+                    } else if (attendance.status === 'Half Day') {
+                        statusClasses = 'bg-amber-100 text-amber-700 border-2 border-amber-500';
+                    } else if (attendance.status === 'Late') {
+                        statusClasses = 'bg-sky-100 text-sky-700 border-2 border-sky-500';
                     }
                 } else if (isCurrentMonth && day === todayDate) {
                     statusClasses = 'bg-orange-500 text-white';
@@ -642,18 +678,18 @@
                     `;
             }
 
-            // Fill remaining spaces
-            const totalSlots = 42; // 6 rows of 7
+            const totalSlots = 42; 
             const currentSlots = (adjustedFirstDay - 1) + daysInMonth;
             for (let i = 1; i <= totalSlots - currentSlots; i++) {
                 calendarContainer.innerHTML += `<div class="aspect-[2/1] flex items-center justify-center text-[10px] font-medium text-slate-200 bg-slate-50/50 rounded-lg">${i}</div>`;
             }
         }
 
-        monthSelect.addEventListener('change', renderCalendar);
-        yearSelect.addEventListener('change', renderCalendar);
+        monthSelect.addEventListener('change', fetchAttendance);
+        yearSelect.addEventListener('change', fetchAttendance);
 
-        // Initial render
-        renderCalendar();
+        // Initial fetch
+        fetchAttendance();
+        fetchSalaries();
     </script>
 @endsection

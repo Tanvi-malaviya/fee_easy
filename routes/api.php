@@ -142,6 +142,7 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('expenses')->group(function () {
                 Route::get('/dashboard', [InstituteExpenseController::class, 'dashboard']);
+                Route::get('/analysis', [InstituteExpenseController::class, 'analysis']);
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
                 Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);
@@ -255,6 +256,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'store']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'destroy']);
                 Route::get('/export', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'export']);
+                Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'showByStaff']);
             });
 
             // Salary Management
@@ -263,6 +265,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [\App\Http\Controllers\Api\StaffSalaryController::class, 'store']);
                 Route::get('/preview/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'preview']);
                 Route::get('/export', [\App\Http\Controllers\Api\StaffSalaryController::class, 'export']);
+                Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'showByStaff']);
             });
 
             Route::prefix('leads')->group(function () {
