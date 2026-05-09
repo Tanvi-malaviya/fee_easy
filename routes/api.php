@@ -42,7 +42,10 @@ use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
-use App\Http\Controllers\Api\V1\InstituteNoteController;
+use App\Http\Controllers\Api\V1\NoteController;
+use App\Http\Controllers\Api\V1\NoteCategoryController;
+use App\Http\Controllers\Api\V1\NoteChecklistController;
+use App\Http\Controllers\Api\V1\NoteImageController;
 use App\Http\Controllers\Api\V1\InstituteTeacherController;
 use App\Http\Controllers\Api\V1\InstituteExpenseController;
 use App\Http\Controllers\Api\V1\InstituteLeadController;
@@ -50,6 +53,7 @@ use App\Http\Controllers\Api\V1\InstituteProfileController;
 use App\Http\Controllers\Api\V1\PublicVerificationController;
 
 use App\Http\Controllers\Api\DemoRequestController;
+use App\Http\Controllers\Api\StaffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,13 +111,22 @@ Route::prefix('v1')->group(function () {
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 
-            // Notes routes
+            // Clean Rich Notes Module
             Route::prefix('notes')->group(function () {
-                Route::get('/', [InstituteNoteController::class, 'index']);
-                Route::post('/', [InstituteNoteController::class, 'store']);
-                Route::put('/{id}', [InstituteNoteController::class, 'update']);
-                Route::delete('/{id}', [InstituteNoteController::class, 'destroy']);
+                Route::get('/', [NoteController::class, 'index']);
+                Route::post('/', [NoteController::class, 'store']);
+                Route::get('/{id}', [NoteController::class, 'show']);
+                Route::put('/{id}', [NoteController::class, 'update']);
+                Route::delete('/{id}', [NoteController::class, 'destroy']);
+                
+                // Actions
+                Route::post('/{id}/bookmark', [NoteController::class, 'bookmark']);
+                Route::post('/checklists/{id}/toggle', [NoteController::class, 'toggleChecklist']);
+                Route::delete('/checklists/{id}', [NoteController::class, 'destroyChecklist']);
             });
+
+            Route::get('/note-categories', [NoteCategoryController::class, 'index']);
+            Route::post('/note-categories', [NoteCategoryController::class, 'store']);
 
             // Teacher Management & Attendance
             Route::prefix('teachers')->group(function () {
@@ -127,8 +140,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/attendance', [InstituteTeacherController::class, 'markAttendance']);
             });
 
-            // Institute Expense
             Route::prefix('expenses')->group(function () {
+                Route::get('/dashboard', [InstituteExpenseController::class, 'dashboard']);
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
                 Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);
@@ -217,6 +230,49 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'store']);
                 Route::get('/{id}/download', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'download']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\V1\InstituteResourceController::class, 'destroy']);
+            });
+
+            // Staff Management Routes
+            Route::prefix('staff')->group(function () {
+                Route::get('/', [StaffController::class, 'index']);
+                Route::post('/', [StaffController::class, 'store']);
+                Route::get('/{id}', [StaffController::class, 'show']);
+                Route::put('/{id}', [StaffController::class, 'update']);
+                Route::delete('/{id}', [StaffController::class, 'destroy']);
+            });
+
+            Route::get('/staff-roles', [StaffController::class, 'getRoles']);
+            Route::post('/staff-roles', [StaffController::class, 'storeRole']);
+            Route::get('/staff-departments', [StaffController::class, 'getDepartments']);
+            Route::post('/staff-departments', [StaffController::class, 'storeDepartment']);
+
+            // Staff List for dropdowns
+            Route::get('/staff-list-simple', [StaffController::class, 'getStaffSimpleList']);
+
+            // Attendance Management
+            Route::prefix('attendance')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'store']);
+                Route::delete('/{id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'destroy']);
+                Route::get('/export', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'export']);
+            });
+
+            // Salary Management
+            Route::prefix('salaries')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\StaffSalaryController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\StaffSalaryController::class, 'store']);
+                Route::get('/preview/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'preview']);
+                Route::get('/export', [\App\Http\Controllers\Api\StaffSalaryController::class, 'export']);
+            });
+
+            // Leads Management
+            Route::prefix('leads')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\LeadController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\LeadController::class, 'store']);
+                Route::get('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'show']);
+                Route::put('/{id}/status', [\App\Http\Controllers\Api\LeadController::class, 'updateStatus']);
+                Route::post('/{id}/notes', [\App\Http\Controllers\Api\LeadController::class, 'addNote']);
+                Route::delete('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'destroy']);
             });
         });
     });

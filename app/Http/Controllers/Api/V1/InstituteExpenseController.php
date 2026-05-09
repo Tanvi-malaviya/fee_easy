@@ -55,7 +55,12 @@ class InstituteExpenseController extends Controller
         
         $query = $institute->expenses()->with('category');
 
-        if ($request->has('start_date') && $request->has('end_date')) {
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('date', $request->month)
+                  ->whereYear('date', $request->year);
+        } elseif ($request->filled('year')) {
+            $query->whereYear('date', $request->year);
+        } elseif ($request->has('start_date') && $request->has('end_date')) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
 
@@ -90,15 +95,22 @@ class InstituteExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
-            'receipt_image' => 'nullable|string' // Wait for direct S3 or Storage disk setup in future
+            'payment_method' => 'nullable|string|in:Cash,Online Payment',
+            'receipt_image' => 'nullable|image|max:2048' 
         ]);
+
+        $path = null;
+        if ($request->hasFile('receipt_image')) {
+            $path = $request->file('receipt_image')->store('expenses', 'public');
+        }
 
         $expense = $institute->expenses()->create([
             'expense_category_id' => $request->expense_category_id,
             'amount' => $request->amount,
-            'date' => $request->date,
+            'date' => \Illuminate\Support\Carbon::parse($request->date)->format('Y-m-d'),
             'description' => $request->description,
-            'receipt_image' => $request->receipt_image,
+            'payment_method' => $request->payment_method ?? 'Cash',
+            'receipt_image' => $path,
         ]);
 
         $expense->load('category');
@@ -124,10 +136,25 @@ class InstituteExpenseController extends Controller
             'amount' => 'sometimes|required|numeric|min:0',
             'date' => 'sometimes|required|date',
             'description' => 'nullable|string',
-            'receipt_image' => 'nullable|string'
+            'payment_method' => 'nullable|string|in:Cash,Online Payment',
+            'receipt_image' => 'nullable|image|max:2048'
         ]);
 
-        $expense->update($request->all());
+        $data = $request->except('receipt_image');
+
+        if ($request->hasFile('receipt_image')) {
+            // Delete old image if exists
+            if ($expense->receipt_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($expense->receipt_image)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($expense->receipt_image);
+            }
+            $data['receipt_image'] = $request->file('receipt_image')->store('expenses', 'public');
+        }
+
+        if ($request->has('date')) {
+            $data['date'] = \Illuminate\Support\Carbon::parse($request->date)->format('Y-m-d');
+        }
+
+        $expense->update($data);
 
         $expense->load('category');
 
@@ -155,6 +182,81 @@ class InstituteExpenseController extends Controller
     }
 
     /**
+     * Get dashboard data for expenses.
+     */
+    public function dashboard(Request $request)
+    {
+        $institute = $request->user();
+        $now = Carbon::now();
+        $thisMonth = $now->month;
+        $thisYear = $now->year;
+        
+        $lastMonthDate = $now->copy()->subMonth();
+        $lastMonth = $lastMonthDate->month;
+        $lastYear = $lastMonthDate->year;
+
+        // 1. Total Spend (Current Month)
+        $totalSpend = $institute->expenses()
+            ->whereMonth('date', $thisMonth)
+            ->whereYear('date', $thisYear)
+            ->sum('amount');
+
+        // 2. Spending Trends (This Month vs Last Month)
+        $thisMonthTrends = $institute->expenses()
+            ->whereMonth('date', $thisMonth)
+            ->whereYear('date', $thisYear)
+            ->selectRaw('DAY(date) as day, SUM(amount) as total')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get();
+
+        $lastMonthTrends = $institute->expenses()
+            ->whereMonth('date', $lastMonth)
+            ->whereYear('date', $lastYear)
+            ->selectRaw('DAY(date) as day, SUM(amount) as total')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get();
+
+        // 3. Category Breakdown
+        $categoryBreakdown = $institute->expenses()
+            ->with('category')
+            ->whereMonth('date', $thisMonth)
+            ->whereYear('date', $thisYear)
+            ->select('expense_category_id', \Illuminate\Support\Facades\DB::raw('SUM(amount) as total'))
+            ->groupBy('expense_category_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'category_name' => $item->category->name ?? 'Unknown',
+                    'total' => (float)$item->total
+                ];
+            });
+
+        // 4. Recent Transactions
+        $recentTransactions = $institute->expenses()
+            ->with('category')
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'total_spend' => (float)$totalSpend,
+                'month_name' => $now->format('F Y'),
+                'trends' => [
+                    'this_month' => $thisMonthTrends,
+                    'last_month' => $lastMonthTrends
+                ],
+                'category_breakdown' => $categoryBreakdown,
+                'recent_transactions' => $recentTransactions
+            ]
+        ]);
+    }
+
+    /**
      * Expense Report generated by category.
      */
     public function report(Request $request)
@@ -162,14 +264,28 @@ class InstituteExpenseController extends Controller
         $institute = $request->user();
 
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date'
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'month' => 'nullable|integer|min:1|max:12',
+            'year' => 'nullable|integer'
         ]);
 
-        $expenses = $institute->expenses()
-            ->with('category')
-            ->whereBetween('date', [$request->start_date, $request->end_date])
-            ->get();
+        $query = $institute->expenses()->with('category');
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('date', $request->month)
+                  ->whereYear('date', $request->year);
+        } elseif ($request->filled('year')) {
+            $query->whereYear('date', $request->year);
+        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        } else {
+            // Default to current month if no filter provided
+            $query->whereMonth('date', now()->month)
+                  ->whereYear('date', now()->year);
+        }
+
+        $expenses = $query->get();
 
         $groupedByCategory = $expenses->groupBy('expense_category_id');
 
@@ -190,10 +306,6 @@ class InstituteExpenseController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'report_period' => [
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date
-            ],
             'total_expense' => $totalOverall,
             'breakdown' => $report
         ]);

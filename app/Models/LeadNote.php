@@ -5,24 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Lead extends Model
+class LeadNote extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'lead_id',
         'institute_id',
-        'full_name',
-        'phone',
-        'email',
-        'address',
-        'course_selection',
-        'reference',
-        'status'
+        'title',
+        'note'
     ];
 
-    public function notes()
+    public function lead()
     {
-        return $this->hasMany(LeadNote::class)->orderBy('created_at', 'desc');
+        return $this->belongsTo(Lead::class);
     }
 
     public function institute()

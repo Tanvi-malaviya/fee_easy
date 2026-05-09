@@ -16,28 +16,39 @@ class InstituteNoteController extends Controller
     public function index(Request $request)
     {
         $institute = $request->user();
+        $query = Note::where('institute_id', $institute->id);
         
-        $query = Note::where('institute_id', $institute->id)->with('notable');
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
 
-        // Optional filtering by notable_type and notable_id
-        if ($request->has('notable_type') && $request->has('notable_id')) {
-            $type = $request->notable_type; // 'student' or 'batch'
-            
-            if ($type === 'student') {
-                $query->where('notable_type', Student::class);
-            } elseif ($type === 'batch') {
-                $query->where('notable_type', Batch::class);
-            }
-            
-            $query->where('notable_id', $request->notable_id);
+        // Filter by archive status
+        if ($request->has('is_archived')) {
+            $query->where('is_archived', $request->is_archived);
+        } else {
+            $query->where('is_archived', false);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('content', 'like', '%' . $request->search . '%');
+            });
         }
 
         $paginator = $query->orderBy('created_at', 'desc')->paginate(15);
 
         $paginator->getCollection()->transform(function ($note) {
             $data = $note->toArray();
-            $data['type'] = class_basename($note->notable_type);
-            $data['target'] = $note->notable;
+            if ($note->notable_type) {
+                $data['type'] = class_basename($note->notable_type);
+                $data['target'] = $note->notable;
+            } else {
+                $data['type'] = 'General';
+                $data['target'] = null;
+            }
             unset($data['notable_type']);
             unset($data['notable']);
             return $data;
@@ -63,40 +74,43 @@ class InstituteNoteController extends Controller
         $institute = $request->user();
 
         $request->validate([
-            'notable_type' => 'required|in:student,batch',
-            'notable_id' => 'required|integer',
+            'title' => 'required|string|max:255',
+            'category' => 'nullable|string|max:100',
             'content' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+            'notable_type' => 'nullable|in:student,batch',
+            'notable_id' => 'nullable|integer',
         ]);
 
-        $modelClass = $request->notable_type === 'student' ? Student::class : Batch::class;
-        $table = $request->notable_type === 'student' ? 'students' : 'batches';
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('notes', 'public');
+        }
 
-        // Validate that the target exists and belongs to this institute
-        $request->validate([
-            'notable_id' => 'exists:' . $table . ',id,institute_id,' . $institute->id
-        ], [
-            'notable_id.exists' => 'The selected ' . $request->notable_type . ' is invalid or does not belong to your institute.'
-        ]);
+        $modelClass = null;
+        if ($request->notable_type) {
+            $modelClass = $request->notable_type === 'student' ? Student::class : Batch::class;
+            $table = $request->notable_type === 'student' ? 'students' : 'batches';
+            
+            $request->validate([
+                'notable_id' => 'required|exists:' . $table . ',id,institute_id,' . $institute->id
+            ]);
+        }
 
         $note = Note::create([
             'institute_id' => $institute->id,
             'notable_id' => $request->notable_id,
             'notable_type' => $modelClass,
+            'title' => $request->title,
+            'category' => $request->category,
             'content' => $request->content,
+            'image' => $imagePath,
         ]);
-
-        $note->load('notable');
-
-        $data = $note->toArray();
-        $data['type'] = class_basename($note->notable_type);
-        $data['target'] = $note->notable;
-        unset($data['notable_type']);
-        unset($data['notable']);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Note added successfully.',
-            'data' => $data
+            'data' => $note
         ], 201);
     }
 
@@ -112,24 +126,49 @@ class InstituteNoteController extends Controller
             ->firstOrFail();
 
         $request->validate([
-            'content' => 'required|string',
+            'title' => 'sometimes|required|string|max:255',
+            'category' => 'nullable|string|max:100',
+            'content' => 'sometimes|required|string',
+            'image' => 'nullable|image|max:2048',
         ]);
 
-        $note->update([
-            'content' => $request->content,
-        ]);
+        $data = $request->except('image');
 
-        $note->load('notable');
-        $data = $note->toArray();
-        $data['type'] = class_basename($note->notable_type);
-        $data['target'] = $note->notable;
-        unset($data['notable_type']);
-        unset($data['notable']);
+        if ($request->hasFile('image')) {
+            if ($note->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($note->image)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($note->image);
+            }
+            $data['image'] = $request->file('image')->store('notes', 'public');
+        }
+
+        $note->update($data);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Note updated successfully.',
-            'data' => $data
+            'data' => $note
+        ]);
+    }
+
+    /**
+     * Archive/Unarchive a note.
+     */
+    public function archive(Request $request, $id)
+    {
+        $institute = $request->user();
+
+        $note = Note::where('institute_id', $institute->id)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $note->update([
+            'is_archived' => ! $note->is_archived
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $note->is_archived ? 'Note archived successfully.' : 'Note unarchived successfully.',
+            'data' => $note
         ]);
     }
 

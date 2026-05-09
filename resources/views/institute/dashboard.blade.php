@@ -103,6 +103,20 @@
                 <p class="text-xs text-slate-400 font-medium">Inquiry tracking</p>
             </div>
         </a>
+
+        <!-- Staff Management -->
+        <a href="{{ route('institute.staff.index') }}" class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-amber-600">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="h-9 w-9 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </div>
+                    <svg class="w-4 h-4 text-slate-200 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-1">Staff Management</h3>
+                <p class="text-xs text-slate-400 font-medium">Manage employees</p>
+            </div>
+        </a>
     </div>
 
     <!-- Bottom Section

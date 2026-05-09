@@ -4,20 +4,52 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Note extends Model
 {
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
-        'institute_id', 'notable_id', 'notable_type', 'content'
+        'user_id', 
+        'institute_id', 
+        'notable_id', 
+        'notable_type', 
+        'category_id', 
+        'category', 
+        'title', 
+        'slug', 
+        'content', 
+        'cover_image', 
+        'is_bookmarked', 
+        'is_archived'
     ];
 
-    public function institute()
+    protected $casts = [
+        'is_bookmarked' => 'boolean',
+        'is_archived' => 'boolean',
+    ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
     {
-        return $this->belongsTo(Institute::class);
+        return $this->cover_image ? url('storage/' . $this->cover_image) : null;
     }
 
-    public function notable()
+    protected static function boot()
     {
-        return $this->morphTo();
+        parent::boot();
+        static::creating(function ($note) {
+            $note->slug = Str::slug($note->title) . '-' . Str::random(5);
+        });
     }
+
+    public function user() { return $this->belongsTo(User::class); }
+    public function institute() { return $this->belongsTo(Institute::class); }
+    public function notable() { return $this->morphTo(); }
+    public function category_relation() { return $this->belongsTo(NoteCategory::class, 'category_id'); }
+    public function checklists() { return $this->hasMany(NoteChecklist::class); }
+    public function images() { return $this->hasMany(NoteImage::class); }
 }
