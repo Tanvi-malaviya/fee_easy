@@ -1405,7 +1405,7 @@
                             optionsContainer.innerHTML = result.data.map(staff => `
                                 <div onclick="selectStaffOption('${staff.id}', '${staff.full_name}')" 
                                      class="attendance-staff-option px-4 py-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-[#A8440B] cursor-pointer transition-colors border-b border-slate-50 last:border-0">
-                                    ${staff.full_name} <span class="text-[10px] text-slate-400 ml-1">(${staff.employee_id || 'No ID'})</span>
+                                    ${staff.full_name}
                                 </div>
                             `).join('');
                         }
