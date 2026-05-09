@@ -80,15 +80,16 @@ class StaffSalaryController extends Controller
         
         $data['net_salary'] = $data['base_salary'] + ($data['bonus'] ?? 0) - ($data['deductions'] ?? 0);
 
-        $salary = StaffSalary::updateOrCreate(
-            [
-                'staff_id' => $data['staff_id'],
-                'month' => $data['month'],
-                'year' => $data['year'],
-                'institute_id' => $instituteId
-            ],
-            $data
-        );
+        if ($request->filled('salary_id')) {
+            $salary = StaffSalary::where('institute_id', $instituteId)->find($request->salary_id);
+            if ($salary) {
+                $salary->update($data);
+            } else {
+                return response()->json(['message' => 'Salary record not found'], 404);
+            }
+        } else {
+            $salary = StaffSalary::create($data);
+        }
 
         return response()->json([
             'message' => 'Salary record saved successfully',

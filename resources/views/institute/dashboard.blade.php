@@ -91,7 +91,7 @@
         </a>
 
         <!-- Lead Management -->
-        <a href="#" class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-600">
+        <a href="{{ route('institute.leads.index') }}" class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-600">
             <div class="relative z-10">
                 <div class="flex items-center justify-between mb-3">
                     <div class="h-9 w-9 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center">

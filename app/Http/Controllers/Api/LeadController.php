@@ -15,8 +15,14 @@ class LeadController extends Controller
      */
     public function index(Request $request)
     {
-        $instituteId = $request->user()->id;
-        $query = Lead::where('institute_id', $instituteId)->with('notes');
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            
+            $instituteId = $user->id;
+            $query = Lead::where('institute_id', $instituteId);
 
         // Filter by Status
         if ($request->has('status') && $request->status !== 'All') {
@@ -35,15 +41,21 @@ class LeadController extends Controller
 
         $leads = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', 10));
 
-        return response()->json([
-            'data' => $leads->items(),
-            'pagination' => [
-                'total' => $leads->total(),
-                'per_page' => $leads->perPage(),
-                'current_page' => $leads->currentPage(),
-                'last_page' => $leads->lastPage(),
-            ]
-        ]);
+            return response()->json([
+                'data' => $leads->items(),
+                'pagination' => [
+                    'total' => $leads->total(),
+                    'per_page' => $leads->perPage(),
+                    'current_page' => $leads->currentPage(),
+                    'last_page' => $leads->lastPage(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -141,6 +153,40 @@ class LeadController extends Controller
 
         return response()->json([
             'message' => 'Lead status updated successfully',
+            'data' => $lead->load('notes')
+        ]);
+    }
+
+    /**
+     * Update lead details.
+     */
+    public function update(Request $request, $id)
+    {
+        $instituteId = $request->user()->id;
+        $lead = Lead::where('institute_id', $instituteId)->find($id);
+
+        if (!$lead) {
+            return response()->json(['message' => 'Lead not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string',
+            'course_selection' => 'nullable|string',
+            'reference' => 'nullable|string',
+            'status' => 'nullable|in:New,Contacted,Qualified,Lost,Converted'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $lead->update($request->all());
+
+        return response()->json([
+            'message' => 'Lead updated successfully',
             'data' => $lead->load('notes')
         ]);
     }

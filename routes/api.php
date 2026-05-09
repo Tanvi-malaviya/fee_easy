@@ -247,7 +247,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/staff-departments', [StaffController::class, 'storeDepartment']);
 
             // Staff List for dropdowns
-            Route::get('/staff-list-simple', [StaffController::class, 'getStaffSimpleList']);
+
 
             // Attendance Management
             Route::prefix('attendance')->group(function () {
@@ -265,11 +265,11 @@ Route::prefix('v1')->group(function () {
                 Route::get('/export', [\App\Http\Controllers\Api\StaffSalaryController::class, 'export']);
             });
 
-            // Leads Management
             Route::prefix('leads')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\LeadController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\LeadController::class, 'store']);
                 Route::get('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'show']);
+                Route::put('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'update']);
                 Route::put('/{id}/status', [\App\Http\Controllers\Api\LeadController::class, 'updateStatus']);
                 Route::post('/{id}/notes', [\App\Http\Controllers\Api\LeadController::class, 'addNote']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'destroy']);
