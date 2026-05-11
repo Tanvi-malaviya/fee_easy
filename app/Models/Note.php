@@ -26,6 +26,8 @@ class Note extends Model
         'is_archived'
     ];
 
+    protected $hidden = ['cover_image', 'slug'];
+
     protected $casts = [
         'is_bookmarked' => 'boolean',
         'is_archived' => 'boolean',
