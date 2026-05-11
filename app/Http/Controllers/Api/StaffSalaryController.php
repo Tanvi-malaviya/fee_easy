@@ -34,10 +34,14 @@ class StaffSalaryController extends Controller
             });
         }
 
+        // Calculate total amount before pagination
+        $totalAmount = (clone $query)->sum('net_salary');
+
         $salaries = $query->orderBy('payment_date', 'desc')->paginate($request->get('per_page', 15));
 
         return response()->json([
             'status' => 'success',
+            'total_amount' => $totalAmount,
             'data' => $salaries->items(),
             'pagination' => [
                 'total' => $salaries->total(),
@@ -55,6 +59,17 @@ class StaffSalaryController extends Controller
     {
         $instituteId = $request->user()->id;
 
+        $allowedFields = ['staff_id', 'salary_id', 'payment_date', 'base_salary', 'bonus', 'deductions', 'payment_method', 'status', 'notes'];
+        $unwantedFields = array_diff(array_keys($request->all()), $allowedFields);
+
+        if (!empty($unwantedFields)) {
+            return response()->json([
+                'errors' => [
+                    'unexpected_fields' => ['The following fields are not allowed: ' . implode(', ', $unwantedFields)]
+                ]
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'staff_id' => 'required|exists:staff,id,institute_id,' . $instituteId,
             'payment_date' => 'required|date|before_or_equal:today',
@@ -63,7 +78,7 @@ class StaffSalaryController extends Controller
             'deductions' => 'nullable|numeric',
             'payment_method' => 'nullable|in:Cash,Online',
             'status' => 'required|in:Paid,Pending',
-            'note' => 'nullable|string'
+            'notes' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
@@ -75,20 +90,23 @@ class StaffSalaryController extends Controller
         
         // Extract month and year from payment_date
         $date = \Carbon\Carbon::parse($request->payment_date);
-        $data['month'] = $date->month;
-        $data['year'] = $date->year;
+        $month = $date->month;
+        $year = $date->year;
         
+        $data['month'] = $month;
+        $data['year'] = $year;
         $data['net_salary'] = $data['base_salary'] + ($data['bonus'] ?? 0) - ($data['deductions'] ?? 0);
 
-        $salary = StaffSalary::updateOrCreate(
-            [
-                'staff_id' => $data['staff_id'],
-                'month' => $data['month'],
-                'year' => $data['year'],
-                'institute_id' => $instituteId
-            ],
-            $data
-        );
+        if ($request->filled('salary_id')) {
+            $salary = StaffSalary::where('institute_id', $instituteId)->find($request->salary_id);
+            if ($salary) {
+                $salary->update($data);
+            } else {
+                return response()->json(['message' => 'Salary record not found'], 404);
+            }
+        } else {
+            $salary = StaffSalary::create($data);
+        }
 
         return response()->json([
             'message' => 'Salary record saved successfully',
@@ -146,5 +164,38 @@ class StaffSalaryController extends Controller
         ]);
 
         return $pdf->download('staff_salary_' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Get salary records for a particular staff.
+     */
+    public function showByStaff(Request $request, $staffId)
+    {
+        $instituteId = $request->user()->id;
+        $query = StaffSalary::where('institute_id', $instituteId)
+            ->where('staff_id', $staffId);
+
+        if ($request->has('month')) {
+            $query->where('month', $request->month);
+        }
+
+        if ($request->has('year')) {
+            $query->where('year', $request->year);
+        }
+
+        $totalAmount = (clone $query)->sum('net_salary');
+        $salaries = $query->orderBy('payment_date', 'desc')->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'status' => 'success',
+            'total_amount' => $totalAmount,
+            'data' => $salaries->items(),
+            'pagination' => [
+                'total' => $salaries->total(),
+                'per_page' => $salaries->perPage(),
+                'current_page' => $salaries->currentPage(),
+                'last_page' => $salaries->lastPage(),
+            ]
+        ]);
     }
 }

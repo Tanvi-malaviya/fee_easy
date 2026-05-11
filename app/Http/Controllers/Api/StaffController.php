@@ -43,6 +43,14 @@ class StaffController extends Controller
             $query->where('staff_department_id', $request->department_id);
         }
 
+        if ($request->has('all')) {
+            $staff = $query->latest()->get();
+            return response()->json([
+                'status' => 'success',
+                'data' => $staff
+            ]);
+        }
+
         $staff = $query->latest()->paginate($request->get('per_page', 10));
 
         return response()->json([
@@ -73,7 +81,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,NULL,id,institute_id,' . $instituteId,
+            'email' => 'required|email:rfc,dns|unique:staff,email,NULL,id,institute_id,' . $instituteId,
             'staff_role_id' => 'required|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'required|exists:staff_departments,id,institute_id,' . $instituteId,
             'employment_type' => 'required|in:Salary,Hourly',
@@ -109,7 +117,7 @@ class StaffController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $instituteId = auth('institute')->id();
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         $staff = Staff::where('institute_id', $instituteId)->with(['role', 'department'])->find($id);
 
         if (!$staff) {
@@ -139,7 +147,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
+            'email' => 'sometimes|required|email:rfc,dns|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
             'staff_role_id' => 'sometimes|required|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'sometimes|required|exists:staff_departments,id,institute_id,' . $instituteId,
             'employment_type' => 'sometimes|required|in:Salary,Hourly',
@@ -179,7 +187,7 @@ class StaffController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $instituteId = auth('institute')->id();
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         $staff = Staff::where('institute_id', $instituteId)->find($id);
 
         if (!$staff) {
@@ -196,7 +204,7 @@ class StaffController extends Controller
      */
     public function getRoles(Request $request)
     {
-        $instituteId = auth('institute')->id();
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         return response()->json(StaffRole::where('institute_id', $instituteId)->get());
     }
 
@@ -205,7 +213,7 @@ class StaffController extends Controller
      */
     public function getDepartments(Request $request)
     {
-        $instituteId = auth('institute')->id();
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         return response()->json(StaffDepartment::where('institute_id', $instituteId)->get());
     }
 
@@ -214,11 +222,12 @@ class StaffController extends Controller
      */
     public function storeRole(Request $request)
     {
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         $request->validate(['name' => 'required|string|max:255']);
 
         $role = StaffRole::create([
             'name' => $request->name,
-            'institute_id' => auth('institute')->id()
+            'institute_id' => $instituteId
         ]);
 
         return response()->json(['message' => 'Role created successfully', 'data' => $role], 201);
@@ -229,29 +238,15 @@ class StaffController extends Controller
      */
     public function storeDepartment(Request $request)
     {
+        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         $request->validate(['name' => 'required|string|max:255']);
 
         $department = StaffDepartment::create([
             'name' => $request->name,
-            'institute_id' => auth('institute')->id()
+            'institute_id' => $instituteId
         ]);
 
         return response()->json(['message' => 'Department created successfully', 'data' => $department], 201);
     }
 
-    /**
-     * Get simple staff list (ID and Name) for dropdowns.
-     */
-    public function getStaffSimpleList(Request $request)
-    {
-        $instituteId = auth('institute')->id();
-        $staff = Staff::where('institute_id', $instituteId)
-            ->select('id', 'full_name', 'employee_id')
-            ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $staff
-        ]);
-    }
 }

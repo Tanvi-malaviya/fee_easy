@@ -141,10 +141,10 @@
     <div id="add-staff-modal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
         <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[550px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-8 py-5 flex items-center justify-between shrink-0">
-                <h1 id="modal-title" class="text-lg font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
+            <div class="px-6 py-4 flex items-center justify-between shrink-0">
+                <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -152,13 +152,13 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-8 pb-8 custom-scrollbar">
+            <div class="overflow-y-auto px-6 pb-6 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
 
                     <!-- Profile Image -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Profile Image</label>
                         <div class="flex items-center gap-3">
                             <div
@@ -183,7 +183,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Full Name</label>
                             <input type="text" name="full_name" id="field-name" required placeholder="e.g. Jonathan Smith"
@@ -191,25 +191,57 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
+                            <div class="relative">
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Role</label>
-                                <select name="staff_role_id" id="field-role" required
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all appearance-none cursor-pointer">
-                                    <option value="">Select Role</option>
-                                    @foreach(App\Models\StaffRole::where('institute_id', Auth::guard('institute')->id())->get() as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
+                                <button type="button" onclick="toggleModalDropdown('role')"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                    <span id="modal-role-label" class="text-slate-400">Select Role</span>
+                                    <svg id="modal-role-chevron" class="w-4 h-4 text-slate-400 transition-transform"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="modal-role-menu"
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                        @foreach(App\Models\StaffRole::where('institute_id', Auth::guard('institute')->id())->get() as $role)
+                                            <button type="button"
+                                                onclick="selectModalOption('role', '{{ $role->id }}', '{{ $role->name }}')"
+                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                {{ $role->name }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" name="staff_role_id" id="field-role-id" required>
+                                <span id="error-staff_role_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
-                            <div>
+                            <div class="relative">
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Department</label>
-                                <select name="staff_department_id" id="field-dept" required
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all appearance-none cursor-pointer">
-                                    <option value="">Select Department</option>
-                                    @foreach(App\Models\StaffDepartment::where('institute_id', Auth::guard('institute')->id())->get() as $dept)
-                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                                    @endforeach
-                                </select>
+                                <button type="button" onclick="toggleModalDropdown('dept')"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                    <span id="modal-dept-label" class="text-slate-400">Select Department</span>
+                                    <svg id="modal-dept-chevron" class="w-4 h-4 text-slate-400 transition-transform"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="modal-dept-menu"
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                        @foreach(App\Models\StaffDepartment::where('institute_id', Auth::guard('institute')->id())->get() as $dept)
+                                            <button type="button"
+                                                onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                {{ $dept->name }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <input type="hidden" name="staff_department_id" id="field-dept-id" required>
+                                <span id="error-staff_department_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                         </div>
 
@@ -260,11 +292,11 @@
                     </div>
 
                     <!-- Modal Footer -->
-                    <div class="flex items-center justify-end gap-4 mt-6">
+                    <div class="flex items-center justify-end gap-3 mt-5">
                         <button type="button" onclick="closeAddModal()"
                             class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">Cancel</button>
                         <button type="submit" id="submit-btn"
-                            class="px-8 py-2.5 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all uppercase tracking-widest">Save Changes</button>
+                            class="px-6 py-2 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all uppercase tracking-widest">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -337,37 +369,11 @@
                 <h3 class="text-xl font-bold text-slate-800 tracking-tight">Salary History</h3>
             </div>
 
-            <div class="space-y-4 mb-6 flex-1 overflow-y-auto max-h-[450px] pr-2 no-scrollbar">
-                @forelse($staff->salaries->sortByDesc('payment_date') as $salary)
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 group/salary hover:bg-white hover:border-brand-800 transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col">
-                                <h4 class="text-sm font-bold text-slate-800 mb-1">{{ date('F Y', strtotime($salary->payment_date)) }}</h4>
-                                <p class="text-[11px] font-medium text-slate-400">Paid on {{ date('d M, Y', strtotime($salary->payment_date)) }}</p>
-                            </div>
-                            <div class="flex flex-col items-end gap-1">
-                                <span class="text-sm font-bold text-slate-800">₹{{ number_format($salary->amount ?? $staff->base_salary, 2) }}</span>
-                                <div class="flex items-center gap-1 px-2 py-0.5 {{ $salary->payment_method == 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-emerald-50 text-emerald-500' }} rounded text-[9px] font-bold uppercase tracking-widest">
-                                    @if($salary->payment_method == 'Online')
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
-                                    @else
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                    @endif
-                                    {{ $salary->payment_method ?? 'CASH' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="flex flex-col items-center justify-center py-10 text-center">
-                        <div class="h-12 w-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p class="text-[11px] font-bold text-slate-400">No payment records yet.</p>
-                    </div>
-                @endforelse
+            <div id="salary-history-container" class="space-y-4 mb-6 flex-1 overflow-y-auto max-h-[450px] pr-2 no-scrollbar">
+                <div class="flex flex-col items-center justify-center py-10 text-center animate-pulse">
+                    <div class="h-8 w-8 border-3 border-slate-100 border-t-brand-800 rounded-full animate-spin mx-auto mb-3"></div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Loading Records...</p>
+                </div>
             </div>
 
             <button class="w-full py-4 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-sm">
@@ -388,6 +394,16 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* Hide number input spinners */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
         }
     </style>
 
@@ -413,8 +429,15 @@
 
             document.getElementById('staff_id').value = staff.id;
             document.getElementById('field-name').value = staff.full_name;
-            document.getElementById('field-role').value = staff.staff_role_id;
-            document.getElementById('field-dept').value = staff.staff_department_id;
+            
+            // Set custom dropdown values
+            if (staff.role) {
+                selectModalOption('role', staff.staff_role_id, staff.role.name);
+            }
+            if (staff.department) {
+                selectModalOption('dept', staff.staff_department_id, staff.department.name);
+            }
+
             document.getElementById('field-email').value = staff.email;
             document.getElementById('field-phone').value = staff.phone || '';
 
@@ -447,6 +470,44 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        // Custom Dropdown Functions
+        function toggleModalDropdown(type) {
+            const menu = document.getElementById(`modal-${type}-menu`);
+            const chevron = document.getElementById(`modal-${type}-chevron`);
+
+            // Close other menus
+            ['role', 'dept'].forEach(t => {
+                if (t !== type) {
+                    document.getElementById(`modal-${t}-menu`).classList.add('hidden');
+                    document.getElementById(`modal-${t}-chevron`).classList.remove('rotate-180');
+                }
+            });
+
+            menu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        function selectModalOption(type, id, name) {
+            document.getElementById(`field-${type}-id`).value = id;
+            document.getElementById(`modal-${type}-label`).textContent = name;
+            document.getElementById(`modal-${type}-label`).classList.remove('text-slate-400');
+            document.getElementById(`modal-${type}-label`).classList.add('text-slate-700');
+            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
+            document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', (e) => {
+            ['role', 'dept'].forEach(type => {
+                const button = document.getElementById(`modal-${type}-label`)?.parentElement;
+                const menu = document.getElementById(`modal-${type}-menu`);
+                if (button && !button.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                    document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
+                }
+            });
+        });
 
         // Form Submission
         const addForm = document.getElementById('add-staff-form');
@@ -484,11 +545,12 @@
                 }
 
                 if (result.status === 'success') {
-                    // Show success message and reload
-                    alert('Staff information updated successfully!');
-                    window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+                    showToast('Staff information updated successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = window.location.pathname;
+                    }, 1000);
                 } else {
-                    alert(result.message || 'Something went wrong');
+                    showToast(result.message || 'Something went wrong', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -499,42 +561,100 @@
             }
         });
 
-        const attendances = @json($staff->attendances);
+        const staffId = "{{ $staff->id }}";
+        let currentAttendances = [];
+
+        async function fetchAttendance() {
+            const monthIndex = monthSelect.selectedIndex + 1;
+            const year = yearSelect.value;
+            
+            calendarContainer.innerHTML = '<div class="col-span-7 py-10 text-center"><div class="h-6 w-6 border-2 border-slate-100 border-t-brand-800 rounded-full animate-spin mx-auto mb-2"></div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Updating...</p></div>';
+
+            try {
+                const response = await fetch(`/api/v1/institute/attendance/${staffId}?month=${monthIndex}&year=${year}`, {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                });
+                const result = await response.json();
+                currentAttendances = result.data || [];
+                renderCalendar();
+            } catch (error) {
+                console.error('Error fetching attendance:', error);
+            }
+        }
+
+        async function fetchSalaries() {
+            const salaryContainer = document.getElementById('salary-history-container');
+            
+            try {
+                const response = await fetch(`/api/v1/institute/salaries/${staffId}`, {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                });
+                const result = await response.json();
+                const salaries = result.data || [];
+
+                if (salaries.length === 0) {
+                    salaryContainer.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-10 text-center">
+                            <div class="h-12 w-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">No payment records yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                salaryContainer.innerHTML = salaries.map(salary => `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 group/salary hover:bg-white hover:border-brand-800 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <h4 class="text-sm font-bold text-slate-800 mb-1">${new Date(salary.payment_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h4>
+                                <p class="text-[11px] font-medium text-slate-400">Paid on ${new Date(salary.payment_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="text-sm font-bold text-slate-800">₹${parseFloat(salary.net_salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <div class="flex items-center gap-1 px-2 py-0.5 ${salary.payment_method === 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-emerald-50 text-emerald-500'} rounded text-[9px] font-bold uppercase tracking-widest">
+                                    ${salary.payment_method === 'Online' ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>' : '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>'}
+                                    ${salary.payment_method || 'CASH'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching salaries:', error);
+            }
+        }
+
         const monthSelect = document.getElementById('month-select');
         const yearSelect = document.getElementById('year-select');
         const calendarContainer = document.getElementById('attendance-calendar');
 
         function renderCalendar() {
-            const month = monthSelect.value;
             const year = parseInt(yearSelect.value);
             const monthIndex = monthSelect.selectedIndex;
 
-            // Clear existing dates (keep labels)
-            const labels = calendarContainer.querySelectorAll('.tracking-widest');
             calendarContainer.innerHTML = '';
-            labels.forEach(l => {
-                if (l.innerText.length === 3) calendarContainer.appendChild(l);
+            ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].forEach(day => {
+                calendarContainer.innerHTML += `<div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center py-1">${day}</div>`;
             });
 
             const firstDay = new Date(year, monthIndex, 1).getDay();
             const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-            const prevMonthDays = new Date(year, monthIndex, 0).getDate();
             const adjustedFirstDay = firstDay === 0 ? 7 : firstDay;
 
-            // Fill previous month days (greyed out)
             for (let i = 0; i < adjustedFirstDay - 1; i++) {
                 const dayNum = new Date(year, monthIndex, 0).getDate() - (adjustedFirstDay - 2) + i;
                 calendarContainer.innerHTML += `<div class="aspect-[2/1] flex items-center justify-center text-[10px] font-bold text-slate-200 bg-slate-50/30 rounded-lg">${dayNum}</div>`;
             }
 
-            // Current month days
             const today = new Date();
             const isCurrentMonth = today.getMonth() === monthIndex && today.getFullYear() === year;
             const todayDate = today.getDate();
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const attendance = attendances.find(a => a.date === dateStr);
+                const attendance = currentAttendances.find(a => a.date === dateStr);
 
                 let statusClasses = 'bg-slate-50 text-slate-400 hover:bg-slate-100';
                 if (attendance) {
@@ -542,6 +662,10 @@
                         statusClasses = 'bg-green-100 text-green-700 border-2 border-green-500';
                     } else if (attendance.status === 'Absent') {
                         statusClasses = 'bg-red-500 text-white border-2 border-red-700';
+                    } else if (attendance.status === 'Half Day') {
+                        statusClasses = 'bg-amber-100 text-amber-700 border-2 border-amber-500';
+                    } else if (attendance.status === 'Late') {
+                        statusClasses = 'bg-sky-100 text-sky-700 border-2 border-sky-500';
                     }
                 } else if (isCurrentMonth && day === todayDate) {
                     statusClasses = 'bg-orange-500 text-white';
@@ -554,18 +678,18 @@
                     `;
             }
 
-            // Fill remaining spaces
-            const totalSlots = 42; // 6 rows of 7
+            const totalSlots = 42; 
             const currentSlots = (adjustedFirstDay - 1) + daysInMonth;
             for (let i = 1; i <= totalSlots - currentSlots; i++) {
                 calendarContainer.innerHTML += `<div class="aspect-[2/1] flex items-center justify-center text-[10px] font-medium text-slate-200 bg-slate-50/50 rounded-lg">${i}</div>`;
             }
         }
 
-        monthSelect.addEventListener('change', renderCalendar);
-        yearSelect.addEventListener('change', renderCalendar);
+        monthSelect.addEventListener('change', fetchAttendance);
+        yearSelect.addEventListener('change', fetchAttendance);
 
-        // Initial render
-        renderCalendar();
+        // Initial fetch
+        fetchAttendance();
+        fetchSalaries();
     </script>
 @endsection

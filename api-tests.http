@@ -225,6 +225,30 @@ GET {{baseUrl}}/institute/notes
 Authorization: Bearer {{instituteToken}}
 Accept: application/json
 
+###
+# Toggle Bookmark on a Note (Requires Note ID)
+POST {{baseUrl}}/institute/notes/1/bookmark
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# Delete a Note (Requires Note ID)
+DELETE {{baseUrl}}/institute/notes/1
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# List Notes filtered by Category
+GET {{baseUrl}}/institute/notes?category_id=1
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
+###
+# List Bookmarked Notes
+GET {{baseUrl}}/institute/notes?is_bookmarked=true
+Authorization: Bearer {{instituteToken}}
+Accept: application/json
+
 ### -------------------------------------------------------------
 ### TEACHER MANAGEMENT & ATTENDANCE API TESTS
 ### -------------------------------------------------------------

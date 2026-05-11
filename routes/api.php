@@ -142,6 +142,7 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('expenses')->group(function () {
                 Route::get('/dashboard', [InstituteExpenseController::class, 'dashboard']);
+                Route::get('/analysis', [InstituteExpenseController::class, 'analysis']);
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);
                 Route::post('/categories', [InstituteExpenseController::class, 'storeCategory']);
@@ -247,7 +248,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/staff-departments', [StaffController::class, 'storeDepartment']);
 
             // Staff List for dropdowns
-            Route::get('/staff-list-simple', [StaffController::class, 'getStaffSimpleList']);
+
 
             // Attendance Management
             Route::prefix('attendance')->group(function () {
@@ -255,6 +256,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'store']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'destroy']);
                 Route::get('/export', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'export']);
+                Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffAttendanceController::class, 'showByStaff']);
             });
 
             // Salary Management
@@ -263,13 +265,14 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [\App\Http\Controllers\Api\StaffSalaryController::class, 'store']);
                 Route::get('/preview/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'preview']);
                 Route::get('/export', [\App\Http\Controllers\Api\StaffSalaryController::class, 'export']);
+                Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'showByStaff']);
             });
 
-            // Leads Management
             Route::prefix('leads')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\LeadController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\LeadController::class, 'store']);
                 Route::get('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'show']);
+                Route::put('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'update']);
                 Route::put('/{id}/status', [\App\Http\Controllers\Api\LeadController::class, 'updateStatus']);
                 Route::post('/{id}/notes', [\App\Http\Controllers\Api\LeadController::class, 'addNote']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'destroy']);

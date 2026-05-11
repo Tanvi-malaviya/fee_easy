@@ -11,10 +11,25 @@ class NoteController extends Controller
     public function __construct() { $this->middleware('auth:sanctum'); }
 
     public function index(Request $request) {
-        $notes = Note::where('user_id', auth()->id())
-            ->with(['checklists', 'images'])
-            ->latest()
-            ->paginate($request->get('per_page', 15));
+        $query = Note::where('user_id', auth()->id())
+            ->with(['checklists', 'images', 'category_relation']);
+
+        // Filter by Category
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by Bookmark
+        if ($request->has('is_bookmarked')) {
+            $query->where('is_bookmarked', $request->boolean('is_bookmarked'));
+        }
+
+        // Filter by Archived
+        if ($request->has('is_archived')) {
+            $query->where('is_archived', $request->boolean('is_archived'));
+        }
+
+        $notes = $query->latest()->paginate($request->get('per_page', 15));
             
         return response()->json([
             'status' => 'success',
@@ -36,6 +51,7 @@ class NoteController extends Controller
             'notable_id' => 'nullable',
             'notable_type' => 'nullable',
             'title' => 'required|string',
+            'category_id' => 'nullable|exists:note_categories,id',
             'category' => 'nullable|string',
             'content' => 'nullable|string',
             'image' => 'nullable|image',
@@ -44,6 +60,15 @@ class NoteController extends Controller
 
         $data['user_id'] = auth()->id();
         
+        // Handle Category Fix: If category name is provided but no category_id, find or create it
+        if (!empty($data['category']) && empty($data['category_id'])) {
+            $category = \App\Models\NoteCategory::firstOrCreate(
+                ['name' => $data['category']],
+                ['color' => '#6366f1'] // Default indigo color
+            );
+            $data['category_id'] = $category->id;
+        }
+
         // Handle cover image (mapping 'image' from request to 'cover_image' in DB)
         if ($request->hasFile('image')) {
             $data['cover_image'] = $request->file('image')->store('notes', 'public');
@@ -58,36 +83,82 @@ class NoteController extends Controller
             }
         }
 
-        // Return EXACT response format as before
+        // Return cleaned response
         return response()->json([
             'status' => 'success',
             'message' => 'Note added successfully.',
-            'data' => [
-                'institute_id' => $note->institute_id,
-                'notable_id' => $note->notable_id,
-                'notable_type' => $note->notable_type,
-                'title' => $note->title,
-                'category' => $note->category,
-                'content' => $note->content,
-                'image' => $note->cover_image,
-                'updated_at' => $note->updated_at,
-                'created_at' => $note->created_at,
-                'id' => $note->id,
-                'image_url' => $note->image_url,
-                'checklists' => $note->checklists, // New rich feature
-            ]
+            'data' => $note
         ], 201);
     }
 
     public function show($id) {
-        $note = Note::where('user_id', auth()->id())->with(['checklists', 'images'])->findOrFail($id);
+        $note = Note::where('user_id', auth()->id())->with(['checklists', 'images', 'category_relation'])->findOrFail($id);
         return response()->json(['status' => 'success', 'data' => $note]);
     }
 
     public function update(Request $request, $id) {
         $note = Note::where('user_id', auth()->id())->findOrFail($id);
-        $note->update($request->all());
-        return response()->json(['status' => 'success', 'message' => 'Note updated.', 'data' => $note]);
+        
+        $data = $request->validate([
+            'institute_id' => 'nullable|exists:institutes,id',
+            'notable_id' => 'nullable',
+            'notable_type' => 'nullable',
+            'title' => 'nullable|string',
+            'category_id' => 'nullable|exists:note_categories,id',
+            'category' => 'nullable|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image',
+            'is_bookmarked' => 'nullable|boolean',
+            'is_archived' => 'nullable|boolean'
+        ]);
+
+        // Handle Category Fix: If category name is provided but no category_id, find or create it
+        if (!empty($data['category']) && empty($data['category_id'])) {
+            $category = \App\Models\NoteCategory::firstOrCreate(
+                ['name' => $data['category']],
+                ['color' => '#6366f1'] // Default indigo color
+            );
+            $data['category_id'] = $category->id;
+        }
+
+        if ($request->hasFile('image')) {
+            $data['cover_image'] = $request->file('image')->store('notes', 'public');
+        }
+
+        $note->update($data);
+
+        // Optional: Update checklists if provided
+        if ($request->has('checklists') && is_array($request->checklists)) {
+            // Simple approach: delete and recreate or just add new ones
+            // For now, let's just allow adding new ones or updating existing ones via separate API if needed
+            // But here we can implement a basic sync
+            $note->checklists()->delete();
+            foreach ($request->checklists as $item) {
+                $note->checklists()->create([
+                    'title' => $item['title'],
+                    'is_completed' => $item['is_completed'] ?? false
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'success', 
+            'message' => 'Note updated.', 
+            'data' => $note
+        ]);
+    }
+
+    public function bookmark($id) {
+        $note = Note::where('user_id', auth()->id())->findOrFail($id);
+        $note->update(['is_bookmarked' => !$note->is_bookmarked]);
+        
+        return response()->json([
+            'status' => 'success', 
+            'message' => $note->is_bookmarked ? 'Note bookmarked.' : 'Note unbookmarked.',
+            'data' => [
+                'is_bookmarked' => $note->is_bookmarked
+            ]
+        ]);
     }
 
     public function destroy($id) {

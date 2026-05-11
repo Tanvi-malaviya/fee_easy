@@ -95,7 +95,7 @@ class InstituteExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
-            'payment_method' => 'nullable|string|in:Cash,Online Payment',
+            'payment_method' => 'nullable|string|in:Cash,Online',
             'receipt_image' => 'nullable|image|max:2048' 
         ]);
 
@@ -136,7 +136,7 @@ class InstituteExpenseController extends Controller
             'amount' => 'sometimes|required|numeric|min:0',
             'date' => 'sometimes|required|date',
             'description' => 'nullable|string',
-            'payment_method' => 'nullable|string|in:Cash,Online Payment',
+            'payment_method' => 'nullable|string|in:Cash,Online',
             'receipt_image' => 'nullable|image|max:2048'
         ]);
 
@@ -308,6 +308,52 @@ class InstituteExpenseController extends Controller
             'status' => 'success',
             'total_expense' => $totalOverall,
             'breakdown' => $report
+        ]);
+    }
+    /**
+     * Expense Analysis Report (Premium Dashboard Data).
+     */
+    public function analysis(Request $request)
+    {
+        $institute = $request->user();
+        $now = Carbon::now();
+        $month = $request->get('month', $now->month);
+        $year = $request->get('year', $now->year);
+        
+        $selectedDate = Carbon::create($year, $month, 1);
+        $lastMonthDate = $selectedDate->copy()->subMonth();
+
+        // 1. Total Spending
+        $currentTotal = $institute->expenses()
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->sum('amount');
+
+        // 2. All Categories Breakdown
+        $categories = $institute->expenses()
+            ->with('category')
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->select('expense_category_id', \Illuminate\Support\Facades\DB::raw('SUM(amount) as total'))
+            ->groupBy('expense_category_id')
+            ->orderBy('total', 'desc')
+            ->get()
+            ->map(function ($item) use ($currentTotal) {
+                $percentage = $currentTotal > 0 ? ($item->total / $currentTotal) * 100 : 0;
+                return [
+                    'category_name' => $item->category->name ?? 'Unknown',
+                    'amount' => (float)$item->total,
+                    'percentage' => round($percentage, 1)
+                ];
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'total_spending' => (float)$currentTotal,
+                'month_name' => $selectedDate->format('F Y'),
+                'categories' => $categories
+            ]
         ]);
     }
 }

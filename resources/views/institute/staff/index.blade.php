@@ -59,11 +59,11 @@
                     Staffs Management
                 </button>
                 <button onclick="switchTab('attendance')" id="tab-attendance"
-                    class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-slate-700">
+                    class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 ">
                     Attendance Management
                 </button>
                 <button onclick="switchTab('salary')" id="tab-salary"
-                    class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-slate-700">
+                    class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 ">
                     Salary Management
                 </button>
             </div>
@@ -203,16 +203,21 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <div class="relative">
-                            <input type="date" id="attendance-filter-date" onchange="fetchAttendance()"
-                                class="absolute opacity-0 pointer-events-none">
-                            <button onclick="document.getElementById('attendance-filter-date').showPicker()"
-                                class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
-                                </svg>
-                                <span id="attendance-filter-label">Filter by Date</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="relative">
+                                <input type="date" id="attendance-filter-date" onchange="fetchAttendance()"
+                                    class="absolute opacity-0 pointer-events-none">
+                                <button onclick="document.getElementById('attendance-filter-date').showPicker()"
+                                    class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span id="attendance-filter-label">Filter by Date</span>
+                                </button>
+                            </div>
+                            <button id="clear-attendance-filter" onclick="clearAttendanceFilter()" style="display: none;" class="h-6 w-6 flex items-center justify-center bg-rose-50 text-rose-500 rounded-md hover:bg-rose-100 transition-all" title="Clear Filter">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
                         <button onclick="exportAttendance()"
@@ -293,16 +298,21 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <div class="relative">
-                            <input type="month" id="salary-filter-month" onchange="fetchSalaries()"
-                                class="absolute opacity-0 pointer-events-none">
-                            <button onclick="document.getElementById('salary-filter-month').showPicker()"
-                                class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
-                                </svg>
-                                <span id="salary-filter-label">Filter by Month</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="relative">
+                                <input type="month" id="salary-filter-month" onchange="fetchSalaries()"
+                                    class="absolute opacity-0 pointer-events-none">
+                                <button onclick="document.getElementById('salary-filter-month').showPicker()"
+                                    class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#A8440B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span id="salary-filter-label">Filter by Month</span>
+                                </button>
+                            </div>
+                            <button id="clear-salary-filter" onclick="clearSalaryFilter()" style="display: none;" class="h-6 w-6 flex items-center justify-center bg-rose-50 text-rose-500 rounded-md hover:bg-rose-100 transition-all" title="Clear Filter">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
                         <button onclick="exportSalaries()"
@@ -334,7 +344,7 @@
                                 <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payment
                                     Mode</th>
                                 <th
-                                    class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right">
+                                    class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
                                     Amount</th>
                             </tr>
                         </thead>
@@ -435,10 +445,10 @@
     <div id="add-staff-modal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
         <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[550px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-8 py-5 flex items-center justify-between shrink-0">
-                <h1 id="modal-title" class="text-lg font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
+            <div class="px-6 py-4 flex items-center justify-between shrink-0">
+                <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -446,13 +456,13 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-8 pb-8 custom-scrollbar">
+            <div class="overflow-y-auto px-6 pb-6 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
 
                     <!-- Profile Image -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Profile Image</label>
                         <div class="flex items-center gap-3">
                             <div
@@ -477,7 +487,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Full Name</label>
                             <input type="text" name="full_name" id="field-name" required placeholder="e.g. Jonathan Smith"
@@ -596,11 +606,11 @@
                     </div>
 
                     <!-- Modal Footer -->
-                    <div class="flex items-center justify-end gap-4 mt-6">
+                    <div class="flex items-center justify-end gap-3 mt-5">
                         <button type="button" onclick="closeAddModal()"
                             class="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">Cancel</button>
                         <button type="submit" id="submit-btn"
-                            class="px-8 py-2.5 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all">Save
+                            class="px-6 py-2 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all">Save
                             Staff Member</button>
                     </div>
                 </form>
@@ -730,8 +740,8 @@
                 id="salary-modal-content">
 
                 <!-- Left Section: Form -->
-                <div class="flex-1 p-6 md:p-8 border-r border-slate-100">
-                    <div class="flex items-center justify-between mb-8">
+                <div class="flex-1 p-5 md:p-6 border-r border-slate-100">
+                    <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="text-xl font-bold text-slate-800" id="salary-modal-title">Add Salary</h3>
                             <p class="text-slate-400 text-xs mt-1">Record a new salary payment for your staff.</p>
@@ -745,7 +755,7 @@
                         </button>
                     </div>
 
-                    <form id="salary-form" class="space-y-5">
+                    <form id="salary-form" class="space-y-4">
                         @csrf
                         <input type="hidden" name="salary_id" id="salary_id_input">
 
@@ -780,7 +790,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Payment
                                     Date</label>
@@ -792,7 +802,7 @@
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Salary
                                     Amount</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-2.5 text-slate-400 text-xs">$</span>
+                                    <span class="absolute left-4 top-2.5 text-slate-400 text-xs">₹</span>
                                     <input type="number" name="base_salary" id="salary_base_amount"
                                         oninput="updateSalaryPreview()" placeholder="0.00"
                                         class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#A8440B] transition-all">
@@ -835,8 +845,8 @@
                 </div>
 
                 <!-- Right Section: Summary -->
-                <div class="w-full md:w-[320px] bg-slate-50 p-6 md:p-8 flex flex-col">
-                    <div class="flex items-center justify-between mb-8">
+                <div class="w-full md:w-[320px] bg-slate-50 p-5 md:p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-5">
                         <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Review Summary</h4>
                         <button onclick="closeSalaryModal()"
                             class="text-slate-400 hover:text-slate-600 transition-all hidden md:block">
@@ -847,8 +857,8 @@
                         </button>
                     </div>
 
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6">
-                        <div class="space-y-3 mb-5 border-b border-slate-100 pb-5">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
+                        <div class="space-y-3 mb-4 border-b border-slate-100 pb-4">
                             <div class="flex justify-between text-[11px]">
                                 <span class="text-slate-400 font-medium">Base Salary</span>
                                 <span class="text-slate-800 font-bold" id="preview-base-salary">$0.00</span>
@@ -865,7 +875,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex gap-3 mb-auto">
+                    <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100 flex gap-3 mb-auto">
                         <div class="shrink-0 text-emerald-500">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -879,7 +889,7 @@
                         </p>
                     </div>
 
-                    <div class="mt-8 space-y-3">
+                    <div class="mt-6 space-y-2">
                         <button onclick="saveSalaryRecord()" id="save-salary-btn"
                             class="w-full py-3.5 bg-[#A8440B] text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1390,7 +1400,7 @@
                 optionsContainer.innerHTML = '<div class="px-4 py-2 text-xs text-slate-400 italic">Loading staff list...</div>';
 
                 try {
-                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}", {
+                    const response = await fetch("{{ url('api/v1/institute/staff') }}?all=1", {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': CSRF_TOKEN
@@ -1451,11 +1461,14 @@
                 const date = document.getElementById('attendance-filter-date').value;
                 const filterLabel = document.getElementById('attendance-filter-label');
 
+                const clearBtn = document.getElementById('clear-attendance-filter');
                 if (date) {
                     const dateObj = new Date(date);
                     filterLabel.textContent = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    if (clearBtn) clearBtn.style.display = 'flex';
                 } else {
                     filterLabel.textContent = 'Filter by Date';
+                    if (clearBtn) clearBtn.style.display = 'none';
                 }
 
                 loader.classList.remove('hidden');
@@ -1731,15 +1744,13 @@
                     selectStaff(item.staff_id, item.staff.full_name);
                 }
 
-                // Load staff if list is empty
-                if (staffListData.length === 0) {
-                    fetchStaffForAttendance();
-                }
+                // Always load fresh staff list
+                fetchStaffForAttendance();
             };
 
             async function fetchStaffForAttendance() {
                 try {
-                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}?_t=" + new Date().getTime(), {
+                    const response = await fetch("{{ url('api/v1/institute/staff') }}?all=1&_t=" + new Date().getTime(), {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': CSRF_TOKEN
@@ -1755,6 +1766,11 @@
                     console.error('Error fetching staff list:', error);
                 }
             }
+
+            window.clearAttendanceFilter = () => {
+                document.getElementById('attendance-filter-date').value = '';
+                fetchAttendance(1);
+            };
 
             window.deleteAttendance = async (id) => {
                 if (!confirm('Are you sure you want to delete this attendance record?')) return;
@@ -1780,10 +1796,7 @@
                 }
             };
 
-            // Initialize staff list when page loads
-            document.addEventListener('DOMContentLoaded', () => {
-                fetchStaffForAttendance();
-            });
+
 
 
 
@@ -1799,11 +1812,14 @@
                 const monthVal = document.getElementById('salary-filter-month').value;
                 const filterLabel = document.getElementById('salary-filter-label');
 
+                const clearBtn = document.getElementById('clear-salary-filter');
                 if (monthVal) {
                     const dateObj = new Date(monthVal + '-01');
                     filterLabel.textContent = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    if (clearBtn) clearBtn.style.display = 'flex';
                 } else {
                     filterLabel.textContent = 'Filter by Month';
+                    if (clearBtn) clearBtn.style.display = 'none';
                 }
 
                 loader.classList.remove('hidden');
@@ -1862,7 +1878,7 @@
                                                 ${item.payment_method}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-xs font-black text-slate-800 text-right">$${parseFloat(item.net_salary).toLocaleString()}</td>
+                                        <td class="px-4 py-3 text-xs font-bold text-slate-800 text-center">₹${parseFloat(item.net_salary).toLocaleString()}</td>
                                     </tr>
                                 `).join('');
             }
@@ -1969,9 +1985,8 @@
             };
 
             async function fetchStaffForSalary() {
-                if (salaryStaffListData.length > 0) return;
                 try {
-                    const response = await fetch("{{ url('api/v1/institute/staff-list-simple') }}?_t=" + new Date().getTime(), {
+                    const response = await fetch("{{ url('api/v1/institute/staff') }}?all=1&_t=" + new Date().getTime(), {
                         headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
                     });
                     const result = await response.json();
@@ -1981,6 +1996,11 @@
                     }
                 } catch (error) { console.error('Error:', error); }
             }
+
+            window.clearSalaryFilter = () => {
+                document.getElementById('salary-filter-month').value = '';
+                fetchSalaries(1);
+            };
 
             window.setSalaryMethod = (method) => {
                 document.getElementById('salary_payment_method_input').value = method;
@@ -2005,9 +2025,9 @@
                 const deductions = 0; // Future enhancement
                 const total = base - deductions;
 
-                document.getElementById('preview-base-salary').textContent = `$${base.toLocaleString()}`;
-                document.getElementById('preview-deductions').textContent = `-$${deductions.toLocaleString()}`;
-                document.getElementById('preview-total-disbursement').textContent = `$${total.toLocaleString()}`;
+                document.getElementById('preview-base-salary').textContent = `₹${base.toLocaleString()}`;
+                document.getElementById('preview-deductions').textContent = `-₹${deductions.toLocaleString()}`;
+                document.getElementById('preview-total-disbursement').textContent = `₹${total.toLocaleString()}`;
             };
 
             window.saveSalaryRecord = async () => {

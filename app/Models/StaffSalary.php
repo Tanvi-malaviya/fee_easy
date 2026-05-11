@@ -20,7 +20,7 @@ class StaffSalary extends Model
         'net_salary',
         'payment_date',
         'payment_method',
-        'note',
+        'notes',
         'status'
     ];
 

@@ -163,6 +163,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/staff/{staff}/edit', [App\Http\Controllers\Web\Institute\StaffController::class, 'edit'])->name('staff.edit');
                 Route::put('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'update'])->name('staff.update');
                 Route::delete('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'destroy'])->name('staff.destroy');
+
+                // Lead Management
+                Route::get('/leads', function () {
+                    return view('institute.leads.index');
+                })->name('leads.index');
             });
         });
     });

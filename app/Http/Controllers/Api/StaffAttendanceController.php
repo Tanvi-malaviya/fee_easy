@@ -50,76 +50,58 @@ class StaffAttendanceController extends Controller
     {
         $instituteId = $request->user()->id;
 
-        // Validation for matching dates if both are provided
-        if ($request->has('date') && $request->query('date') && $request->query('date') !== $request->date) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'The date in URL and the date in body do not match.'
-            ], 422);
-        }
+        // Handle both single object and array for backward compatibility
+        $isBulk = $request->has('attendances') && is_array($request->attendances);
+        $attendances = $isBulk ? $request->attendances : [$request->all()];
+        $date = $request->date ?? ($isBulk ? null : $request->date);
 
         $validator = Validator::make($request->all(), [
-            'attendances' => 'required|array',
-            'attendances.*.staff_id' => 'required|exists:staff,id,institute_id,' . $instituteId,
-            'attendances.*.status' => 'required|in:Present,Absent,Half Day,Late,Holiday',
-            'attendances.*.note' => 'nullable|string',
-            'date' => 'required|date|before_or_equal:today'
-        ], [
-            'attendances.*.staff_id.required' => 'Please select a staff member.',
-            'date.required' => 'Attendance date is required.',
-            'date.before_or_equal' => 'Attendance date cannot be in the future.'
+            'attendances' => $isBulk ? 'required|array' : 'nullable',
+            'staff_id' => !$isBulk ? 'required|exists:staff,id,institute_id,' . $instituteId : 'nullable',
+            'status' => !$isBulk ? 'required|in:Present,Absent,Half Day,Late,Holiday' : 'nullable',
+            'note' => 'nullable|string',
+            'date' => 'required|date|before_or_equal:today',
+            'attendances.*.staff_id' => $isBulk ? 'required|exists:staff,id,institute_id,' . $instituteId : 'nullable',
+            'attendances.*.status' => $isBulk ? 'required|in:Present,Absent,Half Day,Late,Holiday' : 'nullable'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $date = $request->date;
-        $savedStaff = [];
+        $savedData = [];
+        foreach ($attendances as $att) {
+            $staffId = $att['staff_id'] ?? $request->staff_id;
+            $status = $att['status'] ?? $request->status;
+            $note = $att['note'] ?? $request->note;
+            $currentDate = $att['date'] ?? $request->date;
 
-        foreach ($request->attendances as $att) {
-            $attendance = null;
-            
-            // If ID is provided, try to find the specific record first
-            if (!empty($att['id'])) {
-                $attendance = StaffAttendance::where('institute_id', $instituteId)->find($att['id']);
-            }
+            $attendance = StaffAttendance::updateOrCreate(
+                [
+                    'staff_id' => $staffId,
+                    'date' => $currentDate,
+                    'institute_id' => $instituteId
+                ],
+                [
+                    'status' => $status,
+                    'note' => $note
+                ]
+            );
 
-            if ($attendance) {
-                $attendance->update([
-                    'staff_id' => $att['staff_id'],
-                    'date' => $date,
-                    'status' => $att['status'],
-                    'note' => $att['note'] ?? null
-                ]);
-            } else {
-                $attendance = StaffAttendance::updateOrCreate(
-                    [
-                        'staff_id' => $att['staff_id'],
-                        'date' => $date,
-                        'institute_id' => $instituteId
-                    ],
-                    [
-                        'status' => $att['status'],
-                        'note' => $att['note'] ?? null
-                    ]
-                );
-            }
-            
-            // Get staff details for response
             $staff = $attendance->staff;
-            $savedStaff[] = [
-                'id' => $staff->id,
-                'name' => $staff->full_name,
-                'status' => $attendance->status
+            $savedData[] = [
+                'id' => $attendance->id,
+                'staff_id' => $staff->id,
+                'staff_name' => $staff->full_name,
+                'date' => $attendance->date,
+                'status' => $attendance->status,
+                'note' => $attendance->note
             ];
         }
 
         return response()->json([
-            'message' => 'Attendance logged successfully',
-            'count' => count($savedStaff),
-            'date' => $date,
-            'staff_details' => $savedStaff
+            'message' => 'Attendance saved successfully',
+            'data' => $isBulk ? $savedData : $savedData[0]
         ]);
     }
 
@@ -160,5 +142,45 @@ class StaffAttendanceController extends Controller
         $attendance->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Attendance record deleted successfully']);
+    }
+
+    /**
+     * Get attendance records for a particular staff.
+     */
+    public function showByStaff(Request $request, $staffId)
+    {
+        $instituteId = $request->user()->id;
+        $query = StaffAttendance::where('institute_id', $instituteId)
+            ->where('staff_id', $staffId);
+
+        if ($request->has('month')) {
+            $query->whereMonth('date', $request->month);
+        }
+
+        if ($request->has('year')) {
+            $query->whereYear('date', $request->year);
+        }
+
+        $totalPresent = (clone $query)->where('status', 'Present')->count();
+        $totalAbsent = (clone $query)->where('status', 'Absent')->count();
+       
+
+        $attendance = $query->orderBy('date', 'desc')->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'status' => 'success',
+            'summary' => [
+                'total_present' => $totalPresent,
+                'total_absent' => $totalAbsent,
+               
+            ],
+            'data' => $attendance->items(),
+            'pagination' => [
+                'total' => $attendance->total(),
+                'per_page' => $attendance->perPage(),
+                'current_page' => $attendance->currentPage(),
+                'last_page' => $attendance->lastPage(),
+            ]
+        ]);
     }
 }
