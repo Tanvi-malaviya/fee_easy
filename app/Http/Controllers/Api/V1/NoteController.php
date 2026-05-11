@@ -4,15 +4,16 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Note;
+use App\Models\NoteCategory;
 use Illuminate\Http\Request;
+use Exception;
 
 class NoteController extends Controller
 {
     public function __construct() { $this->middleware('auth:sanctum'); }
 
     public function index(Request $request) {
-        $query = Note::where('user_id', auth()->id())
-            ->with(['checklists', 'images', 'category_relation']);
+        $query = Note::where('user_id', auth()->id());
 
         // Filter by Category
         if ($request->has('category_id')) {
@@ -62,11 +63,15 @@ class NoteController extends Controller
         
         // Handle Category Fix: If category name is provided but no category_id, find or create it
         if (!empty($data['category']) && empty($data['category_id'])) {
-            $category = \App\Models\NoteCategory::firstOrCreate(
-                ['name' => $data['category']],
-                ['color' => '#6366f1'] // Default indigo color
-            );
-            $data['category_id'] = $category->id;
+            try {
+                $category = NoteCategory::firstOrCreate(
+                    ['name' => $data['category']],
+                    ['color' => '#6366f1']
+                );
+                $data['category_id'] = $category->id;
+            } catch (Exception $e) {
+                \Log::error('Note category error: ' . $e->getMessage());
+            }
         }
 
         // Handle cover image (mapping 'image' from request to 'cover_image' in DB)
@@ -114,11 +119,15 @@ class NoteController extends Controller
 
         // Handle Category Fix: If category name is provided but no category_id, find or create it
         if (!empty($data['category']) && empty($data['category_id'])) {
-            $category = \App\Models\NoteCategory::firstOrCreate(
-                ['name' => $data['category']],
-                ['color' => '#6366f1'] // Default indigo color
-            );
-            $data['category_id'] = $category->id;
+            try {
+                $category = NoteCategory::firstOrCreate(
+                    ['name' => $data['category']],
+                    ['color' => '#6366f1']
+                );
+                $data['category_id'] = $category->id;
+            } catch (Exception $e) {
+                \Log::error('Note category error: ' . $e->getMessage());
+            }
         }
 
         if ($request->hasFile('image')) {
