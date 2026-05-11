@@ -17,6 +17,7 @@ class Lead extends Model
         'address',
         'course_selection',
         'reference',
+        'referer',
         'status'
     ];
 

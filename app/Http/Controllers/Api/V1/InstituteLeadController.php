@@ -14,7 +14,7 @@ class InstituteLeadController extends Controller
     public function index(Request $request)
     {
         $institute = $request->user();
-        
+
         $query = $institute->leads()->with('assignedTeacher:id,name');
 
         if ($request->has('status')) {
@@ -43,11 +43,13 @@ class InstituteLeadController extends Controller
         $institute = $request->user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:10',
             'email' => 'required|email:rfc,dns|max:255',
-            'course_interest' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
+            'course_selection' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'reference' => 'nullable|string|max:255',
+            'referer' => 'nullable|string|max:255',
             'status' => 'nullable|in:New,Contacted,Converted,Lost',
             'assigned_to' => 'nullable|exists:teachers,id,institute_id,' . $institute->id,
         ]);
@@ -70,11 +72,13 @@ class InstituteLeadController extends Controller
         $lead = $institute->leads()->findOrFail($id);
 
         $request->validate([
-            'name' => 'sometimes|required|string|max:255',
+            'full_name' => 'sometimes|required|string|max:255',
             'phone' => 'sometimes|required|string|max:10',
             'email' => 'sometimes|required|email:rfc,dns|max:255',
-            'course_interest' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
+            'course_selection' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'reference' => 'nullable|string|max:255',
+            'referer' => 'nullable|string|max:255',
             'status' => 'nullable|in:New,Contacted,Converted,Lost',
             'assigned_to' => 'nullable|exists:teachers,id,institute_id,' . $institute->id,
         ]);
@@ -95,7 +99,7 @@ class InstituteLeadController extends Controller
     {
         $institute = $request->user();
         $lead = $institute->leads()->findOrFail($id);
-        
+
         $lead->delete();
 
         return response()->json([

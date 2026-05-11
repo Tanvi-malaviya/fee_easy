@@ -118,7 +118,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}', [NoteController::class, 'show']);
                 Route::put('/{id}', [NoteController::class, 'update']);
                 Route::delete('/{id}', [NoteController::class, 'destroy']);
-                
+
                 // Actions
                 Route::post('/{id}/bookmark', [NoteController::class, 'bookmark']);
                 Route::post('/checklists/{id}/toggle', [NoteController::class, 'toggleChecklist']);
@@ -142,6 +142,7 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('expenses')->group(function () {
                 Route::get('/dashboard', [InstituteExpenseController::class, 'dashboard']);
+                Route::get('/export', [InstituteExpenseController::class, 'report']);
                 Route::get('/analysis', [InstituteExpenseController::class, 'analysis']);
                 Route::get('/report', [InstituteExpenseController::class, 'report']);
                 Route::get('/categories', [InstituteExpenseController::class, 'getCategories']);

@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('note_categories', function (Blueprint $table) {
-            $table->string('name')->after('id');
-            $table->string('color')->nullable()->after('name');
+            if (!Schema::hasColumn('note_categories', 'name')) {
+                $table->string('name')->after('id');
+            }
+            if (!Schema::hasColumn('note_categories', 'color')) {
+                $table->string('color')->nullable()->after('name');
+            }
         });
     }
 
