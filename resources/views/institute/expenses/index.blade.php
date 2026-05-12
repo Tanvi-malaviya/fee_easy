@@ -328,7 +328,7 @@
                             {
                                 label: 'This Month',
                                 data: thisMonthData,
-                                backgroundColor: '#A8440B',
+                                backgroundColor: '#ff6c00',
                                 borderRadius: 4,
                                 barThickness: 12,
                             }
@@ -365,7 +365,7 @@
                 legend.classList.remove('hidden');
                 noData.classList.add('hidden');
 
-                const colors = ['#A8440B', '#D97706', '#059669', '#2563EB', '#7C3AED', '#DB2777', '#0891B2'];
+                const colors = ['#ff6c00', '#D97706', '#059669', '#2563EB', '#7C3AED', '#DB2777', '#0891B2'];
 
                 categoryChart = new Chart(ctx, {
                     type: 'doughnut',

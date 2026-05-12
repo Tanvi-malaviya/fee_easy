@@ -28,7 +28,7 @@
                         sans: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#A8440B',
+                        primary: '#ff6600',
                         primary2: '#713f1bff',
                         secondary: '#00A7B5',
                         tertiary: '#2ECC71',

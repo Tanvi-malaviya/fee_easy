@@ -12,7 +12,7 @@
 
             <div class="flex items-center gap-4">
                 <button onclick="openLeadModal()"
-                    class="px-4 py-2 bg-[#A8440B] text-white rounded-lg text-sm font-semibold hover:bg-[#8e3a09] transition-all flex items-center gap-2">
+                    class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-[#ea580c] transition-all flex items-center gap-2">
 
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -42,7 +42,7 @@
 
                                 <div class="relative flex-1">
                                     <input type="text" id="lead-search" placeholder="Search leads..."
-                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#A8440B]/20 transition-all outline-none">
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#ff6c00]/20 transition-all outline-none">
 
                                     <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
                                 </div>
 
                                 <button onclick="fetchLeads()"
-                                    class="px-4 py-2 bg-[#A8440B] text-white rounded-lg hover:bg-[#8e3a09] transition-all flex items-center justify-center shadow-sm">
+                                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#ea580c] transition-all flex items-center justify-center shadow-sm">
 
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
                             <div class="p-12 text-center loader-container">
 
                                 <div
-                                    class="h-8 w-8 border-[3px] border-gray-100 border-t-[#A8440B] rounded-full animate-spin mx-auto mb-3">
+                                    class="h-8 w-8 border-[3px] border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mx-auto mb-3">
                                 </div>
 
                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -117,7 +117,7 @@
                     class="hidden h-full bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center p-12 min-h-[500px]">
 
                     <div
-                        class="h-12 w-12 border-4 border-gray-100 border-t-[#A8440B] rounded-full animate-spin mb-4">
+                        class="h-12 w-12 border-4 border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mb-4">
                     </div>
 
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -261,7 +261,7 @@
                                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Interaction Notes</h3>
                             </div>
                             <button onclick="openNoteModal()"
-                                class="text-[11px] font-bold text-[#A8440B] hover:underline flex items-center gap-1">
+                                class="text-[11px] font-bold text-primary hover:underline flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -342,9 +342,9 @@
                     const isActive = String(selectedLeadId) == String(lead.id);
                     return `
                         <div onclick="selectLead('${lead.id}')" 
-                            class="relative p-5 cursor-pointer hover:bg-gray-50 transition-all ${isActive ? 'bg-[#A8440B]/5' : ''}">
+                            class="relative p-5 cursor-pointer hover:bg-gray-50 transition-all ${isActive ? 'bg-[#ff6c00]/5' : ''}">
                             <div class="flex items-start justify-between mb-1">
-                                <h4 class="text-sm font-bold ${isActive ? 'text-[#A8440B]' : 'text-gray-800'}">${lead.full_name}</h4>
+                                <h4 class="text-sm font-bold ${isActive ? 'text-[#ff6c00]' : 'text-gray-800'}">${lead.full_name}</h4>
                             </div>
                             <p class="text-xs ${isActive ? 'text-orange-900/60' : 'text-gray-600'} font-medium mb-3 truncate">${lead.course_selection || 'General Inquiry'}</p>
                             <div class="flex items-center gap-4 text-[10px] font-bold ${isActive ? 'text-orange-400' : 'text-gray-500'}">
