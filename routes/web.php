@@ -168,6 +168,10 @@ Route::prefix('institute')->name('institute.')->group(function () {
                     return view('institute.leads.index');
                 })->name('leads.index');
 
+                Route::get('/notes', function () {
+                    return view('institute.notes.index');
+                })->name('notes.index');
+
                 // Expense Management
                 Route::get('/expenses', function () {
                     return view('institute.expenses.index');

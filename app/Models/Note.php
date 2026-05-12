@@ -37,8 +37,7 @@ class Note extends Model
         'is_archived', 
         'deleted_at',
         'checklists',
-        'images',
-        'category_relation'
+        'images'
     ];
 
     protected $casts = [
@@ -51,6 +50,17 @@ class Note extends Model
     public function getImageUrlAttribute()
     {
         return $this->cover_image ? url('storage/' . $this->cover_image) : null;
+    }
+
+    public function getCategoryAttribute($value)
+    {
+        // Prioritize the name from the relation if category_id is set
+        if ($this->category_id && $this->category_relation) {
+            return $this->category_relation->name;
+        }
+        
+        // Otherwise return the database column value
+        return $value;
     }
 
     protected static function boot()

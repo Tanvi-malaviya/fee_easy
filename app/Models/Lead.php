@@ -18,6 +18,7 @@ class Lead extends Model
         'course_selection',
         'reference',
         'referer',
+        'notes',
         'status'
     ];
 

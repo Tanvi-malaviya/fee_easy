@@ -5,7 +5,7 @@
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
             <div>
-                <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Financial Overview</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Financial Overview</h1>
                 <p class="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                     Track and manage institutional expenses in real-time
                 </p>
@@ -190,27 +190,21 @@
                     <div class="mb-4">
                         <label
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Account</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="relative cursor-pointer group">
+                        <div class="flex p-1 bg-slate-100 rounded-xl">
+                            <label class="flex-1 relative cursor-pointer">
                                 <input type="radio" name="payment_method" value="Cash" checked class="peer hidden">
-                                <div
-                                    class="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:border-primary peer-checked:text-primary peer-checked:shadow-sm transition-all">
+                                <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                     Cash
                                 </div>
                             </label>
-                            <label class="relative cursor-pointer group">
+                            <label class="flex-1 relative cursor-pointer">
                                 <input type="radio" name="payment_method" value="Online" class="peer hidden">
-                                <div
-                                    class="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:border-primary peer-checked:text-primary peer-checked:shadow-sm transition-all">
+                                <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252V14C28 9.582 20.837 6 12 6c-8.837 0-16 3.582-16 8z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M28 14c0 4.418-7.163 8-16 8S4 18.418 4 14" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                     Online
                                 </div>
@@ -326,10 +320,6 @@
                 const thisMonthData = Array(31).fill(0);
                 trends.this_month.forEach(t => thisMonthData[t.day - 1] = t.total);
 
-                // Process last month data
-                const lastMonthData = Array(31).fill(0);
-                trends.last_month.forEach(t => lastMonthData[t.day - 1] = t.total);
-
                 trendsChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -340,14 +330,7 @@
                                 data: thisMonthData,
                                 backgroundColor: '#A8440B',
                                 borderRadius: 4,
-                                barThickness: 8,
-                            },
-                            {
-                                label: 'Last Month',
-                                data: lastMonthData,
-                                backgroundColor: '#F1F5F9',
-                                borderRadius: 4,
-                                barThickness: 8,
+                                barThickness: 12,
                             }
                         ]
                     },

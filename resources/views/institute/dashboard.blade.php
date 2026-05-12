@@ -95,7 +95,7 @@
             </a>
 
             <!-- Notes -->
-            <a href="#"
+            <a href="{{ route('institute.notes.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-cyan-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">

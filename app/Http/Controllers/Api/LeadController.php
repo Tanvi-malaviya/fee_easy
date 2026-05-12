@@ -39,7 +39,7 @@ class LeadController extends Controller
             });
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', 10));
+        $leads = $query->with('notes')->orderBy('created_at', 'desc')->paginate($request->get('per_page', 10));
 
             return response()->json([
                 'data' => $leads->items(),
