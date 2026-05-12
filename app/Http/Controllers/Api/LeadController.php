@@ -39,7 +39,7 @@ class LeadController extends Controller
             });
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', 10));
+        $leads = $query->with('notes')->orderBy('created_at', 'desc')->paginate($request->get('per_page', 10));
 
             return response()->json([
                 'data' => $leads->items(),
@@ -72,6 +72,7 @@ class LeadController extends Controller
             'address' => 'nullable|string',
             'course_selection' => 'nullable|string',
             'reference' => 'nullable|string',
+            'referer' => 'nullable|string|max:255',
             'status' => 'nullable|in:New,Contacted,Qualified,Lost,Converted',
             'title' => 'nullable|string|max:255', // Allow custom title
             'note' => 'nullable|string'
@@ -89,6 +90,7 @@ class LeadController extends Controller
             'address' => $request->address,
             'course_selection' => $request->course_selection,
             'reference' => $request->reference,
+            'referer' => $request->referer,
             'status' => $request->status ?? 'New'
         ]);
 
@@ -176,6 +178,7 @@ class LeadController extends Controller
             'address' => 'nullable|string',
             'course_selection' => 'nullable|string',
             'reference' => 'nullable|string',
+            'referer' => 'nullable|string|max:255',
             'status' => 'nullable|in:New,Contacted,Qualified,Lost,Converted'
         ]);
 

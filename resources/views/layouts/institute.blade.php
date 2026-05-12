@@ -28,13 +28,13 @@
                         sans: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#FF6B00',
-                         primary2: '#713f1bff',
+                        primary: '#A8440B',
+                        primary2: '#713f1bff',
                         secondary: '#00A7B5',
                         tertiary: '#2ECC71',
                         neutral: '#F8F9FA',
                         brand: {
-                            900: '#FF6B00', // Using Primary as Brand 900 for consistency
+                            900: '#A8440B', // Updated to match primary theme
                         }
                     }
                 }
@@ -178,9 +178,12 @@
 
             <p id="confirm-modal-message" class="text-[13px] font-semibold text-slate-500 mb-6 leading-relaxed"></p>
 
-            <div class="flex items-center gap-3">
-                <button id="confirm-modal-ok" class="flex-1 py-3 bg-rose-600 text-white rounded-xl text-sm font-bold hover:bg-rose-700 hover:shadow-xl hover:shadow-rose-600/20 transition-all">Yes, Remove</button>
-                <button id="confirm-modal-cancel" class="flex-1 py-3 bg-white border border-slate-100 text-slate-400 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">Cancel</button>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeConfirmModal()"
+                    class="flex-1 px-4 py-2.5 bg-white border-2 border-slate-200 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">Cancel</button>
+                <button id="confirm-proceed-btn"
+                    class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes,
+                    Delete</button>
             </div>
 
             <div class="mt-6 pt-5 border-t border-slate-50 flex items-center gap-2 text-slate-400">

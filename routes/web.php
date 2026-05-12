@@ -164,10 +164,18 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::put('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'update'])->name('staff.update');
                 Route::delete('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'destroy'])->name('staff.destroy');
 
-                // Lead Management
                 Route::get('/leads', function () {
                     return view('institute.leads.index');
                 })->name('leads.index');
+
+                Route::get('/notes', function () {
+                    return view('institute.notes.index');
+                })->name('notes.index');
+
+                // Expense Management
+                Route::get('/expenses', function () {
+                    return view('institute.expenses.index');
+                })->name('expenses.index');
             });
         });
     });

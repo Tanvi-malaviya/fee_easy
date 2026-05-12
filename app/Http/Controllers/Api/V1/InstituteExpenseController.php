@@ -52,12 +52,12 @@ class InstituteExpenseController extends Controller
     public function index(Request $request)
     {
         $institute = $request->user();
-        
+
         $query = $institute->expenses()->with('category');
 
         if ($request->filled('month') && $request->filled('year')) {
             $query->whereMonth('date', $request->month)
-                  ->whereYear('date', $request->year);
+                ->whereYear('date', $request->year);
         } elseif ($request->filled('year')) {
             $query->whereYear('date', $request->year);
         } elseif ($request->has('start_date') && $request->has('end_date')) {
@@ -96,7 +96,7 @@ class InstituteExpenseController extends Controller
             'date' => 'required|date',
             'description' => 'nullable|string',
             'payment_method' => 'nullable|string|in:Cash,Online',
-            'receipt_image' => 'nullable|image|max:2048' 
+            'receipt_image' => 'nullable|image|max:2048'
         ]);
 
         $path = null;
@@ -187,10 +187,17 @@ class InstituteExpenseController extends Controller
     public function dashboard(Request $request)
     {
         $institute = $request->user();
-        $now = Carbon::now();
-        $thisMonth = $now->month;
-        $thisYear = $now->year;
-        
+
+        $request->validate([
+            'month' => 'nullable|integer|min:1|max:12',
+            'year' => 'nullable|integer|min:2000|max:2099',
+        ]);
+
+        $thisMonth = $request->input('month', Carbon::now()->month);
+        $thisYear = $request->input('year', Carbon::now()->year);
+
+        $now = Carbon::createFromDate($thisYear, $thisMonth, 1);
+
         $lastMonthDate = $now->copy()->subMonth();
         $lastMonth = $lastMonthDate->month;
         $lastYear = $lastMonthDate->year;
@@ -229,29 +236,39 @@ class InstituteExpenseController extends Controller
             ->map(function ($item) {
                 return [
                     'category_name' => $item->category->name ?? 'Unknown',
-                    'total' => (float)$item->total
+                    'total' => (float) $item->total
                 ];
             });
 
-        // 4. Recent Transactions
-        $recentTransactions = $institute->expenses()
-            ->with('category')
-            ->orderBy('date', 'desc')
+        // 4. Recent Transactions (Paginated)
+        $recentTransactionsQuery = $institute->expenses()->with('category');
+
+        if ($request->has('month') && $request->has('year')) {
+            $recentTransactionsQuery->whereMonth('date', $thisMonth)
+                ->whereYear('date', $thisYear);
+        }
+
+        $paginatedTransactions = $recentTransactionsQuery->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
+            ->paginate(10);
 
         return response()->json([
             'status' => 'success',
             'data' => [
-                'total_spend' => (float)$totalSpend,
+                'total_spend' => (float) $totalSpend,
                 'month_name' => $now->format('F Y'),
                 'trends' => [
                     'this_month' => $thisMonthTrends,
                     'last_month' => $lastMonthTrends
                 ],
                 'category_breakdown' => $categoryBreakdown,
-                'recent_transactions' => $recentTransactions
+                'recent_transactions' => [
+                    'items' => $paginatedTransactions->items(),
+                    'total' => $paginatedTransactions->total(),
+                    'current_page' => $paginatedTransactions->currentPage(),
+                    'last_page' => $paginatedTransactions->lastPage(),
+                    'per_page' => $paginatedTransactions->perPage(),
+                ]
             ]
         ]);
     }
@@ -274,7 +291,7 @@ class InstituteExpenseController extends Controller
 
         if ($request->filled('month') && $request->filled('year')) {
             $query->whereMonth('date', $request->month)
-                  ->whereYear('date', $request->year);
+                ->whereYear('date', $request->year);
         } elseif ($request->filled('year')) {
             $query->whereYear('date', $request->year);
         } elseif ($request->filled('start_date') && $request->filled('end_date')) {
@@ -282,10 +299,10 @@ class InstituteExpenseController extends Controller
         } else {
             // Default to current month if no filter provided
             $query->whereMonth('date', now()->month)
-                  ->whereYear('date', now()->year);
+                ->whereYear('date', now()->year);
         }
 
-        $expenses = $query->get();
+        $expenses = $query->orderBy('date', 'desc')->get();
 
         $groupedByCategory = $expenses->groupBy('expense_category_id');
 
@@ -304,6 +321,27 @@ class InstituteExpenseController extends Controller
             ];
         }
 
+        if ($request->get('format') === 'pdf') {
+            $period = "All Time";
+            if ($request->filled('month') && $request->filled('year')) {
+                $period = date('F Y', mktime(0, 0, 0, $request->month, 1, $request->year));
+            } elseif ($request->filled('year')) {
+                $period = $request->year;
+            } elseif ($request->filled('start_date') && $request->filled('end_date')) {
+                $period = $request->start_date . ' to ' . $request->end_date;
+            }
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('institute.expenses.report_pdf', [
+                'institute' => $institute,
+                'total_expense' => $totalOverall,
+                'breakdown' => $report,
+                'expenses' => $expenses,
+                'period' => $period
+            ]);
+
+            return $pdf->download('Expense_Report_' . date('Y-m-d_His') . '.pdf');
+        }
+
         return response()->json([
             'status' => 'success',
             'total_expense' => $totalOverall,
@@ -319,7 +357,7 @@ class InstituteExpenseController extends Controller
         $now = Carbon::now();
         $month = $request->get('month', $now->month);
         $year = $request->get('year', $now->year);
-        
+
         $selectedDate = Carbon::create($year, $month, 1);
         $lastMonthDate = $selectedDate->copy()->subMonth();
 
@@ -342,7 +380,7 @@ class InstituteExpenseController extends Controller
                 $percentage = $currentTotal > 0 ? ($item->total / $currentTotal) * 100 : 0;
                 return [
                     'category_name' => $item->category->name ?? 'Unknown',
-                    'amount' => (float)$item->total,
+                    'amount' => (float) $item->total,
                     'percentage' => round($percentage, 1)
                 ];
             });
@@ -350,7 +388,7 @@ class InstituteExpenseController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
-                'total_spending' => (float)$currentTotal,
+                'total_spending' => (float) $currentTotal,
                 'month_name' => $selectedDate->format('F Y'),
                 'categories' => $categories
             ]
