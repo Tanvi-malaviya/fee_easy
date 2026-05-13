@@ -27,21 +27,21 @@
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Full
                             Name</label>
                         <input type="text" name="full_name" required placeholder="Johnnathan Doe"
-                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                     </div>
 
                     <div class="col-span-1">
                         <label
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Phone</label>
                         <input type="text" name="phone" required placeholder="+1 (555) 000-0000"
-                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                     </div>
 
                     <div class="col-span-2">
                         <label
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Email</label>
                         <input type="email" name="email" placeholder="john@example.com"
-                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                     </div>
 
                     <div class="col-span-2">
@@ -49,7 +49,7 @@
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Address</label>
                         <div class="relative">
                             <input type="text" name="address" placeholder="Street, City, State, ZIP"
-                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                             <svg class="w-5 h-5 absolute right-4 top-2 text-slate-300" fill="currentColor"
                                 viewBox="0 0 24 24">
                                 <path
@@ -64,7 +64,7 @@
                             Selection</label>
                         <div class="relative">
                             <input type="text" name="course_selection" placeholder="e.g. Advanced UI Design"
-                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                             <svg class="w-5 h-5 absolute right-4 top-2 text-slate-300" fill="currentColor"
                                 viewBox="0 0 24 24">
                                 <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
@@ -78,7 +78,7 @@
                             Source</label>
                         <div class="relative">
                             <input type="text" name="reference" placeholder="Social Media, referral..."
-                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                             <svg class="w-5 h-5 absolute right-4 top-2 text-slate-300" fill="currentColor"
                                 viewBox="0 0 24 24">
                                 <path
@@ -92,7 +92,7 @@
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Referrer</label>
                         <div class="relative">
                             <input type="text" name="referer" placeholder="Name of Referrer"
-                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                             <svg class="w-5 h-5 absolute right-4 top-2 text-slate-300" fill="currentColor"
                                 viewBox="0 0 24 24">
                                 <path
@@ -106,11 +106,11 @@
                     class="hidden px-4 py-2 bg-rose-50 border border-rose-100 rounded-xl text-[11px] font-bold text-rose-500 mb-2">
                 </div>
 
-                <div class="pt-2 flex items-center justify-end gap-10">
+                <div class="pb-2 flex items-center justify-end gap-10">
                     <button type="button" onclick="closeLeadModal()"
                         class="text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Cancel</button>
                     <button type="submit" id="save-lead-btn"
-                        class="px-8 py-3 bg-[#A8440B] text-white rounded-xl text-sm font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2">
+                        class="px-8 py-3 bg-primary  text-white rounded-xl text-sm font-bold shadow-lg  hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 min-w-[140px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
@@ -147,24 +147,24 @@
                         class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Interaction
                         Type / Title</label>
                     <input type="text" name="title" required placeholder="e.g. Phone Consultation"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none">
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Notes
                         / Details</label>
                     <textarea name="note" required rows="4" placeholder="Brief details of the interaction..."
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#A8440B] transition-all outline-none resize-none"></textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none resize-none"></textarea>
                 </div>
                 <div id="note-error"
                     class="hidden px-4 py-2 bg-rose-50 border border-rose-100 rounded-xl text-[11px] font-bold text-rose-500 mb-2">
                 </div>
 
-                <div class="pt-2 flex gap-3">
+                <div class="flex gap-3">
                     <button type="button" onclick="closeNoteModal()"
                         class="flex-1 px-6 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">Cancel</button>
                     <button type="submit"
-                        class="flex-1 px-6 py-2.5 bg-[#A8440B] text-white rounded-xl text-sm font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all">Add
+                        class="flex-1 px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all">Add
                         Note</button>
                 </div>
             </form>

@@ -163,35 +163,29 @@
     
     <!-- Custom Confirmation Modal -->
     <div id="confirm-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden transition-all duration-300">
-        <div class="bg-white rounded-3xl p-7 max-w-md w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100" id="confirm-modal-content">
-            <div class="flex items-start gap-4 mb-5">
-                <div class="h-12 w-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 shrink-0 border border-rose-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-[1.2rem] p-5 max-w-[340px] w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100" id="confirm-modal-content">
+            <div class="flex items-center gap-3 mb-3.5">
+                <div class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center text-[#FF6B00] shrink-0 border border-orange-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>
                 <div>
-                    <h3 id="confirm-modal-title" class="text-xl font-bold text-slate-900 tracking-tight leading-none mb-1.5">Delete Batch</h3>
-                    <p class="text-[9px] font-bold text-rose-500 uppercase tracking-[0.15em]">Irreversible Action</p>
+                    <h3 id="confirm-modal-title" class="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 uppercase">Confirm</h3>
+                    <p class="text-[9px] font-bold text-[#FF6B00] uppercase tracking-[0.15em]">Irreversible Action</p>
                 </div>
             </div>
 
-            <p id="confirm-modal-message" class="text-[13px] font-semibold text-slate-500 mb-6 leading-relaxed"></p>
+            <div id="confirm-modal-message" class="text-xs font-semibold text-slate-500 mb-5 leading-relaxed"></div>
 
-            <div class="flex gap-3 mt-8">
-                <button onclick="closeConfirmModal()"
-                    class="flex-1 px-4 py-2.5 bg-white border-2 border-slate-200 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">Cancel</button>
-                <button id="confirm-proceed-btn"
-                    class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes,
-                    Delete</button>
+            <div class="flex gap-2">
+                <button id="confirm-modal-cancel" onclick="closeConfirmModal()"
+                    class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
+                <button id="confirm-modal-ok"
+                    class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes, Proceed</button>
             </div>
 
-            <div class="mt-6 pt-5 border-t border-slate-50 flex items-center gap-2 text-slate-400">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <p class="text-[9px] font-semibold">This action will be logged for administrative review.</p>
-            </div>
+          
         </div>
     </div>
 
@@ -239,38 +233,42 @@
 
         // Global Confirm Modal Logic
         let confirmCallback = null;
-        function showConfirmModal(title, message, onConfirm, okText = 'Yes, Remove', okClass = 'bg-rose-600 hover:bg-rose-700') {
+        function closeConfirmModal() {
             const modal = document.getElementById('confirm-modal');
             const content = document.getElementById('confirm-modal-content');
-            document.getElementById('confirm-modal-title').innerText = title;
-            document.getElementById('confirm-modal-message').innerText = message;
-            
+            if (content) {
+                content.classList.add('scale-95', 'opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+            }
+            setTimeout(() => {
+                if (modal) modal.classList.add('hidden');
+            }, 300);
+            confirmCallback = null;
+        }
+
+        function showConfirmModal(title, message, onConfirm, okText = 'Yes, Proceed', okClass = 'bg-primary shadow-amber-900/20') {
+            const modal = document.getElementById('confirm-modal');
+            const content = document.getElementById('confirm-modal-content');
             const okBtn = document.getElementById('confirm-modal-ok');
-            okBtn.innerText = okText;
-            okBtn.className = `flex-1 py-3 ${okClass} text-white rounded-xl text-sm font-bold transition-all`;
             
-            confirmCallback = onConfirm;
+            if (!modal || !content || !okBtn) return;
+
+            document.getElementById('confirm-modal-title').innerText = title;
+            document.getElementById('confirm-modal-message').innerHTML = message;
+            
+            okBtn.innerText = okText;
+            okBtn.className = `flex-1 px-4 py-2.5 ${okClass} text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all`;
+            
+            okBtn.onclick = () => {
+                if (onConfirm) onConfirm();
+                closeConfirmModal();
+            };
             
             modal.classList.remove('hidden');
             setTimeout(() => {
                 content.classList.remove('scale-95', 'opacity-0');
                 content.classList.add('scale-100', 'opacity-100');
             }, 10);
-        }
-
-        document.getElementById('confirm-modal-cancel')?.addEventListener('click', closeConfirmModal);
-        document.getElementById('confirm-modal-ok')?.addEventListener('click', () => {
-            if (confirmCallback) confirmCallback();
-            closeConfirmModal();
-        });
-
-        function closeConfirmModal() {
-            const modal = document.getElementById('confirm-modal');
-            const content = document.getElementById('confirm-modal-content');
-            content.classList.add('scale-95', 'opacity-0');
-            content.classList.remove('scale-100', 'opacity-100');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-            confirmCallback = null;
         }
 
         document.addEventListener('DOMContentLoaded', () => {

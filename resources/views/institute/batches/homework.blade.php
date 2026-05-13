@@ -8,11 +8,11 @@
 
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
-            <a href="{{ route('institute.batches.index') }}" class="hover:text-[#ff6600] transition-colors">Batches</a>
+            <a href="{{ route('institute.batches.index') }}" class="hover:text-primary transition-colors">Batches</a>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
-            <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch
+            <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-primary transition-colors">Batch
                 Details</a>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -30,7 +30,7 @@
                         management.</p>
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-blue-600 transition-all flex-1 md:flex-none md:w-auto">
+                    <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-primary transition-all flex-1 md:flex-none md:w-auto">
                     <div class="relative flex-1">
                         <input type="text" id="homework-search" onkeypress="if(event.key === 'Enter') filterHomeworks()"
                             placeholder="Search assignments..."
@@ -42,12 +42,12 @@
                         </svg>
                     </div>
                     <button onclick="filterHomeworks()"
-                        class="px-4 py-2 bg-slate-900 text-white text-[11px] font-bold rounded-xl hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                        class="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-colors uppercase tracking-widest">
                         Search
                     </button>
                 </div>
                     <button onclick="openAddHomeworkModal()"
-                        class="px-5 py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-2 shrink-0">
+                        class="px-5 py-3 bg-primary hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-2 shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
@@ -61,7 +61,7 @@
         <div id="homework-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             <!-- Loading State -->
             <div class="col-span-full py-32 text-center">
-                <div class="inline-block h-10 w-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin">
+                <div class="inline-block h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin">
                 </div>
                 <p class="text-slate-400 font-bold uppercase tracking-widest text-xs mt-6">Syncing Assignments...</p>
             </div>
@@ -78,7 +78,7 @@
         <div
             class="bg-white w-full max-w-[900px] max-h-[95vh] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
             <!-- Header -->
-            <div class="px-4 py-3 border-b border-slate-100 flex items-start justify-between">
+            <div class="px-6 py-3 border-b border-slate-100 flex items-start justify-between">
                 <div>
                     <h2 class="text-[22px] font-bold text-slate-900 tracking-tight">Create New Homework</h2>
 
@@ -93,7 +93,7 @@
 
             <!-- Body -->
             <form id="homework-form" onsubmit="handleHomeworkSubmit(event)" class="flex flex-col flex-1 overflow-hidden">
-                <div class="px-6 py-5 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-x-12 gap-y-4 overflow-y-auto custom-scrollbar flex-1">
+                <div class="px-6 py-3 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-x-8 gap-y-3 overflow-y-auto custom-scrollbar flex-1">
 
                     <!-- Left Column -->
                     <div class="space-y-4">
@@ -103,7 +103,7 @@
                                 Title</label>
                             <input type="text" name="title" required
                                 placeholder="e.g. Advanced Calculus - Differential Equations"
-                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all">
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
 
                         <!-- Instruction Details -->
@@ -113,7 +113,7 @@
                                 Details</label>
                             <textarea name="description" rows="4" required
                                 placeholder="Outline the learning objectives and step-by-step instructions for the students..."
-                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all resize-none"></textarea>
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
                         </div>
 
                         <!-- Resource Materials -->
@@ -127,18 +127,18 @@
 
                             <div id="dropzone" onclick="document.getElementById('homework-attachment').click()"
                                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)"
-                                class="border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50/50 group hover:bg-slate-50 hover:border-[#ff6600]/30 transition-all cursor-pointer">
+                                class="border-2 border-dashed border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center bg-slate-50/50 group hover:bg-slate-50 hover:border-primary/30 transition-all cursor-pointer">
                                 <div
-                                    class="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center text-[#ff6600] mb-2 group-hover:scale-110 transition-transform">
+                                    class="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center text-primary mb-1 group-hover:scale-110 transition-transform">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 13v4h-2v-4H8l4-4 4 4h-3zm-3-6V3.5L18.5 9H10z" />
                                     </svg>
                                 </div>
                                 <p class="text-[12px] font-semibold text-slate-800">Drag files or <span
-                                        class="text-[#ff6600] underline decoration-[#ff6600]/30 underline-offset-4">browse</span>
+                                        class="text-primary underline decoration-primary/30 underline-offset-4">browse</span>
                                 </p>
-                                <p class="text-[9px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Max Size: 10MB
+                                <p class="text-[9px] text-slate-400 mt-0.5 font-bold uppercase tracking-widest">Max Size: 10MB
                                 </p>
                             </div>
 
@@ -179,7 +179,7 @@
                             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Due
                                 Date</label>
                             <input type="date" name="due_date" required
-                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all">
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
 
                         <!-- Priority Level -->
@@ -189,7 +189,7 @@
                                 Level</label>
                             <div class="relative">
                                 <select
-                                    class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] transition-all appearance-none cursor-pointer">
+                                    class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer">
                                     <option>Normal Priority</option>
                                     <option>High Priority</option>
                                     <option>Low Priority</option>
@@ -224,11 +224,11 @@
 
                 <!-- Footer -->
                 <div
-                    class="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4 mt-auto shrink-0">
+                    class="px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-4 mt-auto shrink-0">
                     <button type="button" onclick="closeAddHomeworkModal()"
                         class="px-6 py-2.5 text-[14px] font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
                     <button type="submit" id="submit-btn"
-                        class="px-6 py-2.5 bg-[#ff6600] text-white rounded-xl text-[14px] font-bold shadow-sm hover:bg-[#e65c00] transition-all flex items-center gap-2">
+                        class="px-6 py-2.5 bg-primary text-white rounded-xl text-[14px] font-bold shadow-sm hover:opacity-90 transition-all flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -324,7 +324,7 @@
 
             // Previous Button
             html += `<button onclick="fetchHomeworks(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
-                                class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-orange-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed">
+                                class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-20 disabled:cursor-not-allowed">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
                             </button>`;
 
@@ -333,7 +333,7 @@
                 if (i === 1 || i === lastPage || (i >= currentPage - 2 && i <= currentPage + 2)) {
                     const isActive = currentPage === i;
                     html += `<button onclick="fetchHomeworks(${i})" 
-                                        class="h-9 w-9 flex items-center justify-center rounded-full text-xs font-black transition-all ${isActive ? 'bg-[#a3360a] text-white shadow-lg shadow-orange-700/20' : 'text-slate-400 hover:text-slate-700'}">
+                                        class="h-9 w-9 flex items-center justify-center rounded-full text-xs font-black transition-all ${isActive ? 'bg-primary text-white shadow-lg shadow-orange-700/20' : 'text-slate-400 hover:text-slate-700'}">
                                         ${i}
                                     </button>`;
                 } else if (i === currentPage - 3 || i === currentPage + 3) {
@@ -343,7 +343,7 @@
 
             // Next Button
             html += `<button onclick="fetchHomeworks(${currentPage + 1})" ${currentPage === lastPage ? 'disabled' : ''} 
-                                class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-orange-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed">
+                                class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-primary transition-all disabled:opacity-20 disabled:cursor-not-allowed">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                             </button>`;
 
@@ -392,10 +392,10 @@
                 return `
                                     <div class="group bg-white rounded-2xl border border-slate-100 p-3 hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-300 relative cursor-pointer flex flex-col" onclick="window.location.href='/institute/batches/${BATCH_ID}/homework/${hw.id}'">
                                         <div class="flex items-start justify-between mb-2">
-                                            <div class="h-8 w-8 rounded-xl ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
+                                            <div class="h-8 w-8 rounded-xl ${isActive ? 'bg-orange-50 text-primary' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
                                             </div>
-                                            <span class="px-2 py-0.5 ${isActive ? 'bg-orange-50 text-[#ff6600]' : 'bg-slate-100 text-slate-500'} rounded text-[7px] font-black uppercase tracking-wider">
+                                            <span class="px-2 py-0.5 ${isActive ? 'bg-orange-50 text-primary' : 'bg-slate-100 text-slate-500'} rounded text-[7px] font-black uppercase tracking-wider">
                                                 ${isActive ? 'Active' : 'Closed'}
                                             </span>
                                         </div>
@@ -415,12 +415,12 @@
                                                     <p class="text-[9px] font-black text-slate-800">${submissions}/${total}</p>
                                                 </div>
                                                 <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                    <div class="h-full ${isActive ? 'bg-[#ff6600]' : 'bg-slate-400'} rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
+                                                    <div class="h-full ${isActive ? 'bg-primary' : 'bg-slate-400'} rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
                                                 </div>
                                             </div>
 
                                             <div class=" flex items-center justify-between">
-                                                 <p class="text-[8px] font-black ${isActive ? 'text-[#ff6600]' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
+                                                 <p class="text-[8px] font-black ${isActive ? 'text-primary' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
                                                  <div class="h-5 w-5 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                                                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                                                  </div>
@@ -462,13 +462,13 @@
                 document.getElementById('homework-attachment').files = e.dataTransfer.files;
                 updateFilePreview(file);
             }
-            document.getElementById('dropzone').classList.remove('border-[#ff6600]', 'bg-slate-50');
+            document.getElementById('dropzone').classList.remove('border-primary', 'bg-slate-50');
         }
 
         function handleDragOver(e) {
             e.preventDefault();
             e.stopPropagation();
-            document.getElementById('dropzone').classList.add('border-[#ff6600]', 'bg-slate-50');
+            document.getElementById('dropzone').classList.add('border-primary', 'bg-slate-50');
         }
 
         function updateFilePreview(file) {

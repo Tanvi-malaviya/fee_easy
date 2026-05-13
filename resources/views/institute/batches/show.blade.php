@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div>
-                        <h3 id="instructor-name" class="text-base font-bold text-slate-900 leading-tight">Not Assigned</h3>
+                        <h3 id="instructor-name" class="text-base font-bold text-slate-900 leading-tight">Prof. Arjun Patel</h3>
                         <p id="instructor-role" class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
                             Primary Tutor</p>
                     </div>
@@ -76,7 +76,7 @@
                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <span id="instructor-email" class="text-[10px] font-bold text-slate-500">contact@institute.edu</span>
+                    <span id="instructor-email" class="text-[10px] font-bold text-slate-500">arjun.patel@tuoora.com</span>
                 </div>
             </div>
 

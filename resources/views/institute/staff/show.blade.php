@@ -50,21 +50,22 @@
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex items-center justify-center sm:justify-end gap-2 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0">
-                <button onclick="openEditModal()" class="flex items-center gap-2 px-4 py-2 text-slate-600 hover:bg-orange-50 hover:text-brand-800 rounded-xl transition-all text-xs font-bold uppercase tracking-widest">
+            <div class="flex items-center justify-center sm:justify-end gap-3 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0">
+                <button onclick="openEditModal()" 
+                    class="flex items-center gap-2 px-5 py-2 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition-all text-xs font-bold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit Profile
+                    Edit
                 </button>
-                <button type="button" onclick="openDeleteModal()" class="flex items-center gap-2 px-4 py-2 text-slate-400 hover:bg-rose-50 hover:text-rose-500 rounded-xl transition-all text-xs font-bold uppercase tracking-widest">
+                <button type="button" onclick="openDeleteModal()" 
+                    class="flex items-center gap-2 px-5 py-2 border-2 border-rose-600 text-rose-600 rounded-xl hover:bg-rose-50 transition-all text-xs font-bold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Delete
+                    Delete Profile
                 </button>
             </div>
         </div>
@@ -83,14 +84,14 @@
 
             <div class="p-5">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="h-12 w-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center shrink-0 border border-rose-100">
+                    <div class="h-12 w-12 bg-orange-50 text-[#FF6B00] rounded-full flex items-center justify-center shrink-0 border border-orange-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 tracking-tight">Delete Staff</h3>
-                        <p class="text-[11px] font-semibold text-rose-600">Irreversible Action</p>
+                        <p class="text-[11px] font-semibold text-[#FF6B00]">Irreversible Action</p>
                     </div>
                 </div>
 
@@ -103,15 +104,15 @@
                     <p class="text-[10px] font-bold text-slate-500 mb-2">Data to be permanently lost:</p>
                     <ul class="space-y-1.5">
                         <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             Attendance records and history
                         </li>
                         <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             Salary and payment documentation
                         </li>
                         <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             Profile data and portal access
                         </li>
                     </ul>
@@ -121,7 +122,7 @@
                     <form id="delete-form" action="{{ route('institute.staff.destroy', $staff->id) }}" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-full py-3 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 active:scale-[0.98]">
+                        <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg text-xs font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98]">
                             Delete Staff
                         </button>
                     </form>
@@ -296,7 +297,7 @@
                         <button type="button" onclick="closeAddModal()"
                             class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">Cancel</button>
                         <button type="submit" id="submit-btn"
-                            class="px-6 py-2 bg-[#A8440B] text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all uppercase tracking-widest">Save Changes</button>
+                            class="px-6 py-2 bg-primary text-white rounded-lg text-xs font-bold shadow-lg shadow-amber-900/20 hover:translate-y-[-1px] active:scale-95 transition-all uppercase tracking-widest">Save Changes</button>
                     </div>
                 </form>
             </div>

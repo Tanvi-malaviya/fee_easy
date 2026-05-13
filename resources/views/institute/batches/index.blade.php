@@ -34,7 +34,7 @@
                         onkeydown="if(event.key === 'Enter') executeSearch()"
                         class="w-full pl-4 pr-24 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-[12px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                     <button onclick="executeSearch()"
-                        class="btn-brand btn-sm absolute right-1 top-1 bottom-1">
+                        class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-primary text-white rounded-lg text-[10px] font-bold hover:opacity-90 transition-all">
                         Search
                     </button>
                 </div>
@@ -42,7 +42,7 @@
                     <button onclick="exportBatches()"
                         class="btn-white btn-md">Export</button>
                     <button onclick="toggleFormView(true)"
-                        class="btn-brand btn-md whitespace-nowrap">
+                        class="btn-brand btn-md whitespace-nowrap bg-primary hover:bg-primary">
                         Intilize new batch
                     </button>
                 </div>
@@ -121,7 +121,8 @@
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
                                         (₹)</label>
-                                    <input type="number" name="fees" id="field-fees" placeholder="0"
+                                    <input type="text" name="fees" id="field-fees" placeholder="0" inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                                 <div class="space-y-1">
@@ -170,7 +171,8 @@
                                 <div class="col-span-1 space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Max
                                         Seats</label>
-                                    <input type="number" name="max_capacity" id="field-capacity" placeholder="30"
+                                    <input type="text" name="max_capacity" id="field-capacity" placeholder="30" inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
@@ -188,8 +190,8 @@
                             <button type="button" onclick="toggleFormView(false)"
                                 class="btn-white btn-md">Cancel</button>
                             <button type="submit" id="submit-btn"
-                                class="btn-brand btn-md">
-                                <span id="btn-text">Save Batch</span>
+                                class="btn-brand btn-md bg-primary hover:bg-primary">
+                                <span id="btn-text ">Save Batch</span>
                                 <span id="btn-loader" class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             </button>
                         </div>
@@ -204,11 +206,11 @@
                 onclick="toggleDeleteModal(false)"></div>
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
                 <div
-                    class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-rose-500 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                    class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                     <div class="p-8">
                         <div class="flex gap-4">
                             <div
-                                class="h-12 w-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shrink-0">
+                                class="h-12 w-12 bg-primary-50 text-primary rounded-full flex items-center justify-center shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -222,22 +224,15 @@
                                     erase all academic and financial history.</p>
                                 <div class="flex items-center gap-3">
                                     <button type="button" onclick="toggleDeleteModal(false)"
-                                        class="flex-1 h-12 border-2 border-emerald-500 text-emerald-500 rounded-xl font-extrabold text-[12px] hover:bg-emerald-50 transition-all">Cancel</button>
+                                        class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
                                     <button type="button" id="confirm-delete-btn"
-                                        class="flex-[1.5] h-12 bg-rose-500 text-white rounded-xl font-extrabold text-[12px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all">Yes,
+                                        class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-900/10 hover:bg-primary transition-all">Yes,
                                         Delete Batch</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="px-8 py-3 bg-slate-50 flex items-center gap-2">
-                        <svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                        </svg>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authenticated as
-                            Admin</span>
-                    </div>
+                  
                 </div>
             </div>
         </div>
