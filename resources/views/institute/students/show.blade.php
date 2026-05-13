@@ -14,17 +14,19 @@
             </a>
             <div class="flex items-center gap-3">
                 <a href="{{ route('institute.students.edit', $student->id) }}"
-                    class="px-6 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg font-medium text-sm hover:bg-slate-50 transition-all flex items-center shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    class="px-7 py-1.5 bg-white border-2 border-[#008080] text-[#008080] rounded-xl font-bold text-sm hover:bg-[#008080] hover:text-white transition-all flex items-center group shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-[#008080] group-hover:text-white transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
-                    Edit Student
+                    Edit
                 </a>
                 <button onclick="openDeleteModal()"
-                    class="px-6 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg font-medium text-sm hover:bg-rose-50 hover:text-rose-600 transition-all flex items-center shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    class="px-7 py-1.5 bg-white border-2 border-rose-500 text-rose-500 rounded-xl font-bold text-sm hover:bg-rose-500 hover:text-white transition-all flex items-center group shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-rose-500 group-hover:text-white transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                     Delete Student
@@ -35,7 +37,8 @@
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             <!-- Profile Header Card (2/3) -->
-            <div class="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm p-4 h-full flex flex-col justify-center">
+            <div
+                class="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm p-4 h-full flex flex-col justify-center">
                 <div class="flex flex-col md:flex-row items-center gap-4">
                     <div class="relative">
                         <div class="h-20 w-20 rounded-xl bg-slate-50 overflow-hidden border-2 border-white shadow-md">
@@ -56,7 +59,8 @@
 
                     <div class="flex-1 text-center md:text-left">
                         <h1 class="text-xl font-semibold text-slate-700 tracking-tight">{{ $student->name }}</h1>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">Student ID: <span
+                        <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">Student ID:
+                            <span
                                 class="text-slate-500 font-bold">TU-{{ $student->created_at->format('Y') }}-{{ str_pad($student->id, 4, '0', STR_PAD_LEFT) }}</span>
                         </p>
 
@@ -70,7 +74,8 @@
                                 <p class="text-[8px] font-bold text-emerald-600/50 uppercase tracking-widest mb-0.5">Payment
                                     Status</p>
                                 <p class="text-sm font-bold text-emerald-700">
-                                    {{ $balance > 0 ? 'Partial Dues' : 'Full Paid' }}</p>
+                                    {{ $balance > 0 ? 'Partial Dues' : 'Full Paid' }}
+                                </p>
                             </div>
                             <div class="bg-blue-50/30 rounded-xl px-3 py-2 border border-blue-100 min-w-[90px]">
                                 <p class="text-[8px] font-bold text-blue-600/50 uppercase tracking-widest mb-0.5">Attendance
@@ -96,12 +101,12 @@
                 </div>
 
                 <div class="mb-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Outstanding</p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pending Amount</p>
                     <div class="flex items-baseline gap-1.5">
                         <span
                             class="text-2xl font-bold text-slate-700 tracking-tighter">₹{{ number_format($balance) }}</span>
                         <span class="text-[8px] font-bold text-slate-400">/
-                            ₹{{ number_format($student->monthly_fee * 12) }} Total</span>
+                            ₹{{ number_format($student->monthly_fee) }} Total</span>
                     </div>
                 </div>
 
@@ -115,15 +120,6 @@
                         <span class="font-bold text-slate-600">₹{{ number_format($student->monthly_fee) }}</span>
                     </div>
                 </div>
-
-                <button
-                    class="w-full py-2 bg-[#ff6600] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all flex items-center justify-center">
-                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    View Receipts
-                </button>
             </div>
         </div>
 
@@ -138,12 +134,14 @@
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Batch Name</p>
                     <p class="text-sm font-semibold text-slate-600 leading-tight">
-                        {{ $student->batch ? $student->batch->name : 'N/A' }}</p>
+                        {{ $student->batch ? $student->batch->name : 'N/A' }}
+                    </p>
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date of Admission</p>
                     <p class="text-sm font-semibold text-slate-600 leading-tight">
-                        {{ $student->created_at->format('M d, Y') }}</p>
+                        {{ $student->created_at->format('M d, Y') }}
+                    </p>
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Guardian Name</p>
@@ -163,55 +161,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Quick Stats -->
-        <!-- <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                    <div class="flex items-center gap-3 mb-6">
-                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        <h2 class="text-lg font-medium text-slate-800 tracking-tight">Quick Stats</h2>
-                    </div>
-
-                    <div class="space-y-6 mb-6">
-                        <div class="flex items-center gap-4">
-                            <div class="h-9 w-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center border border-slate-100">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-center mb-1.5">
-                                    <span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest">Overall GPA</span>
-                                    <span class="text-xs font-medium text-slate-700">8.4 / 10</span>
-                                </div>
-                                <div class="h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                                    <div class="h-full bg-emerald-500 rounded-full" style="width: 84%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            <div class="h-9 w-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center border border-slate-100">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-center mb-1.5">
-                                    <span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest">Assignments Done</span>
-                                    <span class="text-xs font-medium text-slate-700">18 / 20</span>
-                                </div>
-                                <div class="h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                                    <div class="h-full bg-blue-500 rounded-full" style="width: 90%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="w-full py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-medium text-[13px] hover:bg-slate-50 transition-all shadow-sm">
-                        Detailed Progress Report
-                    </button>
-                </div> -->
     </div>
-    </div>
-
-
-
     </div>
 
     <!-- Delete Modal -->

@@ -100,7 +100,7 @@
                     <input type="text" id="student-search" onkeypress="if(event.key === 'Enter') filterStudents()"
                         placeholder="Search students by name, email or ID..."
                         class="flex-1 bg-transparent border-none py-2.5 text-sm font-semibold outline-none">
-                    <button onclick="filterStudents()" class="px-5 py-2.5 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-900 transition-all shadow-sm">
+                    <button onclick="filterStudents()" class="px-5 py-2.5 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary transition-all shadow-sm">
                         Search
                     </button>
                 </div>

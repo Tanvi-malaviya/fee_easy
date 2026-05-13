@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Student extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    
+
     protected $appends = ['profile_image_url'];
 
     protected $fillable = [

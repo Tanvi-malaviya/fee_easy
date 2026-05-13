@@ -58,6 +58,7 @@
                                         <span class="text-sm font-bold text-slate-400">+91</span>
                                     </div>
                                     <input type="text" name="phone" required value="{{ old('phone', $student->phone) }}" placeholder="98765 43210"
+                                        pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number"
                                         class="w-full pl-14 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('phone') border-rose-500 @enderror">
                                 </div>
                                 @error('phone') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
@@ -66,6 +67,7 @@
                             <div class="space-y-1">
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                                 <input type="email" name="email" required value="{{ old('email', $student->email) }}" placeholder="arjun@tuoora.edu"
+                                    title="Please enter a valid email address (e.g., name@domain.com)"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('email') border-rose-500 @enderror">
                                 @error('email') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                             </div>

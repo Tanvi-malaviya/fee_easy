@@ -12,7 +12,7 @@
 
             <div class="flex items-center gap-4">
                 <button onclick="openLeadModal()"
-                    class="px-4 py-2 bg-[#A8440B] text-white rounded-lg text-sm font-semibold hover:bg-[#8e3a09] transition-all flex items-center gap-2">
+                    class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-[#ea580c] transition-all flex items-center gap-2">
 
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -42,7 +42,7 @@
 
                                 <div class="relative flex-1">
                                     <input type="text" id="lead-search" placeholder="Search leads..."
-                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#A8440B]/20 transition-all outline-none">
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#ff6c00]/20 transition-all outline-none">
 
                                     <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
                                 </div>
 
                                 <button onclick="fetchLeads()"
-                                    class="px-4 py-2 bg-[#A8440B] text-white rounded-lg hover:bg-[#8e3a09] transition-all flex items-center justify-center shadow-sm">
+                                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#ea580c] transition-all flex items-center justify-center shadow-sm">
 
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
                             <div class="p-12 text-center loader-container">
 
                                 <div
-                                    class="h-8 w-8 border-[3px] border-gray-100 border-t-[#A8440B] rounded-full animate-spin mx-auto mb-3">
+                                    class="h-8 w-8 border-[3px] border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mx-auto mb-3">
                                 </div>
 
                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -117,7 +117,7 @@
                     class="hidden h-full bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center p-12 min-h-[500px]">
 
                     <div
-                        class="h-12 w-12 border-4 border-gray-100 border-t-[#A8440B] rounded-full animate-spin mb-4">
+                        class="h-12 w-12 border-4 border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mb-4">
                     </div>
 
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -133,7 +133,7 @@
                         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                             <div class="flex items-center gap-4">
                                 <div id="lead-avatar"
-                                    class="h-16 w-16 bg-[#e67e22] rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-orange-200 shrink-0">
+                                    class="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-orange-200 shrink-0">
                                     JM
                                 </div>
                                 <div>
@@ -261,7 +261,7 @@
                                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Interaction Notes</h3>
                             </div>
                             <button onclick="openNoteModal()"
-                                class="text-[11px] font-bold text-[#A8440B] hover:underline flex items-center gap-1">
+                                class="text-[11px] font-bold text-primary hover:underline flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -292,7 +292,7 @@
             let selectedLeadData = null;
             let currentStatusFilter = 'All';
 
-            async function fetchLeads() {
+            async function fetchLeads(selectId = null) {
                 const searchInput = document.getElementById('lead-search');
                 const search = searchInput ? searchInput.value : '';
                 const container = document.getElementById('lead-list-container');
@@ -309,7 +309,9 @@
 
                     currentLeads = leads;
 
-                    if (currentLeads.length > 0 && !selectedLeadId) {
+                    if (selectId) {
+                        selectLead(selectId);
+                    } else if (currentLeads.length > 0 && !selectedLeadId) {
                         selectLead(currentLeads[0].id);
                     } else {
                         renderLeadList();
@@ -331,20 +333,34 @@
 
             function renderLeadList() {
                 const container = document.getElementById('lead-list-container');
+                const searchInput = document.getElementById('lead-search');
+                const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
                 if (!container) return;
 
-                if (currentLeads.length === 0) {
+                let filteredLeads = currentLeads;
+                if (searchQuery) {
+                    filteredLeads = currentLeads.filter(lead => 
+                        (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery)) ||
+                        (lead.phone && lead.phone.includes(searchQuery)) ||
+                        (lead.email && lead.email.toLowerCase().includes(searchQuery)) ||
+                        (lead.course_selection && lead.course_selection.toLowerCase().includes(searchQuery)) ||
+                        (lead.reference && lead.reference.toLowerCase().includes(searchQuery))
+                    );
+                }
+
+                if (filteredLeads.length === 0) {
                     container.innerHTML = `<div class="p-12 text-center text-xs font-medium text-gray-400">No leads found</div>`;
                     return;
                 }
 
-                container.innerHTML = currentLeads.map(lead => {
+                container.innerHTML = filteredLeads.map(lead => {
                     const isActive = String(selectedLeadId) == String(lead.id);
                     return `
                         <div onclick="selectLead('${lead.id}')" 
-                            class="relative p-5 cursor-pointer hover:bg-gray-50 transition-all ${isActive ? 'bg-[#A8440B]/5' : ''}">
+                            class="relative p-5 cursor-pointer hover:bg-gray-50 transition-all ${isActive ? 'bg-[#ff6c00]/5' : ''}">
                             <div class="flex items-start justify-between mb-1">
-                                <h4 class="text-sm font-bold ${isActive ? 'text-[#A8440B]' : 'text-gray-800'}">${lead.full_name}</h4>
+                                <h4 class="text-sm font-bold ${isActive ? 'text-[#ff6c00]' : 'text-gray-800'}">${lead.full_name}</h4>
                             </div>
                             <p class="text-xs ${isActive ? 'text-orange-900/60' : 'text-gray-600'} font-medium mb-3 truncate">${lead.course_selection || 'General Inquiry'}</p>
                             <div class="flex items-center gap-4 text-[10px] font-bold ${isActive ? 'text-orange-400' : 'text-gray-500'}">
@@ -458,31 +474,48 @@
                 const data = Object.fromEntries(formData.entries());
                 const leadId = data.id;
                 const saveBtn = document.getElementById('save-lead-btn');
-                const originalText = saveBtn.innerHTML;
+                const originalContent = saveBtn.innerHTML;
+                const errorDiv = document.getElementById('lead-error');
+
                 saveBtn.disabled = true;
-                saveBtn.innerHTML = '<div class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...';
+                saveBtn.innerHTML = '<div class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>';
+                if (errorDiv) errorDiv.classList.add('hidden');
 
                 try {
                     const url = leadId ? `/api/v1/institute/leads/${leadId}` : '/api/v1/institute/leads';
                     const method = leadId ? 'PUT' : 'POST';
+                    
                     const response = await fetch(url, {
                         method: method,
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Accept': 'application/json', 
+                            'X-CSRF-TOKEN': CSRF_TOKEN 
+                        },
                         body: JSON.stringify(data)
                     });
 
+                    const result = await response.json().catch(() => ({ message: 'Server error. Please try again.' }));
+
                     if (response.ok) {
                         closeLeadModal();
-                        fetchLeads();
+                        const newId = leadId || (result.data ? result.data.id : null);
+                        await fetchLeads(newId);
                     } else {
-                        const errorData = await response.json();
-                        const errDiv = document.getElementById('lead-error');
-                        errDiv.textContent = errorData.message || 'Error saving lead';
-                        errDiv.classList.remove('hidden');
+                        if (errorDiv) {
+                            errorDiv.textContent = result.message || (result.errors ? Object.values(result.errors)[0][0] : 'Error saving lead');
+                            errorDiv.classList.remove('hidden');
+                        }
                     }
-                } catch (error) { console.error(error); } finally {
+                } catch (error) { 
+                    console.error('Save Error:', error);
+                    if (errorDiv) {
+                        errorDiv.textContent = 'Connection failed. Please check your internet.';
+                        errorDiv.classList.remove('hidden');
+                    }
+                } finally {
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = originalText;
+                    saveBtn.innerHTML = originalContent;
                 }
             }
 

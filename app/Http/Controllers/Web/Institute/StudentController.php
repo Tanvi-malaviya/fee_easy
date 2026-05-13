@@ -21,7 +21,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $institute = Auth::guard('institute')->user();
-        
+
         // If it's an AJAX request, return the JSON data
         if ($request->expectsJson()) {
             $students = $institute->students()->with('batch')->orderBy('created_at', 'desc')->paginate(10);
@@ -42,7 +42,7 @@ class StudentController extends Controller
                 ->sum('amount'),
             'pending_fees' => $institute->fees()->where('status', '!=', 'Paid')->sum(DB::raw('total_amount - paid_amount')),
             'today_attendance' => Student::where('institute_id', $institute->id)
-                ->whereHas('attendance', function($q) use ($today) {
+                ->whereHas('attendance', function ($q) use ($today) {
                     $q->where('date', $today)->where('status', 'Present');
                 })->count(),
         ];
@@ -68,8 +68,9 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         $institute = Auth::guard('institute')->user();
-        if ($student->institute_id !== $institute->id) abort(403);
-        
+        if ($student->institute_id !== $institute->id)
+            abort(403);
+
         $batches = $institute->batches()->get();
         return view('institute.students.edit', compact('student', 'batches'));
     }
@@ -80,10 +81,11 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $institute = Auth::guard('institute')->user();
-        if ($student->institute_id !== $institute->id) abort(403);
+        if ($student->institute_id !== $institute->id)
+            abort(403);
 
         $student->load(['batch', 'fees', 'attendance', 'homeworkSubmissions']);
-        
+
         // Calculate balance (Monthly Fee - Total Payments)
         $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
         $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
@@ -109,8 +111,8 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:students,email',
-            'phone' => 'required|string|max:10',
+            'email' => 'required|email:rfc,dns|unique:students,email',
+            'phone' => 'required|numeric|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
             'dob' => 'required|date',
@@ -179,12 +181,13 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $institute = Auth::guard('institute')->user();
-        if ($student->institute_id !== $institute->id) abort(403);
+        if ($student->institute_id !== $institute->id)
+            abort(403);
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:students,email,' . $student->id,
-            'phone' => 'required|string|max:10',
+            'email' => 'required|email:rfc,dns|unique:students,email,' . $student->id,
+            'phone' => 'required|numeric|digits:10',
             'password' => 'nullable|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
@@ -229,7 +232,8 @@ class StudentController extends Controller
     public function destroy(Request $request, Student $student)
     {
         $institute = Auth::guard('institute')->user();
-        if ($student->institute_id !== $institute->id) abort(403);
+        if ($student->institute_id !== $institute->id)
+            abort(403);
 
         $student->delete();
 
@@ -251,10 +255,10 @@ class StudentController extends Controller
         // Apply Filters (same logic as API)
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -276,7 +280,7 @@ class StudentController extends Controller
                 'date' => Carbon::now()->format('d M, Y'),
                 'batch' => $request->filled('batch_id') ? \App\Models\Batch::find($request->batch_id) : null
             ]);
-            
+
             return $pdf->download('Student_Registry_' . Carbon::now()->format('YmdHis') . '.pdf');
         } else {
             // CSV / Excel Format
@@ -286,7 +290,7 @@ class StudentController extends Controller
                 'Content-Disposition' => "attachment; filename=\"$filename\"",
             ];
 
-            $callback = function() use ($students) {
+            $callback = function () use ($students) {
                 $file = fopen('php://output', 'w');
                 fputcsv($file, ['Name', 'Email', 'Phone', 'Batch', 'Standard', 'Status']);
 

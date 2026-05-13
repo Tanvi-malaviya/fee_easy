@@ -1,6 +1,12 @@
 @extends('layouts.institute')
 
 @section('content')
+<style>
+    /* Hide spin-button for number input */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+</style>
 <div class="space-y-2 max-w-[1600px] mx-auto pb-5 px-4 animate-in fade-in duration-500">
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-3"></div>
