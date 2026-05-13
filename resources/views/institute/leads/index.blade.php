@@ -3,9 +3,9 @@
 @section('content')
     <div>
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
             <div class="flex items-center gap-4 md:gap-12">
-                <h1 class="text-xl md:text-2xl font-black text-gray-800 tracking-tight">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
                     Leads Management
                 </h1>
             </div>

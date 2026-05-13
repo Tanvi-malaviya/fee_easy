@@ -88,10 +88,16 @@
 
 
 
-        <!-- Staff Management View -->
-        <div id="staff-view">
-            <!-- Search & Filter Bar -->
-            <div class="bg-white rounded-2xl border border-slate-100 p-2 mb-2 flex flex-wrap items-center gap-2">
+            <!-- Staff Management View -->
+            <div id="staff-view" class="relative">
+                <!-- Loading Spinner -->
+                <div id="loading-spinner"
+                    class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
+                    <div class="h-10 w-10 border-4 border-slate-100 border-t-[#FF6B00] rounded-full animate-spin"></div>
+                </div>
+
+                <!-- Search & Filter Bar -->
+                <div class="bg-white rounded-2xl border border-slate-100 p-2 mb-2 flex flex-wrap items-center gap-2">
                 <div class="flex-1 min-w-[300px] flex items-center gap-2">
                     <div class="relative flex-1">
                         <input type="text" id="staff-search" placeholder="Search staff name or department..."
@@ -173,14 +179,9 @@
                 </div>
             </div>
 
-            <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative min-h-[200px]">
-                <!-- Loading Spinner -->
-                <div id="loading-spinner"
-                    class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
-                    <div class="h-10 w-10 border-4 border-slate-100 border-t-[#FF6B00] rounded-full animate-spin"></div>
+                <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative min-h-[200px]">
+                    <!-- Dynamic Content -->
                 </div>
-                <!-- Dynamic Content -->
-            </div>
 
             <div id="pagination-container" class="mt-8"></div>
         </div>
@@ -371,6 +372,9 @@
                                 <th
                                     class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
                                     Amount</th>
+                                <th
+                                    class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
+                                    Action</th>
                             </tr>
                         </thead>
                         <tbody id="salary-table-body" class="divide-y divide-slate-100">
@@ -396,7 +400,7 @@
         <div
             class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-6 py-4 flex items-center justify-between shrink-0">
+            <div class="px-5 py-3.5 flex items-center justify-between shrink-0">
                 <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -405,7 +409,7 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-6 pb-6 custom-scrollbar">
+            <div class="overflow-y-auto px-5 pb-5 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
@@ -577,7 +581,7 @@
         <div
             class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[380px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
             <!-- Modal Header -->
-            <div class="px-6 pt-3 pb-1 flex items-center justify-between border-b border-slate-50">
+            <div class="px-5 pt-3 pb-1 flex items-center justify-between border-b border-slate-50">
                 <h1 class="text-base font-bold text-slate-800 tracking-tight">Log Attendance</h1>
                 <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -586,7 +590,7 @@
                 </button>
             </div>
 
-            <div class="px-6 pb-6">
+            <div class="px-5 pb-5">
                 <form id="log-attendance-form" class="space-y-4">
                     @csrf
                     <input type="hidden" name="id" id="attendance-id-input">
@@ -693,7 +697,7 @@
                 id="salary-modal-content">
 
                 <!-- Left Section: Form -->
-                <div class="flex-1 p-5 md:p-6 border-r border-slate-100">
+                <div class="flex-1 p-5 border-r border-slate-100">
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="text-xl font-bold text-slate-800" id="salary-modal-title">Add Salary</h3>
@@ -798,7 +802,7 @@
                 </div>
 
                 <!-- Right Section: Summary -->
-                <div class="w-full md:w-[320px] bg-slate-50 p-5 md:p-6 flex flex-col">
+                <div class="w-full md:w-[320px] bg-slate-50 p-5 flex flex-col">
                     <div class="flex items-center justify-between mb-5">
                         <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Review Summary</h4>
                         <button onclick="closeSalaryModal()"
@@ -1004,7 +1008,8 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    renderStaff(result.data.items || []);
+                    staffListData = result.data.items || [];
+                    renderStaff(staffListData);
                     renderPagination(result.data);
                 } else {
                     console.error('API Error:', result.message);
@@ -1020,15 +1025,8 @@
             const grid = document.getElementById('staff-grid');
             if (!grid) return;
 
-            // Preserve the loading spinner
-            const loaderHtml = `
-                                                <div id="loading-spinner" class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-3xl">
-                                                    <div class="h-10 w-10 border-4 border-slate-100 border-t-brand-800 rounded-full animate-spin"></div>
-                                                </div>
-                                        `;
-
             if (staffMembers.length === 0) {
-                grid.innerHTML = loaderHtml + `
+                grid.innerHTML = `
                                                     <div class="col-span-full py-20 flex flex-col items-center text-center bg-white rounded-3xl border border-slate-100 w-full">
                                                         <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
                                                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1068,14 +1066,14 @@
 
                                                         <div class="flex items-center gap-2 w-full">
                                                             <a href="{{ url('institute/staff') }}/${staff.id}" class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all text-center">Profile</a>
-                                                            <button onclick="openEditModalById(${staff.id})" 
+                                                            <button onclick="openEditModalById(${staff.id})" id="edit-btn-${staff.id}"
                                                                 class="flex-1 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition-all">Edit</button>
                                                         </div>
                                                     </div>
                                                 `;
             }).join('');
 
-            grid.innerHTML = loaderHtml + cardsHtml;
+            grid.innerHTML = cardsHtml;
         }
 
         function renderPagination(pagination) {
@@ -1106,7 +1104,7 @@
             // Page Numbers (Simplified)
             for (let i = 1; i <= pagination.last_page; i++) {
                 if (i === pagination.current_page) {
-                    html += `<span class="h-8 w-8 flex items-center justify-center rounded-lg bg-brand-800 text-white text-xs font-bold shadow-md shadow-amber-900/20">${i}</span>`;
+                    html += `<span class="h-8 w-8 flex items-center justify-center rounded-lg bg-[#FF6B00] text-white text-xs font-bold shadow-md shadow-orange-900/10">${i}</span>`;
                 } else if (i <= 3 || i > pagination.last_page - 1 || (i >= pagination.current_page - 1 && i <= pagination.current_page + 1)) {
                     html += `<button onclick="fetchStaff(${i})" class="h-8 w-8 flex items-center justify-center rounded-lg bg-white border border-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-all">${i}</button>`;
                 } else if (i === 4 || i === pagination.last_page - 1) {
@@ -1325,7 +1323,7 @@
                     }
                 },
                 'Yes, Delete Staff',
-                'bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all'
+                'bg-[#FF6B00] text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all'
             );
         };
 
@@ -1724,7 +1722,7 @@
                     }
                 },
                 'Yes, Delete Record',
-                'bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all'
+                'bg-[#FF6B00] text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all'
             );
         };
 
@@ -1811,6 +1809,22 @@
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-xs font-bold text-slate-800 text-center">₹${parseFloat(item.net_salary).toLocaleString()}</td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="flex items-center justify-center gap-2">
+                                                            <button onclick='openSalaryModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' 
+                                                                class="p-1.5 hover:bg-amber-50 text-amber-600 rounded-lg transition-all" title="Edit">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                </svg>
+                                                            </button>
+                                                            <button onclick="deleteSalary(${item.id})" 
+                                                                class="p-1.5 hover:bg-rose-50 text-rose-500 rounded-lg transition-all" title="Delete">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             `).join('');
         }
@@ -2019,6 +2033,36 @@
                 url += `?month=${month}&year=${year}`;
             }
             window.location.href = url;
+        };
+
+        window.deleteSalary = (id) => {
+            showConfirmModal(
+                'Delete Salary Record',
+                'Are you sure you want to delete this salary record? This action will permanently remove the record from financial logs.',
+                async () => {
+                    try {
+                        const response = await fetch(`{{ url('api/v1/institute/salaries') }}/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': CSRF_TOKEN,
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            fetchSalaries();
+                            showToast('Salary record deleted successfully');
+                        } else {
+                            showToast('Error deleting salary record', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showToast('Error deleting salary record', 'error');
+                    }
+                },
+                'Yes, Delete Salary',
+                'bg-[#FF6B00] text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all'
+            );
         };
 
         // Close dropdown when clicking outside
