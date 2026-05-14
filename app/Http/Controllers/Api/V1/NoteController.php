@@ -65,7 +65,7 @@ class NoteController extends Controller
             'checklists' => 'nullable|array'
         ]);
 
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = auth()->id() ?? auth('institute')->id();
 
         // Handle Category Fix: If category name is provided but no category_id, find or create it
         if (!empty($data['category']) && empty($data['category_id'])) {
@@ -104,15 +104,18 @@ class NoteController extends Controller
 
     public function show($id)
     {
-        $note = Note::where('user_id', auth()->id())->with(['checklists', 'images', 'category_relation'])->findOrFail($id);
+        $userId = auth()->id() ?? auth('institute')->id();
+        $note = Note::where('user_id', $userId)->with(['checklists', 'images', 'category_relation'])->findOrFail($id);
         return response()->json(['status' => 'success', 'data' => $note]);
     }
 
     public function update(Request $request, $id)
     {
-        $note = Note::where('user_id', auth()->id())->findOrFail($id);
+        $userId = auth()->id() ?? auth('institute')->id();
+        $note = Note::where('user_id', $userId)->findOrFail($id);
 
         $data = $request->validate([
+            'remove_image' => 'nullable',
             'institute_id' => 'nullable|exists:institutes,id',
             'notable_id' => 'nullable',
             'notable_type' => 'nullable',
@@ -136,6 +139,12 @@ class NoteController extends Controller
             } catch (Exception $e) {
                 \Log::error('Note category error: ' . $e->getMessage());
             }
+        }
+
+        // Handle image removal
+        if ($request->remove_image == '1') {
+            if ($note->cover_image) \Storage::disk('public')->delete($note->cover_image);
+            $data['cover_image'] = null;
         }
 
         if ($request->hasFile('image')) {
@@ -167,7 +176,8 @@ class NoteController extends Controller
 
     public function bookmark($id)
     {
-        $note = Note::where('user_id', auth()->id())->findOrFail($id);
+        $userId = auth()->id() ?? auth('institute')->id();
+        $note = Note::where('user_id', $userId)->findOrFail($id);
         $note->update(['is_bookmarked' => !$note->is_bookmarked]);
 
         return response()->json([
@@ -181,15 +191,17 @@ class NoteController extends Controller
 
     public function destroy($id)
     {
-        Note::where('user_id', auth()->id())->findOrFail($id)->delete();
+        $userId = auth()->id() ?? auth('institute')->id();
+        Note::where('user_id', $userId)->findOrFail($id)->delete();
         return response()->json(['status' => 'success', 'message' => 'Note deleted.']);
     }
 
     // Toggle Checklist Item Completion
     public function toggleChecklist($id)
     {
-        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) {
-            $q->where('user_id', auth()->id());
+        $userId = auth()->id() ?? auth('institute')->id();
+        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
         })->findOrFail($id);
 
         $item->update(['is_completed' => !$item->is_completed]);
@@ -204,8 +216,9 @@ class NoteController extends Controller
     // Remove Checklist Item
     public function destroyChecklist($id)
     {
-        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) {
-            $q->where('user_id', auth()->id());
+        $userId = auth()->id() ?? auth('institute')->id();
+        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
         })->findOrFail($id);
 
         $item->delete();

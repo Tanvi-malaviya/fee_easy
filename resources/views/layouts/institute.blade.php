@@ -82,7 +82,6 @@
                 @php
                     $navItems = [
                         ['route' => 'institute.dashboard', 'label' => 'Dashboard'],
-                        ['route' => 'institute.leads.index', 'label' => 'Leads'],
                         ['route' => 'institute.students.index', 'label' => 'Students'],
                         ['route' => 'institute.batches.index', 'label' => 'Batch'],
                         ['route' => 'institute.reports.index', 'label' => 'Report'],

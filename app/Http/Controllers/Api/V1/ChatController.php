@@ -19,21 +19,27 @@ class ChatController extends Controller
         $user = $request->user();
         
         // Determine receiver_type based on sender
-        $receiverType = '';
+        $receiverType = $request->input('receiver_type');
         $receiverTable = 'parents';
 
-        if ($user instanceof Institute) {
-            // Suppose Institute always sends to StudentParent in this context
-            $receiverType = StudentParent::class;
-            $receiverTable = 'parents';
-        } else if ($user instanceof StudentParent || $user instanceof \App\Models\Student) {
-            // Parent or Student sends to Institute
-            $receiverType = Institute::class;
-            $receiverTable = 'institutes';
+        if ($receiverType) {
+            if ($receiverType === \App\Models\Institute::class) {
+                $receiverTable = 'institutes';
+            } elseif ($receiverType === \App\Models\Staff::class) {
+                $receiverTable = 'staff';
+            } elseif ($receiverType === \App\Models\Student::class) {
+                $receiverTable = 'students';
+            } else {
+                $receiverTable = 'parents';
+            }
         } else {
-            // Default or passed via request
-            $receiverType = $request->input('receiver_type', StudentParent::class);
-            $receiverTable = $receiverType == Institute::class ? 'institutes' : 'parents';
+            if ($user instanceof Institute) {
+                $receiverType = StudentParent::class;
+                $receiverTable = 'parents';
+            } else {
+                $receiverType = Institute::class;
+                $receiverTable = 'institutes';
+            }
         }
 
         $request->validate([
@@ -50,6 +56,8 @@ class ChatController extends Controller
             'message' => $request->message,
             'type' => $request->type,
         ]);
+
+        broadcast(new \App\Events\MessageSent($message))->toOthers();
 
         $message->load('sender', 'receiver');
 
@@ -114,14 +122,14 @@ class ChatController extends Controller
                 $key = $msg->receiver_type . '_' . $msg->receiver_id;
                 $other_id = $msg->receiver_id;
                 $other_type = class_basename($msg->receiver_type);
-                $other_name = $msg->receiver ? $msg->receiver->name : 'Unknown';
-                $other_logo = $msg->receiver ? ($msg->receiver->logo ?? null) : null;
+                $other_name = $msg->receiver ? ($msg->receiver->name ?? $msg->receiver->full_name ?? $msg->receiver->institute_name ?? 'Unknown') : 'Unknown';
+                $other_logo = $msg->receiver ? ($msg->receiver->logo ?? $msg->receiver->profile_image ?? null) : null;
             } else {
                 $key = $msg->sender_type . '_' . $msg->sender_id;
                 $other_id = $msg->sender_id;
                 $other_type = class_basename($msg->sender_type);
-                $other_name = $msg->sender ? $msg->sender->name : 'Unknown';
-                $other_logo = $msg->sender ? ($msg->sender->logo ?? null) : null;
+                $other_name = $msg->sender ? ($msg->sender->name ?? $msg->sender->full_name ?? $msg->sender->institute_name ?? 'Unknown') : 'Unknown';
+                $other_logo = $msg->sender ? ($msg->sender->logo ?? $msg->sender->profile_image ?? null) : null;
             }
 
             if (!isset($conversations[$key])) {
@@ -161,11 +169,15 @@ class ChatController extends Controller
         $user = $request->user();
         $userClass = get_class($user);
         
-        // Figure out the other class type based on the user
-        if ($user instanceof Institute) {
-            $otherClass = StudentParent::class;
+        $otherType = $request->query('type'); // 'Staff', 'Student', 'Institute', 'StudentParent'
+        
+        if ($otherType) {
+            $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class : 
+                         ($otherType == 'Student' ? \App\Models\Student::class : 
+                         ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
         } else {
-            $otherClass = Institute::class;
+            // Fallback for older API calls
+            $otherClass = $user instanceof Institute ? \App\Models\StudentParent::class : \App\Models\Institute::class;
         }
 
         $messages = ChatMessage::with(['sender', 'receiver'])
@@ -206,14 +218,14 @@ class ChatController extends Controller
                 'updated_at' => $msg->updated_at,
                 'sender' => $msg->sender ? [
                     'id' => $msg->sender->id,
-                    'name' => $msg->sender->name,
-                    'logo' => $msg->sender->logo ?? null,
+                    'name' => $msg->sender->name ?? $msg->sender->full_name ?? $msg->sender->institute_name ?? 'Unknown',
+                    'logo' => $msg->sender->logo ?? $msg->sender->profile_image ?? null,
                     'type' => class_basename($msg->sender_type)
                 ] : null,
                 'receiver' => $msg->receiver ? [
                     'id' => $msg->receiver->id,
-                    'name' => $msg->receiver->name,
-                    'logo' => $msg->receiver->logo ?? null,
+                    'name' => $msg->receiver->name ?? $msg->receiver->full_name ?? $msg->receiver->institute_name ?? 'Unknown',
+                    'logo' => $msg->receiver->logo ?? $msg->receiver->profile_image ?? null,
                     'type' => class_basename($msg->receiver_type)
                 ] : null
             ];

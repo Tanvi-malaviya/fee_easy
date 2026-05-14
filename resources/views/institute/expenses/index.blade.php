@@ -3,7 +3,7 @@
 @section('content')
     <div class="max-w-[1600px] mx-auto animate-in fade-in duration-500">
         <!-- Header Section -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3 px-4 md:px-0">
             <div>
                 <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Financial Overview</h1>
                 <p class="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Dashboard Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 px-4 md:px-0">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-2 px-4 md:px-0">
             <!-- Spending Trends Chart -->
             <div class="md:col-span-8 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 relative overflow-hidden">
                 <div class="flex items-center justify-between mb-6">
@@ -59,7 +59,8 @@
             </div>
 
             <!-- Category Breakdown -->
-            <div class="md:col-span-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 min-h-[340px] flex flex-col">
+            <div
+                class="md:col-span-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 min-h-[340px] flex flex-col">
                 <h3 class="text-sm font-bold text-slate-800 mb-6">Category Breakdown</h3>
                 <div id="category-chart-container" class="flex-1 flex flex-col items-center justify-center pt-2">
                     <div class="relative h-44 w-44 mb-4">
@@ -69,7 +70,8 @@
                             <p id="total-spend-display" class="text-2xl font-black text-slate-800 tracking-tight">₹0</p>
                         </div>
                     </div>
-                    <div id="category-legend" class="w-full space-y-1.5 max-h-[120px] overflow-y-auto custom-scrollbar pr-2">
+                    <div id="category-legend"
+                        class="w-full space-y-1.5 max-h-[120px] overflow-y-auto custom-scrollbar pr-2">
                         <!-- Legends injected here -->
                     </div>
                     <div id="no-data-message" class="hidden text-center py-10">
@@ -82,7 +84,8 @@
 
         <!-- Transaction History Section -->
         <div class="mx-4 md:mx-0 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-8">
-            <div class="px-4 md:px-6 py-4 border-b border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
+            <div
+                class="px-4 md:px-6 py-4 border-b border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
                 <h3 class="text-sm font-bold text-slate-800">Transaction History</h3>
                 <button onclick="exportPDF()"
                     class="w-full sm:w-auto text-[11px] font-bold text-primary hover:underline flex items-center justify-center gap-1.5 uppercase tracking-widest">
@@ -121,19 +124,21 @@
             </div>
 
             <!-- Pagination Footer -->
-            <div id="pagination-footer" class="px-4 md:px-6 py-4 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/10">
+            <div id="pagination-footer"
+                class="px-4 md:px-6 py-4 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/10">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest order-2 sm:order-1">
-                    Showing <span id="pagination-from">0</span> - <span id="pagination-to">0</span> of <span id="pagination-total">0</span>
+                    Showing <span id="pagination-from">0</span> - <span id="pagination-to">0</span> of <span
+                        id="pagination-total">0</span>
                 </p>
                 <div class="flex items-center gap-2 order-1 sm:order-2">
-                    <button onclick="changePage(currentPage - 1)" id="prev-page" 
+                    <button onclick="changePage(currentPage - 1)" id="prev-page"
                         class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[10px] font-bold text-slate-500 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-all">
                         Previous
                     </button>
                     <div id="page-numbers" class="flex items-center gap-1">
                         <!-- Page numbers injected here -->
                     </div>
-                    <button onclick="changePage(currentPage + 1)" id="next-page" 
+                    <button onclick="changePage(currentPage + 1)" id="next-page"
                         class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[10px] font-bold text-slate-500 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-all">
                         Next
                     </button>
@@ -165,7 +170,7 @@
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Amount</p>
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-2xl font-black text-primary">₹</span>
-                             <input type="number" name="amount" required step="0.01" placeholder="0.00"
+                            <input type="number" name="amount" required step="0.01" placeholder="0.00"
                                 class="w-40 text-4xl font-black text-primary border-none focus:ring-0 p-0 placeholder-primary/20 bg-transparent text-center">
                         </div>
                     </div>
@@ -182,7 +187,7 @@
                         <div>
                             <label
                                 class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date</label>
-                            <input type="date" name="date" required value="{{ date('Y-m-d') }}"
+                            <input type="date" name="date" required value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}"
                                 class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
                     </div>
@@ -193,18 +198,22 @@
                         <div class="flex p-1 bg-slate-100 rounded-xl">
                             <label class="flex-1 relative cursor-pointer">
                                 <input type="radio" name="payment_method" value="Cash" checked class="peer hidden">
-                                <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
+                                <div
+                                    class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                     Cash
                                 </div>
                             </label>
                             <label class="flex-1 relative cursor-pointer">
                                 <input type="radio" name="payment_method" value="Online" class="peer hidden">
-                                <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
+                                <div
+                                    class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                     Online
                                 </div>
@@ -256,7 +265,7 @@
                 try {
                     isFiltering = isFilter;
                     currentPage = page;
-                    
+
                     const url = new URL(`${API_BASE}/dashboard`, window.location.origin);
                     if (isFiltering) {
                         url.searchParams.append('month', selectedMonth);
@@ -387,31 +396,31 @@
 
                 // Render Legend
                 legend.innerHTML = breakdown.map((b, i) => `
-                            <div class="flex items-center justify-between text-[11px] font-bold border-b border-slate-50 pb-2 last:border-0">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-2 w-2 rounded-full" style="background-color: ${colors[i % colors.length]}"></div>
-                                    <span class="text-slate-500">${b.category_name}</span>
-                                </div>
-                                <span class="text-slate-800 tracking-tight">₹${b.total.toLocaleString()}</span>
-                            </div>
-                        `).join('');
+                                    <div class="flex items-center justify-between text-[11px] font-bold border-b border-slate-50 pb-2 last:border-0">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-2 w-2 rounded-full" style="background-color: ${colors[i % colors.length]}"></div>
+                                            <span class="text-slate-500">${b.category_name}</span>
+                                        </div>
+                                        <span class="text-slate-800 tracking-tight">₹${b.total.toLocaleString()}</span>
+                                    </div>
+                                `).join('');
             }
 
             function renderTransactions(pagination) {
                 const body = document.getElementById('transaction-table-body');
                 const transactions = pagination.items;
-                
+
                 // Update pagination metadata
                 lastPage = pagination.last_page;
                 currentPage = pagination.current_page;
-                
+
                 document.getElementById('pagination-total').textContent = pagination.total;
                 document.getElementById('pagination-from').textContent = ((currentPage - 1) * pagination.per_page) + 1;
                 document.getElementById('pagination-to').textContent = Math.min(currentPage * pagination.per_page, pagination.total);
-                
+
                 document.getElementById('prev-page').disabled = currentPage <= 1;
                 document.getElementById('next-page').disabled = currentPage >= lastPage;
-                
+
                 // Render Page Numbers
                 const pageNumbers = document.getElementById('page-numbers');
                 let pagesHtml = '';
@@ -430,31 +439,31 @@
                 }
 
                 body.innerHTML = transactions.map(t => `
-                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                        </div>
-                                        <span class="text-xs font-bold text-slate-700">${t.category?.name || 'Uncategorized'}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span class="text-xs font-medium text-slate-500">${t.description || 'No description'}</span>
-                                </td>
-                                <td class="px-6 py-3 text-xs font-bold text-slate-400 tracking-tight">
-                                    ${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${t.payment_method === 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-slate-100 text-slate-500'}">
-                                        ${t.payment_method}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3 text-right">
-                                    <span class="text-xs font-black text-primary">₹${t.amount.toLocaleString()}</span>
-                                </td>
-                            </tr>
-                        `).join('');
+                                    <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="h-8 w-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                                </div>
+                                                <span class="text-xs font-bold text-slate-700">${t.category?.name || 'Uncategorized'}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            <span class="text-xs font-medium text-slate-500">${t.description || 'No description'}</span>
+                                        </td>
+                                        <td class="px-6 py-3 text-xs font-bold text-slate-400 tracking-tight">
+                                            ${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${t.payment_method === 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-slate-100 text-slate-500'}">
+                                                ${t.payment_method}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-3 text-right">
+                                            <span class="text-xs font-black text-primary">₹${t.amount.toLocaleString()}</span>
+                                        </td>
+                                    </tr>
+                                `).join('');
             }
 
             async function loadCategories() {

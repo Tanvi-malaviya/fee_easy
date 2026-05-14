@@ -361,7 +361,7 @@
                     </div>
 
                     <!-- Update Card -->
-                    <div class="flex-1 w-full bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 min-w-0 overflow-hidden">
+                    <div class="flex-1 w-full bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all duration-300 min-w-0 overflow-hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-1 mb-1.5 sm:mb-2">
                             <span class="text-[9px] sm:text-[10px] font-black text-${color}-600 uppercase tracking-widest">${cat.toUpperCase()}</span>
                         </div>
