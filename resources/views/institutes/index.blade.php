@@ -11,7 +11,7 @@
                     </svg>
                 </div>
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center hidden" id="search-loader">
-                    <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                         </circle>
@@ -22,14 +22,11 @@
                 </div>
                 <input type="text" id="search-input" name="search" value="{{ request('search') }}" autocomplete="off"
                     placeholder="Search by name, institute, email or phone..."
-                    class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
+                    class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition">
                 <!-- Search Button inside input -->
                 <div class="absolute inset-y-0 right-0 flex items-center pr-1">
                     <button type="submit"
-                        class="no-loader inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition">
-                        <!-- <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg> -->
+                        class="no-loader inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:opacity-90 text-white text-xs font-semibold rounded-lg transition">
                         Search
                     </button>
                 </div>
@@ -47,19 +44,19 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('institutes.create') }}" id="create-btn"
-                    class="relative inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition shadow-indigo-600/20 whitespace-nowrap min-w-[170px]">
+                <a href="{{ route('institutes.create') }}"
+                    class="inline-flex items-center px-6 py-2.5 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-sm font-bold text-white bg-primary hover:opacity-90 focus:outline-none transition transform active:scale-95 whitespace-nowrap">
                     <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                        </path>
                     </svg>
-                    Create New Institute
+                    Add Institute
                 </a>
-                <!-- @if(request()->has('search') || request()->has('status'))
+            </div>    <!-- @if(request()->has('search') || request()->has('status'))
                     <a href="{{ route('institutes.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
                         Clear Filters
                     </a>
                 @endif -->
-            </div>
         </form>
     </div>
 
@@ -69,14 +66,14 @@
         <div id="table-loader"
             class="hidden absolute inset-0 bg-white/70 backdrop-blur-sm rounded-2xl z-10 flex items-center justify-center">
             <div class="flex flex-col items-center gap-3">
-                <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                     </path>
                 </svg>
-                <span class="text-xs font-semibold text-indigo-500 uppercase tracking-widest">Searching...</span>
+                <span class="text-xs font-semibold text-primary uppercase tracking-widest">Searching...</span>
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -106,7 +103,7 @@
                             <td class="px-5 py-1">
                                 <div class="flex items-center">
                                     <div
-                                        class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm overflow-hidden border border-gray-100 shadow-sm">
+                                        class="flex-shrink-0 h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm overflow-hidden border border-primary/20 shadow-sm">
                                         @if($institute->logo)
                                             <img src="{{ asset('storage/' . $institute->logo) }}"
                                                 class="h-full w-full object-cover">
@@ -158,7 +155,7 @@
                                         </svg>
                                     </a>
                                     <a href="{{ route('institutes.edit', $institute) }}"
-                                        class="text-indigo-600 hover:text-indigo-900 transition-colors p-1.5 bg-indigo-50 rounded-lg"
+                                        class="text-primary hover:opacity-80 transition-colors p-1.5 bg-primary/10 rounded-lg"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -313,7 +310,7 @@
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
         aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <!-- Background Overlay -->
             <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" aria-hidden="true"
                 onclick="closeDeleteModal()"></div>
@@ -322,34 +319,27 @@
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <!-- Modal Dialog -->
-            <div
-                class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-gray-100">
-                <div class="sm:flex sm:items-start">
-                    <div
-                        class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-50 rounded-full sm:mx-0 sm:h-10 sm:w-10 ring-8 ring-red-50/50">
-                        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="inline-block px-6 py-6 overflow-hidden text-center align-middle transform bg-white rounded-2xl shadow-xl sm:my-8 sm:max-w-sm sm:w-full border border-gray-100">
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center justify-center w-14 h-14 bg-red-50 rounded-full mb-4">
+                        <svg class="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 class="text-lg font-bold leading-6 text-gray-900" id="modal-title">Delete Institute</h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500">Are you sure you want to delete this institute? All
-                                associated data will be permanently removed. This action cannot be undone.</p>
-                        </div>
-                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1" id="modal-title">Delete Institute?</h3>
+                    <p class="text-[10px] text-gray-500 font-medium px-4">All associated data will be permanently removed. This action cannot be undone. Are you sure you want to proceed?</p>
                 </div>
+
                 <!-- Action Buttons -->
-                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
-                    <form id="deleteForm" method="POST" action="">
+                <div class="mt-6 flex items-center gap-3">
+                    <button type="button" onclick="closeDeleteModal()"
+                        class="flex-1 py-2.5 text-[10px] font-bold text-gray-400 hover:text-gray-600 transition uppercase tracking-widest border border-gray-100 rounded-xl">Cancel</button>
+                    <form id="deleteForm" method="POST" action="" class="flex-1">
                         @csrf @method('DELETE')
                         <button type="submit"
-                            class="inline-flex justify-center w-full px-5 py-2.5 text-sm font-semibold text-white bg-red-600 border border-transparent rounded-xl shadow-sm hover:bg-red-700 focus:outline-none sm:w-auto transition">Delete
-                            Institute</button>
+                            class="w-full py-2.5 text-[10px] font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition uppercase tracking-widest">Yes, Delete</button>
                     </form>
-                    <button type="button" onclick="closeDeleteModal()"
-                        class="inline-flex justify-center w-full px-5 py-2.5 mt-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto transition">Cancel</button>
                 </div>
             </div>
         </div>

@@ -11,7 +11,7 @@
                 <div
                     class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
                     <div class="flex items-center">
-                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 0A9 9 0 115.636 5.636 9 9 0 0118.364 5.636z">
@@ -33,7 +33,7 @@
                 <div
                     class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
                     <div class="flex items-center">
-                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -56,7 +56,7 @@
                     class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                            class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
@@ -79,7 +79,7 @@
                     class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-md duration-300">
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                            class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
@@ -124,12 +124,12 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input type="text" name="search"
+                            <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Search institute or owner..." 
-                                class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
+                                class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition">
                             
                             <div class="absolute inset-y-0 right-0 flex items-center pr-1">
-                                <button type="submit" class="inline-flex items-center px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold uppercase rounded-lg transition shadow-sm tracking-wider no-loader">
+                                <button type="submit" class="inline-flex items-center px-4 py-1.5 bg-primary hover:opacity-90 text-white text-[10px] font-bold uppercase rounded-lg transition shadow-sm tracking-wider no-loader">
                                     Search
                                 </button>
                             </div>
@@ -137,7 +137,7 @@
                         
                         <div class="w-full md:w-48">
                             <select name="source" onchange="this.form.submit()" 
-                                class="block w-full pl-3 pr-10 py-2 text-sm border-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-gray-50 transition font-medium text-gray-700">
+                                class="block w-full pl-3 pr-10 py-2 text-sm border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-gray-50 transition font-medium text-gray-700 outline-none">
                                 <option value="all">All Sources</option>
                                 <option value="admin" {{ request('source') == 'admin' ? 'selected' : '' }}>Admin</option>
                                 <option value="app" {{ request('source') == 'app' ? 'selected' : '' }}>App</option>
@@ -156,10 +156,10 @@
                     <div id="table-loader" class="hidden absolute inset-0 bg-white/70 backdrop-blur-[2px] z-50 flex items-center justify-center transition-all duration-300">
                         <div class="flex flex-col items-center gap-3">
                             <div class="relative">
-                                <div class="w-12 h-12 rounded-full border-4 border-indigo-50"></div>
-                                <div class="absolute inset-0 w-12 h-12 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+                                <div class="w-12 h-12 rounded-full border-4 border-primary/10"></div>
+                                <div class="absolute inset-0 w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
                             </div>
-                            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] animate-pulse">Filtering Transactions...</span>
+                            <span class="text-[10px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Filtering Transactions...</span>
                         </div>
                     </div>
 
@@ -194,9 +194,9 @@
                                             @php
                                                 $source = $payment->payment_source ?? 'admin';
                                                 $sourceClasses = [
-                                                    'admin' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                                                    'app' => 'bg-blue-50 text-blue-600 border-blue-100',
-                                                    'web' => 'bg-purple-50 text-purple-600 border-purple-100',
+                                                    'admin' => 'bg-primary/10 text-primary border-primary/20',
+                                                    'app' => 'bg-primary/10 text-primary border-primary/20',
+                                                    'web' => 'bg-primary/10 text-primary border-primary/20',
                                                 ][$source] ?? 'bg-gray-50 text-gray-600 border-gray-100';
                                             @endphp
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase border {{ $sourceClasses }} w-fit">
@@ -248,7 +248,7 @@
                     <x-input-label for="institute_id" value="Select Institute"
                         class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                     <select id="institute_id" name="institute_id" onchange="clearError(this)"
-                        class="mt-1 block w-full border-gray-200 bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl py-2.5 px-4 text-sm transition @error('institute_id') border-red-500 @enderror">
+                        class="mt-1 block w-full border-gray-200 bg-gray-50 focus:ring-primary focus:border-primary rounded-xl py-2.5 px-4 text-sm transition @error('institute_id') border-red-500 @enderror outline-none">
                         <option value="">Choose an institute...</option>
                         @foreach($institutes as $inst)
                             <option value="{{ $inst->id }}" {{ old('institute_id') == $inst->id ? 'selected' : '' }}>
@@ -300,11 +300,10 @@
             </div>
 
             <div class="mt-8 flex justify-end gap-3">
-                <button type="button" x-on:click="$dispatch('close')"
-                    class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-gray-700 transition">Cancel</button>
-                <button type="submit"
-                    class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition transform active:scale-95 shadow-indigo-600/20">Record
-                    Revenue</button>
+                <x-secondary-button type="button" x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
+                <x-primary-button type="submit"
+                    class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Record
+                    Revenue</x-primary-button>
             </div>
         </form>
     </x-modal>

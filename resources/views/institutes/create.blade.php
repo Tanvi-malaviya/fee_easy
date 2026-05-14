@@ -16,8 +16,9 @@
         .ss-main {
             border-radius: 0.75rem !important;
             border: 1px solid #d1d5db !important;
-            padding: 4px 6px !important;
+            padding: 2px 6px !important;
             background-color: #f9fafb !important;
+            min-height: 34px !important;
         }
         .ss-option {
             padding: 6px 10px !important;
@@ -27,7 +28,7 @@
 
     <div class="max-w-5xl mx-auto">
         <div class="flex items-center gap-4 mb-2">
-            <a href="{{ route('institutes.index') }}" class="relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-100 min-w-[120px]">
+            <a href="{{ route('institutes.index') }}" class="relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition active:scale-95 shadow-lg shadow-primary/20 min-w-[120px]">
                 <span class="flex items-center btn-content">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Back to List
@@ -45,13 +46,13 @@
             @csrf
             
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-visible">
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <!-- Institute Name -->
                     <div>
-                        <label for="institute_name" class="block text-sm font-medium text-gray-700">Institute Name <span class="text-red-500">*</span></label>
+                        <label for="institute_name" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Institute Name <span class="text-red-500">*</span></label>
                         <input type="text" name="institute_name" id="institute_name" value="{{ old('institute_name') }}" required 
                             oninput="clearError(this)"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('institute_name') border-red-500 @enderror" placeholder="e.g. Acme Academy">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('institute_name') border-red-500 @enderror" placeholder="e.g. Acme Academy">
                         @error('institute_name')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -59,10 +60,10 @@
 
                     <!-- Owner Name -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Owner Full Name <span class="text-red-500">*</span></label>
+                        <label for="name" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Owner Full Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" required 
                             oninput="clearError(this)"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('name') border-red-500 @enderror" placeholder="John Doe">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('name') border-red-500 @enderror" placeholder="John Doe">
                         @error('name')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -70,10 +71,10 @@
 
                     <!-- Email Address -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Contact Email <span class="text-red-500">*</span></label>
+                        <label for="email" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Contact Email <span class="text-red-500">*</span></label>
                         <input type="email" name="email" id="email" value="{{ old('email') }}" required 
                             oninput="clearError(this)"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('email') border-red-500 @enderror" placeholder="contact@acme.edu">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('email') border-red-500 @enderror" placeholder="contact@acme.edu">
                         @error('email')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -81,10 +82,10 @@
 
                     <!-- Phone Number -->
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
+                        <label for="phone" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Phone Number <span class="text-red-500">*</span></label>
                         <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required 
                             oninput="clearError(this)"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="+1 (555) 000-0000">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="+1 (555) 000-0000">
                         @error('phone')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
@@ -92,34 +93,33 @@
 
                     <!-- Logo Upload -->
                     <div>
-                        <label for="logo" class="block text-sm font-medium text-gray-700">Institute Logo</label>
+                        <label for="logo" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Institute Logo</label>
                         <input type="hidden" name="logo_base64" id="logo_base64" value="{{ old('logo_base64') }}">
-                        <div class="mt-1 flex items-center gap-4">
+                        <div class="flex items-center gap-3">
                             <div class="flex-shrink-0">
-                                <div id="logo-preview" class="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                                <div id="logo-preview" class="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
                                      @if(old('logo_base64'))
                                         <img src="{{ old('logo_base64') }}" class="w-full h-full object-cover">
                                      @else
-                                        <span class="text-xl text-gray-300">🏢</span>
+                                        <span class="text-lg text-gray-300">🏢</span>
                                      @endif
                                 </div>
                             </div>
                             <input type="file" name="logo" id="logo" accept="image/*" 
                                 onchange="previewImage(this)"
-                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition @error('logo') border-red-500 @enderror">
+                                class="block w-full text-[10px] text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition @error('logo') border-red-500 @enderror">
                         </div>
                         @error('logo')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
-                        <p class="mt-1 text-xs text-gray-500">PNG, JPG or WebP. Max 2MB.</p>
                     </div>
 
                     <!-- Status -->
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
+                        <label for="status" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Status <span class="text-red-500">*</span></label>
                         <select name="status" id="status" required 
                             onchange="clearError(this)"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('status') border-red-500 @enderror">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('status') border-red-500 @enderror">
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             <option value="suspended" {{ old('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
@@ -130,38 +130,38 @@
                     </div>
                 </div>
 
-                <div class="px-8 pb-8 pt-4">
-                    <hr class="border-gray-100 mb-8">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Location Details</h3>
+                <div class="px-5 pb-4">
+                    <hr class="border-gray-100 mb-4">
+                    <div class="mb-2">
+                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Location Details</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="md:col-span-2">
-                            <label for="address" class="block text-sm font-medium text-gray-700">Full Address</label>
+                            <label for="address" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Full Address</label>
                             <input type="text" name="address" id="address" value="{{ old('address') }}" 
                                 oninput="clearError(this)"
-                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('address') border-red-500 @enderror" placeholder="123 Education Lane">
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('address') border-red-500 @enderror" placeholder="123 Education Lane">
                             @error('address')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
                         </div>
                         
                         <div>
-                            <label for="state" class="block text-sm font-medium text-gray-700">State / Province</label>
+                            <label for="state" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">State / Province</label>
                             <select name="state" id="state" onchange="clearError(document.getElementById('state'))"></select>
                         </div>
 
                         <div>
-                            <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                            <label for="city" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">City</label>
                             <select name="city" id="city" onchange="clearError(document.getElementById('city'))"></select>
                         </div>
 
                         <div>
-                            <label for="pincode" class="block text-sm font-medium text-gray-700">Pin Code / Zip</label>
+                            <label for="pincode" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Pin Code / Zip</label>
                             <input type="text" name="pincode" id="pincode" value="{{ old('pincode') }}" 
                                 oninput="clearError(this)"
-                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('pincode') border-red-500 @enderror">
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('pincode') border-red-500 @enderror">
                             @error('pincode')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
@@ -169,38 +169,38 @@
                     </div>
                 </div>
 
-                <div class="px-8 pb-8 pt-4">
-                    <hr class="border-gray-100 mb-8">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Social & Website</h3>
+                <div class="px-5 pb-4">
+                    <hr class="border-gray-100 mb-4">
+                    <div class="mb-2">
+                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Social & Website</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
-                            <label for="website" class="block text-sm font-medium text-gray-700">Website URL</label>
+                            <label for="website" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Website URL</label>
                             <input type="url" name="website" id="website" value="{{ old('website') }}" 
                                 oninput="clearError(this)"
-                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('website') border-red-500 @enderror" placeholder="https://www.acme.edu">
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('website') border-red-500 @enderror" placeholder="https://www.acme.edu">
                             @error('website')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label for="youtube" class="block text-sm font-medium text-gray-700">YouTube Channel</label>
+                            <label for="youtube" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">YouTube Channel</label>
                             <input type="url" name="youtube" id="youtube" value="{{ old('youtube') }}" 
                                 oninput="clearError(this)"
-                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('youtube') border-red-500 @enderror" placeholder="https://youtube.com/c/acme">
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('youtube') border-red-500 @enderror" placeholder="https://youtube.com/c/acme">
                             @error('youtube')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram Profile</label>
+                            <label for="instagram" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Instagram Profile</label>
                             <input type="url" name="instagram" id="instagram" value="{{ old('instagram') }}" 
                                 oninput="clearError(this)"
-                                class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white @error('instagram') border-red-500 @enderror" placeholder="https://instagram.com/acme">
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('instagram') border-red-500 @enderror" placeholder="https://instagram.com/acme">
                             @error('instagram')
                                 <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                             @enderror
@@ -218,7 +218,7 @@
                             </svg>
                         </span>
                     </a>
-                    <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition font-bold text-xs uppercase tracking-widest active:scale-95 min-w-[180px]">
+                    <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center px-8 py-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 focus:outline-none transition font-bold text-xs uppercase tracking-widest active:scale-95 min-w-[180px]">
                         <span class="btn-content">Create Institute</span>
                         <span class="hidden btn-loader">
                             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

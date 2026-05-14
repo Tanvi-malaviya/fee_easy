@@ -149,7 +149,7 @@ class InstituteController extends Controller
 
         Activity::log("Institute updated: {$institute->institute_name}");
 
-        return redirect()->route('institutes.index')->with('success', 'Institute updated successfully.');
+        return redirect()->route('institutes.show', $institute)->with('success', 'Institute updated successfully.');
     }
 
     public function destroy(Institute $institute)
