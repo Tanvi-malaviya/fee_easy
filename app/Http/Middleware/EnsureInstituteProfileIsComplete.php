@@ -24,6 +24,9 @@ class EnsureInstituteProfileIsComplete
             }
 
             if (!$user->isProfileComplete()) {
+                if ($request->expectsJson()) {
+                    return response()->json(['status' => 'error', 'message' => 'Profile setup required.'], 403);
+                }
                 return redirect()->route('institute.profile.index')->with('setup_required', true);
             }
         }

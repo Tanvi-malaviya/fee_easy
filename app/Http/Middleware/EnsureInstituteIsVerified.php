@@ -16,6 +16,9 @@ class EnsureInstituteIsVerified
     public function handle(Request $request, Closure $next): Response
     {
         if (auth('institute')->check() && !auth('institute')->user()->email_verified_at) {
+            if ($request->expectsJson()) {
+                return response()->json(['status' => 'error', 'message' => 'Verification required.'], 403);
+            }
             return redirect()->route('institute.register');
         }
 

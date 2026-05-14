@@ -8,7 +8,14 @@
                 <h1 class="text-3xl font-medium text-slate-800 tracking-tight">Your Workspace</h1>
                 
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleBookmarkFilter()" id="bookmark-filter-btn"
+                    class="px-5 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm font-bold shadow-sm hover:border-primary/30 hover:text-primary transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    Bookmarks
+                </button>
                 <button onclick="openNoteModal()"
                     class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,6 +84,7 @@
 
                 <form id="note-form" onsubmit="saveNote(event)" class="pl-4 pr-4 pb-4 space-y-2.5">
                     <input type="hidden" id="note-id" name="id">
+                    <input type="hidden" id="remove-image-input" name="remove_image" value="0">
 
                     <div>
                         <label
@@ -185,6 +193,7 @@
             let categories = [];
             let currentNotes = [];
             let activeCategory = 'All';
+            let showBookmarkedOnly = false;
 
             async function init() {
                 await fetchNotes();
@@ -274,12 +283,18 @@
 
             function renderNotes() {
                 const grid = document.getElementById('notes-grid');
-                const filtered = activeCategory === 'All'
+                
+                let filtered = activeCategory === 'All'
                     ? currentNotes
                     : currentNotes.filter(n => (n.category_relation?.name || n.category) === activeCategory);
 
+                if (showBookmarkedOnly) {
+                    filtered = filtered.filter(n => n.is_bookmarked);
+                }
+
                 if (filtered.length === 0) {
-                    grid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 font-bold">No notes found in this workspace.</div>';
+                    const message = showBookmarkedOnly ? 'No bookmarked notes found.' : 'No notes found in this workspace.';
+                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold">${message}</div>`;
                     return;
                 }
 
@@ -290,30 +305,54 @@
                     const catColor = getCategoryColor(categoryName);
                     const cleanPreview = stripHTML(note.content || 'No content provided.');
                     const imageHtml = note.image_url ? `
-                                <div class="w-full h-24 overflow-hidden border-b border-slate-50">
+                                <div class="w-full h-32 overflow-hidden relative">
                                     <img src="${note.image_url}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${note.title}">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
                                 </div>
-                            ` : '';
+                            ` : `
+                                <div class="w-full h-32 bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center relative overflow-hidden">
+                                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                                    <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </div>
+                            `;
 
                     return `
-                                <div class="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden flex flex-col h-full">
+                                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden flex flex-col h-[320px]">
                                     ${imageHtml}
-                                    <div class="p-3 flex flex-col flex-1">
-                                        <div class="flex items-center justify-between mb-1.5">
-                                            <span class="px-2 py-0.5 ${catColor} rounded-md text-[8px] font-black uppercase tracking-widest">
+                                    
+                                    <!-- Bookmark Button - Absolute Top -->
+                                    <button onclick="event.stopPropagation(); toggleBookmark(${note.id})" 
+                                        class="absolute top-3 right-3 p-2.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all hover:scale-110 z-20 ${note.is_bookmarked ? 'text-primary' : 'text-slate-300 hover:text-primary'}">
+                                        <svg class="w-4 h-4" fill="${note.is_bookmarked ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                        </svg>
+                                    </button>
+
+                                    <div class="p-4 flex flex-col flex-1">
+                                        <div class="mb-2">
+                                            <span class="px-2 py-0.5 ${catColor} rounded-md text-[8px] font-black uppercase tracking-widest inline-block">
                                                 ${categoryName}
                                             </span>
                                         </div>
-                                        <h3 class="text-base font-bold text-slate-800 mb-1 line-clamp-1 hover:text-primary transition-colors">${note.title}</h3>
-                                        <div class="text-sm text-slate-500 font-medium leading-relaxed mb-3 line-clamp-4">${cleanPreview}</div>
+                                        
+                                        <h3 class="text-base font-bold text-slate-800 mb-1 break-words line-clamp-2 hover:text-primary transition-colors cursor-pointer" onclick="viewNote(${note.id})">
+                                            ${note.title}
+                                        </h3>
+                                        
+                                        <div class="text-[13px] text-slate-500 font-medium leading-relaxed break-words line-clamp-4 cursor-pointer mb-4" onclick="viewNote(${note.id})">
+                                            ${cleanPreview}
+                                        </div>
 
-                                        <div class="flex items-center justify-between pt-2.5 border-t border-slate-50 mt-auto">
+                                        <div class="flex items-center justify-between pt-3 border-t border-slate-50 mt-auto">
                                             <span class="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">${timeAgo}</span>
-                                            <div class="flex items-center gap-1 transition-opacity">
-                                                <button onclick="viewNote(${note.id})" class="p-1 text-slate-400 hover:text-primary transition-colors" title="View Note">
+                                            <div class="flex items-center gap-1">
+                                                <button onclick="viewNote(${note.id})" class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all" title="View Note">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 </button>
-                                                <button onclick="showDeleteModal(${note.id})" class="p-1 text-slate-400 hover:text-rose-500 transition-colors" title="Delete Note">
+                                                <button onclick="openNoteModal(${note.id})" class="p-1.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-all" title="Edit Note">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                </button>
+                                                <button onclick="showDeleteModal(${note.id})" class="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Delete Note">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
                                             </div>
@@ -372,14 +411,34 @@
                 renderNotes();
             }
 
-            async function openNoteModal() {
+            function toggleBookmarkFilter() {
+                showBookmarkedOnly = !showBookmarkedOnly;
+                const btn = document.getElementById('bookmark-filter-btn');
+                
+                if (showBookmarkedOnly) {
+                    btn.classList.add('bg-primary/5', 'border-primary/30', 'text-primary');
+                    btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-500');
+                    btn.querySelector('svg').setAttribute('fill', 'currentColor');
+                } else {
+                    btn.classList.remove('bg-primary/5', 'border-primary/30', 'text-primary');
+                    btn.classList.add('bg-white', 'border-slate-200', 'text-slate-500');
+                    btn.querySelector('svg').setAttribute('fill', 'none');
+                }
+                
+                renderNotes();
+            }
+
+            async function openNoteModal(id = null) {
                 const modal = document.getElementById('note-modal');
                 const content = document.getElementById('note-modal-content');
+                
+                // Reset Form
                 document.getElementById('note-form').reset();
                 document.getElementById('note-editor').innerHTML = '';
                 document.getElementById('note-content-input').value = '';
                 document.getElementById('note-id').value = '';
-                document.getElementById('modal-title').textContent = 'Note Details';
+                document.getElementById('remove-image-input').value = '0';
+                document.getElementById('modal-title').textContent = 'New Note';
                 document.getElementById('note-error').classList.add('hidden');
                 document.getElementById('last-edited').textContent = '';
                 document.getElementById('image-preview-container').classList.replace('flex', 'hidden');
@@ -390,6 +449,45 @@
                 selectedSpan.textContent = 'Select Category';
                 selectedSpan.classList.add('text-slate-400');
                 selectedSpan.classList.remove('text-slate-900');
+
+                // If Editing, Fetch Data
+                if (id) {
+                    document.getElementById('modal-title').textContent = 'Edit Note';
+                    try {
+                        const response = await fetch(`${API_BASE}/notes/${id}`);
+                        const result = await response.json();
+                        const note = result.data;
+
+                        document.getElementById('note-id').value = note.id;
+                        document.querySelector('[name="title"]').value = note.title;
+                        
+                        // Prefill Category
+                        const catName = note.category_relation?.name || note.category;
+                        if (note.category_id || catName) {
+                            if (note.category_id) document.getElementById('category-id-input').value = note.category_id;
+                            selectedSpan.textContent = catName || 'Category';
+                            selectedSpan.classList.remove('text-slate-400');
+                            selectedSpan.classList.add('text-slate-900');
+                        }
+
+                        // Prefill Image if exists
+                        if (note.image_url || note.cover_image) {
+                            const container = document.getElementById('image-preview-container');
+                            const nameSpan = document.getElementById('image-name');
+                            container.classList.replace('hidden', 'flex');
+                            nameSpan.textContent = note.cover_image ? note.cover_image.split('/').pop() : 'Attached Image';
+                        }
+
+                        document.getElementById('note-editor').innerHTML = note.content || '';
+                        document.getElementById('note-content-input').value = note.content || '';
+
+                        if (note.updated_at) {
+                            document.getElementById('last-edited').textContent = `Last edited ${getTimeAgo(new Date(note.updated_at))}`;
+                        }
+                    } catch (error) {
+                        console.error('Prefill Error:', error);
+                    }
+                }
 
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -500,6 +598,36 @@
                 } catch (error) { console.error(error); }
             }
 
+            async function toggleBookmark(id) {
+                const note = currentNotes.find(n => n.id == id);
+                if (!note) return;
+
+                // Optimistic UI update
+                const originalStatus = note.is_bookmarked;
+                note.is_bookmarked = !originalStatus;
+                renderNotes();
+
+                try {
+                    const response = await fetch(`${API_BASE}/notes/${id}/bookmark`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    });
+
+                    if (!response.ok) {
+                        // Revert if failed
+                        note.is_bookmarked = originalStatus;
+                        renderNotes();
+                    }
+                } catch (error) {
+                    note.is_bookmarked = originalStatus;
+                    renderNotes();
+                }
+            }
+
             let noteIdToDelete = null;
 
             function showDeleteModal(id) {
@@ -555,13 +683,24 @@
                 if (file) {
                     document.getElementById('image-name').textContent = file.name;
                     document.getElementById('image-preview-container').classList.replace('hidden', 'flex');
+                    document.getElementById('remove-image-input').value = '0';
                 }
             }
 
             function removeImage() {
-                document.getElementById('note-image-input').value = '';
-                document.getElementById('image-preview-container').classList.replace('flex', 'hidden');
-                document.getElementById('image-name').textContent = '';
+                const input = document.getElementById('note-image-input');
+                const container = document.getElementById('image-preview-container');
+                const nameSpan = document.getElementById('image-name');
+                const removeInput = document.getElementById('remove-image-input');
+                
+                if (input) input.value = '';
+                if (removeInput) removeInput.value = '1';
+                
+                if (container) {
+                    container.classList.add('hidden');
+                    container.classList.remove('flex');
+                }
+                if (nameSpan) nameSpan.textContent = '';
             }
 
             let currentlyViewingId = null;
@@ -666,8 +805,8 @@
                         <img id="view-image" src="" class="max-w-full h-auto max-h-[250px] object-contain" alt="">
                     </div>
                     
-                    <h2 id="view-title" class="text-xl font-black text-slate-800 mb-2 leading-tight"></h2>
-                    <div id="view-content" class="text-slate-600 text-sm leading-relaxed space-y-3 prose prose-slate max-w-none"></div>
+                    <h2 id="view-title" class="text-xl font-black text-slate-800 mb-2 leading-tight break-words"></h2>
+                    <div id="view-content" class="text-slate-600 text-sm leading-relaxed space-y-3 prose prose-slate max-w-none break-words overflow-hidden"></div>
                     
                     <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-[10px] text-slate-300 font-bold uppercase tracking-widest">
                         <span id="view-date"></span>
