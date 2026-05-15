@@ -154,7 +154,7 @@
                                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </a>
-                                    <a href="{{ route('institutes.edit', $institute) }}"
+                                    <a href="{{ route('institutes.edit', [$institute, 'from' => 'index']) }}"
                                         class="text-primary hover:opacity-80 transition-colors p-1.5 bg-primary/10 rounded-lg"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,9 +267,8 @@
             let html = '';
             statuses.forEach(s => {
                 html += `
-                    <form action="/institutes/${id}/status" method="POST">
+                    <form action="/admin/institutes/${id}/status" method="POST">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="_method" value="PATCH">
                         <input type="hidden" name="status" value="${s.value}">
                         <button type="submit" class="no-loader group flex items-center px-4 py-1.5 text-[8.5px] font-bold uppercase tracking-widest text-gray-700 w-full text-left transition ${s.color}">
                             ${s.label}

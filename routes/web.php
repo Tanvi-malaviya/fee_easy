@@ -30,6 +30,10 @@ Route::middleware(array_filter([
         // Institutes Management
         Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
         Route::post('institutes/{institute}/status', [App\Http\Controllers\Web\InstituteController::class, 'updateStatus'])->name('institutes.status');
+        Route::delete('institutes/{institute}/students/{student}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStudent'])->name('institutes.students.destroy');
+        Route::delete('institutes/{institute}/staff/{staff}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStaff'])->name('institutes.staff.destroy');
+        Route::delete('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'deleteBatch'])->name('institutes.batches.destroy');
+        Route::get('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'showBatch'])->name('institutes.batches.show');
 
         // Subscription Management
         Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
@@ -93,7 +97,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::get('/reset-password/{token}', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showResetPassword'])->name('password.reset');
     Route::post('/reset-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resetPassword'])->name('password.update');
 
-    Route::middleware('auth:institute')->group(function () {
+    Route::middleware(['auth:institute', 'active_institute'])->group(function () {
         // Step 3: Setup Profile
         Route::post('/setup-profile', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'setupProfile'])->name('setup-profile');
 

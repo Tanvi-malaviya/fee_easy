@@ -130,4 +130,9 @@ class Institute extends Authenticatable
     {
         return $this->hasMany(Lead::class);
     }
+
+    public function staff()
+    {
+        return $this->hasMany(Staff::class);
+    }
 }
