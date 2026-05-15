@@ -10,13 +10,13 @@
                     <div class="flex-1 relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                             id="search-icon">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center hidden" id="search-loader">
-                            <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg"
+                            <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -27,11 +27,11 @@
                         </div>
                         <input type="text" id="search-input" name="search" value="{{ request('search') }}"
                             autocomplete="off" placeholder="Search by plan name..."
-                            class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition">
+                            class="block w-full pl-10 pr-24 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition">
                         <!-- Search Button inside input -->
                         <div class="absolute inset-y-0 right-0 flex items-center pr-1">
                             <button type="submit"
-                                class="no-loader inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition">
+                                class="no-loader inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:opacity-90 text-white text-xs font-semibold rounded-lg transition">
                                 <!-- <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg> -->
@@ -42,7 +42,7 @@
 
                     <div class="w-full md:w-48">
                         <select name="status" onchange="this.form.submit()"
-                            class="block w-full pl-3 pr-10 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-white transition font-medium text-gray-700 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat">
+                            class="block w-full pl-3 pr-10 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-white transition font-medium text-gray-700 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat">
                             <option value="all">All Status</option>
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
@@ -58,7 +58,7 @@
 
                     <div class="flex items-center ml-auto">
                         <button type="button" @click="$dispatch('open-modal', 'create-plan')"
-                            class="relative inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition shadow-indigo-600/20 whitespace-nowrap min-w-[150px]">
+                            class="relative inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-primary hover:opacity-90 focus:outline-none transition shadow-primary/20 whitespace-nowrap min-w-[150px]">
                             <span class="flex items-center btn-content">
                                 <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,7 +77,7 @@
                 <div id="table-loader"
                     class="hidden absolute inset-0 bg-white/70 backdrop-blur-sm rounded-2xl z-10 flex items-center justify-center">
                     <div class="flex flex-col items-center gap-3">
-                        <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                             </circle>
@@ -86,7 +86,7 @@
                             </path>
                         </svg>
                         <span
-                            class="text-xs font-semibold text-indigo-500 uppercase tracking-widest">Searching...</span>
+                            class="text-xs font-semibold text-primary uppercase tracking-widest">Searching...</span>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -120,18 +120,20 @@
                                     </td>
                                     <td class="px-4 py-2 whitespace-nowrap text-center">
                                         <div class="text-sm font-bold text-emerald-600 leading-tight">
-                                            {{ $currency }}{{ number_format($plan->price, 0) }}</div>
+                                            {{ $currency }}{{ number_format($plan->price, 0) }}
+                                        </div>
                                         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">
-                                            {{ $plan->duration_days }} Days</div>
+                                            {{ $plan->duration_days }} Days
+                                        </div>
                                     </td>
                                     <td class="px-4 py-2 whitespace-nowrap text-center">
                                         <button type="button"
                                             onclick="togglePlanStatusMenu(event, {{ $plan->id }}, {{ $plan->status }})"
-                                            class="status-btn-{{ $plan->id }} px-2 py-0.5 inline-flex items-center justify-between text-[7px] font-black uppercase tracking-[0.15em] rounded border transition cursor-pointer mx-auto
-                                                @if($plan->status) bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
-                                                @else bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100 @endif">
+                                            class="status-btn-{{ $plan->id }} px-2 py-0.5 inline-flex items-center justify-between text-[4px] font-bold uppercase tracking-widest leading-none rounded border transition cursor-pointer mx-auto
+                                                @if($plan->status) bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100
+                                                @else bg-rose-50 text-rose-600 border-rose-100 hover:bg-rose-100 @endif">
                                             {{ $plan->status ? 'Active' : 'Inactive' }}
-                                            <svg class="w-2.5 h-2.5 ml-1.5 opacity-60" fill="none" stroke="currentColor"
+                                            <svg class="w-3 h-3 ml-2 opacity-60" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 9l-7 7-7-7"></path>
@@ -190,48 +192,48 @@
 
     <!-- Create Plan Modal -->
     <x-modal name="create-plan" :show="$errors->any()" focusable>
-        <form method="post" action="{{ route('plans.store') }}" class="p-8">
+        <form method="post" action="{{ route('plans.store') }}" class="p-6">
             @csrf
-            <h2 class="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Create New Plan</h2>
+            <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Create New Plan</h2>
 
-            <div class="mt-6 space-y-6">
+            <div class="mt-3 space-y-3">
                 <div>
-                    <x-input-label for="create_name" value="Plan Name" />
+                    <x-input-label for="create_name" value="Plan Name" class="text-xs font-semibold" />
                     <x-text-input id="create_name" name="name" type="text"
-                        class="mt-1 p-2 block w-full bg-gray-50 focus:bg-white" placeholder="e.g. Premium Access"
+                        class="mt-0.5 p-2 block w-full bg-gray-50 focus:bg-white text-sm" placeholder="e.g. Premium Access"
                         required />
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <x-input-label for="create_price" value="Price ({{ $currency }})" />
+                        <x-input-label for="create_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
                         <x-text-input id="create_price" name="price" type="number" step="1" min="0"
-                            class="mt-1 block w-full bg-gray-50 p-2 focus:bg-white" placeholder="100" required />
+                            class="mt-0.5 block w-full bg-gray-50 p-2 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="100" required />
                     </div>
 
                     <div>
-                        <x-input-label for="create_duration" value="Duration (Days)" />
+                        <x-input-label for="create_duration" value="Duration (Days)" class="text-xs font-semibold" />
                         <x-text-input id="create_duration" name="duration_days" type="number" min="1"
-                            class="mt-1 block p-2 w-full bg-gray-50 focus:bg-white" placeholder="365" required />
+                            class="mt-0.5 block p-2 w-full bg-gray-50 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="365" required />
                     </div>
-                </div>
 
-                <div>
-                    <x-input-label for="create_status" value="Status" />
-                    <select name="status" id="create_status"
-                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white cursor-pointer"
-                        required>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
+                    <div>
+                        <x-input-label for="create_status" value="Status" class="text-xs font-semibold" />
+                        <select name="status" id="create_status"
+                            class="mt-0.5 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3 py-2 border text-sm text-gray-900 bg-gray-50 focus:bg-white cursor-pointer outline-none"
+                            required>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <input type="hidden" name="trial_days" value="0">
 
-            <div class="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6">
-                <x-secondary-button x-on:click="$dispatch('close')">Cancel</x-secondary-button>
-                <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200">Save
+            <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
+                <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
+                <x-primary-button class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Save
                     Plan</x-primary-button>
             </div>
         </form>
@@ -239,79 +241,84 @@
 
     <!-- Edit Plan Modal -->
     <x-modal name="edit-plan" focusable>
-        <form id="edit-plan-form" method="post" action="" class="p-8">
+        <form id="edit-plan-form" method="post" action="" class="p-6">
             @csrf
             @method('PATCH')
-            <h2 class="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Edit Subscription Plan</h2>
+            <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Edit Subscription Plan</h2>
 
-            <div class="mt-6 space-y-6">
+            <div class="mt-3 space-y-3">
                 <div>
-                    <x-input-label for="edit_name" value="Plan Name" />
+                    <x-input-label for="edit_name" value="Plan Name" class="text-xs font-semibold" />
                     <x-text-input id="edit_name" name="name" type="text"
-                        class="mt-1 block w-full bg-gray-50 focus:bg-white" required />
+                        class="mt-0.5 block w-full bg-gray-50 focus:bg-white text-sm" required />
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <x-input-label for="edit_price" value="Price ({{ $currency }})" />
+                        <x-input-label for="edit_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
                         <x-text-input id="edit_price" name="price" type="number" step="1" min="0"
-                            class="mt-1 block w-full bg-gray-50 focus:bg-white" required />
+                            class="mt-0.5 block w-full bg-gray-50 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
                     </div>
 
                     <div>
-                        <x-input-label for="edit_duration" value="Duration (Days)" />
+                        <x-input-label for="edit_duration" value="Duration (Days)" class="text-xs font-semibold" />
                         <x-text-input id="edit_duration" name="duration_days" type="number" min="1"
-                            class="mt-1 block w-full bg-gray-50 focus:bg-white" required />
+                            class="mt-0.5 block w-full bg-gray-50 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
                     </div>
-                </div>
 
-                <div>
-                    <x-input-label for="edit_status" value="Status" />
-                    <select name="status" id="edit_status"
-                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white cursor-pointer"
-                        required>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
+                    <div>
+                        <x-input-label for="edit_status" value="Status" class="text-xs font-semibold" />
+                        <select name="status" id="edit_status"
+                            class="mt-0.5 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3 py-2 border text-sm text-gray-900 bg-gray-50 focus:bg-white cursor-pointer outline-none"
+                            required>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <input type="hidden" name="trial_days" id="edit_trial" value="0">
 
-            <div class="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6">
-                <x-secondary-button x-on:click="$dispatch('close')">Cancel</x-secondary-button>
-                <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200">Update
+            <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
+                <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
+                <x-primary-button class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Update
                     Plan</x-primary-button>
             </div>
         </form>
     </x-modal>
 
     <!-- Delete Confirmation Modal -->
-    <x-modal name="confirm-delete-plan" focusable>
-        <form id="delete-plan-form" method="post" action="" class="p-8">
+    <x-modal name="confirm-delete-plan" maxWidth="lg" focusable>
+        <form id="delete-plan-form" method="post" action="" class="p-5">
             @csrf
             @method('DELETE')
 
-            <div class="flex items-center gap-4 text-red-600 mb-4">
-                <div class="p-3 bg-red-50 rounded-full ring-8 ring-red-50/50">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-full shrink-0">
+                    <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold">Archive Plan?</h2>
+                <div>
+                    <h2 class="text-base font-black text-gray-900 leading-tight uppercase">Archive Plan?</h2>
+                    <p class="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">Irreversible Action</p>
+                </div>
             </div>
 
-            <p class="text-sm text-gray-600 mb-8 leading-relaxed">
-                Are you sure you want to archive this subscription plan? Existing subscriptions using this plan will
-                remain active until their expiry, but no new subscriptions can be created using this plan.
+            <p class="text-[13px] text-gray-500 mb-5 leading-relaxed">
+                Are you sure you want to archive this subscription plan? Existing subscriptions will remain active until expiry.
             </p>
 
-            <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
-                <x-secondary-button x-on:click="$dispatch('close')">Keep Plan</x-secondary-button>
+            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                <button type="button" x-on:click="$dispatch('close')" 
+                    class="px-4 py-2 border border-gray-200 text-gray-500 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-gray-50 transition-all">
+                    Cancel
+                </button>
                 <button type="submit"
-                    class="inline-flex items-center px-6 py-2.5 bg-red-600 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none transition-all shadow-lg shadow-red-200">
-                    Confirm Archive
+                    class="px-4 py-2 bg-primary text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:opacity-90 shadow-lg shadow-primary/20 transition-all">
+                    Yes, Archive Plan
                 </button>
             </div>
         </form>
@@ -374,9 +381,8 @@
             statuses.forEach(s => {
                 if (!s.active) {
                     html += `
-                        <form action="/plans/${id}/status" method="POST">
+                        <form action="/admin/plans/${id}/status" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="_method" value="PATCH">
                             <input type="hidden" name="status" value="${s.value}">
                             <button type="submit" class="no-loader group flex items-center px-4 py-1.5 text-[8.5px] font-bold uppercase tracking-widest text-gray-700 w-full text-left transition ${s.color}">
                                 ${s.label}
@@ -398,7 +404,7 @@
 
         function openEditPlanModal(plan) {
             const form = document.getElementById('edit-plan-form');
-            form.action = `/plans/${plan.id}`;
+            form.action = `/admin/plans/${plan.id}`;
             document.getElementById('edit_name').value = plan.name;
             document.getElementById('edit_price').value = plan.price;
             document.getElementById('edit_duration').value = plan.duration_days;

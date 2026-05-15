@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Institute;
+use App\Models\Student;
+use App\Models\Staff;
+use App\Models\Batch;
 use App\Models\Subscription;
 use App\Models\Activity;
 use Illuminate\Http\Request;
@@ -95,13 +98,48 @@ class InstituteController extends Controller
      */
     public function show(Institute $institute)
     {
-        $institute->load(['subscriptions' => function($q) {
-            $q->latest();
-        }, 'whatsappSettings']);
+        $institute->load([
+            'subscriptions' => function ($q) {
+                $q->latest();
+            },
+            'whatsappSettings',
+            'students' => function ($q) {
+                $q->with('batch')->latest();
+            },
+            'staff' => function ($q) {
+                $q->with(['role', 'department'])->latest();
+            },
+            'batches' => function ($q) {
+                $q->latest();
+            },
+            'expenses' => function ($q) {
+                $q->latest();
+            },
+            'fees' => function ($q) {
+                $q->with('student')->latest();
+            },
+            'leads' => function ($q) {
+                $q->latest();
+            },
+            'dailyUpdates' => function ($q) {
+                $q->latest();
+            },
+            'notes' => function ($q) {
+                $q->latest();
+            },
+            'whatsappLogs' => function ($q) {
+                $q->latest();
+            },
+        ]);
 
         $stats = [
             'students_count' => $institute->students()->count(),
             'batches_count' => $institute->batches()->count(),
+            'staff_count' => $institute->staff()->count(),
+            'total_revenue' => $institute->fees()->sum('paid_amount'),
+            'total_expenses' => $institute->expenses()->sum('amount'),
+            'leads_count' => $institute->leads()->count(),
+            'notes_count' => $institute->notes()->count(),
             'active_subscription' => $institute->subscriptions()->where('status', 'active')->first() ?? $institute->subscriptions()->where('status', 'trial')->first(),
         ];
 
@@ -149,7 +187,11 @@ class InstituteController extends Controller
 
         Activity::log("Institute updated: {$institute->institute_name}");
 
-        return redirect()->route('institutes.index')->with('success', 'Institute updated successfully.');
+        $redirectTo = $request->query('from') === 'index'
+            ? route('institutes.index')
+            : route('institutes.show', $institute);
+
+        return redirect($redirectTo)->with('success', 'Institute updated successfully.');
     }
 
     public function destroy(Institute $institute)
@@ -195,7 +237,7 @@ class InstituteController extends Controller
         if ($request->has('logo_base64') && !empty($request->logo_base64)) {
             try {
                 $base64Data = $request->logo_base64;
-                
+
                 // Extract image data
                 if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
                     $data = substr($base64Data, strpos($base64Data, ',') + 1);
@@ -206,7 +248,8 @@ class InstituteController extends Controller
                     }
 
                     $data = base64_decode($data);
-                    if ($data === false) return $existingLogo;
+                    if ($data === false)
+                        return $existingLogo;
 
                     // Delete old logo if replacing with base64 recovery
                     if ($existingLogo && \Storage::disk('public')->exists($existingLogo)) {
@@ -215,7 +258,7 @@ class InstituteController extends Controller
 
                     $fileName = 'institutes/logos/' . uniqid() . '.' . $type;
                     \Storage::disk('public')->put($fileName, $data);
-                    
+
                     return $fileName;
                 }
             } catch (\Exception $e) {
@@ -224,5 +267,79 @@ class InstituteController extends Controller
         }
 
         return $existingLogo;
+    }
+    /**
+     * Delete a student from an institute (admin action).
+     */
+    public function deleteStudent(Institute $institute, Student $student)
+    {
+        abort_if($student->institute_id !== $institute->id, 403);
+        $student->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['message' => 'Student deleted successfully.']);
+        }
+
+        return redirect()
+            ->route('institutes.show', $institute)
+            ->with('success', "Student '{$student->name}' has been removed.");
+    }
+
+    /**
+     * Delete a staff member from an institute (admin action).
+     */
+    public function deleteStaff(Institute $institute, Staff $staff)
+    {
+        abort_if($staff->institute_id !== $institute->id, 403);
+        $staff->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['message' => 'Staff deleted successfully.']);
+        }
+
+        return redirect()
+            ->route('institutes.show', $institute)
+            ->with('success', "Staff '{$staff->full_name}' has been removed.");
+    }
+
+    /**
+     * Delete a batch from an institute (admin action).
+     */
+    public function deleteBatch(Institute $institute, Batch $batch)
+    {
+        abort_if($batch->institute_id !== $institute->id, 403);
+        $batch->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['message' => 'Batch deleted successfully.']);
+        }
+
+        return redirect()
+            ->route('institutes.show', $institute)
+            ->with('success', "Batch '{$batch->name}' has been removed.");
+    }
+
+    /**
+     * Show batch detail view with students, homework, attendance, resources.
+     */
+    public function showBatch(Institute $institute, Batch $batch)
+    {
+        abort_if($batch->institute_id !== $institute->id, 403);
+
+        $batch->load([
+            'students',
+            'homeworks.submissions',
+            'attendance.student',
+            'resources',
+        ]);
+
+        $stats = [
+            'students_count'   => $batch->students->count(),
+            'homework_count'   => $batch->homeworks->count(),
+            'attendance_count' => $batch->attendance->groupBy('date')->count(),
+            'resources_count'  => $batch->resources->count(),
+        ];
+
+        return view('institutes.batch_show', compact('institute', 'batch', 'stats'));
     }
 }

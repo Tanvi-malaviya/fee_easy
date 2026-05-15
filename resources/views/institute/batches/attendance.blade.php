@@ -29,7 +29,7 @@
                     <div class="h-6 w-px bg-slate-100"></div>
                     <div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Absent</span>
-                        <span class="text-base font-black text-rose-600"><span id="summary-absent">0</span></span>
+                        <span class="text-base font-black text-emerald-600"><span id="summary-absent">0</span></span>
                     </div>
                 </div>
 
@@ -48,7 +48,7 @@
         <!-- Action Bar -->
         <div class="bg-white rounded-xl p-3 mb-3 border border-slate-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="h-8 w-8 rounded-lg bg-orange-50 flex items-center justify-center text-[#ff6600]">
+                <div class="h-8 w-8 rounded-lg bg-orange-50 flex items-center justify-center text-primary">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 </div>
                 <div>
@@ -65,7 +65,7 @@
                     <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     Mark All Absent
                 </button>
-                <button onclick="submitAttendance()" id="submit-btn" class="px-5 py-2 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-1.5">
+                <button onclick="submitAttendance()" id="submit-btn" class="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition-all flex items-center gap-1.5">
                     Submit Attendance
                 </button>
             </div>
@@ -86,8 +86,14 @@
         const BATCH_ID = "{{ $id }}";
         const API_BATCH_URL = `/api/v1/institute/batches/${BATCH_ID}`;
         const API_STUDENTS_URL = `/api/v1/institute/students?batch_id=${BATCH_ID}`;
-        const API_ATTENDANCE_URL = `/api/v1/institute/attendance`;
+        const API_ATTENDANCE_URL = `/api/v1/institute/batch-attendance`;
         const CSRF_TOKEN = "{{ csrf_token() }}";
+        const AUTH_HEADERS = {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+        const FETCH_OPTS = { credentials: 'same-origin' };
 
         let students = [];
         let attendanceMap = {}; // student_id -> status ('present', 'absent')
@@ -104,7 +110,7 @@
 
         async function fetchBatchData() {
             try {
-                const response = await fetch(API_BATCH_URL, { headers: { 'Accept': 'application/json' } });
+                const response = await fetch(API_BATCH_URL, { ...FETCH_OPTS, headers: AUTH_HEADERS });
                 const result = await response.json();
                 if (result.status === 'success') {
                     document.getElementById('header-batch-name').innerText = result.data.name;
@@ -122,7 +128,7 @@
 
             try {
                 // Fetch Students
-                const stuRes = await fetch(API_STUDENTS_URL, { headers: { 'Accept': 'application/json' } });
+                const stuRes = await fetch(API_STUDENTS_URL, { ...FETCH_OPTS, headers: AUTH_HEADERS });
                 const stuResult = await stuRes.json();
                 if (stuResult.status === 'success') {
                     students = stuResult.data.items || [];
@@ -130,16 +136,20 @@
                 }
 
                 // Fetch Marked Attendance
-                const attRes = await fetch(`${API_ATTENDANCE_URL}?date=${date}&batch_id=${BATCH_ID}`, { headers: { 'Accept': 'application/json' } });
+                const attRes = await fetch(`${API_ATTENDANCE_URL}?date=${date}&batch_id=${BATCH_ID}`, { ...FETCH_OPTS, headers: AUTH_HEADERS });
                 const attResult = await attRes.json();
                 
                 attendanceMap = {};
                 // Default all to present if no records exist, otherwise map existing
                 if (attResult.status === 'success' && attResult.data.length > 0) {
                     attResult.data.forEach(record => {
-                        attendanceMap[record.student_id] = record.status;
+                        // status can be null if student has no record for this date → default 'present'
+                        attendanceMap[record.student_id] = record.status || 'present';
                     });
-                    document.getElementById('last-saved').innerText = `Last saved at: ${new Date(attResult.data[0].updated_at).toLocaleTimeString()}`;
+                    const lastSaved = attResult.data.find(r => r.status && r.updated_at);
+                    document.getElementById('last-saved').innerText = lastSaved
+                        ? `Last saved at: ${new Date(lastSaved.updated_at).toLocaleTimeString()}`
+                        : 'New attendance sheet generated.';
                 } else {
                     students.forEach(student => {
                         attendanceMap[student.id] = 'present';
@@ -164,11 +174,11 @@
                 const btnAbsent = card.querySelector('.btn-absent');
                 
                 if (status === 'present') {
-                    btnPresent.className = 'btn-present flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-[#a3360a] text-white';
+                    btnPresent.className = 'btn-present flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-primary text-white';
                     btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-slate-50 hover:bg-slate-100 text-slate-500';
                 } else {
                     btnPresent.className = 'btn-present flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-slate-50 hover:bg-slate-100 text-slate-500';
-                    btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-rose-700 text-white';
+                    btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-emerald-600 text-white';
                 }
             }
 
@@ -217,8 +227,9 @@
 
             try {
                 const response = await fetch(API_ATTENDANCE_URL, {
+                    ...FETCH_OPTS,
                     method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    headers: { ...AUTH_HEADERS, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ batch_id: BATCH_ID, date: date, attendance: attendanceArray })
                 });
                 const result = await response.json();
@@ -247,8 +258,8 @@
                 const status = attendanceMap[student.id] || 'present';
                 const isPresent = status === 'present';
                 
-                const btnPresentClass = isPresent ? 'bg-[#a3360a] text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
-                const btnAbsentClass = !isPresent ? 'bg-rose-700 text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
+                const btnPresentClass = isPresent ? 'bg-primary text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
+                const btnAbsentClass = !isPresent ? 'bg-emerald-600 text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
 
                 return `
                     <div id="card-${student.id}" class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex flex-col justify-between relative max-w-[220px] w-full min-h-[140px]">
@@ -284,7 +295,7 @@
             const toast = document.createElement('div');
             toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right-10 duration-500 ${type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white'}`;
             toast.innerHTML = `
-                <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-[#a3360a]' : 'bg-rose-400'}">
+                <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-primary' : 'bg-rose-400'}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
                 </div>
                 <p class="text-sm font-bold">${message}</p>`;

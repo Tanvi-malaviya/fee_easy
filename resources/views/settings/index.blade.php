@@ -67,7 +67,7 @@
                     </div>
 
                     <div class=" flex justify-end border-t border-gray-50">
-                        <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition transform active:scale-95">
+                        <button type="submit" class="px-8 py-3 bg-primary text-white rounded-xl shadow-lg shadow-indigo-600/20 font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition transform active:scale-95">
                             Save System Configuration
                         </button>
                     </div>

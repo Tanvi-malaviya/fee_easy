@@ -1,343 +1,468 @@
 <x-admin-layout title="{{ $institute->institute_name }} - Details">
-    <div class=" flex flex-col gap-8">
-        <!-- Main Content Area -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- Main Content Area -->
-            <div class="lg:col-span-2 space-y-4">
+<div class="max-w-7xl mx-auto" x-data="{ activeTab: 'subscriptions', deleteModal: false, deleteUrl: '', deleteName: '', deleteType: 'Student', deleteElement: null, deleteScopeEl: null }">
 
-                <!-- Primary Information -->
-                <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
-                    <div class="px-8 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                        <div class="flex items-center gap-4">
-                            <a href="{{ route('institutes.index') }}"
-                                class="p-1.5 bg-white border border-gray-100 rounded-lg text-gray-400 hover:text-indigo-600 transition shadow-sm active:scale-90">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                                </svg>
-                            </a>
-                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Primary Information
-                            </h3>
-                            <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider
-                                @if($institute->status == 'active') bg-emerald-100 text-emerald-700 border border-emerald-200 
-                                @elseif($institute->status == 'suspended') bg-amber-100 text-amber-700 border border-amber-200
-                                @else bg-red-100 text-red-700 border border-red-200 @endif">
-                                ● {{ $institute->status }}
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('institutes.edit', $institute) }}"
-                                class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-[10px] font-bold text-gray-600 hover:bg-gray-50 transition shadow-sm active:scale-95">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg>
-                                EDIT
-                            </a>
-                            <form action="{{ route('institutes.destroy', $institute) }}" method="POST"
-                                onsubmit="return confirm('Archive this institute records?');" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit"
-                                    class="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg text-[10px] font-bold text-red-600 hover:bg-red-100 transition shadow-sm active:scale-95">
-                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                        </path>
-                                    </svg>
-                                    DELETE
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div class="flex flex-col md:flex-row gap-8">
-                            <div class="flex-shrink-0">
-                                <div
-                                    class="w-32 h-32 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                                    @if($institute->logo)
-                                        <img src="{{ asset('storage/' . $institute->logo) }}"
-                                            class="w-full h-full object-cover">
-                                    @else
-                                        <div class="text-4xl">🏢</div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-                                <div>
-                                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Owner /
-                                        Representative</label>
-                                    <p class="text-lg font-bold text-gray-900 mt-1">{{ $institute->name }}</p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Email
-                                        Address</label>
-                                    <p class="text-base font-semibold text-gray-700 mt-1">{{ $institute->email }}</p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Phone
-                                        Number</label>
-                                    <p class="text-base font-semibold text-gray-700 mt-1">{{ $institute->phone }}</p>
-                                </div>
-                                <div>
-                                    <label
-                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500">Registration
-                                        Date</label>
-                                    <p class="text-base font-semibold text-gray-700 mt-1">
-                                        {{ $institute->created_at->format('d M, Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Location Row (Starts below logo) -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Full
-                                    Address</label>
-                                <p class="text-base font-semibold text-gray-700 mt-1 leading-relaxed">
-                                    {{ $institute->address ?? 'N/A' }}</p>
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">City</label>
-                                <p class="text-base font-semibold text-gray-700 mt-1">{{ $institute->city ?? 'N/A' }}
-                                </p>
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">State &
-                                    Pincode</label>
-                                <p class="text-base font-semibold text-gray-700 mt-1">{{ $institute->state ?? 'N/A' }},
-                                    {{ $institute->pincode ?? 'N/A' }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Social Links Row -->
-                        @if($institute->website || $institute->youtube || $institute->instagram)
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-                            @if($institute->website)
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Website</label>
-                                <a href="{{ $institute->website }}" target="_blank" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-bold mt-1 group">
-                                    <span class="text-sm truncate max-w-[200px]">{{ preg_replace("(^https?://)", "", $institute->website) }}</span>
-                                    <svg class="w-3 h-3 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                </a>
-                            </div>
-                            @endif
-                            @if($institute->youtube)
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">YouTube</label>
-                                <a href="{{ $institute->youtube }}" target="_blank" class="flex items-center gap-2 text-red-600 hover:text-red-700 font-bold mt-1 group">
-                                    <span class="text-sm">Channel Profile</span>
-                                    <svg class="w-3 h-3 transform group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                </a>
-                            </div>
-                            @endif
-                            @if($institute->instagram)
-                            <div>
-                                <label class="text-xs font-semibold uppercase tracking-wider text-gray-500">Instagram</label>
-                                <a href="{{ $institute->instagram }}" target="_blank" class="flex items-center gap-2 text-pink-600 hover:text-pink-700 font-bold mt-1 group">
-                                    <span class="text-sm">View Profile</span>
-                                    <svg class="w-3 h-3 transform group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.36.06 2.06.35 2.55.54.67.26 1.15.57 1.65 1.07.5.5.81.98 1.07 1.65.19.49.48 1.19.54 2.55.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.06 1.36-.35 2.06-.54 2.55-.26.67-.57 1.15-1.07 1.65-.5.5-.98.81-1.65 1.07-.49.19-1.19.48-2.55.54-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.36-.06-2.06-.35-2.55-.54-.67-.26-1.15-.57-1.65-1.07-.5-.5-.81-.98-1.07-1.65-.19-.49-.48-1.19-.54-2.55C2.12 15.584 2.11 15.204 2.11 12s.012-3.584.07-4.85c.06-1.36.35-2.06.54-2.55.26-.67.57-1.15 1.07-1.65.5-.5.98-.81 1.65-1.07.49-.19 1.19-.48 2.55-.54 1.266-.058 1.646-.07 4.85-.07M12 0C8.74 0 8.332.015 7.052.074c-1.27.058-2.144.26-2.903.556-.783.304-1.448.711-2.11 1.372-.66.66-1.068 1.325-1.372 2.11-.296.758-.498 1.632-.556 2.903C.015 8.332 0 8.74 0 12s.015 3.668.074 4.948c.058 1.27.26 2.144.556 2.903.304.783.711 1.448 1.372 2.11.66.66 1.325 1.068 2.11 1.372.758.296 1.632.498 2.903.556 1.28.059 1.688.074 4.948.074s3.668-.015 4.948-.074c1.27-.058 2.144-.26 2.903-.556.783-.304 1.448-.711 2.11-1.372.66-.66 1.068-1.325 1.372-2.11.296-.758.498-1.632.556-2.903.059-1.28.074-1.688.074-4.948s-.015-3.668-.074-4.948c-.058-1.27-.26-2.144-.556-2.903-.304-.783-.711-1.448-1.372-2.11-.66-.66-1.325-1.068-2.11-1.372-.758-.296-1.632-.498-2.903-.556C15.668.015 15.26 0 12 0m0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8m6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881"/></svg>
-                                </a>
-                            </div>
-                            @endif
-                        </div>
-                        @endif
-                    </div>
-                </div>
-
-
-
-                <!-- Recent Activity Trace -->
-                <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Latest Subscriptions
-                        </h3>
-                        <!-- <a href="{{ route('subscriptions.index') }}" class="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline">View Ledger</a> -->
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50/50">
-                                <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="px-8 py-4">Plan Name</th>
-                                    <th class="px-8 py-4">Valid Until</th>
-                                    <th class="px-8 py-4">Amount</th>
-                                    <th class="px-8 py-4 text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @forelse($institute->subscriptions as $sub)
-                                    <tr class="hover:bg-gray-50/30 transition">
-                                        <td class="px-8 py-4">
-                                            <div class="text-sm font-bold text-gray-900">{{ $sub->plan_name }}</div>
-                                            <div class="text-xs text-gray-500">Started:
-                                                {{ \Carbon\Carbon::parse($sub->start_date)->format('d M, Y') }}</div>
-                                        </td>
-                                        <td class="px-8 py-4 text-sm font-medium text-gray-700">
-                                            {{ \Carbon\Carbon::parse($sub->end_date)->format('d M, Y') }}
-                                        </td>
-                                        <td class="px-8 py-4 text-sm font-bold text-indigo-600">
-                                            {{ $currency }}{{ number_format($sub->amount, 2) }}
-                                        </td>
-                                        <td class="px-8 py-4 text-right">
-                                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase
-                                                    @if($sub->status == 'active') bg-green-50 text-green-600 border border-green-100
-                                                    @elseif($sub->status == 'trial') bg-blue-50 text-blue-600 border border-blue-100
-                                                    @else bg-gray-50 text-gray-400 border border-gray-100 @endif">
-                                                {{ $sub->status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-8 py-8 text-center text-xs text-gray-400 italic">No
-                                            subscription history available.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+    {{-- Header --}}
+    <div class="flex items-center justify-between mb-2 px-2">
+        <a href="{{ route('institutes.index') }}" class="inline-flex items-center text-gray-400 hover:text-primary transition-colors group">
+            <div class="p-2 bg-white border border-gray-100 rounded-xl shadow-sm group-hover:border-primary/20 transition-all active:scale-90">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </div>
+            <span class="ml-3 text-[10px] font-bold uppercase tracking-widest">Back to Institutes</span>
+        </a>
+        <a href="{{ route('institutes.edit', [$institute, 'from' => 'show']) }}" class="inline-flex items-center px-5 py-2 bg-primary text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition active:scale-95">
+            <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Edit Details
+        </a>
+    </div>
 
-            <!-- Sidebar Stats Area -->
-            <div class="space-y-4">
-
-                <!-- Metrics Card -->
-                <!-- <div class="bg-indigo-600 rounded-3xl p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden group">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition duration-500"></div>
-                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-indigo-100 opacity-80">Operational Pulse</h3>
-                    
-                    <div class="grid grid-cols-2 gap-4 mt-8">
-                        <div>
-                            <p class="text-4xl font-black">{{ $stats['students_count'] }}</p>
-                            <p class="text-[10px] font-black uppercase tracking-widest text-indigo-100 mt-1">Total Students</p>
-                        </div>
-                        <div>
-                            <p class="text-4xl font-black">{{ $stats['batches_count'] }}</p>
-                            <p class="text-[10px] font-black uppercase tracking-widest text-indigo-100 mt-1">Active Batches</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 pt-8 border-t border-white/10">
-                        <div class="flex justify-between items-center mb-1">
-                             <span class="text-[10px] font-black uppercase tracking-widest text-indigo-100">Utility Capacity</span>
-                             <span class="text-[10px] font-black uppercase text-white">Scale Mode</span>
-                        </div>
-                        <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                             <div class="bg-white h-full w-2/3"></div>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- Current Plan Section -->
-                @if($stats['active_subscription'])
-                    <div class="p-6 bg-indigo-50 rounded-3xl border border-indigo-100 shadow-sm shadow-indigo-100/20">
-                        <p class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Service Eligibility</p>
-                        <h4 class="text-xl font-black text-indigo-700 mt-1">{{ $stats['active_subscription']->plan_name }}
-                        </h4>
-                        <p class="text-[10px] text-indigo-500 mt-2 font-semibold uppercase tracking-wider">Expires in
-                            {{ \Carbon\Carbon::parse($stats['active_subscription']->end_date)->diffInDays(now()) }} Days</p>
-                    </div>
+    {{-- Profile Card --}}
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 mb-1.5">
+        <div class="flex flex-col md:flex-row gap-5 items-start">
+            <div class="w-20 h-20 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0">
+                @if($institute->logo)
+                    <img src="{{ asset('storage/' . $institute->logo) }}" class="w-full h-full object-cover">
                 @else
-                    <div class="p-6 bg-red-50 rounded-3xl border border-red-100 shadow-sm shadow-red-100/20">
-                        <p class="text-[10px] font-black text-red-400 uppercase tracking-widest">Alert</p>
-                        <h4 class="text-xl font-black text-red-700 mt-1">No Active Plan</h4>
-                        <p class="text-xs text-red-500 mt-2 font-bold uppercase tracking-widest">Services Suspended</p>
-                    </div>
+                    <div class="text-2xl font-bold text-gray-200">🏢</div>
                 @endif
-
-                <!-- WhatsApp Integration Card -->
-                <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-50 bg-gray-50/30">
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp Integration
-                        </h3>
-                    </div>
-                    <div class="p-6">
-                        <div
-                            class="p-4 {{ $institute->whatsappSettings && $institute->whatsappSettings->access_token ? 'bg-emerald-50 border-emerald-100' : 'bg-gray-50 border-gray-100' }} rounded-2xl border mb-4">
-                            <p
-                                class="text-[10px] font-bold {{ $institute->whatsappSettings && $institute->whatsappSettings->access_token ? 'text-emerald-400' : 'text-gray-400' }} uppercase tracking-wider mb-0.5">
-                                Mobile No</p>
-                            <h4
-                                class="text-xl font-black {{ $institute->whatsappSettings && $institute->whatsappSettings->access_token ? 'text-emerald-700' : 'text-gray-700' }}">
-                                {{ $institute->whatsappSettings && $institute->whatsappSettings->phone_number ? $institute->whatsappSettings->phone_number : 'Not Configured' }}
-                            </h4>
-                            <div class="mt-2 space-y-0.5">
-                                @if($institute->whatsappSettings && $institute->whatsappSettings->business_account_id)
-                                    <p
-                                        class="text-[10px] {{ $institute->whatsappSettings && $institute->whatsappSettings->access_token ? 'text-emerald-600/70' : 'text-gray-400' }} font-bold uppercase tracking-wider">
-                                        Bus ID: {{ $institute->whatsappSettings->business_account_id }}
-                                    </p>
-                                @endif
-                                @if($institute->whatsappSettings && $institute->whatsappSettings->access_token)
-                                    <p
-                                        class="text-[10px] {{ $institute->whatsappSettings && $institute->whatsappSettings->access_token ? 'text-emerald-600/70' : 'text-gray-400' }} font-bold uppercase tracking-wider">
-                                        Token: ••••••••••••
-                                    </p>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="">
-                            <button @click="$dispatch('open-modal', 'edit-whatsapp-{{ $institute->id }}')"
-                                class="w-full px-4 py-3.5 rounded-2xl bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition transform active:scale-95 shadow-sm shadow-indigo-100/50">
-                                Configure Integration
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3.5 gap-x-6 flex-grow">
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Institute</span><div class="flex items-center gap-2 mt-1"><span class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</span><span class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider @if($institute->status=='active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($institute->status=='suspended') bg-amber-50 text-amber-600 border border-amber-100 @else bg-red-50 text-red-600 border border-red-100 @endif">● {{ $institute->status }}</span></div></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</span><p class="text-sm font-bold text-gray-900 mt-1">{{ $institute->name }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</span><p class="text-sm font-bold text-gray-700 mt-1 break-all">{{ $institute->email }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Phone</span><p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->phone }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Address</span><p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->address ?? 'N/A' }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">City</span><p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->city ?? 'N/A' }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">State</span><p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->state ?? 'N/A' }}</p></div>
+                <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pincode</span><p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->pincode ?? 'N/A' }}</p></div>
             </div>
         </div>
     </div>
 
-    <x-modal name="edit-whatsapp-{{ $institute->id }}" :show="false" focusable>
-        <form method="post" action="{{ route('whatsapp.update', $institute) }}" class="p-8 text-left">
-            @csrf @method('PATCH')
-            <div class="border-b border-gray-100 pb-5 mb-8">
-                <h2 class="text-lg font-bold text-gray-900">WhatsApp API Integration</h2>
-                <p class="text-xs text-gray-500 mt-1">Configure Meta Cloud API credentials for <span
-                        class="font-bold text-gray-700">{{ $institute->institute_name }}</span>.</p>
+    {{-- Tab Nav --}}
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm mb-1.5 p-1">
+        <div class="flex overflow-x-auto no-scrollbar gap-1 px-1">
+            @foreach(['subscriptions'=>'Subscriptions','students'=>'Students','staff'=>'Staff','batches'=>'Batches','financials'=>'Financials','leads'=>'Leads','updates'=>'Updates','notes'=>'Notes','chats'=>'Chats'] as $tab => $label)
+            <button @click="activeTab = '{{ $tab }}'" :class="activeTab === '{{ $tab }}' ? 'bg-white text-primary border-primary shadow-sm' : 'text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50/50'" class="px-5 py-2 border-2 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap">{{ $label }}</button>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Tab Content --}}
+    <div class="space-y-1 pb-12">
+
+        {{-- Subscriptions --}}
+        <div x-show="activeTab === 'subscriptions'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Subscription History</h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50"><tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Plan</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Period</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($institute->subscriptions as $sub)
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="px-6 py-4"><span class="text-sm font-black text-gray-900">{{ $sub->plan_name }}</span></td>
+                                <td class="px-6 py-4"><span class="text-sm font-bold text-gray-700">₹{{ number_format($sub->amount) }}</span></td>
+                                <td class="px-6 py-4"><div class="text-[11px] font-medium text-gray-500">{{ \Carbon\Carbon::parse($sub->start_date)->format('M d, Y') }} – {{ \Carbon\Carbon::parse($sub->end_date)->format('M d, Y') }}</div></td>
+                                <td class="px-6 py-4"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($sub->status=='active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($sub->status=='trial') bg-blue-50 text-blue-600 border border-blue-100 @elseif($sub->status=='expired') bg-red-50 text-red-600 border border-red-100 @else bg-gray-50 text-gray-600 border border-gray-100 @endif">{{ $sub->status }}</span></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400 font-bold text-sm">No subscription records found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- Students --}}
+        <div x-show="activeTab === 'students'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $stats['students_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Student Admissions</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['students_count'] }} Students</span>
+                </div>
+                @if($institute->students->isEmpty())
+                    <div class="flex flex-col items-center justify-center py-16 text-gray-300">
+                        <svg class="w-16 h-16 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <p class="text-sm font-bold uppercase tracking-widest text-gray-300">No student records found</p>
+                    </div>
+                @else
+                    <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                        @foreach($institute->students as $idx => $student)
+                            @php $isActive = $student->status=='active'||$student->status==1||$student->status===true; @endphp
+                            <div class="group bg-white rounded-xl border border-gray-100 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col overflow-hidden delete-item" x-show="show({{ $idx }})">
+                                <div class="flex items-center justify-between px-3 pt-3 pb-1">
+                                    <span class="px-2 py-0.5 bg-gray-50 text-gray-400 text-[9px] font-black rounded-md uppercase tracking-tight">{{ $student->batch?->name ?? 'Unassigned' }}</span>
+                                    <span class="text-[9px] font-bold text-gray-300">{{ $student->created_at->format('M d') }}</span>
+                                </div>
+                                <div class="flex flex-col items-start px-3 pb-3 pt-2 flex-1">
+                                    <div class="h-14 w-14 rounded-full border-2 border-gray-100 overflow-hidden mb-2 shadow-sm">
+                                        @if($student->profile_image)
+                                            <img src="{{ asset('storage/'.$student->profile_image) }}" class="w-full h-full object-cover">
+                                        @else
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&color=7F9CF5&background=EBF4FF" class="w-full h-full object-cover">
+                                        @endif
+                                    </div>
+                                    <h4 class="text-sm font-black text-gray-800 tracking-tight leading-tight">{{ $student->name }}</h4>
+                                    <p class="text-[10px] font-medium text-gray-400 truncate w-full mt-0.5">{{ $student->email ?: 'No email' }}</p>
+                                </div>
+                                <div class="px-3 pb-3 space-y-1.5">
+                                    <div class="flex items-center justify-between"><span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Phone</span><span class="text-[10px] font-bold text-gray-600">{{ $student->phone ?: '—' }}</span></div>
+                                    <div class="flex items-center justify-between"><span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Monthly Fee</span><span class="text-[10px] font-black text-primary">₹{{ number_format($student->monthly_fee??0) }}</span></div>
+                                    <div class="flex items-center justify-between"><span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Standard</span><span class="text-[10px] font-bold text-gray-600">{{ $student->standard ?: '—' }}</span></div>
+                                </div>
+                                <div class="flex items-center justify-between px-3 py-2 bg-gray-50/80 border-t border-gray-100">
+                                    <span class="text-[9px] text-gray-400 font-medium">Joined {{ $student->created_at->format('M d, Y') }}</span>
+                                    <button type="button"
+                                            @click="deleteUrl='{{ route('institutes.students.destroy', [$institute, $student]) }}'; deleteName='{{ addslashes($student->name) }}'; deleteType='Student'; deleteElement=$el.closest('.delete-item'); deleteScopeEl=$el.closest('[x-data]'); deleteModal=true"
+                                            class="text-red-500 hover:text-red-700 transition-colors duration-200 p-1.5 rounded-lg hover:bg-red-100">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <x-admin.tab-pagination :total="$stats['students_count']" />
+                @endif
+            </div>
+        </div>
+
+        {{-- Staff --}}
+        <div x-show="activeTab === 'staff'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $stats['staff_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Staff Management</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['staff_count'] }} Staff</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50"><tr>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Name</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Role/Dept</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Email</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Salary</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest"></th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($institute->staff as $i => $member)
+                            <tr class="hover:bg-gray-50/50 transition delete-item" x-show="show({{ $i }})">
+                                <td class="px-4 py-2.5"><span class="text-sm font-bold text-gray-900">{{ $member->full_name }}</span></td>
+                                <td class="px-4 py-2.5"><div class="text-[11px] font-black text-primary uppercase tracking-wider">{{ $member->role->name ?? 'Staff' }}</div><div class="text-[10px] font-bold text-gray-400 uppercase">{{ $member->department->name ?? 'General' }}</div></td>
+                                <td class="px-4 py-2.5"><span class="text-[11px] text-gray-500 font-medium">{{ $member->email ?: '—' }}</span></td>
+                                <td class="px-4 py-2.5 text-xs text-gray-700 font-bold">{{ $member->phone }}</td>
+                                <td class="px-4 py-2.5"><span class="text-sm font-black text-gray-900">₹{{ number_format($member->base_salary??0) }}</span></td>
+                                <td class="px-4 py-2.5 text-right">
+                                    <button type="button"
+                                            @click="deleteUrl='{{ route('institutes.staff.destroy', [$institute, $member]) }}'; deleteName='{{ addslashes($member->full_name) }}'; deleteType='Staff'; deleteElement=$el.closest('.delete-item'); deleteScopeEl=$el.closest('[x-data]'); deleteModal=true"
+                                            class="text-red-500 hover:text-red-700 transition-colors duration-200 p-1.5 rounded-lg hover:bg-red-100">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="6" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">No staff records found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <x-admin.tab-pagination :total="$stats['staff_count']" />
+            </div>
+        </div>
+
+        {{-- Batches --}}
+        <div x-show="activeTab === 'batches'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $stats['batches_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Batch Management</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['batches_count'] }} Batches</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50"><tr>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Batch Name</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Subject</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Timing</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fees</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Students</th>
+                            <th class="px-4 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest"></th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($institute->batches as $i => $batch)
+                            <tr class="hover:bg-gray-50/50 transition delete-item" x-show="show({{ $i }})">
+                                <td class="px-4 py-2.5">
+                                    <a href="{{ route('institutes.batches.show', [$institute, $batch]) }}"
+                                       class="text-sm font-black text-gray-900 hover:text-primary transition-colors">
+                                        {{ $batch->name }}
+                                    </a>
+                                </td>
+                                <td class="px-4 py-2.5"><span class="text-[11px] font-bold text-gray-500">{{ $batch->subject ?? '—' }}</span></td>
+                                <td class="px-4 py-2.5">
+                                    @if($batch->start_time || $batch->end_time)
+                                        <span class="text-[11px] font-bold text-primary bg-orange-50 px-2 py-1 rounded-lg border border-orange-100">{{ $batch->start_time ?? '?' }} – {{ $batch->end_time ?? '?' }}</span>
+                                    @else
+                                        <span class="text-[11px] text-gray-300 font-bold">—</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2.5"><span class="text-[11px] font-black text-gray-700">₹{{ number_format($batch->fees ?? 0) }}</span></td>
+                                <td class="px-4 py-2.5"><span class="text-sm font-black text-gray-900">{{ $batch->students()->count() }}</span></td>
+                                <td class="px-4 py-2.5 text-right">
+                                    <button type="button"
+                                            @click="deleteUrl='{{ route('institutes.batches.destroy', [$institute, $batch]) }}'; deleteName='{{ addslashes($batch->name) }}'; deleteType='Batch'; deleteElement=$el.closest('.delete-item'); deleteScopeEl=$el.closest('[x-data]'); deleteModal=true"
+                                            class="text-red-500 hover:text-red-700 transition-colors duration-200 p-1.5 rounded-lg hover:bg-red-100">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="6" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">No batch records found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <x-admin.tab-pagination :total="$stats['batches_count']" />
+            </div>
+        </div>
+
+        {{-- Financials --}}
+        <div x-show="activeTab === 'financials'" style="display:none">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-50 bg-emerald-50/30"><h4 class="text-sm font-black text-emerald-600 uppercase tracking-widest">Recent Fee Collections</h4></div>
+                    <div class="overflow-x-auto"><table class="w-full text-left"><tbody class="divide-y divide-gray-50">
+                        @forelse($institute->fees as $fee)
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $fee->student->name ?? 'Student' }}</div><div class="text-[10px] text-gray-400">{{ $fee->created_at->format('M d, Y') }}</div></td>
+                            <td class="px-6 py-4 text-right"><div class="text-sm font-black text-emerald-600">+₹{{ number_format($fee->paid_amount) }}</div><div class="text-[10px] font-bold text-gray-400 uppercase">{{ $fee->payment_method ?? 'Offline' }}</div></td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="2" class="px-6 py-8 text-center text-gray-400 font-bold text-xs uppercase">No fees collected yet</td></tr>
+                        @endforelse
+                    </tbody></table></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-50 bg-rose-50/30"><h4 class="text-sm font-black text-rose-600 uppercase tracking-widest">Recent Expenses</h4></div>
+                    <div class="overflow-x-auto"><table class="w-full text-left"><tbody class="divide-y divide-gray-50">
+                        @forelse($institute->expenses as $expense)
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $expense->title }}</div><div class="text-[10px] text-gray-400">{{ $expense->created_at->format('M d, Y') }}</div></td>
+                            <td class="px-6 py-4 text-right"><div class="text-sm font-black text-rose-600">-₹{{ number_format($expense->amount) }}</div><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ $expense->category->name ?? 'General' }}</div></td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="2" class="px-6 py-8 text-center text-gray-400 font-bold text-xs uppercase tracking-widest">No expenses recorded</td></tr>
+                        @endforelse
+                    </tbody></table></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Leads --}}
+        <div x-show="activeTab === 'leads'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $stats['leads_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Lead Management</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['leads_count'] }} Leads</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50"><tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Lead Name</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Interest</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($institute->leads as $i => $lead)
+                            <tr class="hover:bg-gray-50/50 transition" x-show="show({{ $i }})">
+                                <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $lead->name }}</div><div class="text-[10px] text-gray-500 font-bold">{{ $lead->phone }}</div></td>
+                                <td class="px-6 py-4 text-xs font-bold text-gray-700">{{ $lead->interest ?? 'N/A' }}</td>
+                                <td class="px-6 py-4"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($lead->status=='hot') bg-rose-50 text-rose-600 border border-rose-100 @elseif($lead->status=='warm') bg-amber-50 text-amber-600 border border-amber-100 @else bg-blue-50 text-blue-600 border border-blue-100 @endif">{{ $lead->status }}</span></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="3" class="px-6 py-12 text-center text-gray-400 font-bold text-sm">No leads found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <x-admin.tab-pagination :total="$stats['leads_count']" />
+            </div>
+        </div>
+
+        {{-- Updates --}}
+        <div x-show="activeTab === 'updates'" style="display:none">
+            @php $updatesCount = $institute->dailyUpdates->count(); @endphp
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $updatesCount }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Daily News & Updates</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $updatesCount }} Updates</span>
+                </div>
+                <div class="p-4 space-y-3">
+                    @forelse($institute->dailyUpdates as $i => $update)
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-md transition" x-show="show({{ $i }})">
+                        <div class="flex justify-between items-start">
+                            <h5 class="text-sm font-black text-gray-900">{{ $update->title }}</h5>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">{{ $update->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2 line-clamp-2">{{ $update->description }}</p>
+                    </div>
+                    @empty
+                    <div class="text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No updates published yet</div>
+                    @endforelse
+                </div>
+                <x-admin.tab-pagination :total="$updatesCount" />
+            </div>
+        </div>
+
+        {{-- Notes --}}
+        <div x-show="activeTab === 'notes'" style="display:none">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $stats['notes_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Study Materials & Notes</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['notes_count'] }} Notes</span>
+                </div>
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @forelse($institute->notes as $i => $note)
+                    <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:border-primary transition group" x-show="show({{ $i }})">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 text-primary flex items-center justify-center text-lg">📄</div>
+                            <div>
+                                <h5 class="text-sm font-black text-gray-900 group-hover:text-primary transition">{{ $note->title }}</h5>
+                                <div class="text-[10px] font-bold text-gray-400 uppercase mt-0.5">{{ $note->category->name ?? 'General' }} • {{ $note->created_at->diffForHumans() }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="col-span-full text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No notes uploaded yet</div>
+                    @endforelse
+                </div>
+                <x-admin.tab-pagination :total="$stats['notes_count']" />
+            </div>
+        </div>
+
+        {{-- Chats --}}
+        <div x-show="activeTab === 'chats'" style="display:none">
+            @php $logsCount = $institute->whatsappLogs->count(); @endphp
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+                 x-data="{ page:1, perPage:10, total:{{ $logsCount }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Messaging & WhatsApp Logs</h4>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $logsCount }} Logs</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50"><tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Recipient</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Message</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($institute->whatsappLogs as $i => $log)
+                            <tr class="hover:bg-gray-50/50 transition" x-show="show({{ $i }})">
+                                <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $log->recipient_name ?? $log->recipient_phone }}</div><div class="text-[10px] text-gray-400">{{ $log->created_at->format('M d, H:i') }}</div></td>
+                                <td class="px-6 py-4"><p class="text-xs text-gray-600 line-clamp-1 max-w-xs">{{ $log->message }}</p></td>
+                                <td class="px-6 py-4"><span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $log->type }}</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($log->status=='sent') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($log->status=='failed') bg-red-50 text-red-600 border border-red-100 @else bg-blue-50 text-blue-600 border border-blue-100 @endif">{{ $log->status }}</span></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400 font-bold text-sm uppercase tracking-widest">No chat logs available</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <x-admin.tab-pagination :total="$logsCount" />
+            </div>
+        </div>
+
+    </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <div x-show="deleteModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="display:none">
+
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="deleteModal = false"></div>
+
+        {{-- Modal Box --}}
+        <div x-show="deleteModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+             class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-gray-100">
+
+            {{-- Icon --}}
+            <div class="flex items-center justify-center w-14 h-14 bg-orange-50 rounded-2xl mx-auto mb-4 border border-orange-100">
+                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </div>
 
-            <div class="space-y-6">
-                <div>
-                    <x-input-label for="phone_number" value="WhatsApp Phone Number"
-                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                    <x-text-input id="phone_number" name="phone_number" type="text"
-                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
-                        value="{{ $institute->whatsappSettings->phone_number ?? '' }}" placeholder="+91..." />
-                    <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
-                </div>
+            {{-- Title --}}
+            <h3 class="text-base font-black text-gray-900 text-center tracking-tight">Delete <span x-text="deleteType"></span>?</h3>
+            <p class="text-sm text-gray-500 text-center mt-1">
+                Are you sure you want to remove
+                <span class="font-bold text-gray-800" x-text="deleteName"></span>?
+                <br><span class="text-[11px] text-primary font-bold">This action cannot be undone.</span>
+            </p>
 
-                <div>
-                    <x-input-label for="access_token" value="Meta Access Token"
-                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                    <x-text-input id="access_token" name="access_token" type="password"
-                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono"
-                        value="{{ $institute->whatsappSettings->access_token ?? '' }}" placeholder="EAAW..." />
-                    <x-input-error :messages="$errors->get('access_token')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="business_account_id" value="Meta Business ID"
-                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                    <x-text-input id="business_account_id" name="business_account_id" type="text"
-                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-mono"
-                        value="{{ $institute->whatsappSettings->business_account_id ?? '' }}" placeholder="153..." />
-                    <x-input-error :messages="$errors->get('business_account_id')" class="mt-2" />
-                </div>
-
+            {{-- Actions --}}
+            <div class="flex gap-3 mt-6">
+                <button type="button" @click="deleteModal = false"
+                        class="flex-1 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 text-primary font-black text-xs uppercase tracking-widest rounded-xl transition-all active:scale-95">
+                    Cancel
+                </button>
+                <button type="button"
+                        @click="
+                            fetch(deleteUrl, {
+                                method: 'DELETE',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            }).then(res => {
+                                if (res.ok || res.redirected) {
+                                    deleteModal = false;
+                                    if (deleteElement) {
+                                        deleteElement.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+                                        deleteElement.style.opacity = '0';
+                                        deleteElement.style.transform = 'scale(0.92)';
+                                        setTimeout(() => {
+                                            deleteElement.remove();
+                                            if (deleteScopeEl) Alpine.$data(deleteScopeEl).total--;
+                                        }, 380);
+                                    }
+                                }
+                            }).catch(err => console.error('Delete failed:', err))
+                        "
+                        class="flex-1 px-4 py-2.5 bg-primary hover:bg-primary/80 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-primary/25 transition-all active:scale-95">
+                    Delete
+                </button>
             </div>
+        </div>
+    </div>
 
-            <div class="flex justify-end pt-8 mt-8 border-t border-gray-100 gap-3">
-                <button type="button" x-on:click="$dispatch('close')"
-                    class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-gray-700 transition">Cancel</button>
-                <button type="submit"
-                    class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition transform active:scale-95">Save
-                    Credentials</button>
-            </div>
-        </form>
-    </x-modal>
+</div>
+<style>.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}</style>
 </x-admin-layout>

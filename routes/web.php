@@ -30,13 +30,22 @@ Route::middleware(array_filter([
         // Institutes Management
         Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
         Route::post('institutes/{institute}/status', [App\Http\Controllers\Web\InstituteController::class, 'updateStatus'])->name('institutes.status');
+        Route::delete('institutes/{institute}/students/{student}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStudent'])->name('institutes.students.destroy');
+        Route::delete('institutes/{institute}/staff/{staff}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStaff'])->name('institutes.staff.destroy');
+        Route::delete('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'deleteBatch'])->name('institutes.batches.destroy');
+        Route::get('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'showBatch'])->name('institutes.batches.show');
 
         // Subscription Management
         Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
-        Route::post('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
+        Route::patch('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
+        Route::patch('subscriptions/{subscription}/activate', [App\Http\Controllers\Web\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
+        Route::patch('subscriptions/{subscription}/cancel', [App\Http\Controllers\Web\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+        Route::patch('subscriptions/{subscription}/change-plan', [App\Http\Controllers\Web\SubscriptionController::class, 'changePlan'])->name('subscriptions.changePlan');
+        Route::patch('subscriptions/{subscription}/convert', [App\Http\Controllers\Web\SubscriptionController::class, 'convertToPaid'])->name('subscriptions.convert');
 
         // Plan Management
         Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
+        Route::post('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
 
         // Revenue Analysis
         Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
@@ -88,7 +97,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::get('/reset-password/{token}', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showResetPassword'])->name('password.reset');
     Route::post('/reset-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resetPassword'])->name('password.update');
 
-    Route::middleware('auth:institute')->group(function () {
+    Route::middleware(['auth:institute', 'active_institute'])->group(function () {
         // Step 3: Setup Profile
         Route::post('/setup-profile', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'setupProfile'])->name('setup-profile');
 

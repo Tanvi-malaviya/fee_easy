@@ -220,8 +220,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/receipts/{student_id}', [InstituteReceiptController::class, 'getStudentReceipts']);
             Route::get('/receipt/{id}/download', [InstituteReceiptController::class, 'downloadReceipt']);
 
-            // Attendance Management
-            Route::prefix('attendance')->group(function () {
+            // Student/Batch Attendance Management (distinct from staff attendance)
+            Route::prefix('batch-attendance')->group(function () {
                 Route::get('/', [InstituteAttendanceController::class, 'index']);
                 Route::post('/', [InstituteAttendanceController::class, 'store']);
             });

@@ -212,6 +212,16 @@ class SubscriptionController extends Controller
             'status'     => 'active',
         ]);
 
+        // Record Payment for the new plan
+        if ($plan->price > 0) {
+            SubscriptionPayment::create([
+                'subscription_id' => $subscription->id,
+                'amount' => $plan->price,
+                'payment_source' => 'admin',
+                'paid_at' => now(),
+            ]);
+        }
+
         Activity::log("Subscription plan changed to: {$plan->name} for {$subscription->institute->institute_name}");
 
         return redirect()->back()->with('success', 'Subscription plan changed successfully.');
