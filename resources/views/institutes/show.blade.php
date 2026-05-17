@@ -48,7 +48,7 @@
     </div>
 
     {{-- Tab Content --}}
-    <div class="space-y-1 pb-12">
+    <div class="space-y-1 ">
 
         {{-- Subscriptions --}}
         <div x-show="activeTab === 'subscriptions'" style="display:none">
@@ -236,65 +236,148 @@
 
         {{-- Financials --}}
         <div x-show="activeTab === 'financials'" style="display:none">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-gray-50 bg-emerald-50/30"><h4 class="text-sm font-black text-emerald-600 uppercase tracking-widest">Recent Fee Collections</h4></div>
-                    <div class="overflow-x-auto"><table class="w-full text-left"><tbody class="divide-y divide-gray-50">
-                        @forelse($institute->fees as $fee)
-                        <tr class="hover:bg-gray-50/50 transition">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                
+                {{-- Recent Fee Collections --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
+                     x-data="{ page:1, perPage:10, total:{{ $institute->fees->count() }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                    <div class="p-4 border-b border-gray-50 bg-emerald-50/30 shrink-0">
+                        <h4 class="text-sm font-black text-emerald-600 uppercase tracking-widest">Recent Fee Collections</h4>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left"><tbody class="divide-y divide-gray-50">
+                        @forelse($institute->fees as $i => $fee)
+                        <tr class="hover:bg-gray-50/50 transition" x-show="show({{ $i }})">
                             <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $fee->student->name ?? 'Student' }}</div><div class="text-[10px] text-gray-400">{{ $fee->created_at->format('M d, Y') }}</div></td>
                             <td class="px-6 py-4 text-right"><div class="text-sm font-black text-emerald-600">+₹{{ number_format($fee->paid_amount) }}</div><div class="text-[10px] font-bold text-gray-400 uppercase">{{ $fee->payment_method ?? 'Offline' }}</div></td>
                         </tr>
                         @empty
                         <tr><td colspan="2" class="px-6 py-8 text-center text-gray-400 font-bold text-xs uppercase">No fees collected yet</td></tr>
                         @endforelse
-                    </tbody></table></div>
+                        </tbody></table>
+                    </div>
+                    @if($institute->fees->count() > 10)
+                        <div class="shrink-0 border-t border-gray-50">
+                            <x-admin.tab-pagination :total="$institute->fees->count()" />
+                        </div>
+                    @endif
                 </div>
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-gray-50 bg-rose-50/30"><h4 class="text-sm font-black text-rose-600 uppercase tracking-widest">Recent Expenses</h4></div>
-                    <div class="overflow-x-auto"><table class="w-full text-left"><tbody class="divide-y divide-gray-50">
-                        @forelse($institute->expenses as $expense)
-                        <tr class="hover:bg-gray-50/50 transition">
+
+                {{-- Recent Expenses --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
+                     x-data="{ page:1, perPage:10, total:{{ $institute->expenses->count() }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                    <div class="p-4 border-b border-gray-50 bg-rose-50/30 shrink-0">
+                        <h4 class="text-sm font-black text-primary uppercase tracking-widest">Recent Expenses</h4>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left"><tbody class="divide-y divide-gray-50">
+                        @forelse($institute->expenses as $i => $expense)
+                        <tr class="hover:bg-gray-50/50 transition" x-show="show({{ $i }})">
                             <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $expense->title }}</div><div class="text-[10px] text-gray-400">{{ $expense->created_at->format('M d, Y') }}</div></td>
-                            <td class="px-6 py-4 text-right"><div class="text-sm font-black text-rose-600">-₹{{ number_format($expense->amount) }}</div><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ $expense->category->name ?? 'General' }}</div></td>
+                            <td class="px-6 py-4 text-right"><div class="text-sm font-black text-primary">-₹{{ number_format($expense->amount) }}</div><div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ $expense->category->name ?? 'General' }}</div></td>
                         </tr>
                         @empty
                         <tr><td colspan="2" class="px-6 py-8 text-center text-gray-400 font-bold text-xs uppercase tracking-widest">No expenses recorded</td></tr>
                         @endforelse
-                    </tbody></table></div>
+                        </tbody></table>
+                    </div>
+                    @if($institute->expenses->count() > 10)
+                        <div class="shrink-0 border-t border-gray-50">
+                            <x-admin.tab-pagination :total="$institute->expenses->count()" />
+                        </div>
+                    @endif
                 </div>
+
             </div>
         </div>
 
         {{-- Leads --}}
         <div x-show="activeTab === 'leads'" style="display:none">
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
-                 x-data="{ page:1, perPage:10, total:{{ $stats['leads_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
-                <div class="p-4 border-b border-gray-50 flex items-center justify-between">
+                 x-data="{ page:1, perPage:9, total:{{ $stats['leads_count'] }}, get totalPages(){return Math.ceil(this.total/this.perPage);}, get from(){return (this.page-1)*this.perPage+1;}, get to(){return Math.min(this.page*this.perPage,this.total);}, show(i){return i>=(this.page-1)*this.perPage&&i<this.page*this.perPage;} }">
+                <div class="p-2 pl-4 border-b border-gray-50 flex items-center justify-between">
                     <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Lead Management</h4>
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['leads_count'] }} Leads</span>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50/50"><tr>
-                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Lead Name</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Interest</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                        </tr></thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @forelse($institute->leads as $i => $lead)
-                            <tr class="hover:bg-gray-50/50 transition" x-show="show({{ $i }})">
-                                <td class="px-6 py-4"><div class="text-sm font-bold text-gray-900">{{ $lead->name }}</div><div class="text-[10px] text-gray-500 font-bold">{{ $lead->phone }}</div></td>
-                                <td class="px-6 py-4 text-xs font-bold text-gray-700">{{ $lead->interest ?? 'N/A' }}</td>
-                                <td class="px-6 py-4"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($lead->status=='hot') bg-rose-50 text-rose-600 border border-rose-100 @elseif($lead->status=='warm') bg-amber-50 text-amber-600 border border-amber-100 @else bg-blue-50 text-blue-600 border border-blue-100 @endif">{{ $lead->status }}</span></td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="3" class="px-6 py-12 text-center text-gray-400 font-bold text-sm">No leads found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                
+                <div class="p-2 bg-gray-50/30">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                        @forelse($institute->leads as $i => $lead)
+                        <div class="bg-white rounded-xl border border-gray-200 p-3.5 shadow-sm relative transition hover:shadow-md" x-show="show({{ $i }})">
+
+                            
+                            <!-- Header -->
+                            <div class="flex items-center gap-3 mb-3 pr-2">
+                                <div class="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary font-black text-sm border border-orange-100 shrink-0">
+                                    {{ substr(strtoupper(preg_replace('/[^a-zA-Z]/', '', $lead->full_name)), 0, 2) ?: 'LD' }}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h4 class="text-sm font-bold text-gray-900 truncate" title="{{ $lead->full_name }}">{{ $lead->full_name }}</h4>
+                                    <p class="text-[10px] font-bold text-gray-400 truncate">{{ $lead->course_selection ?? 'General Inquiry' }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Details Grid -->
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-xs">
+                                <div>
+                                    <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                        Phone
+                                    </span>
+                                    <span class="font-bold text-gray-700">{{ $lead->phone ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        Email
+                                    </span>
+                                    <span class="font-bold text-gray-700 break-all block">{{ $lead->email ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                        Source
+                                    </span>
+                                    <span class="font-bold text-gray-700">{{ $lead->reference ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        Referrer
+                                    </span>
+                                    <span class="font-bold text-gray-700">{{ $lead->referer ?? 'N/A' }}</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Address
+                                    </span>
+                                    <span class="font-medium text-gray-600 leading-relaxed">{{ $lead->address ?? 'N/A' }}</span>
+                                </div>
+                                <div class="col-span-2 mt-1 pt-2 border-t border-gray-100 flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        Added: {{ $lead->created_at->format('M d, Y') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="col-span-full py-12 text-center">
+                            <div class="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                            <p class="text-sm font-bold text-gray-400">No leads found.</p>
+                        </div>
+                        @endforelse
+                    </div>
                 </div>
-                <x-admin.tab-pagination :total="$stats['leads_count']" />
+                
+                @if($institute->leads->count() > 9)
+                    <div class="border-t border-gray-100">
+                        <x-admin.tab-pagination :total="$stats['leads_count']" />
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -307,20 +390,92 @@
                     <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Daily News & Updates</h4>
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $updatesCount }} Updates</span>
                 </div>
-                <div class="p-4 space-y-3">
-                    @forelse($institute->dailyUpdates as $i => $update)
-                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-md transition" x-show="show({{ $i }})">
-                        <div class="flex justify-between items-start">
-                            <h5 class="text-sm font-black text-gray-900">{{ $update->title }}</h5>
-                            <span class="text-[10px] font-bold text-gray-400 uppercase">{{ $update->created_at->format('M d, Y') }}</span>
+                <div class="p-3 bg-gray-50/30">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-1">
+                        @forelse($institute->dailyUpdates as $i => $update)
+                        @php
+                            $cat = $update->category === 'Administrative' ? 'Fee Reminder' : ($update->category ?? 'Other');
+                            $colorClasses = match($update->category) {
+                                'Emergency' => 'bg-rose-50 text-rose-600 border-rose-100',
+                                'Academic', 'Administrative' => 'bg-orange-50 text-[#ff6c00] border-orange-100',
+                                'Event' => 'bg-sky-50 text-sky-600 border-sky-100',
+                                'Holiday' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                                default => 'bg-slate-50 text-slate-600 border-slate-100'
+                            };
+                            $iconColor = match($update->category) {
+                                'Emergency' => 'bg-rose-500 text-white shadow-rose-500/30',
+                                'Academic', 'Administrative' => 'bg-[#ff6c00] text-white shadow-orange-500/30',
+                                'Event' => 'bg-sky-500 text-white shadow-sky-500/30',
+                                'Holiday' => 'bg-indigo-500 text-white shadow-indigo-500/30',
+                                default => 'bg-slate-500 text-white shadow-slate-500/30'
+                            };
+                            
+                            $targetValue = 'Everyone';
+                            if ($update->recipient === 'parents') {
+                                $targetValue = 'Parents Only';
+                            } else {
+                                $audience = $update->recipient === 'both' ? '(Std & Par)' : '';
+                                if ($update->target_type === 'all') {
+                                    $targetValue = $update->recipient === 'both' ? 'All (Std & Par)' : 'All Students';
+                                } elseif ($update->target_type === 'batch') {
+                                    $targetValue = ($update->batch ? $update->batch->name : 'Batch') . ' ' . $audience;
+                                } elseif ($update->target_type === 'standard') {
+                                    $targetValue = ($update->standard ? $update->standard . ' Std' : 'Standard') . ' ' . $audience;
+                                }
+                            }
+                        @endphp
+                        <div class="bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:shadow-md transition relative flex flex-col" x-show="show({{ $i }})">
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-2 overflow-hidden">
+                                    <div class="h-8 w-8 {{ $iconColor }} rounded-lg shadow-sm flex items-center justify-center shrink-0">
+                                        @if($update->category == 'Emergency')
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                        @elseif($update->category == 'Event')
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        @elseif($update->category == 'Holiday')
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                        @elseif($update->category == 'Administrative')
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                        @else
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <h4 class="text-sm font-bold text-gray-900 truncate" title="{{ $update->topic ?? $update->category }}">{{ $update->topic ?? $update->category ?? 'Update' }}</h4>
+                                        <span class="text-[9px] font-black {{ $colorClasses }} border px-1.5 py-0.5 rounded uppercase tracking-widest mt-0.5 inline-block">{{ strtoupper($cat) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-medium mb-2 flex-1 line-clamp-2 break-words">{{ $update->description }}</p>
+
+                            <div class="mt-auto pt-2 border-t border-gray-50 flex items-center justify-between">
+                                <div class="flex items-center gap-1.5 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    Target: <span class="text-gray-600 truncate max-w-[80px]" title="{{ $targetValue }}">{{ $targetValue }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    {{ str_replace([' seconds', ' minutes', ' hours', ' days', ' weeks', ' months', ' years'], ['s', 'm', 'h', 'd', 'w', 'mo', 'y'], $update->created_at->diffForHumans(null, true)) }}
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-600 mt-2 line-clamp-2">{{ $update->description }}</p>
+                        @empty
+                        <div class="col-span-full py-12 text-center">
+                            <div class="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                            </div>
+                            <p class="text-sm font-bold text-gray-400">No updates published yet</p>
+                        </div>
+                        @endforelse
                     </div>
-                    @empty
-                    <div class="text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No updates published yet</div>
-                    @endforelse
                 </div>
-                <x-admin.tab-pagination :total="$updatesCount" />
+                
+                @if($updatesCount > 10)
+                    <div class="border-t border-gray-50">
+                        <x-admin.tab-pagination :total="$updatesCount" />
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -332,22 +487,77 @@
                     <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Study Materials & Notes</h4>
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: {{ $stats['notes_count'] }} Notes</span>
                 </div>
-                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    @forelse($institute->notes as $i => $note)
-                    <div class="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:border-primary transition group" x-show="show({{ $i }})">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-orange-50 text-primary flex items-center justify-center text-lg">📄</div>
-                            <div>
-                                <h5 class="text-sm font-black text-gray-900 group-hover:text-primary transition">{{ $note->title }}</h5>
-                                <div class="text-[10px] font-bold text-gray-400 uppercase mt-0.5">{{ $note->category->name ?? 'General' }} • {{ $note->created_at->diffForHumans() }}</div>
+                <div class="p-4 bg-gray-50/30">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                        @forelse($institute->notes as $i => $note)
+                        @php
+                            $catName = $note->category_relation->name ?? $note->category ?? 'Uncategorized';
+                            $catColors = match(strtolower($catName)) {
+                                'work' => 'bg-rose-50 text-rose-500',
+                                'personal' => 'bg-blue-50 text-blue-500',
+                                'ideas' => 'bg-emerald-50 text-emerald-500',
+                                'meeting notes' => 'bg-amber-50 text-amber-500',
+                                'family' => 'bg-purple-50 text-purple-500',
+                                'important' => 'bg-orange-50 text-orange-500',
+                                default => 'bg-slate-50 text-slate-400'
+                            };
+                            $cleanPreview = strip_tags($note->content ?: 'No content provided.');
+                        @endphp
+                        <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col h-[320px]" x-show="show({{ $i }})">
+                            @if($note->image_url)
+                                <div class="w-full h-32 overflow-hidden relative shrink-0">
+                                    <img src="{{ $note->image_url }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="{{ $note->title }}">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+                                </div>
+                            @else
+                                <div class="w-full h-32 bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center relative overflow-hidden shrink-0 border-b border-slate-50">
+                                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                                    <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </div>
+                            @endif
+
+                            <div class="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm z-20 {{ $note->is_bookmarked ? 'text-[#ff6c00]' : 'text-slate-300' }}">
+                                <svg class="w-4 h-4" fill="{{ $note->is_bookmarked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                </svg>
+                            </div>
+
+                            <div class="p-4 flex flex-col flex-1">
+                                <div class="mb-2">
+                                    <span class="px-2 py-0.5 {{ $catColors }} rounded-md text-[8px] font-black uppercase tracking-widest inline-block">
+                                        {{ $catName }}
+                                    </span>
+                                </div>
+                                
+                                <h3 class="text-base font-bold text-slate-800 mb-1 break-words line-clamp-2">
+                                    {{ $note->title }}
+                                </h3>
+                                
+                                <div class="text-[13px] text-slate-500 font-medium leading-relaxed break-words line-clamp-4 mb-4">
+                                    {{ $cleanPreview }}
+                                </div>
+
+                                <div class="flex items-center justify-between pt-3 border-t border-slate-50 mt-auto">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ strtoupper(str_replace([' seconds', ' minutes', ' hours', ' days', ' weeks', ' months', ' years'], ['s', 'm', 'h', 'd', 'w', 'mo', 'y'], $note->created_at->diffForHumans(null, true))) }} AGO</span>
+                                    <div class="flex items-center gap-1">
+                                        <div class="p-1.5 text-slate-300 rounded-lg">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        @empty
+                        <div class="col-span-full text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No notes uploaded yet</div>
+                        @endforelse
                     </div>
-                    @empty
-                    <div class="col-span-full text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No notes uploaded yet</div>
-                    @endforelse
                 </div>
-                <x-admin.tab-pagination :total="$stats['notes_count']" />
+                
+                @if($stats['notes_count'] > 10)
+                    <div class="border-t border-gray-50">
+                        <x-admin.tab-pagination :total="$stats['notes_count']" />
+                    </div>
+                @endif
             </div>
         </div>
 

@@ -11,7 +11,7 @@
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
             <span class="text-slate-600">Resources</span>
         </nav>
-
+ 
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
             <div>
@@ -419,10 +419,12 @@
                 const response = await fetch(API_RESOURCES_URL, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     },
-                    body: formData
+                    body: formData,
+                    credentials: 'same-origin'
                 });
 
                 const result = await response.json();
@@ -467,9 +469,11 @@
                 const response = await fetch(`${API_RESOURCES_URL}/${pendingDeleteId}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
-                    }
+                    },
+                    credentials: 'same-origin'
                 });
                 const result = await response.json();
                 if (result.status === 'success') {
@@ -532,17 +536,6 @@
             document.getElementById('view-modal').classList.replace('flex', 'hidden');
         }
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right-10 duration-500 ${type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white'}`;
-            toast.innerHTML = `
-                <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-[#a3360a]' : 'bg-rose-400'}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
-                </div>
-                <p class="text-sm font-bold">${message}</p>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-10'); setTimeout(() => toast.remove(), 500); }, 3000);
-        }
+        // Using global showToast from layout
     </script>
 @endsection

@@ -125,7 +125,7 @@ class InstituteController extends Controller
                 $q->latest();
             },
             'notes' => function ($q) {
-                $q->latest();
+                $q->with('category_relation')->latest();
             },
             'whatsappLogs' => function ($q) {
                 $q->latest();
