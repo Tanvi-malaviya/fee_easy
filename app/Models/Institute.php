@@ -49,11 +49,11 @@ class Institute extends Authenticatable
 
     public function isProfileComplete()
     {
-        return !empty($this->phone) && 
-               !empty($this->address) && 
-               !empty($this->city) && 
-               !empty($this->state) && 
-               !empty($this->pincode);
+        return !empty($this->phone) &&
+            !empty($this->address) &&
+            !empty($this->city) &&
+            !empty($this->state) &&
+            !empty($this->pincode);
     }
 
     public function getLogoUrlAttribute()
@@ -103,7 +103,7 @@ class Institute extends Authenticatable
 
     public function notes()
     {
-        return $this->hasMany(Note::class);
+        return $this->hasMany(Note::class, 'user_id');
     }
 
     public function teachers()
@@ -134,5 +134,15 @@ class Institute extends Authenticatable
     public function staff()
     {
         return $this->hasMany(Staff::class);
+    }
+
+    public function staffAttendances()
+    {
+        return $this->hasMany(StaffAttendance::class);
+    }
+
+    public function staffSalaries()
+    {
+        return $this->hasMany(StaffSalary::class);
     }
 }

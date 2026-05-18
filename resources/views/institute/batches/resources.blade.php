@@ -11,7 +11,7 @@
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
             <span class="text-slate-600">Resources</span>
         </nav>
-
+ 
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
             <div>
@@ -19,7 +19,7 @@
                 <p class="text-xs font-semibold text-slate-400 mt-1">Manage and distribute educational files, videos, and visual assets.</p>
             </div>
 
-            <button onclick="openUploadModal()" class="px-5 py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-2">
+            <button onclick="openUploadModal()" class="px-5 py-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/10 transition-all flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 Upload Resource
             </button>
@@ -28,8 +28,8 @@
         <!-- Resources Grid -->
         <div id="resources-grid" class="flex flex-wrap gap-3 mb-8">
             <!-- Quick Add Card -->
-            <div onclick="openUploadModal()" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-[#a3360a]/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
-                <div class="h-10 w-10 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-2 group-hover:scale-110 transition-transform">
+            <div onclick="openUploadModal()" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-primary/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
+                <div class="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
                 </div>
                 <p class="text-xs font-bold text-slate-800">Quick Add</p>
@@ -63,14 +63,14 @@
                 <div>
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Subject</label>
                     <input type="text" id="res-title" required placeholder="e.g. Advanced Calculus - Week 4 Module" 
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 placeholder-slate-300 outline-none focus:ring-2 focus:ring-[#a3360a]/20 focus:border-[#a3360a] transition-all">
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                 </div>
 
                 <!-- Description -->
                 <div>
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Description</label>
                     <textarea id="res-description" rows="2" placeholder="Provide context and learning objectives..." 
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 placeholder-slate-300 outline-none focus:ring-2 focus:ring-[#a3360a]/20 focus:border-[#a3360a] transition-all resize-none"></textarea>
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
                 </div>
 
                 <!-- Attachments -->
@@ -78,17 +78,17 @@
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Attachments</label>
 
                     <!-- Drag & Drop Zone -->
-                    <div id="drop-zone" class="border border-dashed border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50/30 group hover:border-[#a3360a]/30 hover:bg-slate-50/50 transition-all cursor-pointer relative">
+                    <div id="drop-zone" class="border border-dashed border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50/30 group hover:border-primary/30 hover:bg-slate-50/50 transition-all cursor-pointer relative">
                         <input type="file" id="res-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
 
-                        <div class="h-6 w-6 bg-orange-100/50 rounded-full flex items-center justify-center text-[#a3360a] mb-2 group-hover:scale-110 transition-transform">
+                        <div class="h-6 w-6 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         </div>
 
                         <p class="text-xs font-black text-slate-800">Drag & Drop files here</p>
                         <p class="text-[10px] font-bold text-slate-400 mt-1 mb-4">MP4, PDF, or JPG/PNG (Max 50MB)</p>
 
-                        <span class="px-5 py-2 border border-slate-200 text-slate-600 hover:border-[#a3360a] hover:text-[#a3360a] text-xs font-bold rounded-xl transition-all bg-white shadow-sm flex items-center gap-2">
+                        <span class="px-5 py-2 border border-slate-200 text-slate-600 hover:border-primary hover:text-primary text-xs font-bold rounded-xl transition-all bg-white shadow-sm flex items-center gap-2">
                             Browse Files
                         </span>
                     </div>
@@ -116,7 +116,7 @@
                 <!-- Footer Buttons -->
                 <div class="pt-4 flex items-center justify-end gap-4 border-t border-slate-100">
                     <button type="button" onclick="closeUploadModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
-                    <button type="submit" id="upload-submit-btn" class="px-6 py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-black rounded-xl transition-all shadow-md shadow-orange-700/10">
+                    <button type="submit" id="upload-submit-btn" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white text-xs font-black rounded-xl transition-all shadow-md shadow-primary/10">
                         Initialize Batch Upload
                     </button>
                 </div>
@@ -128,25 +128,21 @@
     <div id="delete-modal" class="fixed inset-0 z-[150] hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
-            <div class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-rose-500 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+            <div class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                 <div class="p-8">
                     <div class="flex gap-4">
-                        <div class="h-12 w-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shrink-0">
+                        <div class="h-12 w-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-xl font-bold text-slate-600 mb-2">Delete Resource?</h3>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Resource?</h3>
                             <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want to permanently remove this resource? This action cannot be undone.</p>
                             <div class="flex items-center gap-3">
-                                <button type="button" onclick="closeDeleteModal()" class="flex-1 h-12 border-2 border-emerald-500 text-emerald-500 rounded-xl font-extrabold text-[12px] hover:bg-emerald-50 transition-all">Cancel</button>
-                                <button type="button" id="confirm-delete-btn" class="flex-[1.5] h-12 bg-rose-500 text-white rounded-xl font-extrabold text-[12px] shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all">Yes, Delete Resource</button>
+                                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
+                                <button type="button" id="confirm-delete-btn" class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">Yes, Delete Resource</button>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="px-8 py-3 bg-slate-50 flex items-center gap-2">
-                    <svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authenticated as Admin</span>
                 </div>
             </div>
         </div>
@@ -194,14 +190,14 @@
                 <!-- Right Side: Action & Info -->
                 <div class="w-full md:w-[240px] space-y-4">
                     <!-- Download Button -->
-                    <a id="view-download-btn" href="#" download class="w-full py-3 bg-[#a3360a] hover:bg-[#852b08] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all">
+                    <a id="view-download-btn" href="#" download class="w-full py-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         Download Resource
                     </a>
 
                     <!-- Resource Author -->
                     <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100 flex items-center gap-3">
-                        <div class="h-9 w-9 bg-orange-100/50 text-[#a3360a] rounded-xl flex items-center justify-center font-bold text-xs">
+                        <div class="h-9 w-9 bg-orange-100/50 text-primary rounded-xl flex items-center justify-center font-bold text-xs">
                             A
                         </div>
                         <div>
@@ -321,7 +317,7 @@
                         </div>
 
                         <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
-                            <a href="javascript:void(0)" onclick="openViewModal(${res.id})" class="text-[10px] font-bold text-[#a3360a] hover:underline flex items-center gap-1">
+                            <a href="javascript:void(0)" onclick="openViewModal(${res.id})" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 View
                             </a>
@@ -349,7 +345,7 @@
 
             for (let i = 1; i <= totalPages; i++) {
                 paginationHTML += `
-                    <button onclick="changePage(${i})" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${currentPage === i ? 'bg-[#a3360a] border-transparent text-white shadow-sm shadow-orange-700/10' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${i}</button>
+                    <button onclick="changePage(${i})" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${currentPage === i ? 'bg-primary border-transparent text-white shadow-sm shadow-primary/10' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${i}</button>
                 `;
             }
 
@@ -419,10 +415,12 @@
                 const response = await fetch(API_RESOURCES_URL, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     },
-                    body: formData
+                    body: formData,
+                    credentials: 'same-origin'
                 });
 
                 const result = await response.json();
@@ -467,9 +465,11 @@
                 const response = await fetch(`${API_RESOURCES_URL}/${pendingDeleteId}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
-                    }
+                    },
+                    credentials: 'same-origin'
                 });
                 const result = await response.json();
                 if (result.status === 'success') {
@@ -532,17 +532,6 @@
             document.getElementById('view-modal').classList.replace('flex', 'hidden');
         }
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right-10 duration-500 ${type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white'}`;
-            toast.innerHTML = `
-                <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-[#a3360a]' : 'bg-rose-400'}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
-                </div>
-                <p class="text-sm font-bold">${message}</p>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-10'); setTimeout(() => toast.remove(), 500); }, 3000);
-        }
+        // Using global showToast from layout
     </script>
 @endsection
