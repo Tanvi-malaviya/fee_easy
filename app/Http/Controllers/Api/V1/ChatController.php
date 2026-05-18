@@ -16,7 +16,7 @@ class ChatController extends Controller
      */
     public function send(Request $request)
     {
-        $user = $request->user();
+        $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         
         // Determine receiver_type based on sender
         $receiverType = $request->input('receiver_type');
@@ -61,25 +61,44 @@ class ChatController extends Controller
 
         $message->load('sender', 'receiver');
 
+        // Trigger real-time FCM push notification to receiver mobile phone
+        if ($message->receiver && !empty($message->receiver->fcm_token)) {
+            $senderName = $user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone';
+            (new \App\Services\FCMService())->sendToUser(
+                $message->receiver,
+                "New message from " . $senderName,
+                $message->message,
+                [
+                    'chat_id' => $message->id,
+                    'sender_id' => $user->id,
+                    'sender_type' => class_basename($user),
+                ]
+            );
+        }
+
         $formattedMessage = [
             'id' => $message->id,
             'sender_id' => $message->sender_id,
+            'sender_type' => class_basename($message->sender_type),
             'receiver_id' => $message->receiver_id,
+            'receiver_type' => class_basename($message->receiver_type),
             'message' => $message->message,
             'type' => $message->type,
             'attachment' => $message->attachment,
+            'read_at' => $message->read_at,
+            'received_at' => $message->received_at,
             'created_at' => $message->created_at,
             'updated_at' => $message->updated_at,
             'sender' => $message->sender ? [
                 'id' => $message->sender->id,
-                'name' => $message->sender->name,
-                'logo' => $message->sender->logo ?? null,
+                'name' => $message->sender->name ?? $message->sender->full_name ?? $message->sender->institute_name ?? 'Unknown',
+                'logo' => $message->sender->logo ?? $message->sender->profile_image ?? null,
                 'type' => class_basename($message->sender_type)
             ] : null,
             'receiver' => $message->receiver ? [
                 'id' => $message->receiver->id,
-                'name' => $message->receiver->name,
-                'logo' => $message->receiver->logo ?? null,
+                'name' => $message->receiver->name ?? $message->receiver->full_name ?? $message->receiver->institute_name ?? 'Unknown',
+                'logo' => $message->receiver->logo ?? $message->receiver->profile_image ?? null,
                 'type' => class_basename($message->receiver_type)
             ] : null
         ];
@@ -96,7 +115,7 @@ class ChatController extends Controller
      */
     public function list(Request $request)
     {
-        $user = $request->user();
+        $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         $userClass = get_class($user);
 
         // Get the latest message for every distinct conversation
@@ -106,11 +125,13 @@ class ChatController extends Controller
         $messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($user, $userClass) {
                 $query->where('sender_id', $user->id)
-                      ->where('sender_type', $userClass);
+                      ->where('sender_type', $userClass)
+                      ->where('deleted_by_sender', false);
             })
             ->orWhere(function($query) use ($user, $userClass) {
                 $query->where('receiver_id', $user->id)
-                      ->where('receiver_type', $userClass);
+                      ->where('receiver_type', $userClass)
+                      ->where('deleted_by_receiver', false);
             })
             ->orderBy('created_at', 'desc')
             ->get();
@@ -135,23 +156,22 @@ class ChatController extends Controller
             if (!isset($conversations[$key])) {
                 $conversations[$key] = [
                     'my_id' => $user->id,
-                    'my_name' => $user->name ?? 'Unknown',
-                    'my_logo' => $user->logo ?? null,
                     'my_type' => class_basename($userClass),
                     'user_id' => $other_id,
+                    'user_type' => $other_type,
                     'user_name' => $other_name,
                     'user_logo' => $other_logo,
-                    'user_type' => $other_type,
                     'latest_message' => $msg->message,
                     'type' => $msg->type,
                     'created_at' => $msg->created_at,
-                    'unread_count' => 0 // To be implemented properly via count queries later
+                    'unread_count' => ChatMessage::where('sender_id', $other_id)
+                        ->where('sender_type', $msg->sender_type == $userClass ? $msg->receiver_type : $msg->sender_type)
+                        ->where('receiver_id', $user->id)
+                        ->where('receiver_type', $userClass)
+                        ->where('deleted_by_receiver', false)
+                        ->whereNull('read_at')
+                        ->count(),
                 ];
-            }
-            
-            // Count unread if this message was sent TO the user and is NOT read
-            if ($msg->receiver_id == $user->id && $msg->receiver_type == $userClass && $msg->read_at == null) {
-                $conversations[$key]['unread_count']++;
             }
         }
 
@@ -166,7 +186,7 @@ class ChatController extends Controller
      */
     public function messages(Request $request, $user_id)
     {
-        $user = $request->user();
+        $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         $userClass = get_class($user);
         
         $otherType = $request->query('type'); // 'Staff', 'Student', 'Institute', 'StudentParent'
@@ -186,14 +206,16 @@ class ChatController extends Controller
                 $query->where('sender_id', $user->id)
                       ->where('sender_type', $userClass)
                       ->where('receiver_id', $user_id)
-                      ->where('receiver_type', $otherClass);
+                      ->where('receiver_type', $otherClass)
+                      ->where('deleted_by_sender', false);
             })
             ->orWhere(function($query) use ($user, $userClass, $user_id, $otherClass) {
                 // Sent by other, received by me
                 $query->where('sender_id', $user_id)
                       ->where('sender_type', $otherClass)
                       ->where('receiver_id', $user->id)
-                      ->where('receiver_type', $userClass);
+                      ->where('receiver_type', $userClass)
+                      ->where('deleted_by_receiver', false);
             })
             ->orderBy('created_at', 'asc')
             ->get();
@@ -210,10 +232,14 @@ class ChatController extends Controller
             return [
                 'id' => $msg->id,
                 'sender_id' => $msg->sender_id,
+                'sender_type' => class_basename($msg->sender_type),
                 'receiver_id' => $msg->receiver_id,
+                'receiver_type' => class_basename($msg->receiver_type),
                 'message' => $msg->message,
                 'type' => $msg->type,
                 'attachment' => $msg->attachment,
+                'read_at' => $msg->read_at,
+                'received_at' => $msg->received_at,
                 'created_at' => $msg->created_at,
                 'updated_at' => $msg->updated_at,
                 'sender' => $msg->sender ? [
@@ -238,28 +264,104 @@ class ChatController extends Controller
     }
     
     /**
-     * Delete a message
+     * Clear / Delete an entire conversation between current user and another user
      */
-    public function destroy(Request $request, $id)
+    public function clearConversation(Request $request)
     {
-        $user = $request->user();
+        $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         $userClass = get_class($user);
 
-        $message = ChatMessage::findOrFail($id);
+        $request->validate([
+            'user_id' => 'required|integer',
+            'user_type' => 'required|string'
+        ]);
 
-        // Allow deletion only if the user is the sender of the message
-        if ($message->sender_id !== $user->id || $message->sender_type !== $userClass) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You are not authorized to delete this message.'
-            ], 403);
-        }
+        $otherId = $request->input('user_id');
+        $otherType = $request->input('user_type');
+        $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class : 
+                     ($otherType == 'Student' ? \App\Models\Student::class : 
+                     ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
 
-        $message->delete();
+        // 1. Where I am the sender, mark deleted_by_sender = true
+        ChatMessage::where('sender_id', $user->id)
+              ->where('sender_type', $userClass)
+              ->where('receiver_id', $otherId)
+              ->where('receiver_type', $otherClass)
+              ->update(['deleted_by_sender' => true]);
+
+        // 2. Where I am the receiver, mark deleted_by_receiver = true
+        ChatMessage::where('sender_id', $otherId)
+              ->where('sender_type', $otherClass)
+              ->where('receiver_id', $user->id)
+              ->where('receiver_type', $userClass)
+              ->update(['deleted_by_receiver' => true]);
+
+        // 3. Clean up permanent deletion if both users have deleted the conversation
+        ChatMessage::where('deleted_by_sender', true)
+              ->where('deleted_by_receiver', true)
+              ->delete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Message deleted successfully.'
+            'message' => 'Conversation deleted successfully.'
+        ]);
+    }
+
+    /**
+     * Mark a message as read and broadcast acknowledgment back to sender
+     */
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'message_id' => 'required|integer|exists:chat_messages,id'
+        ]);
+
+        $message = ChatMessage::findOrFail($request->message_id);
+
+        if (empty($message->read_at)) {
+            $message->read_at = now();
+            $message->save();
+
+            // Broadcast back to the SENDER of the message that it has been read/received
+            broadcast(new \App\Events\MessageRead($message))->toOthers();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message marked as read.',
+            'data' => [
+                'id' => $message->id,
+                'read_at' => $message->read_at,
+            ]
+        ]);
+    }
+
+    /**
+     * Mark a message as received/delivered (device background receipt)
+     */
+    public function markAsReceived(Request $request)
+    {
+        $request->validate([
+            'message_id' => 'required|integer|exists:chat_messages,id'
+        ]);
+
+        $message = ChatMessage::findOrFail($request->message_id);
+
+        if (empty($message->received_at)) {
+            $message->received_at = now();
+            $message->save();
+
+            // Broadcast back to the SENDER of the message that it has been delivered/received
+            broadcast(new \App\Events\MessageReceived($message))->toOthers();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message marked as received.',
+            'data' => [
+                'id' => $message->id,
+                'received_at' => $message->received_at,
+            ]
         ]);
     }
 }

@@ -206,6 +206,9 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/chats/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list'])->name('chats.list');
                 Route::get('/chats/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages'])->name('chats.messages');
                 Route::post('/chats/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send'])->name('chats.send');
+                Route::post('/chats/mark-read', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsRead'])->name('chats.mark-read');
+                Route::post('/chats/mark-received', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsReceived'])->name('chats.mark-received');
+                Route::delete('/chats/conversation', [\App\Http\Controllers\Api\V1\ChatController::class, 'clearConversation'])->name('chats.clear');
                 Route::get('/chats/contacts', function() {
                     $institute = auth('institute')->user();
                     

@@ -334,7 +334,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list']);
             Route::get('/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages']);
             Route::post('/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send']);
-            Route::delete('/{id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'destroy']);
+            Route::post('/mark-read', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsRead']);
+            Route::post('/mark-received', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsReceived']);
+            Route::delete('/conversation', [\App\Http\Controllers\Api\V1\ChatController::class, 'clearConversation']);
         });
 
         // Community Routes

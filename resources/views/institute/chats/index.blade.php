@@ -79,6 +79,9 @@
                         <button class="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                         </button>
+                        <button onclick="clearCurrentConversation()" title="Delete entire conversation" class="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -174,12 +177,11 @@
         .listen('.MessageSent', (data) => {
             console.log('📬 NEW MESSAGE RECEIVED:', data);
             
-            // 1. If we are currently chatting with this person, show the message instantly
+            // 1. If we are currently chatting with this person, show the message instantly and mark as READ
             if (activeConversation && 
                 activeConversation.user_id == data.sender_id && 
                 activeConversation.user_type == data.sender_type) {
                 
-                // Add to our messages array
                 messages.push({
                     id: data.id,
                     sender_id: data.sender_id,
@@ -190,14 +192,107 @@
                     sender: data.sender
                 });
                 
-                // Refresh the chat window
                 renderMessages();
                 scrollToBottom();
+
+                // Automatically inform sender that I have read their message
+                markMessageAsRead(data.id);
+            } else {
+                // Not actively chatting, but device received it! Mark as RECEIVED (Delivered)
+                markMessageAsReceived(data.id);
             }
             
             // 2. Always refresh the sidebar to show the latest message preview and unread count
             fetchConversations();
+        })
+        .listen('.MessageReceived', (data) => {
+            console.log('📥 MESSAGE DELIVERED RECEIPT RECEIVED:', data);
+            messages.forEach(msg => {
+                if (msg.id == data.message_id) {
+                    msg.received_at = data.received_at;
+                }
+            });
+            renderMessages();
+        })
+        .listen('.MessageRead', (data) => {
+            console.log('👁️ MESSAGE READ RECEIPT RECEIVED:', data);
+            messages.forEach(msg => {
+                if (msg.id == data.message_id) {
+                    msg.read_at = data.read_at;
+                }
+            });
+            renderMessages();
+        })
+        .listen('.ChatDeleted', (data) => {
+            console.log('🗑️ CHAT DELETED RECEIPT RECEIVED:', data);
+            if (activeConversation && activeConversation.user_id == data.deleted_by_user_id && activeConversation.user_type == data.deleted_by_user_type) {
+                messages = [];
+                renderMessages();
+            }
+            fetchConversations();
         });
+
+    async function clearCurrentConversation() {
+        if (!activeConversation) return;
+        if (!confirm(`Are you sure you want to delete your entire conversation with ${activeConversation.user_name}? This cannot be undone.`)) return;
+        
+        try {
+            const response = await fetch('{{ route('institute.chats.clear') }}', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    user_id: activeConversation.user_id,
+                    user_type: activeConversation.user_type
+                })
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                messages = [];
+                renderMessages();
+                fetchConversations();
+            } else {
+                alert(result.message || 'Failed to delete conversation.');
+            }
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
+        }
+    }
+
+    async function markMessageAsRead(messageId) {
+        try {
+            await fetch('{{ route('institute.chats.mark-read') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN
+                },
+                body: JSON.stringify({ message_id: messageId })
+            });
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+        }
+    }
+
+    async function markMessageAsReceived(messageId) {
+        try {
+            await fetch('{{ route('institute.chats.mark-received') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN
+                },
+                body: JSON.stringify({ message_id: messageId })
+            });
+        } catch (error) {
+            console.error('Error marking message as received:', error);
+        }
+    }
 
     async function fetchConversations() {
         try {
@@ -284,9 +379,9 @@
                         <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
                             <p class="text-[13px] leading-snug">${msg.message}</p>
                         </div>
-                        <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                        <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1.5 px-1">
                             <span class="text-[8px] font-medium text-slate-400 opacity-70">${formatTime(msg.created_at)}</span>
-                            ${isMe ? `<svg class="w-2.5 h-2.5 text-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>` : ''}
+                            ${isMe ? (msg.read_at ? `<span class="text-[10px] text-blue-300 font-extrabold tracking-tighter" title="Read">✓✓</span>` : (msg.received_at ? `<span class="text-[10px] text-white font-extrabold tracking-tighter" title="Delivered">✓✓</span>` : `<span class="text-[10px] text-white/50 font-bold tracking-tighter" title="Sent">✓</span>`)) : ''}
                         </div>
                     </div>
                 </div>
