@@ -34,6 +34,7 @@ class Student extends Authenticatable
         'state',
         'country',
         'pincode',
+        'fcm_token',
     ];
 
     protected $hidden = [

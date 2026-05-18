@@ -32,6 +32,7 @@ class Institute extends Authenticatable
         'otp',
         'otp_expires_at',
         'email_verified_at',
+        'fcm_token',
     ];
 
     protected $hidden = [

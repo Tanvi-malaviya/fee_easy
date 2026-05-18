@@ -20,6 +20,7 @@ class StudentParent extends Authenticatable
         'password',
         'relation',
         'status',
+        'fcm_token',
     ];
 
     protected $hidden = [

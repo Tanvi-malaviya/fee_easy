@@ -23,6 +23,7 @@ class Staff extends Model
         'status',
         'profile_image',
         'institute_id',
+        'fcm_token',
     ];
 
     protected $appends = ['profile_url'];
