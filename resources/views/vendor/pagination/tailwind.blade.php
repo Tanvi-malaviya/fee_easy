@@ -49,7 +49,7 @@
                             </span>
                         </span>
                     @else
-                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center justify-center w-10 h-10 text-gray-500 bg-white rounded-xl shadow-sm hover:text-indigo-600 hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('pagination.previous') }}">
+                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center justify-center w-10 h-10 text-gray-500 bg-white rounded-xl shadow-sm hover:text-primary hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('pagination.previous') }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
                             </svg>
@@ -70,10 +70,10 @@
                             @foreach ($element as $page => $url)
                                 @if ($page == $paginator->currentPage())
                                     <span aria-current="page">
-                                        <span class="relative inline-flex items-center justify-center w-10 h-10 text-sm font-black text-white bg-indigo-600 rounded-xl shadow-lg shadow-indigo-600/30 cursor-default">{{ $page }}</span>
+                                        <span class="relative inline-flex items-center justify-center w-10 h-10 text-sm font-black text-white bg-primary rounded-xl shadow-lg shadow-primary/30 cursor-default">{{ $page }}</span>
                                     </span>
                                 @else
-                                    <a href="{{ $url }}" class="relative inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-500 bg-white rounded-xl shadow-sm hover:text-indigo-600 hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                    <a href="{{ $url }}" class="relative inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-500 bg-white rounded-xl shadow-sm hover:text-primary hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -83,7 +83,7 @@
 
                     {{-- Next Page Link --}}
                     @if ($paginator->hasMorePages())
-                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center justify-center w-10 h-10 text-gray-500 bg-white rounded-xl shadow-sm hover:text-indigo-600 hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('pagination.next') }}">
+                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center justify-center w-10 h-10 text-gray-500 bg-white rounded-xl shadow-sm hover:text-primary hover:scale-105 transition-all duration-200 active:scale-95" aria-label="{{ __('pagination.next') }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
                             </svg>

@@ -54,6 +54,7 @@ use App\Http\Controllers\Api\V1\PublicVerificationController;
 
 use App\Http\Controllers\Api\DemoRequestController;
 use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\V1\FCMTokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,9 @@ use App\Http\Controllers\Api\StaffController;
 Route::post('/book-demo', [DemoRequestController::class, 'store']);
 
 Route::prefix('v1')->group(function () {
+
+    // Mobile App FCM Device Registration
+    Route::middleware('auth:sanctum')->post('/fcm-token', [FCMTokenController::class, 'updateToken']);
 
     // Admin Auth Routes (Original)
     Route::prefix('auth')->group(function () {
