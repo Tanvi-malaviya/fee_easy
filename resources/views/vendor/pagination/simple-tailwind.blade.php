@@ -6,14 +6,14 @@
                 {!! __('pagination.previous') !!}
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-500 bg-white border border-gray-100 rounded-xl hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200 active:scale-95 shadow-sm">
+            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-500 bg-white border border-gray-100 rounded-xl hover:text-primary hover:bg-gray-50 transition-all duration-200 active:scale-95 shadow-sm">
                 {!! __('pagination.previous') !!}
             </a>
         @endif
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-500 bg-white border border-gray-100 rounded-xl hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200 active:scale-95 shadow-sm">
+            <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-500 bg-white border border-gray-100 rounded-xl hover:text-primary hover:bg-gray-50 transition-all duration-200 active:scale-95 shadow-sm">
                 {!! __('pagination.next') !!}
             </a>
         @else
