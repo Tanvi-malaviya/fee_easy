@@ -12,7 +12,7 @@ class AdminLayout extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($title = 'FeeEasy Panel')
+    public function __construct($title = 'Tuoora Admin')
     {
         $this->title = $title;
     }

@@ -8,7 +8,8 @@
     <meta http-equiv="Expires" content="0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'FeeEasy') }} - Institute Panel</title>
+    <title>Tuoora Institute Panel</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
