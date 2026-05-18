@@ -14,13 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/super-debug', function () {
+    $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+    $stmt = $pdo->query('SELECT id, email FROM users WHERE id = 1');
+    $rawUser = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    return response()->json([
+        'eloquent_user_1' => \App\Models\User::find(1)->email ?? 'null',
+        'raw_db_user_1' => $rawUser['email'] ?? 'null',
+        'auth_user' => auth()->check() ? auth()->user()->email : 'Not logged in',
+        'auth_id' => auth()->id(),
+        'session_id' => session()->getId(),
+        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+    ]);
 });
 
 // Admin Web Panel Routes (Jetstream/Auth)
 Route::middleware(array_filter([
-    'auth:sanctum',
+    'auth:web',
     config('jetstream.auth_session'),
     'verified',
 ]))->group(function () {

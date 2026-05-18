@@ -24,7 +24,7 @@
                 <div class="bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
                     <div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Present</span>
-                        <span class="text-base font-black text-[#a3360a]"><span id="summary-present">0</span></span>
+                        <span class="text-base font-black text-primary"><span id="summary-present">0</span></span>
                     </div>
                     <div class="h-6 w-px bg-slate-100"></div>
                     <div>

@@ -6,20 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'FeeEasy') }}</title>
+    <title>{{ config('app.name', 'FeeEasy') }} - Secure Gateway</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     <style>
+        :root {
+            --primary-color: #ff6c00;
+            --primary-light: rgba(255, 108, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .bg-primary { background-color: var(--primary-color) !important; }
+        .text-primary { color: var(--primary-color) !important; }
+        .border-primary { border-color: var(--primary-color) !important; }
+
         .auth-bg {
             background: 
-                radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 0% 0%, rgba(255, 108, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 108, 0, 0.12) 0%, transparent 50%),
                 #f8fafc;
             min-height: 100vh;
             display: flex;
@@ -27,54 +40,49 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .auth-card {
             width: 100%;
             max-width: 440px;
-            background: white;
-            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.75rem;
             box-shadow: 
-                0 20px 25px -5px rgba(0, 0, 0, 0.03),
-                0 10px 10px -5px rgba(0, 0, 0, 0.02),
-                0 0 0 1px rgba(0, 0, 0, 0.03);
+                0 25px 50px -12px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 108, 0, 0.1);
             overflow: hidden;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 10;
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .input-standard {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-              padding: 2px;
-        }
-
-        .input-standard:focus {
-            transform: translateY(-1px);
-          }
     </style>
 </head>
 
-<body class="font-sans text-gray-900 antialiased bg-slate-50">
+<body class="font-sans text-slate-900 antialiased bg-slate-50">
     <div class="auth-bg">
-        <div class="auth-card p-10 sm:p-12">
+        <!-- Glow Orbs -->
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="auth-card p-8 sm:p-12">
+            <!-- Top Gradient Bar -->
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#ff6c00] to-orange-300"></div>
+
             <!-- Branding Header -->
-            <div class="flex flex-col items-center mb-10 text-center">
-                <a href="/" class="flex flex-col items-center gap-4 group transition-transform hover:scale-105 active:scale-95">
-                    <div class="w-16 h-16 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-2xl shadow-indigo-500/20 border border-gray-100 shrink-0">
-                        <x-application-logo class="w-full h-full object-contain" />
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none uppercase">
-                            {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
-                        </h1>
-                        <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.4em] mt-2 translate-x-[0.2em]">
-                            Management System
-                        </p>
-                    </div>
+            <div class="flex flex-col items-center mb-8 text-center">
+                <a href="/" class="flex flex-col items-center group transition-transform hover:scale-105 active:scale-95">
+                    <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-10 w-auto object-contain mb-3.5" />
+                    <span class="text-[10px] font-black tracking-[0.3em] text-[#ff6c00] uppercase px-3.5 py-1 bg-orange-50 rounded-full border border-orange-100/50 shadow-sm">
+                        Management Portal
+                    </span>
                 </a>
             </div>
 
@@ -82,23 +90,7 @@
             <div class="w-full">
                 {{ $slot }}
             </div>
-
-            <!-- Footer Branding -->
-            <!-- <div class="mt-12 pt-8 border-t border-gray-50 flex flex-col items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure Administrative Gateway</span>
-                </div>
-                <p class="text-[9px] text-gray-300 font-bold uppercase tracking-[0.15em]">
-                    &copy; {{ date('Y') }} {{ App\Models\SystemSetting::get('site_name', 'FeeEasy') }}
-                </p>
-            </div> -->
         </div>
-
-        <!-- Support Link -->
-        <!-- <p class="mt-8 text-xs text-gray-400 font-medium tracking-wide">
-            Need assistance? <a href="#" class="text-indigo-600 hover:text-indigo-700 font-bold underline underline-offset-4 decoration-indigo-200">Contact Support</a>
-        </p> -->
     </div>
 </body>
 

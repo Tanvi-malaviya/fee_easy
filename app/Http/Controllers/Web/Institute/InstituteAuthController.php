@@ -53,11 +53,25 @@ class InstituteAuthController extends Controller
             }
 
             // If logged in but NOT verified (e.g. from a manual DB entry or interrupted flow)
-            // We should ideally send them an OTP here or let them see a "Verify OTP" step
-            // For now, let's allow them to see Step 2 if we have session data, else Step 1
-            if (Session::has('registration_data')) {
-                return view('institute.auth.register', ['initialStep' => 2]);
+            if (!Session::has('registration_data')) {
+                Session::put('registration_data', [
+                    'institute_name' => $user->institute_name ?? 'Institute',
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => $user->password,
+                ]);
+                $otp = rand(100000, 999999);
+                Session::put('registration_otp', $otp);
+                Session::put('registration_otp_expires_at', Carbon::now()->addMinutes(10));
+                Session::save();
+                try {
+                    Mail::to($user->email)->send(new OtpMail($otp));
+                } catch (\Exception $e) {
+                    Log::error('Registration Mail Error: ' . $e->getMessage());
+                }
             }
+
+            return view('institute.auth.register', ['initialStep' => 2]);
         }
 
         // Force reset registration flow on manual page refresh (GET request)
@@ -153,18 +167,26 @@ class InstituteAuthController extends Controller
                 ], 400);
             }
 
-            // OTP Valid - Now create the record in database
+            // OTP Valid - Now create or update the record in database
             $data = Session::get('registration_data');
             
-            $institute = Institute::create([
-                'institute_name' => $data['institute_name'],
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'phone' => '', 
-                'password' => $data['password'],
-                'email_verified_at' => now(),
-                'status' => 'active',
-            ]);
+            $institute = Institute::where('email', $data['email'])->first();
+            if ($institute) {
+                $institute->update([
+                    'email_verified_at' => now(),
+                    'status' => 'active',
+                ]);
+            } else {
+                $institute = Institute::create([
+                    'institute_name' => $data['institute_name'],
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone' => '', 
+                    'password' => $data['password'],
+                    'email_verified_at' => now(),
+                    'status' => 'active',
+                ]);
+            }
 
             // Clear session
             Session::forget(['registration_data', 'registration_otp', 'registration_otp_expires_at']);

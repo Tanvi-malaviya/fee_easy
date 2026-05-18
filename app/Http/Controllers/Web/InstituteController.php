@@ -109,6 +109,12 @@ class InstituteController extends Controller
             'staff' => function ($q) {
                 $q->with(['role', 'department'])->latest();
             },
+            'staffAttendances' => function ($q) {
+                $q->with('staff.role', 'staff.department')->latest('date');
+            },
+            'staffSalaries' => function ($q) {
+                $q->with('staff.role', 'staff.department')->latest('payment_date');
+            },
             'batches' => function ($q) {
                 $q->latest();
             },
@@ -334,10 +340,10 @@ class InstituteController extends Controller
         ]);
 
         $stats = [
-            'students_count'   => $batch->students->count(),
-            'homework_count'   => $batch->homeworks->count(),
+            'students_count' => $batch->students->count(),
+            'homework_count' => $batch->homeworks->count(),
             'attendance_count' => $batch->attendance->groupBy('date')->count(),
-            'resources_count'  => $batch->resources->count(),
+            'resources_count' => $batch->resources->count(),
         ];
 
         return view('institutes.batch_show', compact('institute', 'batch', 'stats'));
