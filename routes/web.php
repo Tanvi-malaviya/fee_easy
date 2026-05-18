@@ -35,9 +35,10 @@ Route::middleware(array_filter([
     config('jetstream.auth_session'),
     'verified',
 ]))->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('admin')->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
+
         // Institutes Management
         Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
         Route::post('institutes/{institute}/status', [App\Http\Controllers\Web\InstituteController::class, 'updateStatus'])->name('institutes.status');
