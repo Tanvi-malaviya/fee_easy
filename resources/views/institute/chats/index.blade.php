@@ -3,28 +3,16 @@
 @section('content')
     <div class="max-w-[1600px] mx-auto">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-3">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Messages</h1>
-                <p class="text-sm text-slate-500 font-medium">Connect with students and parents</p>
+                <p class="text-xs text-slate-500 font-medium">Connect with students and parents</p>
             </div>
-            <div class="flex items-center gap-3">
-                <div
-                    class="h-10 w-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-                <button
-                    class="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
-                    New Broadcast
-                </button>
-            </div>
+
         </div>
 
         <!-- Main Chat Interface -->
-        <div class="grid grid-cols-12 gap-6 h-[calc(100vh-12rem)] min-h-[600px]">
+        <div class="grid grid-cols-12 gap-2 h-[calc(100vh-13.5rem)] min-h-[441px]">
 
             <!-- Sidebar: Conversation List -->
             <div
@@ -84,21 +72,11 @@
                             </div>
                             <div>
                                 <h3 id="active-user-name" class="text-sm font-bold text-slate-800">User Name</h3>
-                                <div class="flex items-center gap-1.5">
-                                    <div class="h-1.5 w-1.5 bg-emerald-500 rounded-full"></div>
-                                    <span id="active-user-status"
-                                        class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Online</span>
-                                </div>
+                               
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button
-                                class="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                            </button>
+                           
                             <button onclick="clearCurrentConversation()" title="Delete entire conversation"
                                 class="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,8 +135,8 @@
                                 class="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 text-slate-600 outline-none">
                             <button type="submit" id="send-btn"
                                 class="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/10 hover:scale-105 active:scale-95 transition-all">
-                                <svg class="w-5 h-5 transform rotate-90" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                                 </svg>
                             </button>
                         </form>
@@ -173,29 +151,30 @@
         class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300"
             id="new-chat-content">
-            <div class="p-6 border-b border-slate-50 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-slate-800">Start New Chat</h3>
+            <div class="p-4 py-3 border-b border-slate-50 flex items-center justify-between">
+                <h3 class="text-base font-bold text-slate-800">Start New Chat</h3>
                 <button onclick="closeNewChatModal()" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div class="p-4 bg-slate-50">
+            <div class="p-3 bg-slate-50">
                 <div class="relative">
                     <input type="text" id="contact-search" placeholder="Search students or staff..."
-                        class="w-full pl-10 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none">
-                    <svg class="w-4 h-4 absolute left-3.5 top-4 text-slate-400" fill="none" stroke="currentColor"
+                        class="w-full pl-9 pr-4 py-2 bg-white border border-slate-100 rounded-xl text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none">
+                    <svg class="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
             </div>
-            <div id="contact-list" class="max-h-[400px] overflow-y-auto custom-scrollbar divide-y divide-slate-50">
+            <div id="contact-list" class="max-h-[300px] overflow-y-auto custom-scrollbar divide-y divide-slate-50">
                 <!-- Contacts will be injected here -->
             </div>
         </div>
+    </div>
     <!-- Share Location Modal -->
     <div id="location-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="location-modal-content">
@@ -252,6 +231,33 @@
         </div>
     </div>
 
+    <!-- Delete Conversation Confirmation Modal -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300 border-t-4 border-primary" id="delete-confirm-modal-content">
+            <div class="p-4 border-b border-slate-50 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-800">Delete Conversation</h3>
+                <button type="button" onclick="closeDeleteConfirmModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Are you sure you want to delete your entire conversation with <span id="delete-confirm-user-name" class="font-bold text-slate-800"></span>? This action cannot be undone.
+                </p>
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" onclick="closeDeleteConfirmModal()" class="flex-1 py-2 bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="confirmClearConversation()" class="flex-1 py-2 bg-primary text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/10">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
@@ -262,16 +268,19 @@
 
             // Initialize Echo
             window.Pusher = Pusher;
+
+            const isLocal = {{ config('app.env') === 'local' ? 'true' : 'false' }};
+
             window.Echo = new Echo({
                 broadcaster: 'pusher',
                 key: '{{ config('broadcasting.connections.pusher.key') }}',
                 cluster: '{{ config('broadcasting.connections.pusher.options.cluster', 'mt1') }}',
                 wsHost: window.location.hostname,
-                wsPort: window.location.protocol === 'https:' ? 443 : 80,
-                wssPort: window.location.protocol === 'https:' ? 443 : 80,
-                wsPath: '/app',
-                forceTLS: window.location.protocol === 'https:',
-                encrypted: window.location.protocol === 'https:',
+                wsPort: isLocal ? {{ config('broadcasting.connections.pusher.options.port', 6001) }} : (window.location.protocol === 'https:' ? 443 : 80),
+                wssPort: isLocal ? {{ config('broadcasting.connections.pusher.options.port', 6001) }} : (window.location.protocol === 'https:' ? 443 : 80),
+                wsPath: isLocal ? '' : '/app',
+                forceTLS: isLocal ? {{ config('broadcasting.connections.pusher.options.scheme', 'http') === 'https' ? 'true' : 'false' }} : (window.location.protocol === 'https:'),
+                encrypted: isLocal ? {{ config('broadcasting.connections.pusher.options.scheme', 'http') === 'https' ? 'true' : 'false' }} : (window.location.protocol === 'https:'),
                 disableStats: true,
                 enabledTransports: ['ws', 'wss'],
                 authEndpoint: '/broadcasting/auth',
@@ -289,6 +298,27 @@
             let currentConversations = [];
             let activeConversation = null;
             let messages = [];
+
+            // Listen for search input on conversation list
+            document.getElementById('chat-search').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                renderConversationList(searchTerm);
+            });
+
+            let allContacts = [];
+            // Listen for search input on contact list inside new chat modal
+            document.getElementById('contact-search').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (!searchTerm) {
+                    renderContacts(allContacts);
+                    return;
+                }
+                const filtered = allContacts.filter(c => 
+                    c.name.toLowerCase().includes(searchTerm) || 
+                    c.type.toLowerCase().includes(searchTerm)
+                );
+                renderContacts(filtered);
+            });
 
             // Debug: Listen for all events on this channel
             window.Echo.private('chat.Institute.' + INSTITUTE_ID)
@@ -346,15 +376,24 @@
                 .listen('.ChatDeleted', (data) => {
                     console.log('🗑️ CHAT DELETED RECEIPT RECEIVED:', data);
                     if (activeConversation && activeConversation.user_id == data.deleted_by_user_id && activeConversation.user_type == data.deleted_by_user_type) {
+                        activeConversation = null;
                         messages = [];
                         renderMessages();
+                        document.getElementById('active-chat').classList.add('hidden');
+                        document.getElementById('chat-empty-state').classList.remove('hidden');
                     }
                     fetchConversations();
                 });
 
-            async function clearCurrentConversation() {
+            function clearCurrentConversation() {
                 if (!activeConversation) return;
-                if (!confirm(`Are you sure you want to delete your entire conversation with ${activeConversation.user_name}? This cannot be undone.`)) return;
+                document.getElementById('delete-confirm-user-name').innerText = activeConversation.user_name;
+                openDeleteConfirmModal();
+            }
+
+            async function confirmClearConversation() {
+                if (!activeConversation) return;
+                closeDeleteConfirmModal();
 
                 try {
                     const response = await fetch('/api/v1/chat/conversation', {
@@ -371,8 +410,11 @@
                     });
                     const result = await response.json();
                     if (result.status === 'success') {
+                        activeConversation = null;
                         messages = [];
                         renderMessages();
+                        document.getElementById('active-chat').classList.add('hidden');
+                        document.getElementById('chat-empty-state').classList.remove('hidden');
                         fetchConversations();
                     } else {
                         alert(result.message || 'Failed to delete conversation.');
@@ -422,21 +464,47 @@
                     const result = await response.json();
                     if (result.status === 'success') {
                         currentConversations = result.data;
-                        renderConversationList();
+                        const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
+                        renderConversationList(searchTerm);
                     }
                 } catch (error) {
                     console.error('Error fetching conversations:', error);
                 }
             }
 
-            function renderConversationList() {
+            function getLatestMessagePreview(conv) {
+                if (conv.type === 'text') {
+                    return conv.latest_message || '';
+                }
+                switch (conv.type) {
+                    case 'image': return '📷 Photo';
+                    case 'video': return '🎥 Video';
+                    case 'document': return '📄 Document';
+                    case 'audio': return '🎵 Audio';
+                    case 'location': return '📍 Location';
+                    case 'contact': return '👤 Contact';
+                    default: return conv.latest_message || '';
+                }
+            }
+
+            function renderConversationList(searchTerm = '') {
                 const list = document.getElementById('conversation-list');
-                if (currentConversations.length === 0) {
-                    list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">No conversations yet.</div>';
+                
+                // Filter conversations based on search term
+                const filteredConversations = currentConversations.filter(conv => {
+                    return conv.user_name.toLowerCase().includes(searchTerm);
+                });
+
+                if (filteredConversations.length === 0) {
+                    if (currentConversations.length === 0) {
+                        list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">No conversations yet.</div>';
+                    } else {
+                        list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">No conversations found.</div>';
+                    }
                     return;
                 }
 
-                list.innerHTML = currentConversations.map(conv => `
+                list.innerHTML = filteredConversations.map(conv => `
                     <div onclick="selectConversation('${conv.user_id}', '${conv.user_type}', '${conv.user_name}')" 
                         class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${activeConversation && activeConversation.user_id == conv.user_id && activeConversation.user_type == conv.user_type ? 'bg-orange-50/50 border-r-4 border-primary' : ''}">
                         <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">
@@ -447,7 +515,7 @@
                                 <h4 class="text-sm font-bold text-slate-800 truncate">${conv.user_name}</h4>
                                 <span class="text-[10px] font-medium text-slate-400">${formatTime(conv.created_at)}</span>
                             </div>
-                            <p class="text-xs text-slate-500 truncate">${conv.latest_message}</p>
+                            <p class="text-xs text-slate-500 truncate flex items-center gap-1">${getLatestMessagePreview(conv)}</p>
                         </div>
                         ${conv.unread_count > 0 ? `<div class="h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">${conv.unread_count}</div>` : ''}
                     </div>
@@ -462,7 +530,8 @@
                 document.getElementById('active-user-name').innerText = userName;
                 document.getElementById('active-user-avatar').innerText = userName.substring(0, 1);
 
-                renderConversationList(); // Update active class
+                const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
+                renderConversationList(searchTerm); // Update active class
                 fetchMessages(userId, userType);
             }
 
@@ -594,9 +663,29 @@
                                 <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
                                     ${renderMessageContent(msg, isMe)}
                                 </div>
-                                <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1.5 px-1">
-                                    <span class="text-[8px] font-medium text-slate-400 opacity-70">${formatTime(msg.created_at)}</span>
-                                    ${isMe ? (msg.read_at ? `<span class="text-[10px] text-blue-300 font-extrabold tracking-tighter" title="Read">✓✓</span>` : (msg.received_at ? `<span class="text-[10px] text-white font-extrabold tracking-tighter" title="Delivered">✓✓</span>` : `<span class="text-[10px] text-white/50 font-bold tracking-tighter" title="Sent">✓</span>`)) : ''}
+                                <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                                    <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
+                                    ${isMe ? (msg.read_at ? `
+                                        <span class="text-sky-500 flex items-center shrink-0" title="Read">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    ` : (msg.received_at ? `
+                                        <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    ` : `
+                                        <span class="text-slate-400 flex items-center shrink-0" title="Sent">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    `)) : ''}
                                 </div>
                             </div>
                         </div>
@@ -677,6 +766,7 @@
             function closeNewChatModal() {
                 const modal = document.getElementById('new-chat-modal');
                 const content = document.getElementById('new-chat-content');
+                document.getElementById('contact-search').value = '';
                 content.classList.add('scale-95', 'opacity-0');
                 content.classList.remove('scale-100', 'opacity-100');
                 setTimeout(() => {
@@ -693,27 +783,36 @@
                     const response = await fetch('/api/v1/chat/contacts', {
                         headers: { 'Accept': 'application/json' }
                     });
-                    const contacts = await response.json();
-
-                    list.innerHTML = contacts.map(c => `
-                        <div onclick="startChat('${c.id}', '${c.type}', '${c.name}')" class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100">
-                                    ${c.name.substring(0, 1)}
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-800">${c.name}</h4>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${c.type}</span>
-                                </div>
-                            </div>
-                            <div class="h-8 w-8 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                            </div>
-                        </div>
-                    `).join('');
+                    allContacts = await response.json();
+                    renderContacts(allContacts);
                 } catch (error) {
                     console.error('Error fetching contacts:', error);
+                    list.innerHTML = '<div class="p-8 text-center text-rose-500 text-xs font-medium">Failed to load contacts.</div>';
                 }
+            }
+
+            function renderContacts(contacts) {
+                const list = document.getElementById('contact-list');
+                if (contacts.length === 0) {
+                    list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">No contacts found</div>';
+                    return;
+                }
+                list.innerHTML = contacts.map(c => `
+                    <div onclick="startChat('${c.id}', '${c.type}', '${c.name}')" class="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs">
+                                ${c.name.substring(0, 1)}
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 leading-tight">${c.name}</h4>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.type}</span>
+                            </div>
+                        </div>
+                        <div class="h-6 w-6 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        </div>
+                    </div>
+                `).join('');
             }
 
             function startChat(userId, type, name) {
@@ -795,6 +894,29 @@
             function closeContactModal() {
                 const modal = document.getElementById('contact-modal');
                 const content = document.getElementById('contact-modal-content');
+                content.classList.add('scale-95', 'opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+
+            // Delete Confirm Modals
+            function openDeleteConfirmModal() {
+                const modal = document.getElementById('delete-confirm-modal');
+                const content = document.getElementById('delete-confirm-modal-content');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeDeleteConfirmModal() {
+                const modal = document.getElementById('delete-confirm-modal');
+                const content = document.getElementById('delete-confirm-modal-content');
                 content.classList.add('scale-95', 'opacity-0');
                 content.classList.remove('scale-100', 'opacity-100');
                 setTimeout(() => {
