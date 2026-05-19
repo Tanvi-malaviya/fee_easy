@@ -32,7 +32,7 @@ class ChatController extends Controller
         }
 
         $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
-        
+
         // Determine receiver_type based on sender
         $receiverType = $request->input('receiver_type');
         $receiverTable = 'parents';
@@ -86,10 +86,25 @@ class ChatController extends Controller
         // Trigger real-time FCM push notification to receiver mobile phone
         if ($message->receiver && !empty($message->receiver->fcm_token)) {
             $senderName = $user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone';
+            
+            // Set descriptive body for non-text messages
+            $body = $message->message;
+            if ($message->type !== 'text') {
+                $body = match ($message->type) {
+                    'image' => '📷 Sent an image',
+                    'video' => '🎥 Sent a video',
+                    'document' => '📄 Sent a document',
+                    'audio' => '🎵 Sent an audio message',
+                    'location' => '📍 Shared a location',
+                    'contact' => '👤 Shared a contact',
+                    default => 'New message',
+                };
+            }
+
             (new \App\Services\FCMService())->sendToUser(
                 $message->receiver,
                 "New message from " . $senderName,
-                $message->message,
+                $body,
                 [
                     'chat_id' => $message->id,
                     'sender_id' => $user->id,
@@ -142,18 +157,18 @@ class ChatController extends Controller
 
         // Get the latest message for every distinct conversation
         // A conversation is defined by the pair of sender and receiver
-        
+
         // This query fetches all messages where the current user is either the sender or receiver
         $messages = ChatMessage::with(['sender', 'receiver'])
-            ->where(function($query) use ($user, $userClass) {
+            ->where(function ($query) use ($user, $userClass) {
                 $query->where('sender_id', $user->id)
-                      ->where('sender_type', $userClass)
-                      ->where('deleted_by_sender', false);
+                    ->where('sender_type', $userClass)
+                    ->where('deleted_by_sender', false);
             })
-            ->orWhere(function($query) use ($user, $userClass) {
+            ->orWhere(function ($query) use ($user, $userClass) {
                 $query->where('receiver_id', $user->id)
-                      ->where('receiver_type', $userClass)
-                      ->where('deleted_by_receiver', false);
+                    ->where('receiver_type', $userClass)
+                    ->where('deleted_by_receiver', false);
             })
             ->orderBy('created_at', 'desc')
             ->get();
@@ -210,13 +225,13 @@ class ChatController extends Controller
     {
         $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         $userClass = get_class($user);
-        
+
         $otherType = $request->query('type'); // 'Staff', 'Student', 'Institute', 'StudentParent'
-        
+
         if ($otherType) {
-            $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class : 
-                         ($otherType == 'Student' ? \App\Models\Student::class : 
-                         ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
+            $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class :
+                ($otherType == 'Student' ? \App\Models\Student::class :
+                    ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
         } else {
             // Fallback for older API calls
             $otherClass = $user instanceof Institute ? \App\Models\StudentParent::class : \App\Models\Institute::class;
@@ -241,21 +256,21 @@ class ChatController extends Controller
         }
 
         $messages = ChatMessage::with(['sender', 'receiver'])
-            ->where(function($query) use ($user, $userClass, $user_id, $otherClass) {
+            ->where(function ($query) use ($user, $userClass, $user_id, $otherClass) {
                 // Sent by me, received by other
                 $query->where('sender_id', $user->id)
-                      ->where('sender_type', $userClass)
-                      ->where('receiver_id', $user_id)
-                      ->where('receiver_type', $otherClass)
-                      ->where('deleted_by_sender', false);
+                    ->where('sender_type', $userClass)
+                    ->where('receiver_id', $user_id)
+                    ->where('receiver_type', $otherClass)
+                    ->where('deleted_by_sender', false);
             })
-            ->orWhere(function($query) use ($user, $userClass, $user_id, $otherClass) {
+            ->orWhere(function ($query) use ($user, $userClass, $user_id, $otherClass) {
                 // Sent by other, received by me
                 $query->where('sender_id', $user_id)
-                      ->where('sender_type', $otherClass)
-                      ->where('receiver_id', $user->id)
-                      ->where('receiver_type', $userClass)
-                      ->where('deleted_by_receiver', false);
+                    ->where('sender_type', $otherClass)
+                    ->where('receiver_id', $user->id)
+                    ->where('receiver_type', $userClass)
+                    ->where('deleted_by_receiver', false);
             })
             ->orderBy('created_at', 'asc')
             ->get();
@@ -294,7 +309,7 @@ class ChatController extends Controller
             'data' => $formattedMessages
         ]);
     }
-    
+
     /**
      * Clear / Delete an entire conversation between current user and another user
      */
@@ -310,28 +325,28 @@ class ChatController extends Controller
 
         $otherId = $request->input('user_id');
         $otherType = $request->input('user_type');
-        $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class : 
-                     ($otherType == 'Student' ? \App\Models\Student::class : 
-                     ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
+        $otherClass = $otherType == 'Staff' ? \App\Models\Staff::class :
+            ($otherType == 'Student' ? \App\Models\Student::class :
+                ($otherType == 'Institute' ? \App\Models\Institute::class : \App\Models\StudentParent::class));
 
         // 1. Where I am the sender, mark deleted_by_sender = true
         ChatMessage::where('sender_id', $user->id)
-              ->where('sender_type', $userClass)
-              ->where('receiver_id', $otherId)
-              ->where('receiver_type', $otherClass)
-              ->update(['deleted_by_sender' => true]);
+            ->where('sender_type', $userClass)
+            ->where('receiver_id', $otherId)
+            ->where('receiver_type', $otherClass)
+            ->update(['deleted_by_sender' => true]);
 
         // 2. Where I am the receiver, mark deleted_by_receiver = true
         ChatMessage::where('sender_id', $otherId)
-              ->where('sender_type', $otherClass)
-              ->where('receiver_id', $user->id)
-              ->where('receiver_type', $userClass)
-              ->update(['deleted_by_receiver' => true]);
+            ->where('sender_type', $otherClass)
+            ->where('receiver_id', $user->id)
+            ->where('receiver_type', $userClass)
+            ->update(['deleted_by_receiver' => true]);
 
         // 3. Clean up permanent deletion if both users have deleted the conversation
         ChatMessage::where('deleted_by_sender', true)
-              ->where('deleted_by_receiver', true)
-              ->delete();
+            ->where('deleted_by_receiver', true)
+            ->delete();
 
         return response()->json([
             'status' => 'success',
@@ -403,15 +418,15 @@ class ChatController extends Controller
     public function contacts(Request $request)
     {
         $user = $request->user();
-        
+
         if ($user instanceof \App\Models\Institute) {
-            $students = $user->students()->select('id', 'name', 'profile_image')->get()->map(function($s) {
+            $students = $user->students()->select('id', 'name', 'profile_image')->get()->map(function ($s) {
                 $s->type = 'Student';
                 $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
                 return $s;
             });
-            
-            $staff = \App\Models\Staff::where('institute_id', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+
+            $staff = \App\Models\Staff::where('institute_id', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
                 $s->type = 'Staff';
                 $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
                 return $s;
@@ -419,7 +434,7 @@ class ChatController extends Controller
 
             $institutes = \App\Models\Institute::where('id', '!=', $user->id)
                 ->select('id', 'institute_name as name', 'logo as profile_image')
-                ->get()->map(function($i) {
+                ->get()->map(function ($i) {
                     $i->type = 'Institute';
                     $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
                     return $i;
@@ -441,13 +456,13 @@ class ChatController extends Controller
 
             $institute = \App\Models\Institute::where('id', $instituteId)
                 ->select('id', 'institute_name as name', 'logo as profile_image')
-                ->get()->map(function($i) {
+                ->get()->map(function ($i) {
                     $i->type = 'Institute';
                     $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
                     return $i;
                 });
 
-            $staff = \App\Models\Staff::where('institute_id', $instituteId)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+            $staff = \App\Models\Staff::where('institute_id', $instituteId)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
                 $s->type = 'Staff';
                 $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
                 return $s;
@@ -458,30 +473,30 @@ class ChatController extends Controller
 
         if ($user instanceof \App\Models\Staff) {
             $instituteId = $user->institute_id;
-            
+
             $institute = \App\Models\Institute::where('id', $instituteId)
                 ->select('id', 'institute_name as name', 'logo as profile_image')
-                ->get()->map(function($i) {
+                ->get()->map(function ($i) {
                     $i->type = 'Institute';
                     $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
                     return $i;
                 });
 
-            $students = \App\Models\Student::where('institute_id', $instituteId)->select('id', 'name', 'profile_image')->get()->map(function($s) {
+            $students = \App\Models\Student::where('institute_id', $instituteId)->select('id', 'name', 'profile_image')->get()->map(function ($s) {
                 $s->type = 'Student';
                 $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
                 return $s;
             });
 
-            $parents = \App\Models\StudentParent::whereHas('students', function($q) use ($instituteId) {
+            $parents = \App\Models\StudentParent::whereHas('students', function ($q) use ($instituteId) {
                 $q->where('institute_id', $instituteId);
-            })->select('id', 'father_name as name', 'profile_image')->get()->map(function($p) {
+            })->select('id', 'father_name as name', 'profile_image')->get()->map(function ($p) {
                 $p->type = 'StudentParent';
                 $p->profile_image = $p->profile_image ? url('storage/' . $p->profile_image) : null;
                 return $p;
             });
 
-            $otherStaff = \App\Models\Staff::where('institute_id', $instituteId)->where('id', '!=', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+            $otherStaff = \App\Models\Staff::where('institute_id', $instituteId)->where('id', '!=', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
                 $s->type = 'Staff';
                 $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
                 return $s;

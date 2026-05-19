@@ -72,11 +72,11 @@
                             </div>
                             <div>
                                 <h3 id="active-user-name" class="text-sm font-bold text-slate-800">User Name</h3>
-                               
+
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                           
+
                             <button onclick="clearCurrentConversation()" title="Delete entire conversation"
                                 class="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,30 +97,55 @@
                     <!-- Input Area -->
                     <div class="p-4 border-t border-slate-50 bg-white relative">
                         <!-- Attachment Dropdown Menu -->
-                        <div id="attachment-menu" class="hidden absolute bottom-20 left-4 bg-white border border-slate-100 rounded-3xl p-3 shadow-2xl flex flex-col gap-2 z-50 w-52 transform scale-95 opacity-0 transition-all duration-200 origin-bottom-left">
-                            <button type="button" onclick="triggerFileInput('image-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
-                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                        <div id="attachment-menu"
+                            class="hidden absolute bottom-20 left-4 bg-white border border-slate-100 rounded-3xl p-3 shadow-2xl flex flex-col gap-2 z-50 w-52 transform scale-95 opacity-0 transition-all duration-200 origin-bottom-left">
+                            <button type="button" onclick="triggerFileInput('image-input-file')"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg></span>
                                 Share Image
                             </button>
-                            <button type="button" onclick="triggerFileInput('video-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
-                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>
+                            <button type="button" onclick="triggerFileInput('video-input-file')"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg></span>
                                 Share Video
                             </button>
-                            <button type="button" onclick="triggerFileInput('doc-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
-                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+                            <button type="button" onclick="triggerFileInput('doc-input-file')"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg></span>
                                 Share Document
                             </button>
-                            <button type="button" onclick="triggerFileInput('audio-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
-                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg></span>
+                            <button type="button" onclick="triggerFileInput('audio-input-file')"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                                    </svg></span>
                                 Share Audio
                             </button>
                         </div>
 
                         <!-- Hidden Inputs for Files -->
-                        <input type="file" id="image-input-file" accept="image/*" class="hidden" onchange="handleFileUpload(this, 'image')">
-                        <input type="file" id="video-input-file" accept="video/*" class="hidden" onchange="handleFileUpload(this, 'video')">
-                        <input type="file" id="doc-input-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" class="hidden" onchange="handleFileUpload(this, 'document')">
-                        <input type="file" id="audio-input-file" accept="audio/*" class="hidden" onchange="handleFileUpload(this, 'audio')">
+                        <input type="file" id="image-input-file" accept="image/*" class="hidden"
+                            onchange="handleFileUpload(this, 'image')">
+                        <input type="file" id="video-input-file" accept="video/*" class="hidden"
+                            onchange="handleFileUpload(this, 'video')">
+                        <input type="file" id="doc-input-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                            class="hidden" onchange="handleFileUpload(this, 'document')">
+                        <input type="file" id="audio-input-file" accept="audio/*" class="hidden"
+                            onchange="handleFileUpload(this, 'audio')">
 
                         <form id="message-form" onsubmit="handleSendMessage(event)"
                             class="flex items-center gap-3 bg-slate-50 rounded-2xl p-2 pr-3">
@@ -135,8 +160,10 @@
                                 class="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 text-slate-600 outline-none">
                             <button type="submit" id="send-btn"
                                 class="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/10 hover:scale-105 active:scale-95 transition-all">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                                 </svg>
                             </button>
                         </form>
@@ -176,30 +203,40 @@
         </div>
     </div>
     <!-- Share Location Modal -->
-    <div id="location-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="location-modal-content">
+    <div id="location-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300"
+            id="location-modal-content">
             <div class="p-6 border-b border-slate-50 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-slate-800">Share Location</h3>
                 <button type="button" onclick="closeLocationModal()" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
             <form onsubmit="handleShareLocation(event)" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location Label / Address</label>
-                    <input type="text" id="loc-label" placeholder="e.g. Science Lab, Main Campus" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location Label /
+                        Address</label>
+                    <input type="text" id="loc-label" placeholder="e.g. Science Lab, Main Campus" required
+                        class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Latitude</label>
-                        <input type="number" step="any" id="loc-lat" placeholder="21.1702" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                        <input type="number" step="any" id="loc-lat" placeholder="21.1702" required
+                            class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Longitude</label>
-                        <input type="number" step="any" id="loc-lng" placeholder="72.8311" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                        <label
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Longitude</label>
+                        <input type="number" step="any" id="loc-lng" placeholder="72.8311" required
+                            class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                     </div>
                 </div>
-                <button type="submit" class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
+                <button type="submit"
+                    class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
                     Share Location
                 </button>
             </form>
@@ -207,24 +244,31 @@
     </div>
 
     <!-- Share Contact Modal -->
-    <div id="contact-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="contact-modal-content">
+    <div id="contact-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300"
+            id="contact-modal-content">
             <div class="p-6 border-b border-slate-50 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-slate-800">Share Contact</h3>
                 <button type="button" onclick="closeContactModal()" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
             <form onsubmit="handleShareContact(event)" class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Contact Name</label>
-                    <input type="text" id="con-name" placeholder="e.g. John Doe" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                    <input type="text" id="con-name" placeholder="e.g. John Doe" required
+                        class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
-                    <input type="tel" id="con-phone" placeholder="e.g. +91 9876543210" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                    <input type="tel" id="con-phone" placeholder="e.g. +91 9876543210" required
+                        class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                 </div>
-                <button type="submit" class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
+                <button type="submit"
+                    class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
                     Share Contact
                 </button>
             </form>
@@ -232,25 +276,30 @@
     </div>
 
     <!-- Delete Conversation Confirmation Modal -->
-    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300 border-t-4 border-primary" id="delete-confirm-modal-content">
+    <div id="delete-confirm-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300 border-t-4 border-primary"
+            id="delete-confirm-modal-content">
             <div class="p-4 border-b border-slate-50 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-800">Delete Conversation</h3>
                 <button type="button" onclick="closeDeleteConfirmModal()" class="text-slate-400 hover:text-slate-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             <div class="p-4 space-y-4">
                 <p class="text-xs text-slate-600 leading-relaxed">
-                    Are you sure you want to delete your entire conversation with <span id="delete-confirm-user-name" class="font-bold text-slate-800"></span>? This action cannot be undone.
+                    Are you sure you want to delete your entire conversation with <span id="delete-confirm-user-name"
+                        class="font-bold text-slate-800"></span>? This action cannot be undone.
                 </p>
                 <div class="flex items-center gap-3 pt-2">
-                    <button type="button" onclick="closeDeleteConfirmModal()" class="flex-1 py-2 bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all">
+                    <button type="button" onclick="closeDeleteConfirmModal()"
+                        class="flex-1 py-2 bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all">
                         Cancel
                     </button>
-                    <button type="button" onclick="confirmClearConversation()" class="flex-1 py-2 bg-primary text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/10">
+                    <button type="button" onclick="confirmClearConversation()"
+                        class="flex-1 py-2 bg-primary text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/10">
                         Delete
                     </button>
                 </div>
@@ -300,31 +349,78 @@
             let messages = [];
 
             // Listen for search input on conversation list
-            document.getElementById('chat-search').addEventListener('input', function(e) {
+            document.getElementById('chat-search').addEventListener('input', function (e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 renderConversationList(searchTerm);
             });
 
             let allContacts = [];
             // Listen for search input on contact list inside new chat modal
-            document.getElementById('contact-search').addEventListener('input', function(e) {
+            document.getElementById('contact-search').addEventListener('input', function (e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 if (!searchTerm) {
                     renderContacts(allContacts);
                     return;
                 }
-                const filtered = allContacts.filter(c => 
-                    c.name.toLowerCase().includes(searchTerm) || 
+                const filtered = allContacts.filter(c =>
+                    c.name.toLowerCase().includes(searchTerm) ||
                     c.type.toLowerCase().includes(searchTerm)
                 );
                 renderContacts(filtered);
             });
+
+            // Request Notification Permission on load
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            function playNotificationSound() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(587.33, audioContext.currentTime); // D5 note
+                    gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.12);
+                } catch (e) {
+                    console.log('Audio feedback failed:', e);
+                }
+            }
+
+            function showDesktopNotification(title, body, senderName) {
+                playNotificationSound();
+                
+                // Show in-app Toast notification (always visible inside the browser window)
+                if (typeof showToast === 'function') {
+                    showToast(`New message from ${senderName}: ${body}`, 'success');
+                }
+
+                // Show browser desktop notification if permitted (great if user is in another tab/minimized)
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    const notification = new Notification(title, {
+                        body: body,
+                        icon: '/favicon.ico'
+                    });
+                    notification.onclick = function() {
+                        window.focus();
+                    };
+                }
+            }
 
             // Debug: Listen for all events on this channel
             window.Echo.private('chat.Institute.' + INSTITUTE_ID)
                 .on('pusher:subscription_succeeded', () => console.log('📡 Subscribed to private chat channel'))
                 .listen('.MessageSent', (data) => {
                     console.log('📬 NEW MESSAGE RECEIVED:', data);
+
+                    const isMe = data.sender_type === 'Institute' && data.sender_id == currentUserId;
 
                     // 1. If we are currently chatting with this person, show the message instantly and mark as READ
                     if (activeConversation &&
@@ -350,6 +446,20 @@
                     } else {
                         // Not actively chatting, but device received it! Mark as RECEIVED (Delivered)
                         markMessageAsReceived(data.id);
+                    }
+
+                    // Show notification/toast and play sound for all incoming messages from others
+                    if (!isMe) {
+                        const senderName = data.sender ? data.sender.name : 'Someone';
+                        let previewText = data.message || 'Sent an attachment';
+                        if (data.type === 'image') previewText = '📷 Sent an image';
+                        else if (data.type === 'video') previewText = '🎥 Sent a video';
+                        else if (data.type === 'document') previewText = '📄 Sent a document';
+                        else if (data.type === 'audio') previewText = '🎵 Sent an audio message';
+                        else if (data.type === 'location') previewText = '📍 Shared a location';
+                        else if (data.type === 'contact') previewText = '👤 Shared a contact';
+                        
+                        showDesktopNotification(`New message from ${senderName}`, previewText, senderName);
                     }
 
                     // 2. Always refresh the sidebar to show the latest message preview and unread count
@@ -489,7 +599,7 @@
 
             function renderConversationList(searchTerm = '') {
                 const list = document.getElementById('conversation-list');
-                
+
                 // Filter conversations based on search term
                 const filteredConversations = currentConversations.filter(conv => {
                     return conv.user_name.toLowerCase().includes(searchTerm);
@@ -505,21 +615,21 @@
                 }
 
                 list.innerHTML = filteredConversations.map(conv => `
-                    <div onclick="selectConversation('${conv.user_id}', '${conv.user_type}', '${conv.user_name}')" 
-                        class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${activeConversation && activeConversation.user_id == conv.user_id && activeConversation.user_type == conv.user_type ? 'bg-orange-50/50 border-r-4 border-primary' : ''}">
-                        <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">
-                            ${conv.user_name.substring(0, 1)}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between mb-0.5">
-                                <h4 class="text-sm font-bold text-slate-800 truncate">${conv.user_name}</h4>
-                                <span class="text-[10px] font-medium text-slate-400">${formatTime(conv.created_at)}</span>
+                            <div onclick="selectConversation('${conv.user_id}', '${conv.user_type}', '${conv.user_name}')" 
+                                class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${activeConversation && activeConversation.user_id == conv.user_id && activeConversation.user_type == conv.user_type ? 'bg-orange-50/50 border-r-4 border-primary' : ''}">
+                                <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">
+                                    ${conv.user_name.substring(0, 1)}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between mb-0.5">
+                                        <h4 class="text-sm font-bold text-slate-800 truncate">${conv.user_name}</h4>
+                                        <span class="text-[10px] font-medium text-slate-400">${formatTime(conv.created_at)}</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 truncate flex items-center gap-1">${getLatestMessagePreview(conv)}</p>
+                                </div>
+                                ${conv.unread_count > 0 ? `<div class="h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">${conv.unread_count}</div>` : ''}
                             </div>
-                            <p class="text-xs text-slate-500 truncate flex items-center gap-1">${getLatestMessagePreview(conv)}</p>
-                        </div>
-                        ${conv.unread_count > 0 ? `<div class="h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">${conv.unread_count}</div>` : ''}
-                    </div>
-                `).join('');
+                        `).join('');
             }
 
             async function selectConversation(userId, userType, userName) {
@@ -558,70 +668,70 @@
                 const bubbleBg = isMe ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-700';
                 const textClass = isMe ? 'text-white' : 'text-slate-700';
                 const iconBg = isMe ? 'bg-white/20 text-white' : 'bg-orange-100/50 text-primary';
-                
+
                 if (msg.type === 'text') {
                     return `<p class="text-[13px] leading-snug break-all">${msg.message}</p>`;
                 }
-                
+
                 if (msg.type === 'image') {
                     return `
-                        <div class="space-y-1">
-                            <a href="${msg.attachment}" target="_blank" class="block overflow-hidden rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} max-w-[240px] hover:scale-[1.01] active:scale-95 transition-all">
-                                <img src="${msg.attachment}" class="w-full h-auto object-cover max-h-[160px]" alt="Image Attachment">
-                            </a>
-                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                        </div>
-                    `;
+                                <div class="space-y-1">
+                                    <a href="${msg.attachment}" target="_blank" class="block overflow-hidden rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} max-w-[240px] hover:scale-[1.01] active:scale-95 transition-all">
+                                        <img src="${msg.attachment}" class="w-full h-auto object-cover max-h-[160px]" alt="Image Attachment">
+                                    </a>
+                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                                </div>
+                            `;
                 }
 
                 if (msg.type === 'video') {
                     return `
-                        <div class="space-y-1">
-                            <video controls class="max-w-[240px] rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} shadow-sm" src="${msg.attachment}"></video>
-                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                        </div>
-                    `;
+                                <div class="space-y-1">
+                                    <video controls class="max-w-[240px] rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} shadow-sm" src="${msg.attachment}"></video>
+                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                                </div>
+                            `;
                 }
 
                 if (msg.type === 'audio') {
                     return `
-                        <div class="space-y-1">
-                            <audio controls class="max-w-[240px] scale-90 origin-left" src="${msg.attachment}"></audio>
-                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                        </div>
-                    `;
+                                <div class="space-y-1">
+                                    <audio controls class="max-w-[240px] scale-90 origin-left" src="${msg.attachment}"></audio>
+                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                                </div>
+                            `;
                 }
 
                 if (msg.type === 'document') {
                     const filename = msg.attachment ? msg.attachment.split('/').pop() : 'Document';
                     return `
-                        <div class="space-y-1">
-                            <a href="${msg.attachment}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
-                                <span class="p-1.5 ${iconBg} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[11px] font-bold truncate">${filename}</p>
-                                    <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Click to view/download</p>
+                                <div class="space-y-1">
+                                    <a href="${msg.attachment}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
+                                        <span class="p-1.5 ${iconBg} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[11px] font-bold truncate">${filename}</p>
+                                            <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Click to view/download</p>
+                                        </div>
+                                    </a>
+                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
                                 </div>
-                            </a>
-                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                        </div>
-                    `;
+                            `;
                 }
 
                 if (msg.type === 'location') {
                     try {
                         const loc = JSON.parse(msg.message);
                         return `
-                            <div class="space-y-1">
-                                <a href="https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
-                                    <span class="p-1.5 ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100/50 text-emerald-600'} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[11px] font-bold truncate">${loc.label || 'Shared Location'}</p>
-                                        <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Lat: ${parseFloat(loc.lat).toFixed(4)}, Lng: ${parseFloat(loc.lng).toFixed(4)}</p>
+                                    <div class="space-y-1">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
+                                            <span class="p-1.5 ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100/50 text-emerald-600'} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-[11px] font-bold truncate">${loc.label || 'Shared Location'}</p>
+                                                <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Lat: ${parseFloat(loc.lat).toFixed(4)}, Lng: ${parseFloat(loc.lng).toFixed(4)}</p>
+                                            </div>
+                                        </a>
                                     </div>
-                                </a>
-                            </div>
-                        `;
+                                `;
                     } catch (e) {
                         return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
                     }
@@ -631,16 +741,16 @@
                     try {
                         const con = JSON.parse(msg.message);
                         return `
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2.5 ${bubbleBg} rounded-xl p-2.5 max-w-[240px]">
-                                    <span class="h-8 w-8 ${isMe ? 'bg-white/20 text-white' : 'bg-blue-100/50 text-blue-600'} rounded-xl flex items-center justify-center font-bold text-xs">${con.name.substring(0, 1)}</span>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[11px] font-bold truncate">${con.name}</p>
-                                        <a href="tel:${con.phone}" class="text-[9px] ${isMe ? 'text-white font-extrabold underline' : 'text-primary font-bold hover:underline'}">${con.phone}</a>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2.5 ${bubbleBg} rounded-xl p-2.5 max-w-[240px]">
+                                            <span class="h-8 w-8 ${isMe ? 'bg-white/20 text-white' : 'bg-blue-100/50 text-blue-600'} rounded-xl flex items-center justify-center font-bold text-xs">${con.name.substring(0, 1)}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-[11px] font-bold truncate">${con.name}</p>
+                                                <a href="tel:${con.phone}" class="text-[9px] ${isMe ? 'text-white font-extrabold underline' : 'text-primary font-bold hover:underline'}">${con.phone}</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        `;
+                                `;
                     } catch (e) {
                         return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
                     }
@@ -655,41 +765,41 @@
                 container.innerHTML = messages.map(msg => {
                     const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
                     return `
-                        <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
-                            <div class="h-7 w-7 rounded-full ${isMe ? 'bg-primary/10 text-primary border-primary/20' : 'bg-slate-100 text-slate-500 border-slate-200'} flex-shrink-0 flex items-center justify-center font-bold text-[9px] border shadow-sm">
-                                ${isMe ? 'I' : msg.sender.name.substring(0, 1)}
-                            </div>
-                            <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
-                                <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
-                                    ${renderMessageContent(msg, isMe)}
+                                <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
+                                    <div class="h-7 w-7 rounded-full ${isMe ? 'bg-primary/10 text-primary border-primary/20' : 'bg-slate-100 text-slate-500 border-slate-200'} flex-shrink-0 flex items-center justify-center font-bold text-[9px] border shadow-sm">
+                                        ${isMe ? 'I' : msg.sender.name.substring(0, 1)}
+                                    </div>
+                                    <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
+                                        <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
+                                            ${renderMessageContent(msg, isMe)}
+                                        </div>
+                                        <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                                            <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
+                                            ${isMe ? (msg.read_at ? `
+                                                <span class="text-sky-500 flex items-center shrink-0" title="Read">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+                                            ` : (msg.received_at ? `
+                                                <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+                                            ` : `
+                                                <span class="text-slate-400 flex items-center shrink-0" title="Sent">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+                                            `)) : ''}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
-                                    <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
-                                    ${isMe ? (msg.read_at ? `
-                                        <span class="text-sky-500 flex items-center shrink-0" title="Read">
-                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                        </span>
-                                    ` : (msg.received_at ? `
-                                        <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
-                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                        </span>
-                                    ` : `
-                                        <span class="text-slate-400 flex items-center shrink-0" title="Sent">
-                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                        </span>
-                                    `)) : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                            `;
                 }).join('');
             }
 
@@ -798,21 +908,21 @@
                     return;
                 }
                 list.innerHTML = contacts.map(c => `
-                    <div onclick="startChat('${c.id}', '${c.type}', '${c.name}')" class="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
-                        <div class="flex items-center gap-3">
-                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs">
-                                ${c.name.substring(0, 1)}
+                            <div onclick="startChat('${c.id}', '${c.type}', '${c.name}')" class="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs">
+                                        ${c.name.substring(0, 1)}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800 leading-tight">${c.name}</h4>
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.type}</span>
+                                    </div>
+                                </div>
+                                <div class="h-6 w-6 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                </div>
                             </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-800 leading-tight">${c.name}</h4>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.type}</span>
-                            </div>
-                        </div>
-                        <div class="h-6 w-6 bg-orange-50 text-primary rounded-lg flex items-center justify-center">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                        </div>
-                    </div>
-                `).join('');
+                        `).join('');
             }
 
             function startChat(userId, type, name) {
@@ -929,7 +1039,7 @@
             async function handleFileUpload(input, type) {
                 if (!input.files || input.files.length === 0 || !activeConversation) return;
                 const file = input.files[0];
-                
+
                 // Clear input value so same file can be uploaded again
                 input.value = '';
 

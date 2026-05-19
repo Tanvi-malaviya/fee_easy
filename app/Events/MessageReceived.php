@@ -34,6 +34,8 @@ class MessageReceived implements ShouldBroadcastNow
         
         return [
             new PrivateChannel('chat.' . $senderType . '.' . $this->message->sender_id),
+
+              new PrivateChannel('chat.' . $this->message->sender_id),
         ];
     }
 
