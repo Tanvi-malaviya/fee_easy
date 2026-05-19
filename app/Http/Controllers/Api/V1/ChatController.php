@@ -222,6 +222,24 @@ class ChatController extends Controller
             $otherClass = $user instanceof Institute ? \App\Models\StudentParent::class : \App\Models\Institute::class;
         }
 
+        // Mark as read where I am the receiver BEFORE loading messages
+        $unreadMessages = ChatMessage::where('receiver_id', $user->id)
+            ->where('receiver_type', $userClass)
+            ->where('sender_id', $user_id)
+            ->where('sender_type', $otherClass)
+            ->whereNull('read_at')
+            ->get();
+
+        if ($unreadMessages->isNotEmpty()) {
+            ChatMessage::whereIn('id', $unreadMessages->pluck('id'))
+                ->update(['read_at' => now()]);
+
+            foreach ($unreadMessages as $msg) {
+                $msg->read_at = now();
+                broadcast(new \App\Events\MessageRead($msg))->toOthers();
+            }
+        }
+
         $messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($user, $userClass, $user_id, $otherClass) {
                 // Sent by me, received by other
@@ -241,14 +259,6 @@ class ChatController extends Controller
             })
             ->orderBy('created_at', 'asc')
             ->get();
-            
-        // Mark as read where I am the receiver
-        ChatMessage::where('receiver_id', $user->id)
-            ->where('receiver_type', $userClass)
-            ->where('sender_id', $user_id)
-            ->where('sender_type', $otherClass)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
 
         $formattedMessages = $messages->map(function ($msg) {
             return [

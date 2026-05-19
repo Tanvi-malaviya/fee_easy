@@ -37,7 +37,7 @@ Route::middleware(array_filter([
 ]))->group(function () {
 
     Route::prefix('admin')->group(function () {
-            Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
 
         // Institutes Management
         Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
