@@ -16,6 +16,21 @@ class ChatController extends Controller
      */
     public function send(Request $request)
     {
+        // Automatically sanitize request keys to trim whitespaces/tabs (defensive fix for Postman/client inputs)
+        $normalizedInputs = [];
+        foreach ($request->all() as $key => $value) {
+            $normalizedInputs[trim($key)] = $value;
+        }
+        $request->replace($normalizedInputs);
+
+        foreach ($request->allFiles() as $key => $file) {
+            $trimmedKey = trim($key);
+            if ($trimmedKey !== $key) {
+                $request->files->set($trimmedKey, $file);
+                $request->files->remove($key);
+            }
+        }
+
         $user = auth('institute')->user() ?? auth('sanctum')->user() ?? $request->user();
         
         // Determine receiver_type based on sender
@@ -44,9 +59,15 @@ class ChatController extends Controller
 
         $request->validate([
             'receiver_id' => 'required|integer|exists:' . $receiverTable . ',id',
-            'message' => 'required|string',
-            'type' => 'required|in:text,image',
+            'message' => 'nullable|string',
+            'type' => 'required|in:text,image,video,document,audio,location,contact',
+            'attachment' => 'nullable|file|max:20480', // Max 20MB
         ]);
+
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('chat_attachments', 'public');
+        }
 
         $message = ChatMessage::create([
             'sender_id' => $user->id,
@@ -55,6 +76,7 @@ class ChatController extends Controller
             'receiver_type' => $receiverType,
             'message' => $request->message,
             'type' => $request->type,
+            'attachment' => $attachmentPath,
         ]);
 
         broadcast(new \App\Events\MessageSent($message))->toOthers();
@@ -84,7 +106,7 @@ class ChatController extends Controller
             'receiver_type' => class_basename($message->receiver_type),
             'message' => $message->message,
             'type' => $message->type,
-            'attachment' => $message->attachment,
+            'attachment' => $message->attachment ? url('storage/' . $message->attachment) : null,
             'read_at' => $message->read_at,
             'received_at' => $message->received_at,
             'created_at' => $message->created_at,
@@ -237,7 +259,7 @@ class ChatController extends Controller
                 'receiver_type' => class_basename($msg->receiver_type),
                 'message' => $msg->message,
                 'type' => $msg->type,
-                'attachment' => $msg->attachment,
+                'attachment' => $msg->attachment ? url('storage/' . $msg->attachment) : null,
                 'read_at' => $msg->read_at,
                 'received_at' => $msg->received_at,
                 'created_at' => $msg->created_at,
@@ -363,5 +385,101 @@ class ChatController extends Controller
                 'received_at' => $message->received_at,
             ]
         ]);
+    }
+
+    /**
+     * Fetch chat contact list dynamically based on authenticated user type
+     */
+    public function contacts(Request $request)
+    {
+        $user = $request->user();
+        
+        if ($user instanceof \App\Models\Institute) {
+            $students = $user->students()->select('id', 'name', 'profile_image')->get()->map(function($s) {
+                $s->type = 'Student';
+                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
+                return $s;
+            });
+            
+            $staff = \App\Models\Staff::where('institute_id', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+                $s->type = 'Staff';
+                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
+                return $s;
+            });
+
+            $institutes = \App\Models\Institute::where('id', '!=', $user->id)
+                ->select('id', 'institute_name as name', 'logo as profile_image')
+                ->get()->map(function($i) {
+                    $i->type = 'Institute';
+                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
+                    return $i;
+                });
+
+            return response()->json($students->concat($staff)->concat($institutes));
+        }
+
+        if ($user instanceof \App\Models\Student || $user instanceof \App\Models\StudentParent) {
+            $instituteId = $user->institute_id ?? null;
+            if (!$instituteId && $user instanceof \App\Models\StudentParent) {
+                $firstChild = $user->students()->first();
+                $instituteId = $firstChild ? $firstChild->institute_id : null;
+            }
+
+            if (!$instituteId) {
+                return response()->json([]);
+            }
+
+            $institute = \App\Models\Institute::where('id', $instituteId)
+                ->select('id', 'institute_name as name', 'logo as profile_image')
+                ->get()->map(function($i) {
+                    $i->type = 'Institute';
+                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
+                    return $i;
+                });
+
+            $staff = \App\Models\Staff::where('institute_id', $instituteId)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+                $s->type = 'Staff';
+                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
+                return $s;
+            });
+
+            return response()->json($institute->concat($staff));
+        }
+
+        if ($user instanceof \App\Models\Staff) {
+            $instituteId = $user->institute_id;
+            
+            $institute = \App\Models\Institute::where('id', $instituteId)
+                ->select('id', 'institute_name as name', 'logo as profile_image')
+                ->get()->map(function($i) {
+                    $i->type = 'Institute';
+                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
+                    return $i;
+                });
+
+            $students = \App\Models\Student::where('institute_id', $instituteId)->select('id', 'name', 'profile_image')->get()->map(function($s) {
+                $s->type = 'Student';
+                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
+                return $s;
+            });
+
+            $parents = \App\Models\StudentParent::whereHas('students', function($q) use ($instituteId) {
+                $q->where('institute_id', $instituteId);
+            })->select('id', 'father_name as name', 'profile_image')->get()->map(function($p) {
+                $p->type = 'StudentParent';
+                $p->profile_image = $p->profile_image ? url('storage/' . $p->profile_image) : null;
+                return $p;
+            });
+
+            $otherStaff = \App\Models\Staff::where('institute_id', $instituteId)->where('id', '!=', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
+                $s->type = 'Staff';
+                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
+                return $s;
+            });
+
+            return response()->json($institute->concat($students)->concat($parents)->concat($otherStaff));
+        }
+
+        return response()->json([]);
     }
 }

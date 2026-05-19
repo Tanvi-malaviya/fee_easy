@@ -202,35 +202,6 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/chats', function () {
                     return view('institute.chats.index');
                 })->name('chats.index');
-
-                Route::get('/chats/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list'])->name('chats.list');
-                Route::get('/chats/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages'])->name('chats.messages');
-                Route::post('/chats/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send'])->name('chats.send');
-                Route::post('/chats/mark-read', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsRead'])->name('chats.mark-read');
-                Route::post('/chats/mark-received', [\App\Http\Controllers\Api\V1\ChatController::class, 'markAsReceived'])->name('chats.mark-received');
-                Route::delete('/chats/conversation', [\App\Http\Controllers\Api\V1\ChatController::class, 'clearConversation'])->name('chats.clear');
-                Route::get('/chats/contacts', function() {
-                    $institute = auth('institute')->user();
-                    
-                    $students = $institute->students()->select('id', 'name', 'profile_image')->get()->map(function($s) {
-                        $s->type = 'Student';
-                        return $s;
-                    });
-                    
-                    $staff = \App\Models\Staff::where('institute_id', $institute->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function($s) {
-                        $s->type = 'Staff';
-                        return $s;
-                    });
-
-                    $institutes = \App\Models\Institute::where('id', '!=', $institute->id)
-                        ->select('id', 'institute_name as name', 'logo as profile_image')
-                        ->get()->map(function($i) {
-                            $i->type = 'Institute';
-                            return $i;
-                        });
-
-                    return response()->json($students->concat($staff)->concat($institutes));
-                })->name('chats.contacts');
             });
         });
     });

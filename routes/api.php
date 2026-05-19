@@ -331,6 +331,7 @@ Route::prefix('v1')->group(function () {
 
         // Chat Routes
         Route::prefix('chat')->group(function () {
+            Route::get('/contacts', [\App\Http\Controllers\Api\V1\ChatController::class, 'contacts']);
             Route::get('/list', [\App\Http\Controllers\Api\V1\ChatController::class, 'list']);
             Route::get('/messages/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'messages']);
             Route::post('/send', [\App\Http\Controllers\Api\V1\ChatController::class, 'send']);

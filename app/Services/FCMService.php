@@ -13,8 +13,8 @@ class FCMService
 
     public function __construct()
     {
-        $this->projectId = config('services.firebase.project_id', '');
-        $path = config('services.firebase.credentials_path', 'storage/app/firebase_credentials.json');
+        $this->projectId = config('services.firebase.project_id') ?? '';
+        $path = config('services.firebase.credentials_path') ?? 'storage/app/firebase_credentials.json';
         
         // Resolve path absolute if relative
         $this->credentialsPath = str_starts_with($path, '/') || str_contains($path, ':\\') 
