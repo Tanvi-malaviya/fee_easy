@@ -117,10 +117,36 @@
                     </div>
 
                     <!-- Input Area -->
-                    <div class="p-4 border-t border-slate-50 bg-white">
+                    <div class="p-4 border-t border-slate-50 bg-white relative">
+                        <!-- Attachment Dropdown Menu -->
+                        <div id="attachment-menu" class="hidden absolute bottom-20 left-4 bg-white border border-slate-100 rounded-3xl p-3 shadow-2xl flex flex-col gap-2 z-50 w-52 transform scale-95 opacity-0 transition-all duration-200 origin-bottom-left">
+                            <button type="button" onclick="triggerFileInput('image-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                                Share Image
+                            </button>
+                            <button type="button" onclick="triggerFileInput('video-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>
+                                Share Video
+                            </button>
+                            <button type="button" onclick="triggerFileInput('doc-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+                                Share Document
+                            </button>
+                            <button type="button" onclick="triggerFileInput('audio-input-file')" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-orange-50 text-slate-700 hover:text-primary transition-all text-xs font-bold">
+                                <span class="p-1.5 bg-orange-100/50 rounded-xl text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg></span>
+                                Share Audio
+                            </button>
+                        </div>
+
+                        <!-- Hidden Inputs for Files -->
+                        <input type="file" id="image-input-file" accept="image/*" class="hidden" onchange="handleFileUpload(this, 'image')">
+                        <input type="file" id="video-input-file" accept="video/*" class="hidden" onchange="handleFileUpload(this, 'video')">
+                        <input type="file" id="doc-input-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" class="hidden" onchange="handleFileUpload(this, 'document')">
+                        <input type="file" id="audio-input-file" accept="audio/*" class="hidden" onchange="handleFileUpload(this, 'audio')">
+
                         <form id="message-form" onsubmit="handleSendMessage(event)"
                             class="flex items-center gap-3 bg-slate-50 rounded-2xl p-2 pr-3">
-                            <button type="button"
+                            <button type="button" onclick="toggleAttachmentMenu(event)"
                                 class="h-10 w-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -170,6 +196,60 @@
                 <!-- Contacts will be injected here -->
             </div>
         </div>
+    <!-- Share Location Modal -->
+    <div id="location-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="location-modal-content">
+            <div class="p-6 border-b border-slate-50 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-800">Share Location</h3>
+                <button type="button" onclick="closeLocationModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form onsubmit="handleShareLocation(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location Label / Address</label>
+                    <input type="text" id="loc-label" placeholder="e.g. Science Lab, Main Campus" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Latitude</label>
+                        <input type="number" step="any" id="loc-lat" placeholder="21.1702" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Longitude</label>
+                        <input type="number" step="any" id="loc-lng" placeholder="72.8311" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
+                    Share Location
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Share Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="contact-modal-content">
+            <div class="p-6 border-b border-slate-50 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-800">Share Contact</h3>
+                <button type="button" onclick="closeContactModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form onsubmit="handleShareContact(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Contact Name</label>
+                    <input type="text" id="con-name" placeholder="e.g. John Doe" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
+                    <input type="tel" id="con-phone" placeholder="e.g. +91 9876543210" required class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-900/10 hover:translate-y-[-1px] transition-all">
+                    Share Contact
+                </button>
+            </form>
+        </div>
     </div>
 
     @push('scripts')
@@ -187,8 +267,9 @@
                 key: '{{ config('broadcasting.connections.pusher.key') }}',
                 cluster: '{{ config('broadcasting.connections.pusher.options.cluster', 'mt1') }}',
                 wsHost: window.location.hostname,
-                wsPort: 6001,
-                wssPort: 6001,
+                wsPort: window.location.protocol === 'https:' ? 443 : 80,
+                wssPort: window.location.protocol === 'https:' ? 443 : 80,
+                wsPath: '/app',
                 forceTLS: window.location.protocol === 'https:',
                 encrypted: window.location.protocol === 'https:',
                 disableStats: true,
@@ -226,6 +307,7 @@
                             sender_type: data.sender_type,
                             message: data.message,
                             type: data.type,
+                            attachment: data.attachment,
                             created_at: data.created_at,
                             sender: data.sender
                         });
@@ -275,7 +357,7 @@
                 if (!confirm(`Are you sure you want to delete your entire conversation with ${activeConversation.user_name}? This cannot be undone.`)) return;
 
                 try {
-                    const response = await fetch('{{ route('institute.chats.clear') }}', {
+                    const response = await fetch('/api/v1/chat/conversation', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -302,7 +384,7 @@
 
             async function markMessageAsRead(messageId) {
                 try {
-                    await fetch('{{ route('institute.chats.mark-read') }}', {
+                    await fetch('/api/v1/chat/mark-read', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -318,7 +400,7 @@
 
             async function markMessageAsReceived(messageId) {
                 try {
-                    await fetch('{{ route('institute.chats.mark-received') }}', {
+                    await fetch('/api/v1/chat/mark-received', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -334,7 +416,7 @@
 
             async function fetchConversations() {
                 try {
-                    const response = await fetch('{{ route('institute.chats.list') }}', {
+                    const response = await fetch('/api/v1/chat/list', {
                         headers: { 'Accept': 'application/json' }
                     });
                     const result = await response.json();
@@ -389,7 +471,7 @@
                 container.innerHTML = '<div class="flex-1 flex items-center justify-center h-full"><div class="h-8 w-8 border-2 border-slate-100 border-t-primary rounded-full animate-spin"></div></div>';
 
                 try {
-                    const response = await fetch(`/institute/chats/messages/${userId}?type=${userType}`, {
+                    const response = await fetch(`/api/v1/chat/messages/${userId}?type=${userType}`, {
                         headers: { 'Accept': 'application/json' }
                     });
                     const result = await response.json();
@@ -401,6 +483,101 @@
                 } catch (error) {
                     console.error('Error fetching messages:', error);
                 }
+            }
+
+            function renderMessageContent(msg, isMe) {
+                const bubbleBg = isMe ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-700';
+                const textClass = isMe ? 'text-white' : 'text-slate-700';
+                const iconBg = isMe ? 'bg-white/20 text-white' : 'bg-orange-100/50 text-primary';
+                
+                if (msg.type === 'text') {
+                    return `<p class="text-[13px] leading-snug break-all">${msg.message}</p>`;
+                }
+                
+                if (msg.type === 'image') {
+                    return `
+                        <div class="space-y-1">
+                            <a href="${msg.attachment}" target="_blank" class="block overflow-hidden rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} max-w-[240px] hover:scale-[1.01] active:scale-95 transition-all">
+                                <img src="${msg.attachment}" class="w-full h-auto object-cover max-h-[160px]" alt="Image Attachment">
+                            </a>
+                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                        </div>
+                    `;
+                }
+
+                if (msg.type === 'video') {
+                    return `
+                        <div class="space-y-1">
+                            <video controls class="max-w-[240px] rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} shadow-sm" src="${msg.attachment}"></video>
+                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                        </div>
+                    `;
+                }
+
+                if (msg.type === 'audio') {
+                    return `
+                        <div class="space-y-1">
+                            <audio controls class="max-w-[240px] scale-90 origin-left" src="${msg.attachment}"></audio>
+                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                        </div>
+                    `;
+                }
+
+                if (msg.type === 'document') {
+                    const filename = msg.attachment ? msg.attachment.split('/').pop() : 'Document';
+                    return `
+                        <div class="space-y-1">
+                            <a href="${msg.attachment}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
+                                <span class="p-1.5 ${iconBg} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] font-bold truncate">${filename}</p>
+                                    <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Click to view/download</p>
+                                </div>
+                            </a>
+                            ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
+                        </div>
+                    `;
+                }
+
+                if (msg.type === 'location') {
+                    try {
+                        const loc = JSON.parse(msg.message);
+                        return `
+                            <div class="space-y-1">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
+                                    <span class="p-1.5 ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100/50 text-emerald-600'} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-bold truncate">${loc.label || 'Shared Location'}</p>
+                                        <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Lat: ${parseFloat(loc.lat).toFixed(4)}, Lng: ${parseFloat(loc.lng).toFixed(4)}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
+                    }
+                }
+
+                if (msg.type === 'contact') {
+                    try {
+                        const con = JSON.parse(msg.message);
+                        return `
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2.5 ${bubbleBg} rounded-xl p-2.5 max-w-[240px]">
+                                    <span class="h-8 w-8 ${isMe ? 'bg-white/20 text-white' : 'bg-blue-100/50 text-blue-600'} rounded-xl flex items-center justify-center font-bold text-xs">${con.name.substring(0, 1)}</span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-bold truncate">${con.name}</p>
+                                        <a href="tel:${con.phone}" class="text-[9px] ${isMe ? 'text-white font-extrabold underline' : 'text-primary font-bold hover:underline'}">${con.phone}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
+                    }
+                }
+
+                return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message || ''}</p>`;
             }
 
             function renderMessages() {
@@ -415,7 +592,7 @@
                             </div>
                             <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
                                 <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
-                                    <p class="text-[13px] leading-snug">${msg.message}</p>
+                                    ${renderMessageContent(msg, isMe)}
                                 </div>
                                 <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1.5 px-1">
                                     <span class="text-[8px] font-medium text-slate-400 opacity-70">${formatTime(msg.created_at)}</span>
@@ -437,7 +614,7 @@
                 input.disabled = true;
 
                 try {
-                    const response = await fetch('{{ route('institute.chats.send') }}', {
+                    const response = await fetch('/api/v1/chat/send', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -513,7 +690,7 @@
                 list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">Searching contacts...</div>';
 
                 try {
-                    const response = await fetch('{{ route('institute.chats.contacts') }}', {
+                    const response = await fetch('/api/v1/chat/contacts', {
                         headers: { 'Accept': 'application/json' }
                     });
                     const contacts = await response.json();
@@ -542,6 +719,225 @@
             function startChat(userId, type, name) {
                 closeNewChatModal();
                 selectConversation(userId, type, name);
+            }
+
+            // Attachment Dropdown & Modals toggle
+            function toggleAttachmentMenu(e) {
+                e.stopPropagation();
+                const menu = document.getElementById('attachment-menu');
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    setTimeout(() => {
+                        menu.classList.remove('scale-95', 'opacity-0');
+                        menu.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                } else {
+                    hideAttachmentMenu();
+                }
+            }
+
+            function hideAttachmentMenu() {
+                const menu = document.getElementById('attachment-menu');
+                menu.classList.add('scale-95', 'opacity-0');
+                menu.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 200);
+            }
+
+            // Close attachment menu if user clicks anywhere else
+            document.addEventListener('click', () => {
+                const menu = document.getElementById('attachment-menu');
+                if (menu && !menu.classList.contains('hidden')) {
+                    hideAttachmentMenu();
+                }
+            });
+
+            function triggerFileInput(id) {
+                document.getElementById(id).click();
+            }
+
+            // Location Modals
+            function openLocationModal() {
+                const modal = document.getElementById('location-modal');
+                const content = document.getElementById('location-modal-content');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeLocationModal() {
+                const modal = document.getElementById('location-modal');
+                const content = document.getElementById('location-modal-content');
+                content.classList.add('scale-95', 'opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+
+            // Contact Modals
+            function openContactModal() {
+                const modal = document.getElementById('contact-modal');
+                const content = document.getElementById('contact-modal-content');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeContactModal() {
+                const modal = document.getElementById('contact-modal');
+                const content = document.getElementById('contact-modal-content');
+                content.classList.add('scale-95', 'opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+
+            // Multipart / File upload implementation
+            async function handleFileUpload(input, type) {
+                if (!input.files || input.files.length === 0 || !activeConversation) return;
+                const file = input.files[0];
+                
+                // Clear input value so same file can be uploaded again
+                input.value = '';
+
+                const formData = new FormData();
+                formData.append('receiver_id', activeConversation.user_id);
+                formData.append('receiver_type', activeConversation.user_type === 'Staff' ? 'App\\Models\\Staff' :
+                    (activeConversation.user_type === 'Student' ? 'App\\Models\\Student' :
+                        (activeConversation.user_type === 'Institute' ? 'App\\Models\\Institute' : 'App\\Models\\StudentParent')));
+                formData.append('type', type);
+                formData.append('attachment', file);
+                formData.append('message', ''); // optional caption can be empty
+
+                // Show uploading state in button or input
+                const sendBtn = document.getElementById('send-btn');
+                const origContent = sendBtn.innerHTML;
+                sendBtn.innerHTML = '<div class="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+                sendBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/api/v1/chat/send', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        messages.push(result.data);
+                        renderMessages();
+                        scrollToBottom();
+                        setTimeout(() => fetchConversations(), 300);
+                    }
+                } catch (error) {
+                    console.error('Error uploading chat media:', error);
+                } finally {
+                    sendBtn.innerHTML = origContent;
+                    sendBtn.disabled = false;
+                }
+            }
+
+            // Share Location implementation
+            async function handleShareLocation(e) {
+                e.preventDefault();
+                if (!activeConversation) return;
+
+                const label = document.getElementById('loc-label').value;
+                const lat = document.getElementById('loc-lat').value;
+                const lng = document.getElementById('loc-lng').value;
+
+                // Reset and close
+                document.getElementById('loc-label').value = '';
+                document.getElementById('loc-lat').value = '';
+                document.getElementById('loc-lng').value = '';
+                closeLocationModal();
+
+                const locationData = JSON.stringify({ label, lat, lng });
+
+                try {
+                    const response = await fetch('/api/v1/chat/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({
+                            receiver_id: activeConversation.user_id,
+                            receiver_type: activeConversation.user_type === 'Staff' ? 'App\\Models\\Staff' :
+                                (activeConversation.user_type === 'Student' ? 'App\\Models\\Student' :
+                                    (activeConversation.user_type === 'Institute' ? 'App\\Models\\Institute' : 'App\\Models\\StudentParent')),
+                            message: locationData,
+                            type: 'location'
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        messages.push(result.data);
+                        renderMessages();
+                        scrollToBottom();
+                        setTimeout(() => fetchConversations(), 300);
+                    }
+                } catch (error) {
+                    console.error('Error sharing location:', error);
+                }
+            }
+
+            // Share Contact implementation
+            async function handleShareContact(e) {
+                e.preventDefault();
+                if (!activeConversation) return;
+
+                const name = document.getElementById('con-name').value;
+                const phone = document.getElementById('con-phone').value;
+
+                // Reset and close
+                document.getElementById('con-name').value = '';
+                document.getElementById('con-phone').value = '';
+                closeContactModal();
+
+                const contactData = JSON.stringify({ name, phone });
+
+                try {
+                    const response = await fetch('/api/v1/chat/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({
+                            receiver_id: activeConversation.user_id,
+                            receiver_type: activeConversation.user_type === 'Staff' ? 'App\\Models\\Staff' :
+                                (activeConversation.user_type === 'Student' ? 'App\\Models\\Student' :
+                                    (activeConversation.user_type === 'Institute' ? 'App\\Models\\Institute' : 'App\\Models\\StudentParent')),
+                            message: contactData,
+                            type: 'contact'
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        messages.push(result.data);
+                        renderMessages();
+                        scrollToBottom();
+                        setTimeout(() => fetchConversations(), 300);
+                    }
+                } catch (error) {
+                    console.error('Error sharing contact:', error);
+                }
             }
 
             // Initial Load

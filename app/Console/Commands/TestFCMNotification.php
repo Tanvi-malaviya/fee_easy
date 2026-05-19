@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 use App\Models\Student;
 use App\Models\Institute;
 use App\Models\StudentParent;
+use App\Models\User;
+use App\Models\Staff;
 
 class TestFCMNotification extends Command
 {
@@ -36,7 +38,7 @@ class TestFCMNotification extends Command
         $this->info("Looking for user with email: {$email}");
 
         // Check across models
-        $user = Student::where('email', $email)->first() 
+        $user = Student::where('email', $email)->first()
             ?? Institute::where('email', $email)->first()
             ?? StudentParent::where('email', $email)->first()
             ?? User::where('email', $email)->first()
