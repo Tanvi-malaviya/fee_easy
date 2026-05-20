@@ -347,6 +347,7 @@
             let currentConversations = [];
             let activeConversation = null;
             let messages = [];
+            const currentUserId = {{ auth('institute')->id() }};
 
             // Listen for search input on conversation list
             document.getElementById('chat-search').addEventListener('input', function (e) {
@@ -419,14 +420,28 @@
                 .on('pusher:subscription_succeeded', () => console.log('📡 Subscribed to private chat channel'))
                 .listen('.MessageSent', (data) => {
                     console.log('📬 NEW MESSAGE RECEIVED:', data);
+                    console.log('👤 Current conversation:', activeConversation);
+                    
+                    const senderID = parseInt(data.sender_id);
+                    const activeUserID = activeConversation ? parseInt(activeConversation.user_id) : null;
+                    const isMatchingConv = activeConversation && 
+                                           activeUserID === senderID && 
+                                           activeConversation.user_type === data.sender_type;
+                    
+                    console.log('📊 Checking match:', {
+                        senderID: senderID,
+                        senderType: data.sender_type,
+                        activeUserID: activeUserID,
+                        activeUserType: activeConversation?.user_type,
+                        isMatch: isMatchingConv
+                    });
 
-                    const isMe = data.sender_type === 'Institute' && data.sender_id == currentUserId;
+                    const isMe = data.sender_type === 'Institute' && currentUserId == senderID;
 
                     // 1. If we are currently chatting with this person, show the message instantly and mark as READ
-                    if (activeConversation &&
-                        activeConversation.user_id == data.sender_id &&
-                        activeConversation.user_type == data.sender_type) {
-
+                    if (isMatchingConv) {
+                        
+                        console.log('✅ Message is for active conversation, adding to UI');
                         messages.push({
                             id: data.id,
                             sender_id: data.sender_id,
@@ -438,12 +453,14 @@
                             sender: data.sender
                         });
 
+                        console.log('🎨 Calling renderMessages, total messages:', messages.length);
                         renderMessages();
                         scrollToBottom();
 
                         // Automatically inform sender that I have read their message
                         markMessageAsRead(data.id);
                     } else {
+                        console.log('⏭️ Not active conversation, marking as received');
                         // Not actively chatting, but device received it! Mark as RECEIVED (Delivered)
                         markMessageAsReceived(data.id);
                     }
@@ -633,7 +650,9 @@
             }
 
             async function selectConversation(userId, userType, userName) {
-                activeConversation = { user_id: userId, user_type: userType, user_name: userName };
+                console.log('🔄 Selecting conversation with:', { userId, userType, userName });
+                activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName };
+                console.log('✅ Active conversation now set to:', activeConversation);
 
                 document.getElementById('chat-empty-state').classList.add('hidden');
                 document.getElementById('active-chat').classList.remove('hidden');
@@ -642,7 +661,8 @@
 
                 const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
                 renderConversationList(searchTerm); // Update active class
-                fetchMessages(userId, userType);
+                await fetchMessages(userId, userType);
+                console.log('📨 Messages fetched, total:', messages.length);
             }
 
             async function fetchMessages(userId, userType) {
@@ -665,142 +685,132 @@
             }
 
             function renderMessageContent(msg, isMe) {
-                const bubbleBg = isMe ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-700';
-                const textClass = isMe ? 'text-white' : 'text-slate-700';
-                const iconBg = isMe ? 'bg-white/20 text-white' : 'bg-orange-100/50 text-primary';
+                try {
+                    const bubbleBg = isMe ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-700';
+                    const textClass = isMe ? 'text-white' : 'text-slate-700';
+                    const iconBg = isMe ? 'bg-white/20 text-white' : 'bg-orange-100/50 text-primary';
 
-                if (msg.type === 'text') {
-                    return `<p class="text-[13px] leading-snug break-all">${msg.message}</p>`;
-                }
+                    if (!msg.type || msg.type === 'text') {
+                        const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+                        return `<p class="text-[13px] leading-snug break-all">${escapedMsg}</p>`;
+                    }
 
-                if (msg.type === 'image') {
-                    return `
-                                <div class="space-y-1">
-                                    <a href="${msg.attachment}" target="_blank" class="block overflow-hidden rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} max-w-[240px] hover:scale-[1.01] active:scale-95 transition-all">
-                                        <img src="${msg.attachment}" class="w-full h-auto object-cover max-h-[160px]" alt="Image Attachment">
-                                    </a>
-                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                                </div>
-                            `;
-                }
-
-                if (msg.type === 'video') {
-                    return `
-                                <div class="space-y-1">
-                                    <video controls class="max-w-[240px] rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} shadow-sm" src="${msg.attachment}"></video>
-                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                                </div>
-                            `;
-                }
-
-                if (msg.type === 'audio') {
-                    return `
-                                <div class="space-y-1">
-                                    <audio controls class="max-w-[240px] scale-90 origin-left" src="${msg.attachment}"></audio>
-                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                                </div>
-                            `;
-                }
-
-                if (msg.type === 'document') {
-                    const filename = msg.attachment ? msg.attachment.split('/').pop() : 'Document';
-                    return `
-                                <div class="space-y-1">
-                                    <a href="${msg.attachment}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
-                                        <span class="p-1.5 ${iconBg} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-[11px] font-bold truncate">${filename}</p>
-                                            <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Click to view/download</p>
-                                        </div>
-                                    </a>
-                                    ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${msg.message}</p>` : ''}
-                                </div>
-                            `;
-                }
-
-                if (msg.type === 'location') {
-                    try {
-                        const loc = JSON.parse(msg.message);
+                    if (msg.type === 'image' && msg.attachment) {
+                        const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
                         return `
                                     <div class="space-y-1">
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
-                                            <span class="p-1.5 ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100/50 text-emerald-600'} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+                                        <a href="${msg.attachment}" target="_blank" class="block overflow-hidden rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} max-w-[240px] hover:scale-[1.01] active:scale-95 transition-all">
+                                            <img src="${msg.attachment}" class="w-full h-auto object-cover max-h-[160px]" alt="Image Attachment">
+                                        </a>
+                                        ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${escapedMsg}</p>` : ''}
+                                    </div>
+                                `;
+                    }
+
+                    if (msg.type === 'video' && msg.attachment) {
+                        const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+                        return `
+                                    <div class="space-y-1">
+                                        <video controls class="max-w-[240px] rounded-xl border ${isMe ? 'border-white/10' : 'border-slate-100'} shadow-sm" src="${msg.attachment}"></video>
+                                        ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${escapedMsg}</p>` : ''}
+                                    </div>
+                                `;
+                    }
+
+                    if (msg.type === 'audio' && msg.attachment) {
+                        const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+                        return `
+                                    <div class="space-y-1">
+                                        <audio controls class="max-w-[240px] scale-90 origin-left" src="${msg.attachment}"></audio>
+                                        ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${escapedMsg}</p>` : ''}
+                                    </div>
+                                `;
+                    }
+
+                    if (msg.type === 'document' && msg.attachment) {
+                        const filename = msg.attachment.split('/').pop() || 'Document';
+                        const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+                        return `
+                                    <div class="space-y-1">
+                                        <a href="${msg.attachment}" target="_blank" class="flex items-center gap-2.5 ${bubbleBg} hover:opacity-90 rounded-xl p-2.5 transition-all max-w-[240px]">
+                                            <span class="p-1.5 ${iconBg} rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-[11px] font-bold truncate">${loc.label || 'Shared Location'}</p>
-                                                <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Lat: ${parseFloat(loc.lat).toFixed(4)}, Lng: ${parseFloat(loc.lng).toFixed(4)}</p>
+                                                <p class="text-[11px] font-bold truncate">${filename}</p>
+                                                <p class="text-[9px] ${isMe ? 'text-white/70' : 'text-slate-400'}">Click to view/download</p>
                                             </div>
                                         </a>
+                                        ${msg.message ? `<p class="text-[13px] leading-snug break-all mt-1 ${textClass}">${escapedMsg}</p>` : ''}
                                     </div>
                                 `;
-                    } catch (e) {
-                        return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
                     }
-                }
 
-                if (msg.type === 'contact') {
-                    try {
-                        const con = JSON.parse(msg.message);
-                        return `
-                                    <div class="space-y-1">
-                                        <div class="flex items-center gap-2.5 ${bubbleBg} rounded-xl p-2.5 max-w-[240px]">
-                                            <span class="h-8 w-8 ${isMe ? 'bg-white/20 text-white' : 'bg-blue-100/50 text-blue-600'} rounded-xl flex items-center justify-center font-bold text-xs">${con.name.substring(0, 1)}</span>
-                                            <div class="flex-1 min-w-0">
-                                                <p class="text-[11px] font-bold truncate">${con.name}</p>
-                                                <a href="tel:${con.phone}" class="text-[9px] ${isMe ? 'text-white font-extrabold underline' : 'text-primary font-bold hover:underline'}">${con.phone}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                    } catch (e) {
-                        return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message}</p>`;
-                    }
+                    // Fallback for any message type
+                    const escapedMsg = (msg.message || '').replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+                    return `<p class="text-[13px] leading-snug break-all ${textClass}">${escapedMsg}</p>`;
+                } catch (e) {
+                    console.error('Error rendering message content:', e, msg);
+                    return `<p class="text-[13px] leading-snug break-all">Message</p>`;
                 }
-
-                return `<p class="text-[13px] leading-snug break-all ${textClass}">${msg.message || ''}</p>`;
             }
 
             function renderMessages() {
                 const container = document.getElementById('messages-container');
-                const currentUserId = {{ auth('institute')->id() }};
-                container.innerHTML = messages.map(msg => {
-                    const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
-                    return `
-                                <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
-                                    <div class="h-7 w-7 rounded-full ${isMe ? 'bg-primary/10 text-primary border-primary/20' : 'bg-slate-100 text-slate-500 border-slate-200'} flex-shrink-0 flex items-center justify-center font-bold text-[9px] border shadow-sm">
-                                        ${isMe ? 'I' : msg.sender.name.substring(0, 1)}
-                                    </div>
-                                    <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
-                                        <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
-                                            ${renderMessageContent(msg, isMe)}
+                try {
+                    if (!container) {
+                        console.error('❌ Messages container not found');
+                        return;
+                    }
+                    if (!messages || messages.length === 0) {
+                        container.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400">No messages yet</div>';
+                        return;
+                    }
+                    console.log('🎨 Rendering', messages.length, 'messages');
+                    container.innerHTML = messages.map((msg, idx) => {
+                        const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
+                        const senderName = msg.sender?.name || 'U';
+                        const senderInitial = senderName.substring(0, 1) || '?';
+                        return `
+                                    <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
+                                        <div class="h-7 w-7 rounded-full ${isMe ? 'bg-primary/10 text-primary border-primary/20' : 'bg-slate-100 text-slate-500 border-slate-200'} flex-shrink-0 flex items-center justify-center font-bold text-[9px] border shadow-sm">
+                                            ${isMe ? 'I' : senderInitial}
                                         </div>
-                                        <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
-                                            <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
-                                            ${isMe ? (msg.read_at ? `
-                                                <span class="text-sky-500 flex items-center shrink-0" title="Read">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                </span>
-                                            ` : (msg.received_at ? `
-                                                <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                </span>
-                                            ` : `
-                                                <span class="text-slate-400 flex items-center shrink-0" title="Sent">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                </span>
-                                            `)) : ''}
+                                        <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
+                                            <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
+                                                ${renderMessageContent(msg, isMe)}
+                                            </div>
+                                            <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                                                <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
+                                                ${isMe ? (msg.read_at ? `
+                                                    <span class="text-sky-500 flex items-center shrink-0" title="Read">
+                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </span>
+                                                ` : (msg.received_at ? `
+                                                    <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
+                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </span>
+                                                ` : `
+                                                    <span class="text-slate-400 flex items-center shrink-0" title="Sent">
+                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </span>
+                                                `)) : ''}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            `;
-                }).join('');
+                                `;
+                    }).join('');
+                    console.log('✅ Rendered successfully');
+                } catch (e) {
+                    console.error('❌ Error rendering messages:', e);
+                    container.innerHTML = '<div class="p-4 text-red-500 text-xs">Error rendering messages. Please refresh.</div>';
+                }
             }
 
             async function handleSendMessage(e) {
@@ -830,14 +840,27 @@
                         })
                     });
                     const result = await response.json();
-                    if (result.status === 'success') {
-                        messages.push(result.data);
+                    console.log('📤 Message send response:', result);
+                    if (result.status === 'success' && result.data) {
+                        const msgData = result.data;
+                        // Ensure sender object exists with fallback
+                        if (!msgData.sender) {
+                            msgData.sender = {
+                                id: currentUserId,
+                                name: '{{ auth("institute")->user()->name ?? auth("institute")->user()->institute_name ?? "You" }}',
+                                type: 'Institute'
+                            };
+                        }
+                        console.log('✅ Adding message to UI:', msgData);
+                        messages.push(msgData);
                         renderMessages();
                         scrollToBottom();
-                        setTimeout(() => fetchConversations(), 300); // Small delay to ensure DB is ready
+                        setTimeout(() => fetchConversations(), 300);
+                    } else {
+                        console.error('❌ Message send failed:', result.message);
                     }
                 } catch (error) {
-                    console.error('Error sending message:', error);
+                    console.error('❌ Error sending message:', error);
                 } finally {
                     input.disabled = false;
                     input.focus();
@@ -850,14 +873,26 @@
             }
 
             function scrollToBottom() {
-                const container = document.getElementById('messages-container');
-                container.scrollTop = container.scrollHeight;
+                try {
+                    const container = document.getElementById('messages-container');
+                    if (container) {
+                        setTimeout(() => {
+                            container.scrollTop = container.scrollHeight;
+                        }, 50);
+                    }
+                } catch (e) {
+                    console.error('Error scrolling:', e);
+                }
             }
 
             function formatTime(dateStr) {
                 if (!dateStr) return '';
-                const date = new Date(dateStr);
-                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                    return '';
+                }
             }
 
             // Modal Logic
