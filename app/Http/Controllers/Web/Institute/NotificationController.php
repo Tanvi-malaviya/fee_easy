@@ -11,4 +11,9 @@ class NotificationController extends Controller
     {
         return view('institute.notifications.index');
     }
+
+    public function compose()
+    {
+        return view('institute.notifications.push');
+    }
 }

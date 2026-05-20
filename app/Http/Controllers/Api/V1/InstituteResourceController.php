@@ -80,6 +80,10 @@ class InstituteResourceController extends Controller
                 'file_size' => $size,
             ]);
 
+            // ── Send Push Notification for New Resource ──
+            $this->notifyBatchStudents($resource);
+            // ──────────────────────────────────────────────
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Resource uploaded successfully.',
@@ -91,6 +95,73 @@ class InstituteResourceController extends Controller
             'status' => 'error',
             'message' => 'File upload failed.'
         ], 400);
+    }
+
+    /**
+     * Send FCM push notification to all students in the batch (and their parents).
+     */
+    private function notifyBatchStudents(Resource $resource): void
+    {
+        try {
+            $fcm = app(\App\Services\FCMService::class);
+            $batch = \App\Models\Batch::with('students.parent')->find($resource->batch_id);
+
+            if (!$batch) return;
+
+            $typeEmoji = match ($resource->file_type) {
+                'document' => '📄',
+                'video'    => '🎥',
+                'image'    => '🖼️',
+                default    => '📄',
+            };
+
+            $notifTitle = "New Resource: {$batch->name}";
+            $notifBody  = "{$typeEmoji} {$resource->title}" .
+                          ($resource->description ? " — {$resource->description}" : '');
+
+            $notifData = [
+                'type'        => 'resource',
+                'resource_id' => (string) $resource->id,
+                'batch_id'    => (string) $resource->batch_id,
+                'file_type'   => $resource->file_type,
+            ];
+
+            foreach ($batch->students as $student) {
+                // Notify student
+                \App\Models\Notification::create([
+                    'user_type'    => 'student',
+                    'user_id'      => $student->id,
+                    'title'        => $notifTitle,
+                    'message'      => $notifBody,
+                    'type'         => 'resource',
+                    'reference_id' => $resource->id,
+                    'is_read'      => false,
+                ]);
+
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                // Notify parent (if linked)
+                if ($student->parent) {
+                    \App\Models\Notification::create([
+                        'user_type'    => 'parent',
+                        'user_id'      => $student->parent->id,
+                        'title'        => $notifTitle,
+                        'message'      => $notifBody,
+                        'type'         => 'resource',
+                        'reference_id' => $resource->id,
+                        'is_read'      => false,
+                    ]);
+
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, $notifTitle, $notifBody, $notifData);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Resource FCM notification failed: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Request $request, $id)

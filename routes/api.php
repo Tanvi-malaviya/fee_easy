@@ -105,6 +105,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
+            Route::post('/notifications/send-push', [InstituteNotificationController::class, 'sendPush']);
+            Route::get('/notifications/recipient-stats', [InstituteNotificationController::class, 'recipientStats']);
             Route::get('/notifications', [InstituteNotificationController::class, 'index']);
             Route::post('/notifications/mark-all-read', [InstituteNotificationController::class, 'markAllRead']);
 

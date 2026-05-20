@@ -259,6 +259,47 @@ class InstituteBatchController extends Controller
         // Remove student from batch (set batch_id to null)
         $student->update(['batch_id' => null]);
 
+        // ── Send Push Notification for Removal ──
+        $fcm = app(\App\Services\FCMService::class);
+        $notifTitle = "Batch Removed 🚫";
+        $notifBody = "You have been removed from the batch: {$batch->name}";
+        $notifData = [
+            'type' => 'batch_removal',
+            'batch_id' => (string) $batch->id,
+        ];
+
+        // Notify Student
+        \App\Models\Notification::create([
+            'user_type' => 'student',
+            'user_id' => $student->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'batch_removal',
+            'reference_id' => $batch->id,
+            'is_read' => false,
+        ]);
+        if (!empty($student->fcm_token)) {
+            $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+        }
+
+        // Notify Parent
+        $student->load('parent');
+        if ($student->parent) {
+            \App\Models\Notification::create([
+                'user_type' => 'parent',
+                'user_id' => $student->parent->id,
+                'title' => "Batch Removed: {$student->name}",
+                'message' => "{$student->name} has been removed from the batch: {$batch->name}",
+                'type' => 'batch_removal',
+                'reference_id' => $batch->id,
+                'is_read' => false,
+            ]);
+            if (!empty($student->parent->fcm_token)) {
+                $fcm->send($student->parent->fcm_token, "Batch Removed: {$student->name}", "{$student->name} has been removed from the batch: {$batch->name}", $notifData);
+            }
+        }
+        // ────────────────────────────────────────
+
         return response()->json([
             'status' => 'success',
             'message' => 'Student removed from batch successfully'
@@ -288,25 +329,71 @@ class InstituteBatchController extends Controller
 
         $count = 0;
         $assignedStudents = [];
+        $fcm = app(\App\Services\FCMService::class);
+
         foreach ($request->students as $studentData) {
-            $student = \App\Models\Student::where('id', $studentData['id'])
+            $student = \App\Models\Student::with('parent')
+                ->where('id', $studentData['id'])
                 ->where('institute_id', $request->user()->id)
                 ->first();
 
             if ($student) {
+                $oldBatchId = $student->batch_id;
+
                 $updateData = ['batch_id' => $id];
                 $fee = $studentData['fee'] ?? $student->monthly_fee;
                 if (isset($studentData['fee'])) {
                     $updateData['monthly_fee'] = $studentData['fee'];
                 }
                 $student->update($updateData);
-                
+
                 $assignedStudents[] = [
                     'id' => $student->id,
                     'name' => $student->name,
                     'fee' => $fee
                 ];
                 $count++;
+
+                // ── Send Push Notification if Batch Changed ──
+                if ($oldBatchId != $id) {
+                    $notifTitle = "Batch Assigned 📚";
+                    $notifBody = "You have been assigned to the batch: {$batch->name}";
+                    $notifData = [
+                        'type' => 'batch_assignment',
+                        'batch_id' => (string) $batch->id,
+                    ];
+
+                    // Notify Student
+                    \App\Models\Notification::create([
+                        'user_type' => 'student',
+                        'user_id' => $student->id,
+                        'title' => $notifTitle,
+                        'message' => $notifBody,
+                        'type' => 'batch_assignment',
+                        'reference_id' => $batch->id,
+                        'is_read' => false,
+                    ]);
+                    if (!empty($student->fcm_token)) {
+                        $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                    }
+
+                    // Notify Parent
+                    if ($student->parent) {
+                        \App\Models\Notification::create([
+                            'user_type' => 'parent',
+                            'user_id' => $student->parent->id,
+                            'title' => "Batch Assigned: {$student->name}",
+                            'message' => "{$student->name} has been assigned to the batch: {$batch->name}",
+                            'type' => 'batch_assignment',
+                            'reference_id' => $batch->id,
+                            'is_read' => false,
+                        ]);
+                        if (!empty($student->parent->fcm_token)) {
+                            $fcm->send($student->parent->fcm_token, "Batch Assigned: {$student->name}", "{$student->name} has been assigned to the batch: {$batch->name}", $notifData);
+                        }
+                    }
+                }
+                // ──────────────────────────────────────────────
             }
         }
 

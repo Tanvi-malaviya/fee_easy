@@ -176,6 +176,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Notifications
                 Route::get('/notifications', [App\Http\Controllers\Web\Institute\NotificationController::class, 'index'])->name('notifications.index');
+                Route::get('/push-notifications', [App\Http\Controllers\Web\Institute\NotificationController::class, 'compose'])->name('push.compose');
 
                 // Staff Management
                 Route::get('/staff', [App\Http\Controllers\Web\Institute\StaffController::class, 'index'])->name('staff.index');
