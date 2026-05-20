@@ -120,11 +120,71 @@ class InstituteHomeworkController extends Controller
             'attachment' => $attachmentPath,
         ]);
 
+        // ── Send Push Notification for New Homework ──
+        $this->notifyBatchStudents($homework, $batch);
+        // ──────────────────────────────────────────────
+
         return response()->json([
             'status' => 'success',
             'message' => 'Homework created successfully.',
             'data' => $homework,
         ], 201);
+    }
+
+    /**
+     * Send FCM push notification to all students in the batch (and their parents).
+     */
+    private function notifyBatchStudents(Homework $homework, Batch $batch): void
+    {
+        try {
+            $fcm = app(\App\Services\FCMService::class);
+            $batch->load('students.parent');
+
+            $notifTitle = "New Homework: {$batch->name} 📝";
+            $notifBody = "{$homework->title}" . ($homework->due_date ? "\nDue: " . \Carbon\Carbon::parse($homework->due_date)->format('M d, Y') : '');
+
+            $notifData = [
+                'type' => 'homework',
+                'homework_id' => (string) $homework->id,
+                'batch_id' => (string) $batch->id,
+            ];
+
+            foreach ($batch->students as $student) {
+                // Notify Student
+                \App\Models\Notification::create([
+                    'user_type' => 'student',
+                    'user_id' => $student->id,
+                    'title' => $notifTitle,
+                    'message' => $notifBody,
+                    'type' => 'homework',
+                    'reference_id' => $homework->id,
+                    'is_read' => false,
+                ]);
+                
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                // Notify Parent
+                if ($student->parent) {
+                    \App\Models\Notification::create([
+                        'user_type' => 'parent',
+                        'user_id' => $student->parent->id,
+                        'title' => "New Homework: {$student->name} 📝",
+                        'message' => "{$student->name} has new homework: {$homework->title}",
+                        'type' => 'homework',
+                        'reference_id' => $homework->id,
+                        'is_read' => false,
+                    ]);
+                    
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, "New Homework: {$student->name} 📝", "{$student->name} has new homework: {$homework->title}", $notifData);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Homework FCM notification failed: ' . $e->getMessage());
+        }
     }
 
     public function show(Request $request, $id)
