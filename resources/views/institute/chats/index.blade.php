@@ -314,6 +314,13 @@
         <script>
             const INSTITUTE_ID = '{{ auth('institute')->id() }}';
             const CSRF_TOKEN = '{{ csrf_token() }}';
+            @php
+                $instLogo = auth('institute')->user()?->logo;
+                $instLogoUrl = $instLogo ? url('storage/' . $instLogo) : null;
+                $instName = auth('institute')->user()?->institute_name ?? auth('institute')->user()?->name ?? 'Institute';
+            @endphp
+            const INSTITUTE_LOGO = '{{ $instLogoUrl }}';
+            const INSTITUTE_NAME = '{{ $instName }}';
 
             // Initialize Echo
             window.Pusher = Pusher;
@@ -767,44 +774,45 @@
                     console.log('🎨 Rendering', messages.length, 'messages');
                     container.innerHTML = messages.map((msg, idx) => {
                         const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
-                        const senderName = msg.sender?.name || 'U';
-                        const senderInitial = senderName.substring(0, 1) || '?';
+                        const senderName = msg.sender?.name || msg.sender?.full_name || 'U';
+                        const senderInitial = senderName.substring(0, 1).toUpperCase() || '?';
+                        const senderLogo = msg.sender?.logo ?? msg.sender?.profile_image ?? null;
+
+                        // Avatar HTML
+                        const myAvatarHtml = INSTITUTE_LOGO
+                            ? `<img src="${INSTITUTE_LOGO}" class="h-7 w-7 rounded-full object-cover border border-primary/20 shadow-sm flex-shrink-0" alt="Me" onerror="this.outerHTML='<div class=\'h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm\'>' + INSTITUTE_NAME.substring(0,1) + '</div>'">`
+                            : `<div class="h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm">${INSTITUTE_NAME.substring(0,1)}</div>`;
+
+                        const otherAvatarHtml = senderLogo
+                            ? `<img src="${senderLogo}" class="h-7 w-7 rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0" alt="${senderInitial}" onerror="this.outerHTML='<div class=\'h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm\'>${senderInitial}</div>'">`
+                            : `<div class="h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm">${senderInitial}</div>`;
+
+                        // Tick icon HTML
+                        const tickHtml = isMe ? (msg.read_at ? `
+                            <span class="text-sky-500 flex items-center shrink-0" title="Seen">
+                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>` : (msg.received_at ? `
+                            <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
+                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>` : `
+                            <span class="text-slate-400 flex items-center shrink-0" title="Sent">
+                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>`)) : '';
+
                         return `
-                                    <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
-                                        <div class="h-7 w-7 rounded-full ${isMe ? 'bg-primary/10 text-primary border-primary/20' : 'bg-slate-100 text-slate-500 border-slate-200'} flex-shrink-0 flex items-center justify-center font-bold text-[9px] border shadow-sm">
-                                            ${isMe ? 'I' : senderInitial}
-                                        </div>
-                                        <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
-                                            <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
-                                                ${renderMessageContent(msg, isMe)}
-                                            </div>
-                                            <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
-                                                <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
-                                                ${isMe ? (msg.read_at ? `
-                                                    <span class="text-sky-500 flex items-center shrink-0" title="Read">
-                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                            <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </span>
-                                                ` : (msg.received_at ? `
-                                                    <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
-                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                            <path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </span>
-                                                ` : `
-                                                    <span class="text-slate-400 flex items-center shrink-0" title="Sent">
-                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </span>
-                                                `)) : ''}
-                                            </div>
-                                        </div>
+                            <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
+                                ${isMe ? myAvatarHtml : otherAvatarHtml}
+                                <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
+                                    <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
+                                        ${renderMessageContent(msg, isMe)}
                                     </div>
-                                `;
+                                    <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                                        <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
+                                        ${tickHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     }).join('');
                     console.log('✅ Rendered successfully');
                 } catch (e) {

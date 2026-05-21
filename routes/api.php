@@ -296,6 +296,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [StudentAuthController::class, 'logout']);
             Route::get('/profile', [StudentProfileController::class, 'show']);
+            Route::post('/profile/avatar', [StudentProfileController::class, 'updateAvatar']);
             Route::get('/dashboard', [StudentDashboardController::class, 'index']);
             Route::get('/fees', [StudentFeesController::class, 'index']);
             Route::get('/fees/{id}', [StudentFeesController::class, 'show']);
@@ -311,6 +312,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/homeworks/{id}/attachment/download', [StudentHomeworkController::class, 'attachmentDownload']);
             Route::get('/report', [StudentReportController::class, 'index']);
             Route::get('/notifications', [StudentNotificationController::class, 'index']);
+            Route::get('/notifications/{id}/attachment/download', [StudentNotificationController::class, 'downloadAttachment']);
+            Route::post('/notifications/{id}/read', [StudentNotificationController::class, 'markAsRead']);
+            Route::post('/notifications/mark-all-read', [StudentNotificationController::class, 'markAllRead']);
             Route::get('/institute', [StudentInstituteController::class, 'show']);
             Route::post('/feedback', [StudentFeedbackController::class, 'store']);
             Route::get('/resources', [StudentResourceController::class, 'index']);

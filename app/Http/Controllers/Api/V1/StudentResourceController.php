@@ -72,13 +72,10 @@ class StudentResourceController extends Controller
                 'description' => $r->description,
                 'subject'     => $r->batch->subject ?? null,
                 'batch_name'  => $r->batch->name ?? null,
-                'file_type'   => $r->file_type,   // document | video | image
+                'file_type'   => $r->file_type,
                 'file_size'   => $r->file_size,
-                'file_count'  => 1,                // one file per resource record
-                'file_url'     => $r->file_url,
-                'download_url' => url('/api/v1/student/resources/' . $r->id . '/download'),
-                'date'         => $this->formatDate($r->created_at),
-                'date_raw'    => $r->created_at->toDateString(),
+                'file_url'    => $r->file_url,
+                'date'        => $this->formatDate($r->created_at),
             ];
         });
 

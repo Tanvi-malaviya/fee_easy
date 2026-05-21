@@ -151,5 +151,38 @@ class StudentProfileController extends Controller
         ]);
     }
 
-}
+    /**
+     * POST /api/v1/student/profile/avatar
+     *
+     * Upload / replace the student's profile photo.
+     * Request: multipart/form-data  →  field "avatar" (jpg/jpeg/png/webp, max 2 MB)
+     */
+    public function updateAvatar(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof Student)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
 
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        /** @var Student $student */
+        $student = $request->user();
+
+        // Delete old image from storage if exists
+        if ($student->profile_image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($student->profile_image);
+        }
+
+        // Store new image
+        $path = $request->file('avatar')->store('profile_images', 'public');
+        $student->update(['profile_image' => $path]);
+
+        return response()->json([
+            'status'     => 'success',
+            'message'    => 'Profile photo updated successfully.',
+            'avatar_url' => $student->profile_image_url,
+        ]);
+    }
+}

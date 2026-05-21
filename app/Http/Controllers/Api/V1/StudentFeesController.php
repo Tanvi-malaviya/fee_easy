@@ -16,21 +16,48 @@ class StudentFeesController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $fees = Fee::where('student_id', $request->user()->id)
-            ->orderByDesc('created_at')
+        $student   = $request->user();
+        $fees      = Fee::where('student_id', $student->id)
+            ->orderByDesc('date')
             ->get();
 
+        // total_fees = student's monthly_fee (fixed), not sum of fee records
+        $totalFees = (float) ($student->monthly_fee > 0 ? $student->monthly_fee : $fees->sum('total_amount'));
+        $paidFees  = (float) $fees->sum('paid_amount');
+        $dueFees   = max(0.0, $totalFees - $paidFees);
+
         $summary = [
-            'total_fees' => $fees->sum('total_amount'),
-            'paid_fees' => $fees->sum('paid_amount'),
-            'due_fees' => $fees->sum('total_amount') - $fees->sum('paid_amount'),
+            'total_fees' => $totalFees,
+            'paid_fees'  => $paidFees,
+            'due_fees'   => $dueFees,
         ];
+
+        $feeList = $fees->map(function ($fee) {
+            $dueDate   = Carbon::parse($fee->date);
+            $dueAmount = max(0.0, (float)$fee->total_amount - (float)$fee->paid_amount);
+            $diffDays  = Carbon::today()->diffInDays($dueDate, false);
+
+            $daysLabel = match(true) {
+                $diffDays > 0  => "{$diffDays} days left",
+                $diffDays == 0 => 'Due today',
+                default        => 'Overdue by ' . abs($diffDays) . ' days',
+            };
+
+            return [
+                'id'           => $fee->id,
+                'month_year'   => $dueDate->format('F Y'),
+                'due_date'     => $fee->date,
+                'paid_amount'  => (float) $fee->paid_amount,
+                'status'       => ucfirst($fee->status),
+                'is_overdue'   => $diffDays < 0,
+            ];
+        });
 
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data'   => [
                 'summary' => $summary,
-                'fees' => $fees,
+                'fees'    => $feeList,
             ],
         ]);
     }

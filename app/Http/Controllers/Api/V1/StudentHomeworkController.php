@@ -107,11 +107,8 @@ class StudentHomeworkController extends Controller
                 'subject'         => $homework->batch->subject ?? 'General',
                 'batch_name'      => $homework->batch->name ?? null,
                 'due_date'        => $homework->due_date,
-                'due_label'       => $dueLabel,
-                'due_label_badge' => $dueLabelShort,
                 'is_overdue'      => $isOverdue,
                 'attachment_url'  => $homework->attachment ?? null,
-                'status'          => $isSubmitted ? 'completed' : ($isOverdue ? 'overdue' : 'pending'),
                 'submission'      => $submission ? [
                     'id'           => $submission->id,
                     'status'       => $submission->status,
@@ -162,7 +159,6 @@ class StudentHomeworkController extends Controller
         // ── Build response based on status filter ──
         $responseData = [
             'summary'      => $summary,
-            'week_summary' => $weekSummary,
         ];
 
         if (!$statusFilter || $statusFilter === 'pending') {
@@ -225,11 +221,8 @@ class StudentHomeworkController extends Controller
                 'subject'        => $homework->batch->subject ?? 'General',
                 'batch_name'     => $homework->batch->name ?? null,
                 'due_date'       => $homework->due_date,
-                'due_date_label' => $dueLabel,
-                'due_date_formatted' => $dueDate->format('d M Y'),
                 'is_overdue'     => $isOverdue,
                 'attachment_url' => $homework->attachment ?? null,
-                'status'         => $isSubmitted ? 'completed' : ($isOverdue ? 'overdue' : 'pending'),
                 'submission'     => $submission ? [
                     'id'           => $submission->id,
                     'status'       => $submission->status,
@@ -307,7 +300,6 @@ class StudentHomeworkController extends Controller
     {
         return [
             'summary'      => ['total' => 0, 'pending' => 0, 'completed' => 0, 'overdue' => 0],
-            'week_summary' => ['still_to_do' => 0, 'total' => 0, 'done' => 0, 'label' => '0/0 Still to do this week', 'sub_label' => '0 marked complete'],
             'pending'      => [],
             'completed'    => [],
         ];
