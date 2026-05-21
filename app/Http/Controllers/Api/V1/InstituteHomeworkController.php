@@ -70,6 +70,12 @@ class InstituteHomeworkController extends Controller
             if ($homework->attachment) {
                 $homework->attachment = asset('storage/' . $homework->attachment);
             }
+
+            // Status flags for CLOSED / ACTIVE badge
+            $dueDate         = \Carbon\Carbon::parse($homework->due_date)->endOfDay();
+            $homework->is_closed = \Carbon\Carbon::now()->isAfter($dueDate);
+            $homework->days_left = max(0, (int) \Carbon\Carbon::today()->diffInDays($dueDate, false));
+            $homework->status    = $homework->is_closed ? 'closed' : 'active';
         });
 
         return response()->json([
@@ -85,11 +91,11 @@ class InstituteHomeworkController extends Controller
         }
 
         $request->validate([
-            'batch_id' => 'required|integer|exists:batches,id',
-            'title' => 'required|string|max:255',
+            'batch_id'    => 'required|integer|exists:batches,id',
+            'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'due_date' => 'required|date',
-            'attachment' => 'nullable|file|max:10240', // Max 10MB
+            'due_date'    => 'required|date|after_or_equal:today',
+            'attachment'  => 'nullable|file|max:10240',
         ]);
 
         $institute = $request->user();
@@ -255,9 +261,15 @@ class InstituteHomeworkController extends Controller
             $homework->attachment = asset('storage/' . $homework->attachment);
         }
 
+        // Status flags for CLOSED / ACTIVE badge
+        $dueDate              = \Carbon\Carbon::parse($homework->due_date)->endOfDay();
+        $homework->is_closed  = \Carbon\Carbon::now()->isAfter($dueDate);
+        $homework->days_left  = max(0, (int) \Carbon\Carbon::today()->diffInDays($dueDate, false));
+        $homework->status     = $homework->is_closed ? 'closed' : 'active';
+
         return response()->json([
             'status' => 'success',
-            'data' => $homework,
+            'data'   => $homework,
         ]);
     }
 
