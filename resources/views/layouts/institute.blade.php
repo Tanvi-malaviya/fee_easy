@@ -73,8 +73,9 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
                 </button>
                 <div class="flex items-center gap-2">
-                    <img src="{{ asset('images/turooa.png') }}" alt="Logo" class="h-12 w-auto object-contain" onerror="this.style.display='none'">
-
+                    <a href="{{ route('institute.dashboard') }}" class="flex items-center">
+                        <img src="{{ asset('images/turooa.png') }}" alt="Logo" class="h-12 w-auto object-contain" onerror="this.style.display='none'">
+                    </a>
                 </div>
             </div>
 

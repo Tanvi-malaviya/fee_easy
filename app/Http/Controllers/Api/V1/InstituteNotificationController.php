@@ -73,6 +73,8 @@ class InstituteNotificationController extends Controller
             'target_ids.*'=> 'integer',
             'type'        => 'nullable|string|max:100',
             'reference_id'=> 'nullable|integer',
+            'image'       => 'nullable|max:5120',    // file upload OR URL string
+            'image_url'   => 'nullable|string|max:1000', // alternate URL field
         ]);
 
         $institute   = $request->user();
@@ -81,6 +83,19 @@ class InstituteNotificationController extends Controller
         $title       = $request->title;
         $body        = $request->message;
         $notifType   = $request->input('type', 'general');
+
+        // ── Handle image ────────────────────────────────────────────────────
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            // multipart file upload
+            $path     = $request->file('image')->store('notifications', 'public');
+            $imageUrl = url('storage/' . $path);
+        } elseif ($request->filled('image') && filter_var($request->input('image'), FILTER_VALIDATE_URL)) {
+            // URL string passed in 'image' field
+            $imageUrl = $request->input('image');
+        } elseif ($request->filled('image_url')) {
+            $imageUrl = $request->image_url;
+        }
 
         // ── Resolve recipients ──────────────────────────────────────────────
         $recipients = collect(); // each item: ['model' => ..., 'user_type' => '...']
@@ -144,6 +159,7 @@ class InstituteNotificationController extends Controller
                 'user_id'      => $user->id,
                 'title'        => $title,
                 'message'      => $body,
+                'image'        => $imageUrl,
                 'type'         => $notifType,
                 'target'       => $targetType,
                 'reference_id' => $request->reference_id,
@@ -154,6 +170,7 @@ class InstituteNotificationController extends Controller
             $pushed = $fcm->send($user->fcm_token, $title, $body, [
                 'type'         => $notifType,
                 'reference_id' => (string) ($request->reference_id ?? ''),
+                'image'        => $imageUrl ?? '',
             ]);
 
             $pushed ? $sentCount++ : $failedCount++;
@@ -220,13 +237,26 @@ class InstituteNotificationController extends Controller
             'type'         => 'nullable|string|max:100',
             'target'       => 'nullable|string|max:255',
             'reference_id' => 'nullable|integer',
+            'image'        => 'nullable|max:5120',
+            'image_url'    => 'nullable|string|max:1000',
         ]);
+
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            $path     = $request->file('image')->store('notifications', 'public');
+            $imageUrl = url('storage/' . $path);
+        } elseif ($request->filled('image') && filter_var($request->input('image'), FILTER_VALIDATE_URL)) {
+            $imageUrl = $request->input('image');
+        } elseif ($request->filled('image_url')) {
+            $imageUrl = $request->image_url;
+        }
 
         $notification = Notification::create([
             'user_type'    => 'institute',
             'user_id'      => $request->user()->id,
             'title'        => $request->title,
             'message'      => $request->message,
+            'image'        => $imageUrl,
             'type'         => $request->type,
             'target'       => $request->target,
             'reference_id' => $request->reference_id,

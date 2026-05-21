@@ -196,7 +196,9 @@ class StudentDashboardController extends Controller
                         'id' => $resource->id,
                         'title' => $resource->title,
                         'subject' => $resource->batch->subject ?? 'General',
-                        'file_size' => $resource->file_size ? round($resource->file_size / 1024 / 1024, 2) . ' MB' : '1 file',
+                        'file_size' => ($resource->file_size && is_numeric($resource->file_size))
+                            ? round((float)$resource->file_size / 1024 / 1024, 2) . ' MB'
+                            : ($resource->file_size ?: '1 file'),
                         'file_type' => $resource->file_type,
                         'file_url' => $resource->file_url,
                         'download_url' => $resource->download_url,

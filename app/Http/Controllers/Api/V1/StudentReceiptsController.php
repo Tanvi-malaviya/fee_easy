@@ -15,6 +15,9 @@ class StudentReceiptsController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
+        $student  = $request->user();
+        $institute = $student->institute;
+
         $receipts = Receipt::whereHas('payment', function ($query) use ($request) {
                 $query->where('student_id', $request->user()->id);
             })
@@ -24,17 +27,17 @@ class StudentReceiptsController extends Controller
             }])
             ->orderByDesc('created_at')
             ->get()
-            ->map(function ($receipt) {
+            ->map(function ($receipt) use ($student, $institute) {
                 $date = \Carbon\Carbon::parse($receipt->created_at);
                 return [
-                    'id' => $receipt->id,
+                    'id'             => $receipt->id,
                     'receipt_number' => $receipt->receipt_number,
-                    'amount' => $receipt->payment->amount ?? 0,
+                    'amount'         => $receipt->payment->amount ?? 0,
                     'payment_method' => $receipt->payment->payment_method ?? 'Cash',
-                    'date' => $date->format('j M Y'),
-                    'time' => $date->format('g:i A'),
-                    'month_year' => $receipt->payment->fee->month ?? $date->format('F'),
-                    'download_url' => route('student.receipts.download', ['id' => $receipt->id]),
+                    'date'           => $date->format('j M Y'),
+                    'student_name'   => $student->name,
+                    'roll_no'        => $student->id,
+                    'institute_name' => $institute->institute_name ?? $institute->name ?? null,
                 ];
             });
 
@@ -46,17 +49,17 @@ class StudentReceiptsController extends Controller
                 ->get();
                 
             if ($payments->isNotEmpty()) {
-                $receipts = $payments->map(function($payment) {
+                $receipts = $payments->map(function($payment) use ($student, $institute) {
                     $date = \Carbon\Carbon::parse($payment->paid_at ?? $payment->created_at);
                     return [
-                        'id' => $payment->id,
+                        'id'             => $payment->id,
                         'receipt_number' => 'RE-DEMO-' . str_pad($payment->id, 4, '0', STR_PAD_LEFT),
-                        'amount' => $payment->amount,
+                        'amount'         => $payment->amount,
                         'payment_method' => $payment->payment_method ?? 'Cash',
-                        'date' => $date->format('j M Y'),
-                        'time' => $date->format('g:i A'),
-                        'month_year' => $payment->fee->month ?? $date->format('F'),
-                        'download_url' => route('student.receipts.download', ['id' => 'demo-' . $payment->id]),
+                        'date'           => $date->format('j M Y'),
+                        'student_name'   => $student->name,
+                        'roll_no'        => $student->id,
+                        'institute_name' => $institute->institute_name ?? $institute->name ?? null,
                     ];
                 });
             } else {
@@ -67,17 +70,17 @@ class StudentReceiptsController extends Controller
                     ->get();
                     
                 if ($fees->isNotEmpty()) {
-                    $receipts = $fees->map(function($fee) {
+                    $receipts = $fees->map(function($fee) use ($student, $institute) {
                         $date = \Carbon\Carbon::parse($fee->updated_at ?? $fee->date);
                         return [
-                            'id' => $fee->id, // Use fee ID
+                            'id'             => $fee->id,
                             'receipt_number' => 'RE-FEE-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT),
-                            'amount' => $fee->paid_amount,
+                            'amount'         => $fee->paid_amount,
                             'payment_method' => 'Cash',
-                            'date' => $date->format('j M Y'),
-                            'time' => $date->format('g:i A'),
-                            'month_year' => $fee->month ?? $date->format('F'),
-                            'download_url' => route('student.receipts.download', ['id' => 'fee-' . $fee->id]),
+                            'date'           => $date->format('j M Y'),
+                            'student_name'   => $student->name,
+                            'roll_no'        => $student->id,
+                            'institute_name' => $institute->institute_name ?? $institute->name ?? null,
                         ];
                     });
                 } else {

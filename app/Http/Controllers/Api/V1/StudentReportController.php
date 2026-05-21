@@ -19,7 +19,13 @@ class StudentReportController extends Controller
         }
 
         $student = $request->user();
-        $period  = $request->query('period', '4_weeks'); // this_week | 4_weeks | 12_weeks
+
+        // Strict validation: only integer 1, 4, or 12 accepted — text rejected
+        $validated = $request->validate([
+            'period' => 'nullable|integer|in:1,4,12',
+        ]);
+
+        $period = (int) ($validated['period'] ?? 4);
 
         [$weeks, $startDate] = $this->resolvePeriod($period);
 
@@ -39,16 +45,17 @@ class StudentReportController extends Controller
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     /**
-     * Returns [weekCount, startDate (Carbon)] for the given period key.
+     * Returns [weekCount, startDate (Carbon)] for the given period.
+     * period: 1 = This Week, 4 = Four Weeks, 12 = Twelve Weeks
      */
-    private function resolvePeriod(string $period): array
+    private function resolvePeriod(int $period): array
     {
         $today = Carbon::today();
 
         return match ($period) {
-            'this_week' => [1,  $today->copy()->startOfWeek()],
-            '12_weeks'  => [12, $today->copy()->subWeeks(11)->startOfWeek()],
-            default     => [4,  $today->copy()->subWeeks(3)->startOfWeek()],  // 4_weeks
+            1  => [1,  $today->copy()->startOfWeek()],
+            12 => [12, $today->copy()->subWeeks(11)->startOfWeek()],
+            default => [4, $today->copy()->subWeeks(3)->startOfWeek()], // 4 weeks
         };
     }
 
@@ -138,7 +145,10 @@ class StudentReportController extends Controller
 
         return [
             'pct'     => $overallPct,
-            'summary' => $totalPresent . ' of ' . $totalClassDays . ' days',
+            'summary' => [
+                'present' => $totalPresent,
+                'total'   => $totalClassDays,
+            ],
             'weeks'   => $weeklyData,
         ];
     }
@@ -226,7 +236,10 @@ class StudentReportController extends Controller
 
         return [
             'pct'     => $overallPct,
-            'summary' => $totalCompleted . ' completed · ' . max(0, $totalPending) . ' pending',
+            'summary' => [
+                'completed' => $totalCompleted,
+                'pending'   => max(0, $totalPending),
+            ],
             'weeks'   => $weeklyData,
         ];
     }

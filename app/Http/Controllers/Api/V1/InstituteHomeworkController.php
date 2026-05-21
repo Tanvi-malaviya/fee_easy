@@ -147,7 +147,7 @@ class InstituteHomeworkController extends Controller
             $batch->load('students.parent');
 
             $notifTitle = "New Homework: {$batch->name} 📝";
-            $notifBody = "{$homework->title}" . ($homework->due_date ? "\nDue: " . \Carbon\Carbon::parse($homework->due_date)->format('M d, Y') : '');
+            $notifBody  = $homework->description ?? $homework->title;
 
             $notifData = [
                 'type' => 'homework',
@@ -155,16 +155,27 @@ class InstituteHomeworkController extends Controller
                 'batch_id' => (string) $batch->id,
             ];
 
+            // Check if homework has an image attachment
+            $homeworkImageUrl = null;
+            if (!empty($homework->attachment)) {
+                $rawAttachment = $homework->getRawOriginal('attachment') ?? $homework->attachment;
+                $ext = strtolower(pathinfo($rawAttachment, PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    $homeworkImageUrl = $homework->attachment; // accessor gives full URL
+                }
+            }
+
             foreach ($batch->students as $student) {
                 // Notify Student
                 \App\Models\Notification::create([
-                    'user_type' => 'student',
-                    'user_id' => $student->id,
-                    'title' => $notifTitle,
-                    'message' => $notifBody,
-                    'type' => 'homework',
+                    'user_type'    => 'student',
+                    'user_id'      => $student->id,
+                    'title'        => $notifTitle,
+                    'message'      => $notifBody,
+                    'image'        => $homeworkImageUrl,
+                    'type'         => 'homework',
                     'reference_id' => $homework->id,
-                    'is_read' => false,
+                    'is_read'      => false,
                 ]);
                 
                 if (!empty($student->fcm_token)) {
@@ -174,13 +185,14 @@ class InstituteHomeworkController extends Controller
                 // Notify Parent
                 if ($student->parent) {
                     \App\Models\Notification::create([
-                        'user_type' => 'parent',
-                        'user_id' => $student->parent->id,
-                        'title' => "New Homework: {$student->name} 📝",
-                        'message' => "{$student->name} has new homework: {$homework->title}",
-                        'type' => 'homework',
+                        'user_type'    => 'parent',
+                        'user_id'      => $student->parent->id,
+                        'title'        => "New Homework: {$student->name} 📝",
+                        'message'      => "{$student->name} has new homework: {$homework->title}",
+                        'image'        => $homeworkImageUrl,
+                        'type'         => 'homework',
                         'reference_id' => $homework->id,
-                        'is_read' => false,
+                        'is_read'      => false,
                     ]);
                     
                     if (!empty($student->parent->fcm_token)) {
