@@ -91,6 +91,69 @@ class InstituteDailyUpdateController extends Controller
             'date' => now()->toDateString(),
         ]);
 
+        // Send notifications based on Recipient (Students/Parents/Both) and Target Audience
+        $studentsQuery = \App\Models\Student::where('institute_id', $request->user()->id);
+
+        if ($request->target_type === UpdateTargetType::BATCH->value) {
+            $studentsQuery->where('batch_id', $request->batch_id);
+        } elseif ($request->target_type === UpdateTargetType::STANDARD->value) {
+            $studentsQuery->where('standard', $request->standard);
+        } elseif ($request->student_id) {
+            $studentsQuery->where('id', $request->student_id);
+        }
+
+        $students = $studentsQuery->with('parent')->get();
+        $fcm = app(\App\Services\FCMService::class);
+
+        $categoryLabel = ucfirst($request->category);
+        $topicLabel = $request->topic ?: 'Announcement';
+        $notifTitle = "New {$categoryLabel} Update: {$topicLabel} 📢";
+        $notifBody = \Illuminate\Support\Str::limit($request->description, 150);
+        $notifData = [
+            'type' => 'daily_update',
+            'update_id' => (string) $update->id,
+            'category' => $request->category,
+        ];
+
+        $notifyStudents = in_array($request->recipient, ['students', 'both']);
+        $notifyParents = in_array($request->recipient, ['parents', 'both']);
+
+        foreach ($students as $student) {
+            // Notify Student
+            if ($notifyStudents) {
+                \App\Models\Notification::create([
+                    'user_type' => 'student',
+                    'user_id' => $student->id,
+                    'title' => $notifTitle,
+                    'message' => $notifBody,
+                    'type' => 'daily_update',
+                    'reference_id' => $update->id,
+                    'is_read' => false,
+                ]);
+
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+            }
+
+            // Notify Parent
+            if ($notifyParents && $student->parent) {
+                \App\Models\Notification::create([
+                    'user_type' => 'parent',
+                    'user_id' => $student->parent->id,
+                    'title' => $notifTitle,
+                    'message' => $notifBody,
+                    'type' => 'daily_update',
+                    'reference_id' => $update->id,
+                    'is_read' => false,
+                ]);
+
+                if (!empty($student->parent->fcm_token)) {
+                    $fcm->send($student->parent->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+            }
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Update published successfully.',

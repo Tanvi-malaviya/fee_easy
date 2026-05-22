@@ -88,6 +88,9 @@ class InstituteAttendanceController extends Controller
         $markedBy = $request->user()->name ?? 'Institute Admin';
 
         $savedRecords = [];
+        $studentIds = collect($request->attendance)->pluck('student_id')->toArray();
+        $students = \App\Models\Student::whereIn('id', $studentIds)->with('parent')->get()->keyBy('id');
+        $fcm = app(\App\Services\FCMService::class);
 
         foreach ($request->attendance as $record) {
             $attendance = Attendance::updateOrCreate(
@@ -102,6 +105,56 @@ class InstituteAttendanceController extends Controller
                 ]
             );
             $savedRecords[] = $attendance;
+
+            $student = $students[$record['student_id']] ?? null;
+            if ($student && ($attendance->wasRecentlyCreated || $attendance->wasChanged('status'))) {
+                $statusUpper = ucfirst(strtolower($record['status']));
+                $formattedDate = \Illuminate\Support\Carbon::parse($date)->format('d M Y');
+                
+                $notifTitle = "Attendance: {$statusUpper} 📝";
+                $notifBody = "You have been marked {$statusUpper} for class on {$formattedDate}.";
+                $notifData = [
+                    'type' => 'attendance',
+                    'date' => $date,
+                    'status' => strtolower($record['status']),
+                ];
+
+                // Student DB Notification
+                \App\Models\Notification::create([
+                    'user_type' => 'student',
+                    'user_id' => $student->id,
+                    'title' => $notifTitle,
+                    'message' => $notifBody,
+                    'type' => 'attendance',
+                    'reference_id' => $attendance->id,
+                    'is_read' => false,
+                ]);
+
+                // Student FCM push
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                // Parent Notification
+                if ($student->parent) {
+                    $parentTitle = "Attendance: {$student->name} - {$statusUpper} 📝";
+                    $parentBody = "{$student->name} has been marked {$statusUpper} for class on {$formattedDate}.";
+
+                    \App\Models\Notification::create([
+                        'user_type' => 'parent',
+                        'user_id' => $student->parent->id,
+                        'title' => $parentTitle,
+                        'message' => $parentBody,
+                        'type' => 'attendance',
+                        'reference_id' => $attendance->id,
+                        'is_read' => false,
+                    ]);
+
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, $parentTitle, $parentBody, $notifData);
+                    }
+                }
+            }
         }
 
         return response()->json([
