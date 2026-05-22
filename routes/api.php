@@ -106,6 +106,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/homeworks/{id}', [InstituteHomeworkController::class, 'show']);
             Route::post('/homeworks/{id}/score', [InstituteHomeworkController::class, 'updateScore']);
             Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
+            Route::post('/homeworks/{id}/reminder', [InstituteHomeworkController::class, 'sendReminder']);
 
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::post('/notifications/send-push', [InstituteNotificationController::class, 'sendPush']);
@@ -302,6 +303,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/fees/{id}', [StudentFeesController::class, 'show']);
             Route::get('/fees/{id}/download', [StudentFeesController::class, 'download'])->name('student.fees.download');
             Route::get('/receipts', [StudentReceiptsController::class, 'index']);
+            Route::get('/receipts/{id}', [StudentReceiptsController::class, 'show']);
             Route::get('/receipts/{id}/download', [StudentReceiptsController::class, 'download'])->name('student.receipts.download');
             Route::get('/attendance', [StudentAttendanceController::class, 'index']);
             Route::get('/daily-updates', [StudentDailyUpdateController::class, 'index']);

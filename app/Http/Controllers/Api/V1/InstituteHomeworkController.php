@@ -341,12 +341,24 @@ class InstituteHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
         }
 
+        // Block grade updates for closed homework
+        if ($homework->is_closed) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Grades cannot be updated after homework is closed.'
+            ], 422);
+        }
+
         $request->validate([
             'grades' => 'required|array',
             'grades.*.student_id' => 'required|integer|exists:students,id',
             'grades.*.score' => 'nullable|numeric',
             'grades.*.status' => 'required|string',
         ]);
+
+        $studentIds = collect($request->grades)->pluck('student_id')->toArray();
+        $students = \App\Models\Student::whereIn('id', $studentIds)->with('parent')->get()->keyBy('id');
+        $fcm = app(\App\Services\FCMService::class);
 
         foreach ($request->grades as $gradeData) {
             // Standardize status to Title Case for consistency
@@ -364,11 +376,156 @@ class InstituteHomeworkController extends Controller
                     'status' => $status,
                 ]
             );
+
+            $student = $students[$gradeData['student_id']] ?? null;
+            if (!$student) {
+                continue;
+            }
+
+            // Only notify if status is 'Submitted' (meaning graded/published successfully)
+            if ($status === 'Submitted') {
+                $scoreText = $gradeData['score'] !== null ? "Score: {$gradeData['score']}" : "Graded successfully";
+                $notifTitle = "Homework Graded! 🌟";
+                $notifBody = "Your homework \"{$homework->title}\" has been graded. {$scoreText}!";
+                $notifData = [
+                    'type' => 'homework_graded',
+                    'homework_id' => (string) $homework->id,
+                    'batch_id' => (string) $homework->batch_id,
+                ];
+
+                // Student DB Notification
+                \App\Models\Notification::create([
+                    'user_type' => 'student',
+                    'user_id' => $student->id,
+                    'title' => $notifTitle,
+                    'message' => $notifBody,
+                    'type' => 'homework_graded',
+                    'reference_id' => $homework->id,
+                    'is_read' => false,
+                ]);
+
+                // Student FCM push
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                // Parent Notification
+                if ($student->parent) {
+                    $parentTitle = "Homework Graded: {$student->name}";
+                    $parentBody = "{$student->name}'s homework \"{$homework->title}\" has been graded. {$scoreText}!";
+
+                    \App\Models\Notification::create([
+                        'user_type' => 'parent',
+                        'user_id' => $student->parent->id,
+                        'title' => $parentTitle,
+                        'message' => $parentBody,
+                        'type' => 'homework_graded',
+                        'reference_id' => $homework->id,
+                        'is_read' => false,
+                    ]);
+
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, $parentTitle, $parentBody, $notifData);
+                    }
+                }
+            }
         }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Grades updated successfully',
+        ]);
+    }
+
+    public function sendReminder(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $homework = Homework::where('id', $id)
+            ->where('institute_id', $request->user()->id)
+            ->with(['batch.students.parent'])
+            ->first();
+
+        if (!$homework) {
+            return response()->json(['status' => 'error', 'message' => 'Homework not found'], 404);
+        }
+
+        $dueDate   = \Carbon\Carbon::parse($homework->due_date)->endOfDay();
+        $isClosed  = \Carbon\Carbon::now()->isAfter($dueDate);
+        $daysLeft  = max(0, (int) \Carbon\Carbon::today()->diffInDays($dueDate, false));
+
+        if ($isClosed) {
+            return response()->json(['status' => 'error', 'message' => 'Cannot send reminder for closed homework.'], 422);
+        }
+
+        if ($daysLeft > 3) {
+            return response()->json(['status' => 'error', 'message' => 'Reminders can only be sent when 3 or fewer days are left.'], 422);
+        }
+
+        // Fetch already submitted student IDs to skip
+        $submittedStudentIds = $homework->submissions()
+            ->whereIn('status', ['Submitted', 'Late'])
+            ->pluck('student_id')
+            ->toArray();
+
+        $students = $homework->batch->students ?? collect();
+        $remindedCount = 0;
+        $fcm = app(\App\Services\FCMService::class);
+
+        $notifTitle = "Homework Pending! 📝";
+        $notifBody  = "Reminder: \"{$homework->title}\" is still pending. Please submit it soon! (If already submitted, please ignore.)";
+        $notifData  = [
+            'type'        => 'homework_reminder',
+            'homework_id' => (string) $homework->id,
+            'batch_id'    => (string) $homework->batch_id,
+        ];
+
+        foreach ($students as $student) {
+            if (in_array($student->id, $submittedStudentIds)) {
+                continue;
+            }
+
+            \App\Models\Notification::create([
+                'user_type'    => 'student',
+                'user_id'      => $student->id,
+                'title'        => $notifTitle,
+                'message'      => $notifBody,
+                'type'         => 'homework_reminder',
+                'reference_id' => $homework->id,
+                'is_read'      => false,
+            ]);
+
+            if (!empty($student->fcm_token)) {
+                $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+            }
+
+            if ($student->parent) {
+                $parentTitle = "Homework Reminder: {$student->name}";
+                $parentBody  = "{$student->name}'s homework \"{$homework->title}\" is still pending. Please make sure they submit it. (If already submitted, please ignore.)";
+
+                \App\Models\Notification::create([
+                    'user_type'    => 'parent',
+                    'user_id'      => $student->parent->id,
+                    'title'        => $parentTitle,
+                    'message'      => $parentBody,
+                    'type'         => 'homework_reminder',
+                    'reference_id' => $homework->id,
+                    'is_read'      => false,
+                ]);
+
+                if (!empty($student->parent->fcm_token)) {
+                    $fcm->send($student->parent->fcm_token, $parentTitle, $parentBody, $notifData);
+                }
+            }
+
+            $remindedCount++;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Reminders sent successfully to {$remindedCount} student(s)!",
         ]);
     }
 }

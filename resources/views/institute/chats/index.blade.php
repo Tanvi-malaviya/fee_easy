@@ -66,8 +66,7 @@
                     <div
                         class="p-4 border-b border-slate-50 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
                         <div class="flex items-center gap-4">
-                            <div id="active-user-avatar"
-                                class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary border border-primary/20">
+                            <div id="active-user-avatar" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary border border-primary/20 overflow-hidden flex-shrink-0">
                                 ?
                             </div>
                             <div>
@@ -638,12 +637,26 @@
                     return;
                 }
 
-                list.innerHTML = filteredConversations.map(conv => `
-                            <div onclick="selectConversation('${conv.user_id}', '${conv.user_type}', '${conv.user_name}')" 
+                list.innerHTML = filteredConversations.map(conv => {
+                        // Resolve logo to full URL if relative
+                        let logoUrl = conv.user_logo ?? null;
+                        if (logoUrl && !logoUrl.startsWith('http')) {
+                            logoUrl = `${window.location.origin}/storage/${logoUrl.replace(/^\//, '')}`;
+                        }
+                        const initial = conv.user_name.substring(0, 1).toUpperCase();
+
+                        const avatarHtml = logoUrl
+                            ? `<div class="relative h-12 w-12 flex-shrink-0">
+                                    <img src="${logoUrl}" class="h-12 w-12 rounded-full object-cover border border-slate-200 shadow-sm" alt="${initial}"
+                                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                    <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 items-center justify-center font-bold text-slate-500 border border-slate-200 absolute inset-0" style="display:none">${initial}</div>
+                               </div>`
+                            : `<div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">${initial}</div>`;
+
+                        return `
+                            <div onclick="selectConversation('${conv.user_id}', '${conv.user_type}', '${conv.user_name}', '${logoUrl ?? ''}')"
                                 class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${activeConversation && activeConversation.user_id == conv.user_id && activeConversation.user_type == conv.user_type ? 'bg-orange-50/50 border-r-4 border-primary' : ''}">
-                                <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">
-                                    ${conv.user_name.substring(0, 1)}
-                                </div>
+                                ${avatarHtml}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between mb-0.5">
                                         <h4 class="text-sm font-bold text-slate-800 truncate">${conv.user_name}</h4>
@@ -653,18 +666,29 @@
                                 </div>
                                 ${conv.unread_count > 0 ? `<div class="h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">${conv.unread_count}</div>` : ''}
                             </div>
-                        `).join('');
+                        `;
+                    }).join('');
             }
 
-            async function selectConversation(userId, userType, userName) {
+            async function selectConversation(userId, userType, userName, logoUrl = '') {
                 console.log('🔄 Selecting conversation with:', { userId, userType, userName });
-                activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName };
+                activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName, user_logo: logoUrl || null };
                 console.log('✅ Active conversation now set to:', activeConversation);
 
                 document.getElementById('chat-empty-state').classList.add('hidden');
                 document.getElementById('active-chat').classList.remove('hidden');
                 document.getElementById('active-user-name').innerText = userName;
-                document.getElementById('active-user-avatar').innerText = userName.substring(0, 1);
+
+                // Update header avatar
+                const avatarEl = document.getElementById('active-user-avatar');
+                const initial = userName.substring(0, 1).toUpperCase();
+                if (logoUrl) {
+                    avatarEl.innerHTML = `<img src="${logoUrl}" class="h-full w-full object-cover" alt="${initial}" onerror="this.style.display='none';this.parentElement.innerText='${initial}'">`;
+                    avatarEl.classList.remove('text-primary');
+                } else {
+                    avatarEl.innerHTML = initial;
+                    avatarEl.classList.add('text-primary');
+                }
 
                 const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
                 renderConversationList(searchTerm); // Update active class
@@ -776,43 +800,62 @@
                         const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
                         const senderName = msg.sender?.name || msg.sender?.full_name || 'U';
                         const senderInitial = senderName.substring(0, 1).toUpperCase() || '?';
-                        const senderLogo = msg.sender?.logo ?? msg.sender?.profile_image ?? null;
+
+                        // Ensure senderLogo is a full URL (relative paths get storage prefix)
+                        // Fallback to activeConversation.user_logo if msg.sender has no image
+                        let rawLogo = msg.sender?.logo ?? msg.sender?.profile_image ?? activeConversation?.user_logo ?? null;
+                        if (rawLogo && !rawLogo.startsWith('http')) {
+                            rawLogo = `${window.location.origin}/storage/${rawLogo.replace(/^\//, '')}`;
+                        }
+                        const senderLogo = rawLogo;
 
                         // Avatar HTML
                         const myAvatarHtml = INSTITUTE_LOGO
-                            ? `<img src="${INSTITUTE_LOGO}" class="h-7 w-7 rounded-full object-cover border border-primary/20 shadow-sm flex-shrink-0" alt="Me" onerror="this.outerHTML='<div class=\'h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm\'>' + INSTITUTE_NAME.substring(0,1) + '</div>'">`
-                            : `<div class="h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm">${INSTITUTE_NAME.substring(0,1)}</div>`;
+                            ? `<img src="${INSTITUTE_LOGO}" class="h-7 w-7 rounded-full object-cover border border-primary/20 shadow-sm flex-shrink-0 mt-0.5" alt="Me" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                              + `<div class="h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 items-center justify-center font-bold text-[9px] shadow-sm mt-0.5" style="display:none">${INSTITUTE_NAME.substring(0,1)}</div>`
+                            : `<div class="h-7 w-7 rounded-full bg-primary/10 text-primary border border-primary/20 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm mt-0.5">${INSTITUTE_NAME.substring(0,1)}</div>`;
 
                         const otherAvatarHtml = senderLogo
-                            ? `<img src="${senderLogo}" class="h-7 w-7 rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0" alt="${senderInitial}" onerror="this.outerHTML='<div class=\'h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm\'>${senderInitial}</div>'">`
-                            : `<div class="h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm">${senderInitial}</div>`;
+                            ? `<img src="${senderLogo}" class="h-7 w-7 rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0 mt-0.5" alt="${senderInitial}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                              + `<div class="h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 items-center justify-center font-bold text-[9px] shadow-sm mt-0.5" style="display:none">${senderInitial}</div>`
+                            : `<div class="h-7 w-7 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-[9px] shadow-sm mt-0.5">${senderInitial}</div>`;
 
-                        // Tick icon HTML
-                        const tickHtml = isMe ? (msg.read_at ? `
-                            <span class="text-sky-500 flex items-center shrink-0" title="Seen">
-                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>` : (msg.received_at ? `
-                            <span class="text-slate-400 flex items-center shrink-0" title="Delivered">
-                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>` : `
-                            <span class="text-slate-400 flex items-center shrink-0" title="Sent">
-                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>`)) : '';
+                        // Tick SVG for sent messages
+                        const tickSvg = msg.read_at
+                            ? `<svg class="w-3 h-3 text-sky-300 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+                            : msg.received_at
+                            ? `<svg class="w-3 h-3 text-white/60 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+                            : `<svg class="w-3 h-3 text-white/60 inline-block" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-                        return `
-                            <div class="flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}">
-                                ${isMe ? myAvatarHtml : otherAvatarHtml}
-                                <div class="space-y-0.5 ${isMe ? 'text-right' : ''}">
-                                    <div class="${isMe ? 'bg-primary text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-700 shadow-sm'} px-3 py-2 rounded-2xl ${isMe ? 'rounded-br-none' : 'rounded-bl-none'}">
-                                        ${renderMessageContent(msg, isMe)}
+                        if (isMe) {
+                            // Sent message: NO avatar, tick OUTSIDE bubble bottom-right
+                            return `
+                                <div class="flex flex-col items-end max-w-[75%] ml-auto">
+                                    <div class="bg-primary text-white shadow-sm px-3 py-2 rounded-2xl rounded-br-none">
+                                        ${renderMessageContent(msg, true)}
                                     </div>
-                                    <div class="flex items-center ${isMe ? 'justify-end' : ''} gap-1 px-1">
+                                    <div class="flex items-center gap-1 px-1 mt-0.5">
                                         <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
-                                        ${tickHtml}
+                                        ${tickSvg}
                                     </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        } else {
+                            // Received message: avatar on left, time below bubble
+                            return `
+                                <div class="flex items-start gap-2 max-w-[75%]">
+                                    ${otherAvatarHtml}
+                                    <div class="space-y-0.5">
+                                        <div class="bg-white border border-slate-100 text-slate-700 shadow-sm px-3 py-2 rounded-2xl rounded-bl-none">
+                                            ${renderMessageContent(msg, false)}
+                                        </div>
+                                        <div class="flex items-center gap-1 px-1">
+                                            <span class="text-[8px] font-medium text-slate-400/80">${formatTime(msg.created_at)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
                     }).join('');
                     console.log('✅ Rendered successfully');
                 } catch (e) {

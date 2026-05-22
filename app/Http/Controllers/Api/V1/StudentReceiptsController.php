@@ -95,6 +95,81 @@ class StudentReceiptsController extends Controller
         ]);
     }
 
+    public function show(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Student)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student  = $request->user();
+        $institute = $student->institute;
+
+        // Try to fetch actual receipt first
+        $receipt = Receipt::whereHas('payment', function ($query) use ($student) {
+                $query->where('student_id', $student->id);
+            })
+            ->with(['payment' => function($q) {
+                $q->select('id', 'student_id', 'fee_id', 'amount', 'payment_method', 'transaction_id', 'paid_at');
+                $q->with('fee:id,month,year,date');
+            }])
+            ->find($id);
+
+        if ($receipt) {
+            $date = \Carbon\Carbon::parse($receipt->created_at);
+            $data = [
+                'id'             => $receipt->id,
+                'receipt_number' => $receipt->receipt_number,
+                'amount'         => $receipt->payment->amount ?? 0,
+                'payment_method' => $receipt->payment->payment_method ?? 'Cash',
+                'date'           => $date->format('j M Y'),
+                'student_name'   => $student->name,
+                'roll_no'        => $student->id,
+                'institute_name' => $institute->institute_name ?? $institute->name ?? null,
+            ];
+            return response()->json(['status' => 'success', 'data' => $data]);
+        }
+
+        // Fallback to payment-based receipt if the ID is standard payment ID or starting with 'demo-'
+        $paymentId = str_replace('demo-', '', $id);
+        $payment = \App\Models\Payment::where('student_id', $student->id)->find($paymentId);
+
+        if ($payment) {
+            $date = \Carbon\Carbon::parse($payment->paid_at ?? $payment->created_at);
+            $data = [
+                'id'             => $payment->id,
+                'receipt_number' => 'RE-DEMO-' . str_pad($payment->id, 4, '0', STR_PAD_LEFT),
+                'amount'         => $payment->amount,
+                'payment_method' => $payment->payment_method ?? 'Cash',
+                'date'           => $date->format('j M Y'),
+                'student_name'   => $student->name,
+                'roll_no'        => $student->id,
+                'institute_name' => $institute->institute_name ?? $institute->name ?? null,
+            ];
+            return response()->json(['status' => 'success', 'data' => $data]);
+        }
+
+        // Fallback to fee-based receipt
+        $feeId = str_replace('fee-', '', $id);
+        $fee = \App\Models\Fee::where('student_id', $student->id)->find($feeId);
+
+        if ($fee && $fee->paid_amount > 0) {
+            $date = \Carbon\Carbon::parse($fee->updated_at ?? $fee->date);
+            $data = [
+                'id'             => $fee->id,
+                'receipt_number' => 'RE-FEE-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT),
+                'amount'         => $fee->paid_amount,
+                'payment_method' => 'Cash',
+                'date'           => $date->format('j M Y'),
+                'student_name'   => $student->name,
+                'roll_no'        => $student->id,
+                'institute_name' => $institute->institute_name ?? $institute->name ?? null,
+            ];
+            return response()->json(['status' => 'success', 'data' => $data]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Receipt not found'], 404);
+    }
+
     public function download(Request $request, $id)
     {
         if (!$request->user() || !($request->user() instanceof Student)) {

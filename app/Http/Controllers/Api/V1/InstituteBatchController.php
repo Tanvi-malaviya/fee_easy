@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\Institute;
+use App\Models\Notification;
+use App\Models\Student;
 use Illuminate\Http\Request;
-
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InstituteBatchController extends Controller
@@ -176,12 +177,78 @@ class InstituteBatchController extends Controller
             }
         }
 
+        // Capture old schedule BEFORE update
+        $oldStartTime = $batch->start_time;
+        $oldEndTime   = $batch->end_time;
+        $oldDays      = $batch->days ?? [];
+
         $batch->update($data);
 
+        // ── Schedule Change Notification ───────────────────────────────────────
+        $newStartTime = $batch->fresh()->start_time;
+        $newEndTime   = $batch->fresh()->end_time;
+        $newDays      = $batch->fresh()->days ?? [];
+
+        $scheduleChanged = ($oldStartTime !== $newStartTime)
+            || ($oldEndTime !== $newEndTime)
+            || (json_encode($oldDays) !== json_encode($newDays));
+
+        if ($scheduleChanged) {
+            // Build human-readable schedule string
+            $daysList  = implode(', ', (array) $newDays);
+            $timeRange = trim(($newStartTime ?? '') . ($newStartTime && $newEndTime ? ' – ' . $newEndTime : ($newEndTime ?? '')));
+            $scheduleStr = implode(' · ', array_filter([$daysList, $timeRange]));
+
+            $notifTitle = "Schedule Updated 🗓️";
+            $notifBody  = "Your {$batch->name} schedule has been updated" . ($scheduleStr ? ": {$scheduleStr}" : '.');
+            $notifData  = [
+                'type'     => 'schedule_update',
+                'batch_id' => (string) $batch->id,
+            ];
+
+            $fcm      = app(\App\Services\FCMService::class);
+            $students = Student::where('batch_id', $batch->id)->with('parent')->get();
+
+            foreach ($students as $student) {
+                // DB notification → student
+                Notification::create([
+                    'user_type'    => 'student',
+                    'user_id'      => $student->id,
+                    'title'        => $notifTitle,
+                    'message'      => $notifBody,
+                    'type'         => 'schedule_update',
+                    'reference_id' => $batch->id,
+                    'is_read'      => false,
+                ]);
+                // FCM push → student
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                // DB notification → parent
+                if ($student->parent) {
+                    Notification::create([
+                        'user_type'    => 'parent',
+                        'user_id'      => $student->parent->id,
+                        'title'        => $notifTitle,
+                        'message'      => $notifBody,
+                        'type'         => 'schedule_update',
+                        'reference_id' => $batch->id,
+                        'is_read'      => false,
+                    ]);
+                    // FCM push → parent
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, $notifTitle, $notifBody, $notifData);
+                    }
+                }
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Batch updated successfully',
-            'data' => $batch
+            'data'    => $batch->fresh()
         ]);
     }
 

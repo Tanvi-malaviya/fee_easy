@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Batch;
-use App\Models\DailyUpdate;
+
 use App\Models\Fee;
 use App\Models\Homework;
 use App\Models\HomeworkSubmission;
@@ -78,9 +78,9 @@ class StudentDashboardController extends Controller
         $weekDays = [];
         $dayNamesShort = [1 => 'M', 2 => 'T', 3 => 'W', 4 => 'T', 5 => 'F', 6 => 'S', 7 => 'S'];
         for ($i = 1; $i <= 7; $i++) {
-            $status = null;
+            $status = "";
             if (isset($weekAttendances[$i])) {
-                $status = strtolower($weekAttendances[$i]->status); // present, absent, late, leave
+                $status = strtolower($weekAttendances[$i]->status) ?: ""; // present, absent, late, leave
             }
 
             $weekDays[] = [
@@ -118,7 +118,6 @@ class StudentDashboardController extends Controller
                         'description' => $homework->description,
                         'subject' => $homework->batch->subject ?? 'General',
                         'due_date' => $homework->due_date,
-                        'due_label' => $dueLabel,
                         'status' => $submission ? 'Submitted' : 'Pending',
                     ];
                 });
@@ -134,46 +133,16 @@ class StudentDashboardController extends Controller
             $checkInTime = $todayAttendance->created_at ? Carbon::parse($todayAttendance->created_at)->format('g:i A') : '8:00 AM';
             $todayAttendanceData = [
                 'status' => ucfirst($todayAttendance->status), // Present, Absent, Late
-                'check_in_time' => $checkInTime,
                 'text' => "Checked in at {$checkInTime} · " . ($batch->subject ?? 'Class'),
             ];
         } else {
             $todayAttendanceData = [
                 'status' => 'Not Marked',
-                'check_in_time' => null,
                 'text' => 'Attendance not marked yet for today.',
             ];
         }
 
-        // 6. Updates (Daily Updates only)
-        $dailyUpdatesQuery = DailyUpdate::where('institute_id', $student->institute_id)
-            ->whereIn('recipient', ['students', 'both']);
-            
-        if ($student->batch_id) {
-            $dailyUpdatesQuery->where(function($q) use ($student) {
-                $q->where('target_type', 'all')
-                  ->orWhere('batch_id', $student->batch_id)
-                  ->orWhere('standard', $student->standard);
-            });
-        } else {
-            $dailyUpdatesQuery->where('target_type', 'all');
-        }
-
-        $updates = $dailyUpdatesQuery->orderByDesc('date')
-            ->orderByDesc('created_at')
-            ->take(5)
-            ->get()
-            ->map(function ($update) {
-                $createdAt = Carbon::parse($update->created_at);
-                return [
-                    'id' => $update->id,
-                    'type' => 'Daily Update',
-                    'title' => $update->topic ? "Daily update: " . $update->topic : "Daily update",
-                    'description' => $update->description,
-                    'date' => $update->date,
-                    'time_label' => $createdAt->diffForHumans(),
-                ];
-            });
+      
 
         // 7. Study Material This Week
         $studyMaterials = [];
@@ -203,12 +172,18 @@ class StudentDashboardController extends Controller
                         'file_url' => $resource->file_url,
                         'download_url' => $resource->download_url,
                         'time_label' => $timeLabel,
-                        'text' => ($resource->batch->subject ?? 'General') . " · 1 file · " . $timeLabel,
                     ];
                 });
         }
 
         // 8. Pending Fees Details
+        // 9. Consolidated Fees Summary
+        $totalFees = (float) ($student->monthly_fee > 0 ? $student->monthly_fee : Fee::where('student_id', $student->id)->sum('total_amount'));
+        $paidFees = (float)Fee::where('student_id', $student->id)->sum('paid_amount');
+        $dueFees = max(0.0, $totalFees - $paidFees);
+
+        // 8. Pending Fees Details
+        $runningDue = $dueFees;
         $pendingFees = Fee::where('student_id', $student->id)
             ->where(function ($query) {
                 $query->where('status', '!=', 'Paid')
@@ -216,34 +191,24 @@ class StudentDashboardController extends Controller
             })
             ->orderBy('date', 'asc')
             ->get()
-            ->map(function ($fee) {
+            ->map(function ($fee) use (&$runningDue) {
                 $dueDate = Carbon::parse($fee->date);
-                $dueAmount = $fee->total_amount - $fee->paid_amount;
+                $rawDue = (float)$fee->total_amount - (float)$fee->paid_amount;
+                $dueAmount = min($runningDue, $rawDue);
+                $runningDue -= $dueAmount;
                 
                 return [
                     'id' => $fee->id,
                     'month_year' => $dueDate->format('F Y'),
-                    'due_amount' => $dueAmount,
-                    'due_date' => $fee->date,
-                    'due_date_label' => "Due " . $dueDate->format('j M'),
+                    'due_amount' => max(0.0, $dueAmount),
                     'status' => ucfirst($fee->status),
-                    'text' => $dueDate->format('F Y') . " · ₹" . number_format($dueAmount) . " due",
-                    'subtext' => "Due " . $dueDate->format('j M') . " · pay at institute",
                 ];
             })
+            ->filter(function($f) {
+                return $f['due_amount'] > 0;
+            })
+            ->values()
             ->toArray();
-
-        // 9. Consolidated Fees Summary
-        $totalFees = (float)Fee::where('student_id', $student->id)->sum('total_amount');
-        $paidFees = (float)Fee::where('student_id', $student->id)->sum('paid_amount');
-        
-        // If the student has a monthly_fee configured, ensure totalFees is at least monthly_fee
-        if ($student->monthly_fee > 0) {
-            if ($totalFees < $student->monthly_fee) {
-                $totalFees = (float)$student->monthly_fee;
-            }
-        }
-        $dueFees = max(0.0, $totalFees - $paidFees);
 
         // Fallback: If there is a due amount but no pending fees in the list, or if they don't cover the due amount,
         // dynamically append a pending/partial fee for the remaining amount
@@ -257,11 +222,7 @@ class StudentDashboardController extends Controller
                 'id' => null,
                 'month_year' => Carbon::now()->format('F Y'),
                 'due_amount' => $remainingDue,
-                'due_date' => $dueDate->toDateString(),
-                'due_date_label' => "Due " . $dueDate->format('j M'),
                 'status' => $paidFees > 0 ? 'Partial' : 'Pending',
-                'text' => Carbon::now()->format('F Y') . " · ₹" . number_format($remainingDue) . " due",
-                'subtext' => "Due " . $dueDate->format('j M') . " · pay at institute",
             ];
         }
 
@@ -285,7 +246,7 @@ class StudentDashboardController extends Controller
                 'week_attendance_days' => $weekDays,
                 'today_assignments' => $todayAssignments,
                 'today_attendance' => $todayAttendanceData,
-                'updates' => $updates,
+             
                 'study_materials' => $studyMaterials,
                 'pending_fees' => $pendingFees,
             ],
