@@ -108,18 +108,29 @@
                                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Expires On</span>
                                             <span class="text-sm font-bold text-gray-900 mt-0.5">{{ \Carbon\Carbon::parse($subscription->end_date)->format('d M, Y') }}</span>
                                             
-                                            @php $daysLeft = \Carbon\Carbon::parse($subscription->end_date)->diffInDays(now(), false); @endphp
-                                            @if($daysLeft < 0)
+                                            @php
+                                                $endDate = \Carbon\Carbon::parse($subscription->end_date)->startOfDay();
+                                                $today = \Carbon\Carbon::today();
+                                                $daysLeft = $today->diffInDays($endDate, false);
+                                            @endphp
+                                            @if($daysLeft > 0)
                                                 <div class="inline-flex items-center mt-1.5">
                                                     <span class="w-1.5 h-1.5 rounded-full {{ strtolower($subscription->status) == 'trial' ? 'bg-primary' : 'bg-emerald-500' }} mr-2"></span>
                                                     <span class="text-[10px] font-bold {{ strtolower($subscription->status) == 'trial' ? 'text-primary' : 'text-emerald-600' }} uppercase tracking-wider">
-                                                        {{ abs($daysLeft) }} Days {{ strtolower($subscription->status) == 'trial' ? 'Trial left' : 'Remaining' }}
+                                                        {{ $daysLeft }} Days {{ strtolower($subscription->status) == 'trial' ? 'Trial left' : 'Remaining' }}
+                                                    </span>
+                                                </div>
+                                            @elseif($daysLeft == 0)
+                                                <div class="inline-flex items-center mt-1.5">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
+                                                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">
+                                                        Expires Today
                                                     </span>
                                                 </div>
                                             @else
                                                 <div class="inline-flex items-center mt-1.5">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></span>
-                                                    <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider italic">Expired {{ $daysLeft }} days ago</span>
+                                                    <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider italic">Expired {{ abs($daysLeft) }} days ago</span>
                                                 </div>
                                             @endif
                                         </div>

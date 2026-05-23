@@ -323,7 +323,7 @@
     // ── Fetch device stats ───────────────────────────────────────────────────
     async function fetchDeviceStats() {
         try {
-            const res    = await fetch('/api/v1/institute/notifications/recipient-stats', {
+            const res    = await fetch('{{ url("/api/v1/institute/notifications/recipient-stats") }}', {
                 headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
             });
             const result = await res.json();
@@ -375,7 +375,7 @@
         `;
 
         try {
-            const res = await fetch('/api/v1/institute/notifications/send-push', {
+            const res = await fetch('{{ url("/api/v1/institute/notifications/send-push") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

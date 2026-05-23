@@ -23,7 +23,7 @@
 <script>
     async function fetchNotifications() {
         try {
-            const response = await fetch("/api/v1/institute/notifications", { 
+            const response = await fetch('{{ url("/api/v1/institute/notifications") }}', { 
                 headers: { 
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -91,6 +91,18 @@
                     </div>
                     <p class="text-[11px] text-slate-500 mt-1 leading-relaxed font-medium">${n.message}</p>
                     
+                    ${n.image ? `
+                        <div class="mt-3">
+                            <a href="{{ asset('storage') }}/${n.image}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 rounded-lg text-[10px] font-bold transition-all border border-slate-200/40">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View File
+                            </a>
+                        </div>
+                    ` : ''}
+                    
                     ${titleLower.includes('expire') ? `
                         <div class="mt-4 flex items-center gap-3">
                             <button class="px-4 py-1.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:scale-[1.02] transition-all">
@@ -123,7 +135,7 @@
 
     async function markAllAsRead() {
         try {
-            const response = await fetch("/api/v1/institute/notifications/mark-all-read", { 
+            const response = await fetch('{{ url("/api/v1/institute/notifications/mark-all-read") }}', { 
                 method: 'POST',
                 headers: { 
                     'Accept': 'application/json',

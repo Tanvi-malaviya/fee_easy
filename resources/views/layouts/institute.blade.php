@@ -293,6 +293,54 @@
                 });
             }
         });
+
+        // Real-time notification polling
+        let seenNotifications = new Set();
+        let isFirstLoad = true;
+
+        async function pollNotifications() {
+            try {
+                const response = await fetch('{{ url("/api/v1/institute/notifications") }}', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const result = await response.json();
+                if (result.status === 'success' && Array.isArray(result.data)) {
+                    let hasUnread = false;
+                    result.data.forEach(notif => {
+                        if (!notif.is_read) {
+                            hasUnread = true;
+                            if (!seenNotifications.has(notif.id)) {
+                                seenNotifications.add(notif.id);
+                                if (!isFirstLoad) {
+                                    showToast(`📢 ${notif.title}: ${notif.message}`, 'success');
+                                }
+                            }
+                        }
+                    });
+                    
+                    const dot = document.getElementById('notif-dot');
+                    if (dot) {
+                        if (hasUnread) {
+                            dot.classList.remove('hidden');
+                        } else {
+                            dot.classList.add('hidden');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Notification polling error:', e);
+            } finally {
+                isFirstLoad = false;
+            }
+        }
+
+        @if(auth('institute')->check())
+            // Run on load and then every 30 seconds
+            document.addEventListener('DOMContentLoaded', () => {
+                pollNotifications();
+                setInterval(pollNotifications, 30000);
+            });
+        @endif
     </script>
     @stack('scripts')
     @stack('modals')

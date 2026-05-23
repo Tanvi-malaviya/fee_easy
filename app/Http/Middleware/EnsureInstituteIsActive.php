@@ -19,12 +19,12 @@ class EnsureInstituteIsActive
     {
         if (Auth::guard('institute')->check()) {
             $institute = Auth::guard('institute')->user();
-            
+
             if (in_array($institute->status, ['suspended', 'blocked'])) {
                 Auth::guard('institute')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return redirect()->route('institute.login')->withErrors([
                     'email' => "Your account is currently {$institute->status}. Please contact support.",
                 ]);
