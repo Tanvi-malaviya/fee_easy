@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::table('notes', function (Blueprint $table) {
             // Add user_id foreign key referencing users table
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade')->after('id');
+            if (!Schema::hasColumn('notes', 'user_id')) {
+                $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade')->after('id');
+            }
             // Add category_id foreign key referencing note_categories table
-            $table->foreignId('category_id')->nullable()->constrained('note_categories')->onDelete('set null')->after('category');
+            if (!Schema::hasColumn('notes', 'category_id')) {
+                $table->foreignId('category_id')->nullable()->constrained('note_categories')->onDelete('set null')->after('category');
+            }
         });
     }
 
