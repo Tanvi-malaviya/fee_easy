@@ -30,7 +30,51 @@ class CheckSubscriptionExpiry extends Command
     {
         $today = Carbon::today();
 
-        // Find all active or trial subscriptions that should have expired by now
+        // 1. Send Expiry Warning Notifications (expiring in 7 days down to 0 days)
+        $warningSubscriptions = Subscription::whereBetween('end_date', [$today, $today->copy()->addDays(7)])
+            ->whereIn('status', ['active', 'trial'])
+            ->get();
+
+        $fcmService = app(\App\Services\FCMService::class);
+
+        foreach ($warningSubscriptions as $subscription) {
+            $institute = $subscription->institute;
+            if (!$institute) {
+                continue;
+            }
+
+            $days = $today->diffInDays($subscription->end_date);
+            $planName = $subscription->plan_name;
+            $formattedDate = $subscription->end_date->format('d-m-Y');
+
+            $title = '⚠️ Plan Expiring Soon!';
+            if ($days === 0) {
+                $message = "Your '{$planName}' subscription plan expires today ({$formattedDate})! Please renew now to prevent service interruption.";
+            } else {
+                $message = "Your '{$planName}' subscription plan will expire in {$days} day(s) on {$formattedDate}. Please renew your plan.";
+            }
+
+            // Save to Notification database for Institute
+            \App\Models\Notification::create([
+                'user_type' => 'institute',
+                'user_id' => $institute->id,
+                'title' => $title,
+                'message' => $message,
+                'type' => 'subscription_alert',
+                'is_read' => false,
+            ]);
+
+            // Send Firebase push notification if token exists
+            if (!empty($institute->fcm_token)) {
+                $fcmService->send($institute->fcm_token, $title, $message, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $planName,
+                    'days_remaining' => (string) $days,
+                ]);
+            }
+        }
+
+        // 2. Find all active or trial subscriptions that should have expired by now
         $expiredSubscriptions = Subscription::where('end_date', '<', $today)
             ->whereIn('status', ['active', 'trial'])
             ->get();

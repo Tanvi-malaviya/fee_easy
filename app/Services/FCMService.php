@@ -55,6 +55,21 @@ class FCMService
             return false;
         }
 
+        // Find the user (Student or Parent) by FCM token to check preferences
+        $user = \App\Models\Student::where('fcm_token', $targetToken)->first()
+            ?? \App\Models\StudentParent::where('fcm_token', $targetToken)->first();
+
+        if ($user) {
+            if (!$this->isNotificationEnabled($user, $data)) {
+                Log::info("Notification suppressed because user turned off notifications for this category.", [
+                    'user_id' => $user->id,
+                    'user_type' => get_class($user),
+                    'data' => $data
+                ]);
+                return false;
+            }
+        }
+
         if (empty($this->projectId)) {
             Log::error("FCM Project ID is not configured in .env (FIREBASE_PROJECT_ID).");
             return false;
@@ -117,5 +132,47 @@ class FCMService
         }
 
         return $this->send($user->fcm_token, $title, $body, $data);
+    }
+
+    /**
+     * Check if user enabled notification for this type/category
+     */
+    public function isNotificationEnabled($user, array $data): bool
+    {
+        $settings = $user->notification_settings;
+        
+        // If settings are not configured/empty, default to true for all notifications
+        if (empty($settings)) {
+            return true;
+        }
+
+        // 1. Mute Everything
+        if (isset($settings['mute_all']) && $settings['mute_all']) {
+            return false;
+        }
+
+        // Resolve notification category from data type
+        $type = $data['type'] ?? '';
+
+        // Mapping:
+        // - fee / fee_reminder -> fee_reminders
+        // - homework / assignment -> assignment_alerts
+        // - attendance -> attendance
+        // - daily_update -> daily_updates
+        // - announcement / events / others -> events_holidays
+        $categoryKey = 'events_holidays'; // Default fallback
+
+        if (in_array($type, ['fee', 'fee_reminder', 'payment'])) {
+            $categoryKey = 'fee_reminders';
+        } elseif (in_array($type, ['homework', 'homework_graded', 'assignment', 'homework_reminder'])) {
+            $categoryKey = 'assignment_alerts';
+        } elseif ($type === 'attendance') {
+            $categoryKey = 'attendance';
+        } elseif ($type === 'daily_update') {
+            $categoryKey = 'daily_updates';
+        }
+
+        // If explicitly set, return the preference, else default to enabled (true)
+        return filter_var($settings[$categoryKey] ?? true, FILTER_VALIDATE_BOOLEAN);
     }
 }

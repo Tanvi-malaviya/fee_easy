@@ -1,7 +1,8 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="max-w-7xl mx-auto mt-2">
+    <div class="min-h-[calc(100vh-6.5rem)] flex flex-col justify-between max-w-7xl mx-auto mt-2">
+        <div class="w-full">
 
 
         <!-- Module Grid -->
@@ -238,21 +239,22 @@
                             </div>
                         </div> -->
         <!-- </div> -->
+        </div>
+    
+        <footer class="mb-0 border-t border-slate-100 ">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 px-6">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    © 2026 TUOORA EDUCATION. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex items-center gap-6">
+                    <span class="text-slate-300">|</span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest select-none">
+                        Version {{ \App\Models\SystemSetting::get('web_version', '1.0.0') }}
+                    </span>
+                </div>
+            </div>
+        </footer>
     </div>
-
-    <!-- <footer class="mt-20 border-t border-slate-100 py-10">
-                    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 px-6">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            © 2026 TUOORA EDUCATION. ALL RIGHTS RESERVED.
-                        </p>
-                        <div class="flex items-center gap-8">
-                            <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">Support</a>
-                            <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">Privacy</a>
-                            <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">Terms</a>
-                            <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">System Status</a>
-                        </div>
-                    </div>
-                </footer> -->
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;600;700;800;900&display=swap');

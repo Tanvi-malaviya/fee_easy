@@ -35,6 +35,7 @@ class Student extends Authenticatable
         'country',
         'pincode',
         'fcm_token',
+        'notification_settings',
     ];
 
     protected $hidden = [
@@ -45,6 +46,7 @@ class Student extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'notification_settings' => 'array',
     ];
 
     public function institute()

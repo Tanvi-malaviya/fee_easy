@@ -188,6 +188,19 @@ class InstituteAuthController extends Controller
                 ]);
             }
 
+            // Assign Free Plan subscription (1 month = 30 days)
+            $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active', 'trial'])->exists();
+            if (!$hasActiveSub) {
+                \App\Models\Subscription::create([
+                    'institute_id' => $institute->id,
+                    'plan_name' => 'Free Plan',
+                    'amount' => 0,
+                    'start_date' => now(),
+                    'end_date' => now()->addDays(30),
+                    'status' => 'active',
+                ]);
+            }
+
             // Clear session
             Session::forget(['registration_data', 'registration_otp', 'registration_otp_expires_at']);
             Session::save();
