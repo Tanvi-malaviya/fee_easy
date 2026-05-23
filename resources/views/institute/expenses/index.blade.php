@@ -175,21 +175,52 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
                         <div>
-                            <label
-                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Category</label>
-                            <select name="expense_category_id" id="category-select" required
-                                class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                <option value="">Select Category</option>
-                            </select>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Category</label>
+                                <button type="button" onclick="toggleAddCategoryInline()" class="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
+                                    + New
+                                </button>
+                            </div>
+                            <div class="relative" id="custom-category-dropdown">
+                                <button type="button" onclick="toggleCategoryDropdown()"
+                                    class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-left text-xs font-bold flex items-center justify-between text-slate-700 hover:border-slate-200 transition-all cursor-pointer">
+                                    <span id="selected-category-name" class="text-slate-400 font-bold text-xs">Select Category</span>
+                                    <svg class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <input type="hidden" name="expense_category_id" id="category-id-input" required>
+                                
+                                <div id="category-dropdown-options"
+                                    class="hidden absolute z-30 w-full mt-1 bg-white border border-slate-100 rounded-xl shadow-xl max-h-40 overflow-y-auto custom-scrollbar p-1">
+                                    <!-- Options injected here -->
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label
-                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date</label>
+                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 mt-[2px] ml-1">Date</label>
                             <input type="date" name="date" required value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}"
                                 class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
+                    </div>
+
+                    <!-- Inline Add Category Input -->
+                    <div id="inline-category-container" class="hidden mb-4 bg-slate-50/50 border border-slate-100 p-3 rounded-2xl animate-in duration-300">
+                        <div class="flex items-center justify-between mb-1.5 ml-1">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Create New Category</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="new-category-name" placeholder="Category Name..." 
+                                class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-primary outline-none transition-all">
+                            <button type="button" id="add-category-btn" onclick="createCategory()"
+                                class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all">
+                                Add
+                            </button>
+                        </div>
+                        <span id="category-create-error" class="hidden text-[9px] font-bold text-rose-500 mt-1 ml-1 block"></span>
                     </div>
 
                     <div class="mb-4">
@@ -473,20 +504,96 @@
                     });
                     const result = await response.json();
                     if (result.status === 'success') {
-                        const select = document.getElementById('category-select');
-                        select.innerHTML = '<option value="">Select Category</option>' +
-                            result.data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                        const optionsDiv = document.getElementById('category-dropdown-options');
+                        let html = '';
+                        if (result.data.length === 0) {
+                            html = `<div class="px-4 py-2 text-xs text-slate-400 text-center font-medium">No categories. Click "+ New" to add one!</div>`;
+                        } else {
+                            html = result.data.map(c => `
+                                <button type="button" onclick="selectCategory('${c.id}', '${c.name.replace(/'/g, "\\'")}')"
+                                    class="w-full text-left px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-between group">
+                                    <span>${c.name}</span>
+                                    <svg class="w-3 h-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            `).join('');
+                        }
+                        optionsDiv.innerHTML = html;
                     }
                 } catch (error) {
                     console.error('Category Load Error:', error);
                 }
             }
 
+            function toggleCategoryDropdown() {
+                const options = document.getElementById('category-dropdown-options');
+                const arrow = document.getElementById('dropdown-arrow');
+                if (options.classList.contains('hidden')) {
+                    options.classList.remove('hidden');
+                    arrow.classList.add('rotate-180');
+                } else {
+                    options.classList.add('hidden');
+                    arrow.classList.remove('rotate-180');
+                }
+            }
+
+            function selectCategory(id, name) {
+                const hiddenInput = document.getElementById('category-id-input');
+                const selectedSpan = document.getElementById('selected-category-name');
+                
+                hiddenInput.value = id;
+                selectedSpan.textContent = name;
+                selectedSpan.classList.remove('text-slate-400');
+                selectedSpan.classList.add('text-slate-900');
+
+                // Close dropdown
+                const options = document.getElementById('category-dropdown-options');
+                const arrow = document.getElementById('dropdown-arrow');
+                options.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+
+            // Click outside to close category dropdown
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('custom-category-dropdown');
+                if (dropdown && !dropdown.contains(e.target)) {
+                    const options = document.getElementById('category-dropdown-options');
+                    const arrow = document.getElementById('dropdown-arrow');
+                    if (options && !options.classList.contains('hidden')) {
+                        options.classList.add('hidden');
+                        arrow.classList.remove('rotate-180');
+                    }
+                }
+            });
+
             function openExpenseModal() {
                 const modal = document.getElementById('expense-modal');
                 const content = document.getElementById('expense-modal-content');
                 document.getElementById('expense-form').reset();
                 document.getElementById('expense-error').classList.add('hidden');
+
+                // Reset inline category adder
+                const inlineContainer = document.getElementById('inline-category-container');
+                if (inlineContainer) inlineContainer.classList.add('hidden');
+                const newCatInput = document.getElementById('new-category-name');
+                if (newCatInput) newCatInput.value = '';
+                const catError = document.getElementById('category-create-error');
+                if (catError) catError.classList.add('hidden');
+
+                // Reset custom category select
+                const hiddenInput = document.getElementById('category-id-input');
+                if (hiddenInput) hiddenInput.value = '';
+                const selectedSpan = document.getElementById('selected-category-name');
+                if (selectedSpan) {
+                    selectedSpan.textContent = 'Select Category';
+                    selectedSpan.classList.add('text-slate-400');
+                    selectedSpan.classList.remove('text-slate-900');
+                }
+                const options = document.getElementById('category-dropdown-options');
+                if (options) options.classList.add('hidden');
+                const arrow = document.getElementById('dropdown-arrow');
+                if (arrow) arrow.classList.remove('rotate-180');
 
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -503,6 +610,79 @@
                 content.classList.add('scale-95', 'opacity-0');
                 content.classList.remove('scale-100', 'opacity-100');
                 setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+
+            function toggleAddCategoryInline() {
+                const container = document.getElementById('inline-category-container');
+                const errSpan = document.getElementById('category-create-error');
+                const nameInput = document.getElementById('new-category-name');
+                
+                if (container.classList.contains('hidden')) {
+                    container.classList.remove('hidden');
+                    nameInput.focus();
+                } else {
+                    container.classList.add('hidden');
+                    nameInput.value = '';
+                    errSpan.classList.add('hidden');
+                }
+            }
+
+            async function createCategory() {
+                const nameInput = document.getElementById('new-category-name');
+                const name = nameInput.value.trim();
+                const errSpan = document.getElementById('category-create-error');
+                const addBtn = document.getElementById('add-category-btn');
+
+                if (!name) {
+                    errSpan.textContent = 'Please enter a category name.';
+                    errSpan.classList.remove('hidden');
+                    return;
+                }
+
+                errSpan.classList.add('hidden');
+                addBtn.disabled = true;
+                addBtn.innerHTML = '<div class="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>';
+
+                try {
+                    const response = await fetch(`${API_BASE}/categories`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({ name })
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.status === 'success') {
+                        // Refresh categories list
+                        await loadCategories();
+                        
+                        // Select the newly created category
+                        selectCategory(result.data.id, result.data.name);
+
+                        // Reset and hide inline adder
+                        toggleAddCategoryInline();
+                        
+                        // Show success feedback
+                        if (window.showToast) {
+                            window.showToast('Category created successfully');
+                        } else {
+                            alert('Category created successfully');
+                        }
+                    } else {
+                        errSpan.textContent = result.message || 'Failed to create category.';
+                        errSpan.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Create Category Error:', error);
+                    errSpan.textContent = 'Connection error. Please try again.';
+                    errSpan.classList.remove('hidden');
+                } finally {
+                    addBtn.disabled = false;
+                    addBtn.textContent = 'Add';
+                }
             }
 
             async function saveExpense(event) {

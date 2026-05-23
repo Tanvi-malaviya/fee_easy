@@ -17,8 +17,12 @@ class NoteController extends Controller
 
     public function index(Request $request)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $query = Note::where('user_id', $userId)->with('category_relation');
+        // Determine the correct owner filter based on which guard is active
+        if (auth('institute')->check()) {
+            $query = Note::where('institute_id', auth('institute')->id())->with('category_relation');
+        } else {
+            $query = Note::where('user_id', auth()->id())->with('category_relation');
+        }
 
         // Filter by Category
         if ($request->has('category_id')) {
@@ -65,7 +69,13 @@ class NoteController extends Controller
             'checklists' => 'nullable|array'
         ]);
 
-        $data['user_id'] = auth()->id() ?? auth('institute')->id();
+        // Assign owner correctly: institute guard users are NOT in the `users` table
+        if (auth('institute')->check()) {
+            $data['user_id'] = null; // FK references `users` table — institute users don't exist there
+            $data['institute_id'] = auth('institute')->id();
+        } else {
+            $data['user_id'] = auth()->id();
+        }
 
         // Handle Category Fix: If category name is provided but no category_id, find or create it
         if (!empty($data['category']) && empty($data['category_id'])) {
@@ -104,15 +114,13 @@ class NoteController extends Controller
 
     public function show($id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $note = Note::where('user_id', $userId)->with(['checklists', 'images', 'category_relation'])->findOrFail($id);
+        $note = $this->noteQuery()->with(['checklists', 'images', 'category_relation'])->findOrFail($id);
         return response()->json(['status' => 'success', 'data' => $note]);
     }
 
     public function update(Request $request, $id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $note = Note::where('user_id', $userId)->findOrFail($id);
+        $note = $this->noteQuery()->findOrFail($id);
 
         $data = $request->validate([
             'remove_image' => 'nullable',
@@ -176,8 +184,7 @@ class NoteController extends Controller
 
     public function bookmark($id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $note = Note::where('user_id', $userId)->findOrFail($id);
+        $note = $this->noteQuery()->findOrFail($id);
         $note->update(['is_bookmarked' => !$note->is_bookmarked]);
 
         return response()->json([
@@ -191,9 +198,19 @@ class NoteController extends Controller
 
     public function destroy($id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        Note::where('user_id', $userId)->findOrFail($id)->delete();
+        $this->noteQuery()->findOrFail($id)->delete();
         return response()->json(['status' => 'success', 'message' => 'Note deleted.']);
+    }
+
+    /**
+     * Returns a base Note query scoped to the currently authenticated user/institute.
+     */
+    private function noteQuery()
+    {
+        if (auth('institute')->check()) {
+            return Note::where('institute_id', auth('institute')->id());
+        }
+        return Note::where('user_id', auth()->id());
     }
 
     // Toggle Checklist Item Completion

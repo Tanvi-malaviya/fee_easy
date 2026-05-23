@@ -164,6 +164,7 @@ class StudentDashboardController extends Controller
                     return [
                         'id' => $resource->id,
                         'title' => $resource->title,
+                        'description' => $resource->description,
                         'subject' => $resource->batch->subject ?? 'General',
                         'file_size' => ($resource->file_size && is_numeric($resource->file_size))
                             ? round((float)$resource->file_size / 1024 / 1024, 2) . ' MB'
