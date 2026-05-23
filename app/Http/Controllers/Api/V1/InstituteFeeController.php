@@ -87,6 +87,13 @@ class InstituteFeeController extends Controller
             'date' => 'required|date',
             'status' => 'nullable|string|in:Paid,Partial,Unpaid',
             'payment_method' => 'nullable|string|in:Cash,Online',
+        ], [
+            'student_id.required' => 'Please select a student.',
+            'student_id.exists'   => 'The selected student does not exist.',
+            'total_amount.required' => 'Please enter the fee amount.',
+            'total_amount.numeric'  => 'Amount must be a valid number.',
+            'date.required' => 'Please select a fee date.',
+            'date.date'     => 'Please enter a valid date.',
         ]);
 
         \Illuminate\Support\Facades\DB::beginTransaction();

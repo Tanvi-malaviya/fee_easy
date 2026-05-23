@@ -121,7 +121,7 @@
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
                                         (₹)</label>
-                                    <input type="text" name="fees" id="field-fees" placeholder="0" inputmode="numeric"
+                                    <input type="text" name="fees" id="field-fees" required placeholder="0" inputmode="numeric"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
@@ -141,13 +141,13 @@
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
                                         Time</label>
-                                    <input type="time" name="start_time" id="field-start"
+                                    <input type="time" name="start_time" id="field-start" required
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
                                         Time</label>
-                                    <input type="time" name="end_time" id="field-end"
+                                    <input type="time" name="end_time" id="field-end" required
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
@@ -419,6 +419,11 @@
             const formData = new FormData(form);
             const id = formData.get('id');
             const days = Array.from(form.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+
+            if (days.length === 0) {
+                showToast('Please select at least one day.', 'error');
+                return;
+            }
 
             // Clean payload: remove days[] and ensure days is an array
             const payload = Object.fromEntries(formData.entries());

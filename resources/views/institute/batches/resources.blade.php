@@ -61,7 +61,7 @@
             <form onsubmit="handleUpload(event)" class="px-6 py-4 space-y-4">
                 <!-- Subject -->
                 <div>
-                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Subject</label>
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Title</label>
                     <input type="text" id="res-title" required placeholder="e.g. Advanced Calculus - Week 4 Module" 
                         class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                 </div>

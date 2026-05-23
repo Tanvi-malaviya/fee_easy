@@ -320,22 +320,25 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-4">
-                    <div class="flex items-center bg-slate-100 rounded-lg px-2 py-1 w-full sm:w-auto justify-center sm:justify-start">
-                        <select id="month-select" class="bg-transparent border-none text-[11px] font-bold text-slate-600 focus:ring-0 cursor-pointer py-1 px-2">
-                            @php
-                                $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                                $currentMonth = date('F');
-                            @endphp
-                            @foreach($months as $month)
-                                <option value="{{ $month }}" {{ $month == $currentMonth ? 'selected' : '' }}>{{ $month }}</option>
-                            @endforeach
-                        </select>
-                        <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
-                        <select id="year-select" class="bg-transparent border-none text-[11px] font-bold text-slate-600 focus:ring-0 cursor-pointer py-1 px-2">
-                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
-                                <option value="{{ $i }}">{{ $i }}</option>
-                            @endfor
-                        </select>
+                    <div class="relative w-full sm:w-auto flex items-center gap-2">
+                        <div class="relative">
+                            <button onclick="document.getElementById('month-picker').showPicker()"
+                                class="bg-slate-100 hover:bg-slate-200 transition-all rounded-lg px-3 py-1.5 flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
+                                <span id="current-month-display" class="text-[11px] font-bold text-slate-600"></span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <input type="month" id="month-picker" class="absolute inset-0 opacity-0 pointer-events-none"
+                                onchange="handleMonthChange(this.value)">
+                        </div>
+                        <button onclick="goToCurrentMonth()"
+                            class="bg-orange-50 hover:bg-orange-100 text-[#ff6c00] text-[11px] font-bold px-3 py-1.5 rounded-lg border border-orange-100 transition-all cursor-pointer flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            This Month
+                        </button>
                     </div>
                     <div class="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
                         <div class="flex items-center gap-1.5">
@@ -557,9 +560,55 @@
         const staffId = "{{ $staff->id }}";
         let currentAttendances = [];
 
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const today = new Date();
+        let selectedYear = today.getFullYear();
+        let selectedMonthIndex = today.getMonth(); // 0-indexed
+
+        // Set month picker initial value on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            const monthPicker = document.getElementById('month-picker');
+            if (monthPicker) {
+                monthPicker.value = `${selectedYear}-${String(selectedMonthIndex + 1).padStart(2, '0')}`;
+            }
+            const monthDisplay = document.getElementById('current-month-display');
+            if (monthDisplay) {
+                monthDisplay.textContent = `${monthNames[selectedMonthIndex]} ${selectedYear}`;
+            }
+        });
+
+        function handleMonthChange(value) {
+            if (!value) return;
+            const parts = value.split('-');
+            selectedYear = parseInt(parts[0]);
+            selectedMonthIndex = parseInt(parts[1]) - 1;
+            
+            const monthDisplay = document.getElementById('current-month-display');
+            if (monthDisplay) {
+                monthDisplay.textContent = `${monthNames[selectedMonthIndex]} ${selectedYear}`;
+            }
+            fetchAttendance();
+        }
+
+        function goToCurrentMonth() {
+            const now = new Date();
+            selectedYear = now.getFullYear();
+            selectedMonthIndex = now.getMonth();
+            
+            const monthPicker = document.getElementById('month-picker');
+            if (monthPicker) {
+                monthPicker.value = `${selectedYear}-${String(selectedMonthIndex + 1).padStart(2, '0')}`;
+            }
+            const monthDisplay = document.getElementById('current-month-display');
+            if (monthDisplay) {
+                monthDisplay.textContent = `${monthNames[selectedMonthIndex]} ${selectedYear}`;
+            }
+            fetchAttendance();
+        }
+
         async function fetchAttendance() {
-            const monthIndex = monthSelect.selectedIndex + 1;
-            const year = yearSelect.value;
+            const monthIndex = selectedMonthIndex + 1;
+            const year = selectedYear;
             
             calendarContainer.innerHTML = '<div class="col-span-7 py-10 text-center"><div class="h-6 w-6 border-2 border-slate-100 border-t-brand-800 rounded-full animate-spin mx-auto mb-2"></div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Updating...</p></div>';
 
@@ -619,13 +668,11 @@
             }
         }
 
-        const monthSelect = document.getElementById('month-select');
-        const yearSelect = document.getElementById('year-select');
         const calendarContainer = document.getElementById('attendance-calendar');
 
         function renderCalendar() {
-            const year = parseInt(yearSelect.value);
-            const monthIndex = monthSelect.selectedIndex;
+            const year = selectedYear;
+            const monthIndex = selectedMonthIndex;
 
             calendarContainer.innerHTML = '';
             ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].forEach(day => {
@@ -677,9 +724,6 @@
                 calendarContainer.innerHTML += `<div class="aspect-[2/1] flex items-center justify-center text-[10px] font-medium text-slate-200 bg-slate-50/50 rounded-lg">${i}</div>`;
             }
         }
-
-        monthSelect.addEventListener('change', fetchAttendance);
-        yearSelect.addEventListener('change', fetchAttendance);
 
         // Initial fetch
         fetchAttendance();

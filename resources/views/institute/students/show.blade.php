@@ -14,8 +14,8 @@
             </a>
             <div class="flex items-center gap-3">
                 <a href="{{ route('institute.students.edit', $student->id) }}"
-                    class="px-7 py-1.5 bg-white border-2 border-[#008080] text-[#008080] rounded-xl font-bold text-sm hover:bg-[#008080] hover:text-white transition-all flex items-center group shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-[#008080] group-hover:text-white transition-colors" fill="none"
+                    class="px-7 py-1.5 bg-white border-2 border-[#008080] text-[#008080] rounded-xl font-bold text-sm   transition-all flex items-center group shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-[#008080]  transition-colors" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -23,8 +23,8 @@
                     Edit
                 </a>
                 <button onclick="openDeleteModal()"
-                    class="px-7 py-1.5 bg-white border-2 border-rose-500 text-rose-500 rounded-xl font-bold text-sm hover:bg-rose-500 hover:text-white transition-all flex items-center group shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-rose-500 group-hover:text-white transition-colors" fill="none"
+                    class="px-7 py-1.5 bg-white border-2 border-rose-500 text-rose-500 rounded-xl font-bold text-sm  transition-all flex items-center group shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-rose-500  transition-colors" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -116,7 +116,7 @@
                         <span class="font-bold text-slate-600">{{ $student->standard }}</span>
                     </div>
                     <div class="flex justify-between text-[10px]">
-                        <span class="font-bold text-slate-400 uppercase">Monthly Fee</span>
+                        <span class="font-bold text-slate-400 uppercase"> Fee</span>
                         <span class="font-bold text-slate-600">₹{{ number_format($student->monthly_fee) }}</span>
                     </div>
                 </div>
@@ -170,12 +170,12 @@
         <div
             class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
             <!-- Top Accent Border -->
-            <div class="h-1 bg-rose-600 w-full"></div>
+            <div class="h-1 bg-primary w-full"></div>
 
             <div class="p-6">
                 <div class="flex items-start gap-4 mb-5">
-                    <div class="h-10 w-10 bg-rose-50 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-5 h-5 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                                 clip-rule="evenodd" />
@@ -193,7 +193,7 @@
 
                 <div class="flex items-center gap-3">
                     <button onclick="closeDeleteModal()"
-                        class="flex-1 py-2.5 border-2 border-teal-600 text-teal-600 rounded-xl font-semibold text-sm hover:bg-teal-50 transition-all text-center">
+                        class="flex-1 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl font-semibold text-sm hover:bg-slate-50 hover:text-slate-700 transition-all text-center">
                         Cancel
                     </button>
                     <form id="delete-form" action="{{ route('institute.students.destroy', $student->id) }}" method="POST"
@@ -201,7 +201,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="w-full py-2.5 bg-[#be1e1e] text-white rounded-xl font-semibold text-sm shadow-lg shadow-rose-900/10 hover:bg-rose-800 transition-all">
+                            class="w-full py-2.5 bg-primary text-white rounded-xl font-semibold text-sm shadow-lg shadow-orange-600/15 hover:bg-orange-600 active:scale-[0.98] transition-all">
                             Yes, Delete Student
                         </button>
                     </form>
