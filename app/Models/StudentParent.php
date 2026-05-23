@@ -21,6 +21,7 @@ class StudentParent extends Authenticatable
         'relation',
         'status',
         'fcm_token',
+        'notification_settings',
     ];
 
     protected $hidden = [
@@ -30,6 +31,7 @@ class StudentParent extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'notification_settings' => 'array',
     ];
 
     public function students()

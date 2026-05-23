@@ -76,21 +76,19 @@ class InstituteController extends Controller
         $validated['logo'] = $this->handleLogo($request);
 
         $institute = Institute::create($validated);
-        $trialDays = \App\Models\SystemSetting::get('default_trial_days', 14);
-
-        // Create Default Trial Subscription
+        // Create Default Free Plan Subscription (1 month = 30 days)
         Subscription::create([
             'institute_id' => $institute->id,
-            'plan_name' => 'Free Trial',
+            'plan_name' => 'Free Plan',
             'amount' => 0,
             'start_date' => now(),
-            'end_date' => now()->addDays($trialDays),
-            'status' => 'trial',
+            'end_date' => now()->addDays(30),
+            'status' => 'active',
         ]);
 
         Activity::log("New institute registered: {$institute->institute_name}");
 
-        return redirect()->route('institutes.index')->with('success', "Institute created successfully with {$trialDays}-day free trial.");
+        return redirect()->route('institutes.index')->with('success', "Institute created successfully with 1-month Free Plan.");
     }
 
     /**

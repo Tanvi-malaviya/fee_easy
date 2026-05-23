@@ -69,6 +69,9 @@ Route::post('/book-demo', [DemoRequestController::class, 'store']);
 
 Route::prefix('v1')->group(function () {
 
+    // System Versions
+    Route::get('/app-versions', [App\Http\Controllers\Api\V1\SystemVersionController::class, 'index']);
+
     // Mobile App FCM Device Registration
     Route::middleware('auth:sanctum')->post('/fcm-token', [FCMTokenController::class, 'updateToken']);
 
@@ -321,6 +324,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/feedback', [StudentFeedbackController::class, 'store']);
             Route::get('/resources', [StudentResourceController::class, 'index']);
             Route::get('/resources/{id}/download', [StudentResourceController::class, 'download']);
+            Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
+            Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
         });
     });
 
@@ -339,6 +344,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/homeworks', [ParentHomeworkController::class, 'index']);
             Route::get('/report', [ParentReportController::class, 'index']);
             Route::get('/notifications', [ParentNotificationController::class, 'index']);
+            Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
+            Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
         });
     });
 

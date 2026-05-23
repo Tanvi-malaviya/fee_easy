@@ -224,7 +224,17 @@ class InstituteSubscriptionController extends Controller
         $enrolledCount = \App\Models\Student::where('institute_id', $institute->id)->count();
 
         // 2. Plans
-        $plans = \App\Models\Plan::where('status', 1)->get();
+        $plans = \App\Models\Plan::where('status', 1)->get()->map(function($plan) {
+            return [
+                'id' => $plan->id,
+                'name' => $plan->name,
+                'price' => $plan->price,
+                'duration_days' => $plan->duration_days,
+                'status' => $plan->status,
+                'created_at' => $plan->created_at,
+                'updated_at' => $plan->updated_at,
+            ];
+        });
 
         // 3. History
         $history = $institute->subscriptions()
@@ -240,13 +250,11 @@ class InstituteSubscriptionController extends Controller
                     'status' => $subscription->status,
                     'expires_at' => $subscription->end_date,
                     'students_enrolled' => $enrolledCount,
-                    'student_limit' => 1000, // Fixed fallback for now
                 ] : [
                     'plan_name' => 'No Active Plan',
                     'status' => 'Inactive',
                     'expires_at' => null,
                     'students_enrolled' => $enrolledCount,
-                    'student_limit' => 0,
                 ],
                 'plans' => $plans,
                 'history' => $history

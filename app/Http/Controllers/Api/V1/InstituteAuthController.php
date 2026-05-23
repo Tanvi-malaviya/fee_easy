@@ -80,6 +80,19 @@ class InstituteAuthController extends Controller
             'status' => 'active',
         ]);
 
+        // Assign Free Plan subscription (1 month = 30 days)
+        $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active', 'trial'])->exists();
+        if (!$hasActiveSub) {
+            \App\Models\Subscription::create([
+                'institute_id' => $institute->id,
+                'plan_name' => 'Free Plan',
+                'amount' => 0,
+                'start_date' => Carbon::now(),
+                'end_date' => Carbon::now()->addDays(30),
+                'status' => 'active',
+            ]);
+        }
+
         $token = $institute->createToken('institute_token')->plainTextToken;
 
         return response()->json([

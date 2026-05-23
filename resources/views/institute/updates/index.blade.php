@@ -77,68 +77,131 @@
                 <form id="update-form" class="space-y-3">
                     <!-- Audience & Category Section -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div class="space-y-1">
+                        <div class="space-y-1 relative" id="recipient-dropdown-container">
                             <label
                                 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Recipient</label>
-                            <select name="recipient" id="recipient-select" onchange="handleTargetChange()" required
-                                class="w-full px-3 py-3 sm:py-2.5 bg-orange-50/50 border border-orange-100 rounded-xl text-xs font-bold text-orange-600 outline-none focus:ring-2 focus:ring-orange-500/20">
-                                <option value="students">Students</option>
-                                <option value="parents">Parents</option>
-                                <option value="both">Both (Students & Parents)</option>
-                            </select>
+                            <button type="button" onclick="toggleUpdatesDropdown('recipient')" id="recipient-btn"
+                                class="w-full px-3 py-3 sm:py-2.5 bg-orange-50/50 border border-orange-100 rounded-xl text-xs font-bold text-orange-600 outline-none flex items-center justify-between transition-all">
+                                <span id="recipient-label">Students</span>
+                                <svg class="w-4 h-4 text-orange-500 transition-transform duration-200" id="recipient-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="recipient-menu"
+                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                <div class="py-1">
+                                    <button type="button" onclick="selectUpdatesOption('recipient', 'students', 'Students')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Students</button>
+                                    <button type="button" onclick="selectUpdatesOption('recipient', 'parents', 'Parents')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Parents</button>
+                                    <button type="button" onclick="selectUpdatesOption('recipient', 'both', 'Both (Students & Parents)')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Both (Students & Parents)</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="recipient" id="recipient-select" value="students" required>
                         </div>
 
-                        <div id="student-audience-container" class="space-y-1">
+                        <div id="student-audience-container" class="space-y-1 relative">
                             <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Target
                                 Audience</label>
-                            <select name="target_type" id="target-type-select" onchange="handleTargetChange()" required
-                                class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none">
-                                <option value="all">All Students</option>
-                                <option value="batch">Specific Batch</option>
-                            </select>
+                            <button type="button" onclick="toggleUpdatesDropdown('target_type')" id="target_type-btn"
+                                class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
+                                <span id="target_type-label">All Students</span>
+                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" id="target_type-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="target_type-menu"
+                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                <div class="py-1">
+                                    <button type="button" onclick="selectUpdatesOption('target_type', 'all', 'All Students')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">All Students</button>
+                                    <button type="button" onclick="selectUpdatesOption('target_type', 'batch', 'Specific Batch')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Specific Batch</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="target_type" id="target-type-select" value="all" required>
                         </div>
 
-                        <div class="space-y-1">
+                        <div class="space-y-1 relative" id="category-dropdown-container">
                             <label
                                 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Category</label>
-                            <select name="category" required
-                                class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none">
-                                <option value="Academic">Academic</option>
-                                <option value="Administrative">Administrative</option>
-                                <option value="Emergency">Emergency</option>
-                                <option value="Event">Event</option>
-                                <option value="Other">Other</option>
-                            </select>
+                            <button type="button" onclick="toggleUpdatesDropdown('category')" id="category-btn"
+                                class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
+                                <span id="category-label">Academic</span>
+                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" id="category-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="category-menu"
+                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                <div class="py-1">
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Academic', 'Academic')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Academic</button>
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Administrative', 'Administrative')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Administrative</button>
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Emergency', 'Emergency')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Emergency</button>
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Event', 'Event')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Event</button>
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Other', 'Other')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Other</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="category" id="category-select" value="Academic" required>
                         </div>
                     </div>
 
                     <!-- Detail Row -->
                     <div id="audience-detail-row" class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div id="target-detail-container" class="col-span-1">
-                            <div id="batch-selector-container" class="space-y-1 hidden animate-in slide-in-from-top-1">
+                            <div id="batch-selector-container" class="space-y-1 hidden animate-in slide-in-from-top-1 relative">
                                 <label
                                     class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Select
                                     Batch</label>
-                                <select name="batch_id" id="modal-batch-select"
-                                    class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none">
-                                    <option value="">Choose Batch...</option>
-                                </select>
+                                <button type="button" onclick="toggleUpdatesDropdown('batch')" id="batch-btn"
+                                    class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
+                                    <span id="batch-label">Choose Batch...</span>
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" id="batch-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="batch-menu"
+                                    class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar" id="batch-menu-list">
+                                        <button type="button" onclick="selectUpdatesOption('batch', '', 'Choose Batch...')"
+                                            class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Choose Batch...</button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="batch_id" id="modal-batch-select" value="">
                             </div>
 
-                            <div id="standard-selector-container" class="space-y-1 hidden animate-in slide-in-from-top-1">
+                            <div id="standard-selector-container" class="space-y-1 hidden animate-in slide-in-from-top-1 relative">
                                 <label
                                     class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Select
                                     Standard</label>
-                                <select name="standard"
-                                    class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold outline-none">
-                                    <option value="">Choose Standard...</option>
-                                    @for($i = 1; $i <= 12; $i++)
-                                        <option
-                                            value="{{ $i }}{{ in_array($i, [1, 2, 3]) ? (['st', 'nd', 'rd'][$i - 1]) : 'th' }}">
-                                            {{ $i }}{{ in_array($i, [1, 2, 3]) ? (['st', 'nd', 'rd'][$i - 1]) : 'th' }} Standard
-                                        </option>
-                                    @endfor
-                                </select>
+                                <button type="button" onclick="toggleUpdatesDropdown('standard')" id="standard-btn"
+                                    class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
+                                    <span id="standard-label">Choose Standard...</span>
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" id="standard-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="standard-menu"
+                                    class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                        <button type="button" onclick="selectUpdatesOption('standard', '', 'Choose Standard...')"
+                                            class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Choose Standard...</button>
+                                        @for($i = 1; $i <= 12; $i++)
+                                            @php
+                                                $val = $i . (in_array($i, [1, 2, 3]) ? (['st', 'nd', 'rd'][$i - 1]) : 'th');
+                                            @endphp
+                                            <button type="button" onclick="selectUpdatesOption('standard', '{{ $val }}', '{{ $val }} Standard')"
+                                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">{{ $val }} Standard</button>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <input type="hidden" name="standard" id="standard-select" value="">
                             </div>
 
                             <div id="all-students-placeholder" class="space-y-1 opacity-50">
@@ -256,6 +319,97 @@
     <script>
         const CSRF_TOKEN = "{{ csrf_token() }}";
 
+        function toggleUpdatesDropdown(type) {
+            const menus = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            menus.forEach(m => {
+                const menu = document.getElementById(`${m}-menu`);
+                const chevron = document.getElementById(`${m}-chevron`);
+                if (m === type) {
+                    const isHidden = menu.classList.contains('hidden');
+                    if (isHidden) {
+                        menu.classList.remove('hidden');
+                        chevron.classList.add('rotate-180');
+                    } else {
+                        menu.classList.add('hidden');
+                        chevron.classList.remove('rotate-180');
+                    }
+                } else {
+                    if (menu) menu.classList.add('hidden');
+                    if (chevron) chevron.classList.remove('rotate-180');
+                }
+            });
+        }
+
+        function selectUpdatesOption(type, value, label) {
+            let inputId = `${type}-select`;
+            if (type === 'target_type') inputId = 'target-type-select';
+            if (type === 'batch') inputId = 'modal-batch-select';
+
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = value;
+            }
+            
+            const labelSpan = document.getElementById(`${type}-label`);
+            if (labelSpan) {
+                labelSpan.innerText = label;
+            }
+            
+            // Close the menu
+            const menu = document.getElementById(`${type}-menu`);
+            if (menu) menu.classList.add('hidden');
+            const chevron = document.getElementById(`${type}-chevron`);
+            if (chevron) chevron.classList.remove('rotate-180');
+            
+            // Trigger change callback if any
+            if (type === 'recipient' || type === 'target_type') {
+                handleTargetChange();
+            }
+        }
+
+        function resetUpdatesDropdowns() {
+            // Reset hidden input values
+            document.getElementById('recipient-select').value = 'students';
+            document.getElementById('target-type-select').value = 'all';
+            document.getElementById('category-select').value = 'Academic';
+            document.getElementById('modal-batch-select').value = '';
+            document.getElementById('standard-select').value = '';
+
+            // Update labels in UI
+            document.getElementById('recipient-label').innerText = 'Students';
+            document.getElementById('target_type-label').innerText = 'All Students';
+            document.getElementById('category-label').innerText = 'Academic';
+            document.getElementById('batch-label').innerText = 'Choose Batch...';
+            document.getElementById('standard-label').innerText = 'Choose Standard...';
+            
+            // Reset chevrons
+            const chevrons = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            chevrons.forEach(c => {
+                const chevron = document.getElementById(`${c}-chevron`);
+                const menu = document.getElementById(`${c}-menu`);
+                if (chevron) chevron.classList.remove('rotate-180');
+                if (menu) menu.classList.add('hidden');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            const menus = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            menus.forEach(m => {
+                let container = document.getElementById(`${m}-dropdown-container`);
+                if (m === 'target_type') container = document.getElementById('student-audience-container');
+                if (m === 'batch') container = document.getElementById('batch-selector-container');
+                if (m === 'standard') container = document.getElementById('standard-selector-container');
+                
+                if (container && !container.contains(e.target)) {
+                    const menu = document.getElementById(`${m}-menu`);
+                    const chevron = document.getElementById(`${m}-chevron`);
+                    if (menu) menu.classList.add('hidden');
+                    if (chevron) chevron.classList.remove('rotate-180');
+                }
+            });
+        });
+
         function getTimeAgo(date) {
             const seconds = Math.floor((new Date() - date) / 1000);
             let interval = seconds / 31536000;
@@ -315,8 +469,6 @@
                 allPlaceholder.classList.toggle('hidden', type !== 'all');
                 placeholderText.innerText = "Broadcasting to all Students";
             }
-
-            document.getElementById('modal-batch-select').required = ((recipient === 'students' || recipient === 'both') && type === 'batch');
         }
 
         async function fetchBatches() {
@@ -324,13 +476,18 @@
                 const response = await fetch("/api/v1/institute/batches", { headers: { 'Accept': 'application/json' } });
                 const result = await response.json();
                 if (result.status === 'success') {
-                    const sel = document.getElementById('modal-batch-select');
-                    result.data.items.forEach(batch => {
-                        const opt = document.createElement('option');
-                        opt.value = batch.id;
-                        opt.innerText = batch.name;
-                        sel.appendChild(opt);
-                    });
+                    const menu = document.getElementById('batch-menu-list');
+                    if (menu) {
+                        menu.innerHTML = `<button type="button" onclick="selectUpdatesOption('batch', '', 'Choose Batch...')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Choose Batch...</button>`;
+                        result.data.items.forEach(batch => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors';
+                            btn.onclick = () => selectUpdatesOption('batch', batch.id, batch.name);
+                            btn.innerText = batch.name;
+                            menu.appendChild(btn);
+                        });
+                    }
                 }
             } catch (error) { console.error('Failed to sync batches'); }
         }
@@ -456,6 +613,25 @@
 
         document.getElementById('update-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Client-side Validation
+            const recipient = document.getElementById('recipient-select').value;
+            const targetType = document.getElementById('target-type-select').value;
+            
+            if ((recipient === 'students' || recipient === 'both') && targetType === 'batch') {
+                const batchVal = document.getElementById('modal-batch-select').value;
+                if (!batchVal) {
+                    showToast('Please select a batch.', 'error');
+                    return;
+                }
+            } else if ((recipient === 'students' || recipient === 'both') && targetType === 'standard') {
+                const standardVal = document.getElementById('standard-select').value;
+                if (!standardVal) {
+                    showToast('Please select a standard.', 'error');
+                    return;
+                }
+            }
+
             const f = new FormData(e.target);
             const btn = document.getElementById('submit-btn');
             const btnText = document.getElementById('btn-text');
@@ -488,6 +664,7 @@
                     closeUpdateModal();
                     fetchUpdates();
                     e.target.reset();
+                    resetUpdatesDropdowns();
                     handleTargetChange();
                 } else {
                     showToast(result.message || 'Validation failed. Check inputs.', 'error');
@@ -506,6 +683,7 @@
         function closeUpdateModal() {
             document.getElementById('update-modal').classList.add('hidden');
             document.getElementById('update-form').reset();
+            resetUpdatesDropdowns();
             handleTargetChange();
         }
         function showToast(message, type = 'success') {
