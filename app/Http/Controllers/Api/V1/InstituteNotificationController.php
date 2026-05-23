@@ -16,12 +16,17 @@ class InstituteNotificationController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $user = $request->user();
+        if (!$user && auth()->guard('institute')->check()) {
+            $user = auth()->guard('institute')->user();
+        }
+
+        if (!$user || !($user instanceof Institute)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $notifications = Notification::where('user_type', 'institute')
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->get();
 
@@ -33,12 +38,17 @@ class InstituteNotificationController extends Controller
 
     public function markAllRead(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $user = $request->user();
+        if (!$user && auth()->guard('institute')->check()) {
+            $user = auth()->guard('institute')->user();
+        }
+
+        if (!$user || !($user instanceof Institute)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         Notification::where('user_type', 'institute')
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 

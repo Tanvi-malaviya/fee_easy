@@ -41,12 +41,12 @@ class InstituteAuthController extends Controller
     {
         if (Auth::guard('institute')->check()) {
             $user = Auth::guard('institute')->user();
-            
+
             // If already complete, go to dashboard
             if ($user->email_verified_at && $user->isProfileComplete()) {
                 return redirect()->route('institute.dashboard');
             }
-            
+
             // If verified but profile incomplete, show Step 3 (Setup)
             if ($user->email_verified_at) {
                 return view('institute.auth.register', ['initialStep' => 3]);
@@ -76,7 +76,7 @@ class InstituteAuthController extends Controller
 
         // Force reset registration flow on manual page refresh (GET request)
         Session::forget(['registration_data', 'registration_otp', 'registration_otp_expires_at']);
-        
+
         return view('institute.auth.register', ['initialStep' => 1]);
     }
 
@@ -169,7 +169,7 @@ class InstituteAuthController extends Controller
 
             // OTP Valid - Now create or update the record in database
             $data = Session::get('registration_data');
-            
+
             $institute = Institute::where('email', $data['email'])->first();
             if ($institute) {
                 $institute->update([
@@ -181,7 +181,7 @@ class InstituteAuthController extends Controller
                     'institute_name' => $data['institute_name'],
                     'name' => $data['name'],
                     'email' => $data['email'],
-                    'phone' => '', 
+                    'phone' => '',
                     'password' => $data['password'],
                     'email_verified_at' => now(),
                     'status' => 'active',
@@ -232,7 +232,7 @@ class InstituteAuthController extends Controller
 
         $email = Session::get('registration_data')['email'];
         $otp = rand(100000, 999999);
-        
+
         Session::put('registration_otp', $otp);
         Session::put('registration_otp_expires_at', Carbon::now()->addMinutes(10));
         Session::save();
@@ -265,9 +265,9 @@ class InstituteAuthController extends Controller
             if (!$institute) {
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
             }
-            
+
             $data = $request->only(['phone', 'city', 'state', 'pincode', 'address']);
-            
+
             if ($request->hasFile('logo')) {
                 $path = $request->file('logo')->store('institute_logos', 'public');
                 $data['logo'] = $path;
@@ -349,15 +349,15 @@ class InstituteAuthController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email|exists:institutes,email']);
-        
+
         $otp = rand(100000, 999999);
         Session::put('reset_email', $request->email);
         Session::put('reset_otp', $otp);
         Session::put('reset_otp_expires_at', Carbon::now()->addMinutes(15));
         Session::save();
-        
+
         try {
-            Mail::raw("Your Tuoora password reset code is: $otp", function($message) use ($request) {
+            Mail::raw("Your Tuoora password reset code is: $otp", function ($message) use ($request) {
                 $message->to($request->email)->subject('Password Reset Code - Tuoora');
             });
             return response()->json(['status' => 'success', 'message' => 'OTP sent to your email.']);

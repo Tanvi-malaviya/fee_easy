@@ -91,6 +91,22 @@ class CheckSubscriptionExpiry extends Command
             }
         }
 
+        // 3. Find any subscriptions that are currently marked 'expired' but their end_date is in the future
+        $reactivatedSubscriptions = Subscription::where('end_date', '>=', $today)
+            ->where('status', 'expired')
+            ->get();
+
+        foreach ($reactivatedSubscriptions as $subscription) {
+            $subscription->update(['status' => 'active']);
+            $institute = $subscription->institute;
+            if ($institute && $institute->status === 'inactive') {
+                $institute->update(['status' => 'active']);
+                $this->info("Institute '{$institute->institute_name}' reactivated as subscription is now active.");
+            }
+        }
+
+        $this->info(count($warningSubscriptions) . ' subscription warning notifications processed.');
         $this->info(count($expiredSubscriptions) . ' subscriptions processed and expired.');
+        $this->info(count($reactivatedSubscriptions) . ' subscriptions reactivated.');
     }
 }
