@@ -350,7 +350,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Protected App Routes (Default Admin/Sanctum)
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->name('api.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::apiResource('institutes', InstituteController::class);
         Route::apiResource('plans', PlanController::class);
