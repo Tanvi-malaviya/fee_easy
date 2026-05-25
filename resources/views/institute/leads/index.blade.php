@@ -29,7 +29,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-20 lg:pb-0 lg:flex-1 lg:min-h-0">
 
             <!-- Sidebar -->
-            <div class="col-span-1 lg:col-span-3 lg:h-full">
+            <div id="leads-sidebar" class="col-span-1 lg:col-span-3 lg:h-full">
 
                 <div class="h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
@@ -128,7 +128,10 @@
                         <!-- Header Card -->
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
                             <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                                <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <button onclick="backToLeadsList()" class="lg:hidden h-8 w-8 flex items-center justify-center text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
                                     <div id="lead-avatar"
                                         class="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-orange-200 shrink-0">
                                         JM
@@ -165,7 +168,7 @@
                         </div>
 
                        <!-- Info Cards Grid -->
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Contact Info Card -->
                             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                                 <div class="flex items-center justify-between mb-6">
@@ -227,7 +230,7 @@
                                             <p id="detail-source" class="text-sm font-bold text-gray-700">Alumni Referral</p>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label
                                                 class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Referrer</label>
@@ -289,6 +292,31 @@
                 let selectedLeadData = null;
                 let currentStatusFilter = 'All';
 
+                function updateMobileView() {
+                    const sidebar = document.getElementById('leads-sidebar');
+                    const detailPanel = document.getElementById('detail-panel');
+                    if (!sidebar || !detailPanel) return;
+                    if (window.innerWidth < 1024) {
+                        if (selectedLeadId) {
+                            sidebar.classList.add('hidden');
+                            detailPanel.classList.remove('hidden');
+                        } else {
+                            sidebar.classList.remove('hidden');
+                            detailPanel.classList.add('hidden');
+                        }
+                    } else {
+                        sidebar.classList.remove('hidden');
+                        detailPanel.classList.remove('hidden');
+                    }
+                }
+
+                function backToLeadsList() {
+                    selectedLeadId = null;
+                    selectedLeadData = null;
+                    renderLeadList();
+                    updateMobileView();
+                }
+
                 async function fetchLeads(selectId = null) {
                     const searchInput = document.getElementById('lead-search');
                     const search = searchInput ? searchInput.value : '';
@@ -309,9 +337,15 @@
                         if (selectId) {
                             selectLead(selectId);
                         } else if (currentLeads.length > 0 && !selectedLeadId) {
-                            selectLead(currentLeads[0].id);
+                            if (window.innerWidth >= 1024) {
+                                selectLead(currentLeads[0].id);
+                            } else {
+                                renderLeadList();
+                                updateMobileView();
+                            }
                         } else {
                             renderLeadList();
+                            updateMobileView();
                         }
                     } catch (error) {
                         console.error('Fetch Error:', error);
@@ -378,6 +412,7 @@
                 async function selectLead(id) {
                     selectedLeadId = id;
                     renderLeadList();
+                    updateMobileView();
 
                     const emptyState = document.getElementById('detail-empty');
                     const contentArea = document.getElementById('detail-content');
@@ -582,7 +617,8 @@
                                     selectedLeadData = null;
                                     document.getElementById('detail-empty').classList.remove('hidden');
                                     document.getElementById('detail-content').classList.add('hidden');
-                                    fetchLeads();
+                                    await fetchLeads();
+                                    updateMobileView();
                                 }
                             } catch (error) { console.error(error); }
                         }
@@ -633,6 +669,7 @@
                     if (e.key === 'Enter') fetchLeads();
                 });
 
+                window.addEventListener('resize', updateMobileView);
                 fetchLeads();
             </script>
         @endpush

@@ -6,17 +6,17 @@
     <div class="max-w-7xl mx-auto ">
         <!-- Breadcrumb & Header -->
         <div class="mb-3">
-            <nav class="flex items-center pt-1 gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">
+            <nav class="flex flex-wrap items-center pt-1 gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-1">
                 <a href="{{ route('institute.batches.index') }}" class="hover:text-blue-600 transition-colors">Batches</a>
-               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                 </svg>
-                  <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch Details</a>
-                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch Details</a>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                 </svg>
                 <a href="{{ route('institute.batches.show', $id) }}" id="breadcrumb-batch-name"
-                    class="hover:text-[#ff6600] transition-colors text-slate-600">Loading...</a>
+                    class="hover:text-[#ff6600] transition-colors text-slate-600 truncate max-w-[120px] sm:max-w-none">Loading...</a>
             </nav>
 
             <h1 id="batch-name-heading" class="text-xl font-semibold text-slate-800 tracking-tight mb-2">Loading...</h1>
@@ -74,8 +74,8 @@
         </div>
 
         <!-- Control Bar -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-3 mb-2">
-            <div class="relative flex-1 group">
+        <div class="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center gap-3 mb-2">
+            <div class="relative flex-1 group w-full">
                 <div class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-xl focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
                     <div class="pl-3.5 pr-2 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,16 +84,16 @@
                     </div>
                     <input type="text" id="student-search" onkeypress="if(event.key === 'Enter') filterStudents()"
                         placeholder="Search students by name, email or ID..."
-                        class="flex-1 bg-transparent border-none py-2.5 text-sm font-semibold outline-none">
-                    <button onclick="filterStudents()" class="px-5 py-2.5 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary transition-all shadow-sm">
+                        class="flex-1 bg-transparent border-none py-2.5 text-xs sm:text-sm font-semibold outline-none min-w-0">
+                    <button onclick="filterStudents()" class="px-4 sm:px-5 py-2 sm:py-2.5 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary transition-all shadow-sm shrink-0">
                         Search
                     </button>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
                 <button onclick="window.location.href='{{ route('institute.students.export') }}?batch_id={{ $id }}&format=pdf'"
-                    class="px-5 py-3 bg-white border border-slate-100 rounded-lg text-sm font-bold text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
+                    class="px-4 sm:px-5 py-2.5 bg-white border border-slate-100 rounded-lg text-xs sm:text-sm font-bold text-slate-600 flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all shadow-sm flex-1 sm:flex-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -101,8 +101,8 @@
                     Export
                 </button>
                 <button onclick="openEnrollModal()"
-                    class="px-6 py-3.5 bg-orange-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>

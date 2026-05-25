@@ -15,7 +15,7 @@
         <div class="grid grid-cols-12 gap-2 h-[calc(100vh-13.5rem)] min-h-[441px]">
 
             <!-- Sidebar: Conversation List -->
-            <div
+            <div id="chat-sidebar"
                 class="col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 <!-- Search & New Chat -->
                 <div class="p-4 border-b border-slate-50 space-y-3">
@@ -46,7 +46,7 @@
 
             <!-- Main Chat Area -->
             <div id="chat-area"
-                class="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                class="col-span-12 lg:col-span-8 xl:col-span-9 hidden lg:flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 <!-- Empty State -->
                 <div id="chat-empty-state" class="flex-1 flex flex-col items-center justify-center p-12 text-center">
                     <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
@@ -65,13 +65,15 @@
                     <!-- Chat Header -->
                     <div
                         class="p-4 border-b border-slate-50 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <button onclick="backToConversationsList()" class="lg:hidden h-8 w-8 flex items-center justify-center text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
                             <div id="active-user-avatar" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary border border-primary/20 overflow-hidden flex-shrink-0">
                                 ?
                             </div>
                             <div>
                                 <h3 id="active-user-name" class="text-sm font-bold text-slate-800">User Name</h3>
-
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -149,16 +151,16 @@
                         <form id="message-form" onsubmit="handleSendMessage(event)"
                             class="flex items-center gap-3 bg-slate-50 rounded-2xl p-2 pr-3">
                             <button type="button" onclick="toggleAttachmentMenu(event)"
-                                class="h-10 w-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                                class="h-10 w-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                 </svg>
                             </button>
                             <input type="text" id="message-input" placeholder="Type your message here..."
-                                class="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 text-slate-600 outline-none">
+                                class="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm py-2 text-slate-600 outline-none">
                             <button type="submit" id="send-btn"
-                                class="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/10 hover:scale-105 active:scale-95 transition-all">
+                                class="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/10 hover:scale-105 active:scale-95 transition-all shrink-0">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -355,6 +357,39 @@
             let messages = [];
             const currentUserId = {{ auth('institute')->id() }};
 
+            function updateMobileView() {
+                const sidebar = document.getElementById('chat-sidebar');
+                const chatArea = document.getElementById('chat-area');
+                if (!sidebar || !chatArea) return;
+                if (window.innerWidth < 1024) { // lg breakpoint
+                    if (activeConversation) {
+                        sidebar.classList.add('hidden');
+                        sidebar.classList.remove('flex');
+                        chatArea.classList.remove('hidden');
+                        chatArea.classList.add('flex');
+                    } else {
+                        sidebar.classList.remove('hidden');
+                        sidebar.classList.add('flex');
+                        chatArea.classList.add('hidden');
+                        chatArea.classList.remove('flex');
+                    }
+                } else {
+                    sidebar.classList.remove('hidden');
+                    sidebar.classList.add('flex');
+                    chatArea.classList.remove('hidden');
+                    chatArea.classList.add('flex');
+                }
+            }
+
+            function backToConversationsList() {
+                activeConversation = null;
+                const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
+                renderConversationList(searchTerm);
+                updateMobileView();
+            }
+
+            window.addEventListener('resize', updateMobileView);
+
             // Listen for search input on conversation list
             document.getElementById('chat-search').addEventListener('input', function (e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
@@ -514,6 +549,7 @@
                         renderMessages();
                         document.getElementById('active-chat').classList.add('hidden');
                         document.getElementById('chat-empty-state').classList.remove('hidden');
+                        updateMobileView();
                     }
                     fetchConversations();
                 });
@@ -549,6 +585,7 @@
                         document.getElementById('active-chat').classList.add('hidden');
                         document.getElementById('chat-empty-state').classList.remove('hidden');
                         fetchConversations();
+                        updateMobileView();
                     } else {
                         alert(result.message || 'Failed to delete conversation.');
                     }
@@ -674,6 +711,7 @@
                 console.log('🔄 Selecting conversation with:', { userId, userType, userName });
                 activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName, user_logo: logoUrl || null };
                 console.log('✅ Active conversation now set to:', activeConversation);
+                updateMobileView();
 
                 document.getElementById('chat-empty-state').classList.add('hidden');
                 document.getElementById('active-chat').classList.remove('hidden');
@@ -1260,6 +1298,7 @@
 
             // Initial Load
             fetchConversations();
+            updateMobileView();
         </script>
     @endpush
     </div>
