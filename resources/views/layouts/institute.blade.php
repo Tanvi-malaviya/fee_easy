@@ -420,6 +420,63 @@
                 firebase.initializeApp(firebaseConfig);
                 const messaging = firebase.messaging();
 
+                // Foreground message handler
+                messaging.onMessage((payload) => {
+                    console.log('Foreground message received: ', payload);
+                    
+                    const senderId = payload.data && payload.data.sender_id;
+                    const senderType = payload.data && payload.data.sender_type;
+                    const currentUserId = '{{ auth('institute')->id() }}';
+                    const isMe = senderId && (senderId == currentUserId) && (senderType === 'Institute');
+                    
+                    // Do not notify about own sent messages
+                    if (isMe) {
+                        return;
+                    }
+
+                    const title = (payload.notification && payload.notification.title) || 
+                                  (payload.data && payload.data.title) || 
+                                  'New Notification';
+                    const body = (payload.notification && payload.notification.body) || 
+                                 (payload.data && payload.data.body) || 
+                                 (payload.data && payload.data.message) || 
+                                 '';
+                    
+                    const isChatPage = window.location.pathname.includes('/institute/chats');
+                    const isChatMsg = (payload.data && payload.data.type === 'chat');
+
+                    // If we are on the chats page and it is a chat message, let the chats page Echo handle it
+                    if (isChatPage && isChatMsg) {
+                        return;
+                    }
+
+                    // Show toast inside the app only if the tab is visible/active
+                    if (!document.hidden) {
+                        if (typeof showToast === 'function') {
+                            showToast(`${title}: ${body}`, 'success');
+                        }
+                    }
+
+                    // Play notification sound
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.type = 'sine';
+                        oscillator.frequency.value = 587.33; // D5 note
+                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                        
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.12);
+                    } catch (e) {
+                        console.log('Audio feedback failed:', e);
+                    }
+                });
+
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('{{ asset("firebase-messaging-sw.js") }}')
                         .then((registration) => {
