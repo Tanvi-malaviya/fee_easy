@@ -88,6 +88,12 @@ class FCMService
                 'title' => $title,
                 'body' => $body,
             ],
+            'webpush' => [
+                'notification' => [
+                    'icon' => '/images/turooa.png',
+                    'badge' => '/images/turooa.png',
+                ],
+            ],
         ];
 
         // Only attach data if not empty (FCM v1 requires all data values to be strings)
