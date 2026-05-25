@@ -50,9 +50,9 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-center sm:justify-end gap-3 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center sm:justify-end gap-3 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0 w-full sm:w-auto">
                 <button onclick="openEditModal()" 
-                    class="flex items-center gap-2 px-5 py-2 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition-all text-xs font-bold">
+                    class="flex items-center justify-center gap-2 px-5 py-2 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition-all text-xs font-bold w-full sm:w-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -60,7 +60,7 @@
                     Edit
                 </button>
                 <button type="button" onclick="openDeleteModal()" 
-                    class="flex items-center gap-2 px-5 py-2 border-2 border-rose-600 text-rose-600 rounded-xl hover:bg-rose-50 transition-all text-xs font-bold">
+                    class="flex items-center justify-center gap-2 px-5 py-2 border-2 border-rose-600 text-rose-600 rounded-xl hover:bg-rose-50 transition-all text-xs font-bold w-full sm:w-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -72,9 +72,10 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[120] hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[380px] bg-white rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+    <div id="delete-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative w-full max-w-[380px] bg-white rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <!-- Close Button -->
             <button onclick="closeDeleteModal()" class="absolute top-3 right-3 h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all z-10">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,18 +132,16 @@
                     </button>
                 </div>
             </div>
-
-           
         </div>
-    </div>
         </div>
     </div>
 
     <!-- Add/Edit Staff Modal (Same as index.blade.php) -->
-    <div id="add-staff-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
-        <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
+    <div id="add-staff-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div
+                class="relative w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
             <div class="px-6 py-4 flex items-center justify-between shrink-0">
                 <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
@@ -191,7 +190,7 @@
                                 class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="relative">
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Role</label>
                                 <button type="button" onclick="toggleModalDropdown('role')"
@@ -246,7 +245,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Email Address</label>
                                 <input type="email" name="email" id="field-email" required placeholder="j.smith@company.com"
@@ -259,7 +258,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Employment Type</label>
                                 <div class="flex p-1 bg-slate-100 rounded-lg w-full">
@@ -302,7 +301,6 @@
                 </form>
             </div>
         </div>
-    </div>
         </div>
     </div>
 

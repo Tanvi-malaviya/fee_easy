@@ -7,14 +7,14 @@
         <!-- Breadcrumb & Header -->
 
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
+        <nav class="flex flex-wrap items-center gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-2">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-primary transition-colors">Batches</a>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
             <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-primary transition-colors">Batch
                 Details</a>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
             <span class="text-slate-600">Homework</span>
@@ -23,28 +23,30 @@
 
         <div class="mb-5">
 
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
                     <h1 class="text-xl font-semibold text-slate-800 tracking-tight mb-1">Batch Homework</h1>
                     <p class="text-xs text-slate-400 mt-0.5 font-medium">Centralized assignment tracking and submission management.</p>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-primary transition-all flex-1 md:flex-none md:w-auto">
-                    <div class="relative flex-1">
-                        <input type="text" id="homework-search" onkeypress="if(event.key === 'Enter') filterHomeworks()"
-                            placeholder="Search assignments..."
-                            class="pl-10 pr-2 py-2 bg-transparent rounded-xl text-sm font-semibold outline-none w-full md:w-[260px]">
-                        <svg class="w-4 h-4 text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <button onclick="filterHomeworks()"
-                        class="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-colors uppercase tracking-widest">
-                        Search
-                    </button>
                 </div>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-primary transition-all w-full sm:w-auto">
+                        <div class="relative flex-1">
+                            <input type="text" id="homework-search" onkeypress="if(event.key === 'Enter') filterHomeworks()"
+                                placeholder="Search assignments..."
+                                class="pl-10 pr-2 py-2 bg-transparent rounded-xl text-sm font-semibold outline-none w-full sm:w-[200px] md:w-[260px] min-w-0">
+                            <svg class="w-4 h-4 text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <button onclick="filterHomeworks()"
+                            class="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-colors uppercase tracking-widest shrink-0">
+                            Search
+                        </button>
+                    </div>
                     <button onclick="openAddHomeworkModal()"
-                        class="px-5 py-3 bg-primary hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center gap-2 shrink-0">
+                        class="px-5 py-3 bg-primary hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center justify-center gap-2 w-full sm:w-auto shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>

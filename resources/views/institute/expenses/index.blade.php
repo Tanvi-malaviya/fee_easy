@@ -1,7 +1,7 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div class="w-full max-w-[1600px] mx-auto overflow-hidden animate-in fade-in duration-500">
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3 px-4 md:px-0">
             <div>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="h-[220px] w-full relative">
+                <div class="h-[220px] w-full relative overflow-hidden">
                     <canvas id="trendsChart"></canvas>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 class="md:col-span-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 min-h-[340px] flex flex-col">
                 <h3 class="text-sm font-bold text-slate-800 mb-6">Category Breakdown</h3>
                 <div id="category-chart-container" class="flex-1 flex flex-col items-center justify-center pt-2">
-                    <div class="relative h-44 w-44 mb-4">
+                    <div class="relative h-44 w-44 mb-4 overflow-hidden">
                         <canvas id="categoryChart"></canvas>
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                             <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Total Spend</p>
