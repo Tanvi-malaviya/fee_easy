@@ -106,8 +106,9 @@ class ChatController extends Controller
                 "New message from " . $senderName,
                 $body,
                 [
-                    'chat_id' => $message->id,
-                    'sender_id' => $user->id,
+                    'type' => 'chat',
+                    'chat_id' => (string) $message->id,
+                    'sender_id' => (string) $user->id,
                     'sender_type' => class_basename($user),
                 ]
             );

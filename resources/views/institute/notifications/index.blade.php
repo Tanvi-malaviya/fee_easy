@@ -5,8 +5,8 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-3xl font-[550] text-slate-800 tracking-tight leading-tight">Notifications</h1>
-            <p class="text-xs text-slate-400 mt-1 font-medium leading-relaxed">Stay updated with your digital campus activities and milestones.</p>
+            <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Notifications</h1>
+            <p class="text-xs text-slate-400 mt-0.5 font-medium">Stay updated with your digital campus activities and milestones.</p>
         </div>
 
     </div>
@@ -32,10 +32,35 @@
             const result = await response.json();
             if (result.status === 'success') {
                 renderNotifications(result.data);
+                const hasUnread = result.data.some(n => !n.is_read);
+                if (hasUnread) {
+                    markAllAsReadSilently();
+                }
             }
         } catch (error) { 
             console.error(error);
             showToast('Load error', 'error'); 
+        }
+    }
+
+    async function markAllAsReadSilently() {
+        try {
+            const response = await fetch('{{ url("/api/v1/institute/notifications/mark-all-read") }}', { 
+                method: 'POST',
+                headers: { 
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                } 
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                const dot = document.getElementById('notif-dot');
+                if (dot) {
+                    dot.classList.add('hidden');
+                }
+            }
+        } catch (error) { 
+            console.error(error);
         }
     }
 

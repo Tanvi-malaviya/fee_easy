@@ -5,10 +5,8 @@
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3 px-4 md:px-0">
             <div>
-                <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Financial Overview</h1>
-                <p class="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    Track and manage institutional expenses in real-time
-                </p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Financial Overview</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Track and manage institutional expenses in real-time</p>
             </div>
             <div class="flex items-center gap-2">
                 <div class="relative">

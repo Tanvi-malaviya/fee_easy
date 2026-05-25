@@ -17,10 +17,9 @@
                     Back to Reports
                 </button>
             </div>
-            <h1 id="page-title" class="text-3xl sm:text-4xl font-[580] text-slate-900 tracking-tight">Reports Hub</h1>
-            <p id="page-subtitle" class="text-xs sm:text-sm text-slate-500 font-medium mt-1.5 max-w-2xl leading-relaxed">
-                Access real-time academic analytics, financial summaries, and student progress metrics through our
-                centralized reporting engine.</p>
+            <h1 id="page-title" class="text-xl font-semibold text-slate-800 tracking-tight">Reports Hub</h1>
+            <p id="page-subtitle" class="text-xs text-slate-400 mt-0.5 font-medium">Access real-time academic analytics,
+                financial summaries, and student progress metrics through our centralized reporting engine.</p>
         </div>
 
         <style>

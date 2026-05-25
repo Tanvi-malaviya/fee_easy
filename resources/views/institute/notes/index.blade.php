@@ -5,8 +5,7 @@
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-4">
             <div>
-                <h1 class="text-3xl font-medium text-slate-800 tracking-tight">Your Workspace</h1>
-                
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Your Workspace</h1>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="toggleBookmarkFilter()" id="bookmark-filter-btn"

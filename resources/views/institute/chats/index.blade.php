@@ -5,8 +5,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-3">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Messages</h1>
-                <p class="text-xs text-slate-500 font-medium">Connect with students and parents</p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Messages</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Connect with students and parents</p>
             </div>
 
         </div>
@@ -822,10 +822,10 @@
 
                         // Tick SVG for sent messages
                         const tickSvg = msg.read_at
-                            ? `<svg class="w-3 h-3 text-sky-300 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+                            ? `<svg class="w-3 h-3 text-sky-500 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
                             : msg.received_at
-                            ? `<svg class="w-3 h-3 text-white/60 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-                            : `<svg class="w-3 h-3 text-white/60 inline-block" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                            ? `<svg class="w-3 h-3 text-slate-400 inline-block" viewBox="0 0 24 24" fill="none"><path d="M2 12L7 17L17 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L22 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+                            : `<svg class="w-3 h-3 text-slate-400 inline-block" viewBox="0 0 24 24" fill="none"><path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
                         if (isMe) {
                             // Sent message: NO avatar, tick OUTSIDE bubble bottom-right

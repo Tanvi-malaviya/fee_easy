@@ -19,14 +19,14 @@
                     class="hover:text-[#ff6600] transition-colors text-slate-600">Loading...</a>
             </nav>
 
-            <h1 id="batch-name-heading" class="text-4xl font-bold text-slate-900 tracking-tight mb-2">Loading...</h1>
-            <p id="batch-sub-info" class="text-sm font-semibold text-slate-400 flex items-center gap-2">
+            <h1 id="batch-name-heading" class="text-xl font-semibold text-slate-800 tracking-tight mb-2">Loading...</h1>
+            <p id="batch-sub-info" class="text-xs text-slate-400 mt-0.5 font-medium flex items-center gap-2">
                 Academic Year 2023-2024 • Section A-12 • <span id="instructor-name">Dr. Julian Vance</span>
             </p>
         </div>
 
         <!-- Top Stat Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
             <!-- Total Enrolled -->
             <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 group">
                 <div
@@ -53,22 +53,7 @@
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Attendance Avg</p>
-                    <h3 class="text-lg font-bold text-slate-900 leading-none">94.2%</h3>
-                </div>
-            </div>
-
-            <!-- Pending Tasks -->
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3 group">
-                <div
-                    class="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M9 5H7a2 2 0 00-2-2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pending Tasks</p>
-                    <h3 class="text-lg font-bold text-slate-900 leading-none">08</h3>
+                    <h3 id="stat-attendance-avg" class="text-lg font-bold text-slate-900 leading-none">Loading...</h3>
                 </div>
             </div>
 
@@ -300,6 +285,11 @@
 
                     const curBatchRev = document.getElementById('current-batch-revenue-display');
                     if (curBatchRev) curBatchRev.innerText = ((batch.students_count || 0) * BATCH_FEES).toLocaleString();
+
+                    const attAvg = batch.attendance_avg !== null && batch.attendance_avg !== undefined 
+                        ? `${batch.attendance_avg}%` 
+                        : 'N/A';
+                    document.getElementById('stat-attendance-avg').innerText = attAvg;
                 }
             } catch (error) {
                 showToast('Failed to load batch info', 'error');

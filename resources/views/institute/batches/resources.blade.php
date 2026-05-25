@@ -15,8 +15,8 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
             <div>
-                <h1 class="text-2xl font-bold text-slate-700 tracking-tight">Batch Resources</h1>
-                <p class="text-xs font-semibold text-slate-400 mt-1">Manage and distribute educational files, videos, and visual assets.</p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Batch Resources</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage and distribute educational files, videos, and visual assets.</p>
             </div>
 
             <button onclick="openUploadModal()" class="px-5 py-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/10 transition-all flex items-center gap-2">

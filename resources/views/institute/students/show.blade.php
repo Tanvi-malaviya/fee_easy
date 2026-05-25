@@ -4,13 +4,13 @@
     <div class="max-w-6xl mx-auto">
         <!-- Breadcrumb & Actions -->
         <div class="flex items-center justify-between mb-1">
-            <a href="{{ route('institute.students.index') }}"
+            <a href="{{ session('student_back_url') ?: route('institute.students.index') }}"
                 class="flex items-center text-slate-400 hover:text-slate-600 font-bold text-sm transition-all group">
                 <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to Students
+                Back
             </a>
             <div class="flex items-center gap-3">
                 <a href="{{ route('institute.students.edit', $student->id) }}"
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="flex-1 text-center md:text-left">
-                        <h1 class="text-xl font-semibold text-slate-700 tracking-tight">{{ $student->name }}</h1>
+                        <h1 class="text-xl font-semibold text-slate-800 tracking-tight">{{ $student->name }}</h1>
                         <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">Student ID:
                             <span
                                 class="text-slate-500 font-bold">TU-{{ $student->created_at->format('Y') }}-{{ str_pad($student->id, 4, '0', STR_PAD_LEFT) }}</span>
@@ -116,7 +116,7 @@
                         <span class="font-bold text-slate-600">{{ $student->standard }}</span>
                     </div>
                     <div class="flex justify-between text-[10px]">
-                        <span class="font-bold text-slate-400 uppercase"> Fee</span>
+                        <span class="font-bold text-slate-400 uppercase">    Fee</span>
                         <span class="font-bold text-slate-600">₹{{ number_format($student->monthly_fee) }}</span>
                     </div>
                 </div>

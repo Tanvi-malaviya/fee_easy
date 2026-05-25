@@ -9,11 +9,8 @@
         <div class="pt-0 px-4 md:px-8 animate-in fade-in duration-500">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-3 md:mb-4">
                 <div class="flex-1">
-                    <h1 class="text-2xl md:text-4xl font-medium text-slate-800 tracking-tight leading-tight">Updates Hub
-                    </h1>
-                    <p class="text-xs md:text-sm text-slate-400 mt-1 font-medium leading-relaxed max-w-2xl">Manage and
-                        broadcast critical institutional communications, academic calendars, and financial notices to your
-                        campus community.</p>
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Updates Hub</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage and broadcast critical institutional communications, academic calendars, and financial notices to your campus community.</p>
                 </div>
             </div>
 

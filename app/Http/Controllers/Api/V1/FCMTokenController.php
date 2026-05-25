@@ -17,6 +17,14 @@ class FCMTokenController extends Controller
         ]);
 
         $user = $request->user();
+        if (!$user) {
+            foreach (['institute', 'web', 'api'] as $guard) {
+                if (auth()->guard($guard)->check()) {
+                    $user = auth()->guard($guard)->user();
+                    break;
+                }
+            }
+        }
 
         if (!$user) {
             return response()->json([

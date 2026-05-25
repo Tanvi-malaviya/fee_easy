@@ -6,7 +6,7 @@
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Send Push Notification</h1>
+            <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Send Push Notification</h1>
             <p class="text-xs text-slate-400 mt-0.5 font-medium">Reach students, parents & staff directly on their devices via Firebase.</p>
         </div>
         <a href="{{ route('institute.notifications.index') }}"

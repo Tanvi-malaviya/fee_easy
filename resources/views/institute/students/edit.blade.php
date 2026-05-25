@@ -7,6 +7,7 @@
             @csrf
             @method('PUT')
 
+
             <!-- Basic Information & Identity -->
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-3">
                 <div class="flex flex-col lg:flex-row gap-5">
@@ -165,7 +166,7 @@
 
             <!-- Form Actions -->
             <div class="flex items-center justify-end gap-3 mt-6 mb-10 px-4">
-                <a href="{{ route('institute.students.index') }}"
+                <a href="{{ session('student_back_url') ?: route('institute.students.index') }}"
                     class="px-8 py-2.5 bg-white border border-[#006666] text-[#006666] rounded-xl font-bold text-sm hover:bg-slate-50 transition-all">
                     Cancel
                 </a>

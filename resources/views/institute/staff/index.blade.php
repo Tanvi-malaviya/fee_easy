@@ -57,8 +57,8 @@
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Staff Management Hub</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage your institute's faculty and support staff.</p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Staff Management Hub</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage your institute's faculty and support staff.</p>
             </div>
 
 

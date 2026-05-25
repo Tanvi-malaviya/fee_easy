@@ -74,7 +74,7 @@
                 </button>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('images/turooa.png') }}" alt="Logo" class="h-12 w-auto object-contain" onerror="this.style.display='none'">
+                        <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain" onerror="this.style.display='none'">
                     </a>
                 </div>
             </div>
@@ -106,24 +106,24 @@
             </nav>
 
             <!-- Right Profile Section -->
-            <div class="flex items-center gap-4">
-                <a href="{{ route('institute.notifications.index') }}" class="text-slate-400 hover:text-slate-800 transition-colors relative">
+            <div class="flex items-center gap-2 sm:gap-4">
+                <a href="{{ route('institute.notifications.index') }}" class="text-slate-400 hover:text-slate-800 transition-colors relative p-2 rounded-xl hover:bg-slate-50 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    <span id="notif-dot" class="absolute -top-1 -right-1 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
+                    <span id="notif-dot" class="absolute top-2 right-2 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
                 </a>
                 
-                <div class="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+                <div class="h-6 w-[1px] bg-slate-200 hidden lg:block"></div>
 
-                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0">
+                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0 hidden sm:block">
                     <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" 
                          class="h-full w-full object-cover">
                 </a>
 
                 <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
-                    class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group"
+                    class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group hidden lg:flex"
                     title="Logout">
                     <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3h4a3 3 0 013 3v1" />
                     </svg>
                 </button>
 
@@ -134,16 +134,71 @@
         </div>
     </header>
 
-    <!-- MOBILE MENU -->
-    <div id="mobile-menu" class="fixed inset-0 bg-white z-[200] hidden flex-col">
-        <div class="p-6 flex items-center justify-between border-b border-slate-100">
-            <h1 class="text-xl font-black text-slate-800">Menu</h1>
-            <button id="close-menu" class="p-2 text-slate-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    <!-- MOBILE MENU (Slide-over) -->
+    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <div id="mobile-menu-panel" class="fixed top-0 bottom-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[201] -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <!-- Close & Logo Header -->
+        <div class="py-3 px-4 flex items-center justify-between border-b border-slate-100">
+            <a href="{{ route('institute.dashboard') }}" class="flex items-center">
+                <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain" onerror="this.style.display='none'">
+            </a>
+            <button id="close-menu" class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
-        <div class="p-6 flex flex-col space-y-4 overflow-y-auto">
+
+        <!-- Profile Card -->
+        <a href="{{ route('institute.profile.index') }}" class="py-3 px-4 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="h-10 w-10 rounded-xl bg-white overflow-hidden border border-slate-200 shrink-0 shadow-sm group-hover:border-orange-500 transition-colors">
+                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" class="h-full w-full object-cover">
+                </div>
+                <div class="overflow-hidden text-left">
+                    <h4 class="text-xs font-extrabold text-slate-800 truncate group-hover:text-[#FF6B00] transition-colors">{{ auth('institute')->user()->institute_name ?? auth('institute')->user()->name }}</h4>
+                    <p class="text-[9px] font-medium text-slate-400 truncate">{{ auth('institute')->user()->email }}</p>
+                </div>
+            </div>
+            <span class="text-slate-400 group-hover:text-[#FF6B00] transition-colors pl-2">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </span>
+        </a>
+
+        <!-- Navigation Links -->
+        <div class="flex-1 py-3 px-3 flex flex-col gap-1 overflow-y-auto custom-scrollbar">
             @foreach($navItems as $item)
-                <a href="{{ route($item['route']) }}" class="text-lg font-black text-slate-700 uppercase tracking-widest">{{ $item['label'] }}</a>
+                @php 
+                    $active = request()->routeIs($item['route']) || (request()->is('institute/batches/*') && $item['label'] == 'Batch') || (request()->is('institute/students/*') && $item['label'] == 'Students');
+                    
+                    $icon = '';
+                    if ($item['label'] == 'Dashboard') {
+                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>';
+                    } elseif ($item['label'] == 'Students') {
+                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+                    } elseif ($item['label'] == 'Batch') {
+                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>';
+                    } elseif ($item['label'] == 'Report') {
+                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9-1V3a2 2 0 012-2h2a2 2 0 012 2v15a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>';
+                    } elseif ($item['label'] == 'Finance') {
+                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                    }
+                @endphp
+                <a href="{{ route($item['route']) }}" 
+                   class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ $active ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                    <span class="{{ $active ? 'text-[#FF6B00]' : 'text-slate-400' }}">{!! $icon !!}</span>
+                    <span>{{ $item['label'] }}</span>
+                </a>
             @endforeach
+        </div>
+
+        <!-- Logout Section in Mobile Menu -->
+        <div class="p-3.5 border-t border-slate-100 bg-slate-50/50">
+            <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 rounded-lg text-[10px] font-bold transition-all shadow-sm">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign Out
+            </button>
         </div>
     </div>
 
@@ -192,12 +247,32 @@
 
     <script>
         // Mobile Menu Logic
-        const menuBtn = document.getElementById('menu-btn');
+        const sidebarToggle = document.getElementById('mobile-sidebar-toggle');
         const closeMenu = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
+        const backdrop = document.getElementById('mobile-menu-backdrop');
+        const panel = document.getElementById('mobile-menu-panel');
 
-        menuBtn?.addEventListener('click', () => mobileMenu.classList.replace('hidden', 'flex'));
-        closeMenu?.addEventListener('click', () => mobileMenu.classList.replace('flex', 'hidden'));
+        function openMobileMenu() {
+            if (!backdrop || !panel) return;
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+            panel.classList.remove('-translate-x-full');
+            panel.classList.add('translate-x-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            if (!backdrop || !panel) return;
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            panel.classList.add('-translate-x-full');
+            panel.classList.remove('translate-x-0');
+            document.body.style.overflow = 'auto';
+        }
+
+        sidebarToggle?.addEventListener('click', openMobileMenu);
+        closeMenu?.addEventListener('click', closeMobileMenu);
+        backdrop?.addEventListener('click', closeMobileMenu);
 
         // Loader Logic
         function toggleLoader(show) {
@@ -274,24 +349,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Mobile Menu Toggle
-            const menuBtn = document.getElementById('mobile-sidebar-toggle');
-            const closeBtn = document.getElementById('close-menu');
-            const menu = document.getElementById('mobile-menu');
-
-            if (menuBtn && menu) {
-                menuBtn.addEventListener('click', () => {
-                    menu.classList.remove('hidden');
-                    menu.classList.add('flex');
-                });
-            }
-
-            if (closeBtn && menu) {
-                closeBtn.addEventListener('click', () => {
-                    menu.classList.add('hidden');
-                    menu.classList.remove('flex');
-                });
-            }
+            // Mobile Menu Toggle registered globally above
         });
 
         // Real-time notification polling
@@ -340,6 +398,84 @@
                 pollNotifications();
                 setInterval(pollNotifications, 30000);
             });
+        @endif
+    </script>
+
+    <!-- Firebase SDKs for client-side Web Push -->
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-messaging-compat.js"></script>
+    <script>
+        @if(auth('institute')->check())
+            const firebaseConfig = {
+                apiKey: "{{ config('services.firebase.api_key') }}",
+                authDomain: "{{ config('services.firebase.auth_domain') }}",
+                projectId: "{{ config('services.firebase.project_id') }}",
+                storageBucket: "{{ config('services.firebase.storage_bucket') }}",
+                messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
+                appId: "{{ config('services.firebase.app_id') }}"
+            };
+
+            // Initialize Firebase only if the client configuration is available in .env
+            if (firebaseConfig.apiKey && firebaseConfig.messagingSenderId) {
+                firebase.initializeApp(firebaseConfig);
+                const messaging = firebase.messaging();
+
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('{{ asset("firebase-messaging-sw.js") }}')
+                        .then((registration) => {
+                            console.log('FCM Service Worker registered successfully.');
+                            
+                            // Request Notification permission
+                            return Notification.requestPermission().then((permission) => {
+                                if (permission === 'granted') {
+                                    const vapidKey = "{{ config('services.firebase.vapid_key') }}";
+                                    const tokenOptions = { serviceWorkerRegistration: registration };
+                                    if (vapidKey) {
+                                        tokenOptions.vapidKey = vapidKey;
+                                    }
+
+                                    return messaging.getToken(tokenOptions).then((currentToken) => {
+                                        if (currentToken) {
+                                            sendTokenToServer(currentToken);
+                                        } else {
+                                            console.warn('No FCM token received.');
+                                        }
+                                    });
+                                } else {
+                                    console.warn('Notification permission denied.');
+                                }
+                            });
+                        })
+                        .catch((err) => {
+                            console.error('FCM Service Worker registration failed:', err);
+                        });
+                }
+
+                function sendTokenToServer(token) {
+                    const storageKey = 'fcm_token_user_{{ auth('institute')->id() }}';
+                    if (localStorage.getItem(storageKey) === token) {
+                        return; // Already registered for this session
+                    }
+
+                    fetch('{{ route("institute.fcm-token.update") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ fcm_token: token })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            localStorage.setItem(storageKey, token);
+                            console.log('FCM Token successfully registered on server.');
+                        }
+                    })
+                    .catch(err => console.error('Error saving FCM token to server:', err));
+                }
+            }
         @endif
     </script>
     @stack('scripts')

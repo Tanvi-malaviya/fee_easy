@@ -71,6 +71,11 @@ class StudentController extends Controller
         if ($student->institute_id !== $institute->id)
             abort(403);
 
+        $referer = request()->headers->get('referer');
+        if ($referer && !str_contains($referer, "/students/{$student->id}")) {
+            session(['student_back_url' => $referer]);
+        }
+
         $batches = $institute->batches()->get();
         return view('institute.students.edit', compact('student', 'batches'));
     }
@@ -83,6 +88,11 @@ class StudentController extends Controller
         $institute = Auth::guard('institute')->user();
         if ($student->institute_id !== $institute->id)
             abort(403);
+
+        $referer = request()->headers->get('referer');
+        if ($referer && !str_contains($referer, "/students/{$student->id}")) {
+            session(['student_back_url' => $referer]);
+        }
 
         $student->load(['batch', 'fees', 'attendance', 'homeworkSubmissions']);
 
@@ -221,6 +231,12 @@ class StudentController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Student details updated successfully!', 'student' => $student]);
+        }
+
+        if (session()->has('student_back_url')) {
+            $backUrl = session('student_back_url');
+            session()->forget('student_back_url');
+            return redirect($backUrl)->with('success', 'Student details updated successfully.');
         }
 
         return redirect()->route('institute.students.index')->with('success', 'Student details updated successfully.');

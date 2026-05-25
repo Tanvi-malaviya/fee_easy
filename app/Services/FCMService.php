@@ -154,6 +154,10 @@ class FCMService
         // Resolve notification category from data type
         $type = $data['type'] ?? '';
 
+        if ($type === 'chat') {
+            return true;
+        }
+
         // Mapping:
         // - fee / fee_reminder -> fee_reminders
         // - homework / assignment -> assignment_alerts

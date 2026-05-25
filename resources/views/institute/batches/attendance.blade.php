@@ -15,8 +15,8 @@
         <!-- Header & Date Picker -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
             <div>
-                <h1 id="header-batch-name" class="text-2xl font-bold text-slate-900 tracking-tight">Loading Batch...</h1>
-                <p id="header-batch-subject" class="text-xs font-semibold text-slate-400 mt-1">Fetching details...</p>
+                <h1 id="header-batch-name" class="text-xl font-semibold text-slate-800 tracking-tight">Loading Batch...</h1>
+                <p id="header-batch-subject" class="text-xs text-slate-400 mt-0.5 font-medium">Fetching details...</p>
             </div>
             
             <div class="flex flex-wrap items-center gap-3">
