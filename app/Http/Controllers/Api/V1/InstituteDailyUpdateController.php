@@ -74,7 +74,7 @@ class InstituteDailyUpdateController extends Controller
 
         if ($file) {
             $path = $file->store('updates', 'public');
-            $attachmentPath = asset('storage/' . $path);
+            $attachmentPath = $path;
         }
 
         $update = DailyUpdate::create([
@@ -126,6 +126,7 @@ class InstituteDailyUpdateController extends Controller
                     'user_id' => $student->id,
                     'title' => $notifTitle,
                     'message' => $notifBody,
+                    'image' => $update->attachment,
                     'type' => 'daily_update',
                     'reference_id' => $update->id,
                     'is_read' => false,
@@ -143,6 +144,7 @@ class InstituteDailyUpdateController extends Controller
                     'user_id' => $student->parent->id,
                     'title' => $notifTitle,
                     'message' => $notifBody,
+                    'image' => $update->attachment,
                     'type' => 'daily_update',
                     'reference_id' => $update->id,
                     'is_read' => false,

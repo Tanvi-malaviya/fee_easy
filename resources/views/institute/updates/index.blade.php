@@ -71,7 +71,7 @@
             </div>
 
             <div class="p-4 sm:p-6 sm:pt-2 overflow-y-auto no-scrollbar">
-                <form id="update-form" class="space-y-3">
+                <form id="update-form" class="space-y-3" enctype="multipart/form-data">
                     <!-- Audience & Category Section -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="space-y-1 relative" id="recipient-dropdown-container">
@@ -524,6 +524,28 @@
             fetchUpdates(query);
         }
 
+        function formatAttachmentUrl(urlStr) {
+            if (!urlStr) return null;
+            let path = urlStr;
+            if (path.startsWith('http')) {
+                try {
+                    const parsed = new URL(path);
+                    const storageIdx = parsed.pathname.indexOf('/storage/');
+                    if (storageIdx !== -1) {
+                        path = parsed.pathname.substring(storageIdx);
+                    } else {
+                        path = parsed.pathname;
+                    }
+                } catch (e) {}
+            }
+            if (path.startsWith('/storage')) {
+                return "{{ url('/') }}" + path;
+            } else if (!path.startsWith('http')) {
+                return "{{ url('/') }}/storage/" + path;
+            }
+            return path;
+        }
+
         function renderUpdates(updates) {
             const container = document.getElementById('update-feed');
             if (updates.length === 0) {
@@ -546,6 +568,9 @@
                 const color = config.color;
                 const updateJson = JSON.stringify(update).replace(/"/g, '&quot;');
                 const timeAgo = getTimeAgo(new Date(update.created_at));
+
+                // Formulate absolute attachment path
+                const attachmentUrl = formatAttachmentUrl(update.attachment);
 
                 // Improved Target Display Logic
                 let targetLabel = 'Target';
@@ -574,7 +599,7 @@
                         </div>
 
                         <!-- Update Card -->
-                        <div class="flex-1 w-full bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all duration-300 min-w-0 overflow-hidden">
+                        <div onclick="openViewUpdateModal(${updateJson})" class="flex-1 w-full bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all duration-300 min-w-0 overflow-hidden cursor-pointer">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-1 mb-1.5 sm:mb-2">
                                 <span class="text-[9px] sm:text-[10px] font-black text-${color}-600 uppercase tracking-widest">${cat.toUpperCase()}</span>
                             </div>
@@ -596,7 +621,7 @@
 
                             ${update.attachment ? `
                             <div class="mt-2.5 pt-2 border-t border-slate-50">
-                                <a href="${update.attachment}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-all group">
+                                <a href="${attachmentUrl}" target="_blank" onclick="event.stopPropagation();" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition-all group">
                                     <svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
                                     <span class="text-[9px] font-black text-slate-700 uppercase tracking-wider">View File</span>
                                 </a>
@@ -606,6 +631,69 @@
                     </div>
                     `;
             }).join('');
+        }
+
+        function openViewUpdateModal(update) {
+            const catConfig = {
+                'Academic': { color: 'orange', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>' },
+                'Administrative': { color: 'orange', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>' },
+                'Emergency': { color: 'rose', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>' },
+                'Event': { color: 'sky', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>' },
+                'Holiday': { color: 'indigo', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>' },
+                'Other': { color: 'slate', icon: '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>' }
+            };
+
+            const cat = update.category === 'Administrative' ? 'Fee Reminder' : update.category;
+            const config = catConfig[update.category] || catConfig['Other'];
+            const color = config.color;
+
+            const iconContainer = document.getElementById('view-cat-icon');
+            iconContainer.className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-500 text-white`;
+            iconContainer.innerHTML = config.icon;
+
+            document.getElementById('view-topic').innerText = update.topic || update.category;
+            
+            const catBadge = document.getElementById('view-category');
+            catBadge.className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-100 text-${color}-600`;
+            catBadge.innerText = cat;
+
+            // Format date
+            const dateObj = new Date(update.created_at);
+            document.getElementById('view-date').innerText = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+            // Target audience display
+            let targetValue = 'Everyone';
+            if (update.recipient === 'parents') {
+                targetValue = 'Parents Only';
+            } else {
+                const audience = update.recipient === 'both' ? '(Students & Parents)' : '';
+                if (update.target_type === 'all') {
+                    targetValue = update.recipient === 'both' ? 'All (Students & Parents)' : 'All Students';
+                } else if (update.target_type === 'batch') {
+                    targetValue = (update.batch ? update.batch.name : 'Batch') + ' ' + audience;
+                } else if (update.target_type === 'standard') {
+                    targetValue = (update.standard ? update.standard + ' Std' : 'Standard') + ' ' + audience;
+                }
+            }
+            document.getElementById('view-target').innerText = targetValue;
+            document.getElementById('view-description').innerText = update.description;
+
+            // Attachment link formatting
+            const attachmentContainer = document.getElementById('view-attachment-container');
+            if (update.attachment) {
+                const attachmentUrl = formatAttachmentUrl(update.attachment);
+                const link = document.getElementById('view-attachment-link');
+                link.href = attachmentUrl;
+                attachmentContainer.classList.remove('hidden');
+            } else {
+                attachmentContainer.classList.add('hidden');
+            }
+
+            document.getElementById('view-modal').classList.remove('hidden');
+        }
+
+        function closeViewModal() {
+            document.getElementById('view-modal').classList.add('hidden');
         }
 
         document.getElementById('update-form').addEventListener('submit', async (e) => {

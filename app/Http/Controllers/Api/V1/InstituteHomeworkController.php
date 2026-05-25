@@ -155,14 +155,10 @@ class InstituteHomeworkController extends Controller
                 'batch_id' => (string) $batch->id,
             ];
 
-            // Check if homework has an image attachment
+            // Check if homework has an attachment (image or document/PDF)
             $homeworkImageUrl = null;
             if (!empty($homework->attachment)) {
-                $rawAttachment = $homework->getRawOriginal('attachment') ?? $homework->attachment;
-                $ext = strtolower(pathinfo($rawAttachment, PATHINFO_EXTENSION));
-                if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                    $homeworkImageUrl = $homework->attachment; // accessor gives full URL
-                }
+                $homeworkImageUrl = $homework->attachment; // Accessor gives the full URL
             }
 
             foreach ($batch->students as $student) {
