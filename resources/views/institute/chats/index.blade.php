@@ -439,20 +439,11 @@
             function showDesktopNotification(title, body, senderName) {
                 playNotificationSound();
                 
-                // Show in-app Toast notification (always visible inside the browser window)
-                if (typeof showToast === 'function') {
-                    showToast(`New message from ${senderName}: ${body}`, 'success');
-                }
-
-                // Show browser desktop notification if permitted (great if user is in another tab/minimized)
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    const notification = new Notification(title, {
-                        body: body,
-                        icon: '/favicon.ico'
-                    });
-                    notification.onclick = function() {
-                        window.focus();
-                    };
+                // Show in-app Toast notification only if the tab is currently active/visible
+                if (!document.hidden) {
+                    if (typeof showToast === 'function') {
+                        showToast(`New message from ${senderName}: ${body}`, 'success');
+                    }
                 }
             }
 
