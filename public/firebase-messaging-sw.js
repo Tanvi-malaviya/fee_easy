@@ -20,13 +20,29 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Background message received: ', payload);
 
-    const notificationTitle = payload.notification.title || "New Notification";
+    // If the payload already contains a notification object, the FCM SDK will
+    // automatically display a notification. Calling showNotification here would
+    // trigger a second, duplicate notification.
+    if (payload.notification) {
+        return;
+    }
+
+    const notificationTitle = payload.data.title || "New Notification";
     const notificationOptions = {
-        body: payload.notification.body || "",
+        body: payload.data.body || payload.data.message || "",
         icon: '/images/turooa.png', // Path to your logo/icon
         badge: '/images/turooa.png', // Small icon shown in Android notification bar
         data: payload.data
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Force immediate update and activation of the new Service Worker
+self.addEventListener('install', (event) => {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
 });
