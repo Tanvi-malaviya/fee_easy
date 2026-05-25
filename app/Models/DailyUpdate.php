@@ -23,6 +23,24 @@ class DailyUpdate extends Model
         'topic',
     ];
 
+    public function getAttachmentAttribute($value)
+    {
+        if (!$value) return null;
+        
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+        
+        $cleanPath = ltrim($value, '/');
+        
+        if (str_starts_with($cleanPath, 'storage/')) {
+            $cleanPath = substr($cleanPath, 8);
+        }
+        
+        $encodedPath = str_replace(' ', '%20', $cleanPath);
+        return url('storage/' . $encodedPath);
+    }
+
     public function student()
     {
         return $this->belongsTo(Student::class);
