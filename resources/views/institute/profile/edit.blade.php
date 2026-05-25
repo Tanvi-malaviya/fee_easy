@@ -6,9 +6,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h1 class="text-2xl font-[550] text-slate-800 tracking-tight leading-tight">Edit Institute Profile</h1>
-                <p class="text-[10px] text-slate-400 mt-0.5 font-medium leading-relaxed">Update your institute details and
-                    institutional settings</p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight leading-tight">Edit Institute Profile</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium leading-relaxed">Update your institute details and institutional settings</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('institute.profile.index') }}"

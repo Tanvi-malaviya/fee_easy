@@ -9,8 +9,8 @@
             <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
-            <h1 class="text-2xl font-black text-slate-800 leading-tight">WhatsApp Integration</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Connect your Meta WhatsApp Cloud API for automated notifications</p>
+            <h1 class="text-xl font-semibold text-slate-800 tracking-tight">WhatsApp Integration</h1>
+            <p class="text-xs text-slate-400 mt-0.5 font-medium">Connect your Meta WhatsApp Cloud API for automated notifications</p>
         </div>
     </div>
 

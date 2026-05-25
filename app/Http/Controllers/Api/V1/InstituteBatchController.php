@@ -80,6 +80,13 @@ class InstituteBatchController extends Controller
         $batch->total_paid = (float) \App\Models\Fee::whereIn('student_id', $studentIds)->sum('paid_amount');
         $batch->total_expected = (float) ($batch->students_count * ($batch->fees ?? 0));
 
+        // Calculate attendance average
+        $totalAttendance = \App\Models\Attendance::where('batch_id', $batch->id)->count();
+        $presentOrLate = \App\Models\Attendance::where('batch_id', $batch->id)
+            ->whereIn('status', ['present', 'late'])
+            ->count();
+        $batch->attendance_avg = $totalAttendance > 0 ? round(($presentOrLate / $totalAttendance) * 100, 1) : null;
+
         return response()->json([
             'status' => 'success',
             'data' => $batch

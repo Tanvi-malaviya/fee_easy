@@ -24,11 +24,8 @@
         <div class="mb-5">
 
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <h1 class="text-4xl font-medium text-slate-900 tracking-tight mb-1">Batch Homework</h1>
-                    <p class="text-sm font-semibold text-slate-400">Centralized assignment tracking and submission
-                        management.</p>
-                </div>
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight mb-1">Batch Homework</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Centralized assignment tracking and submission management.</p>
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-primary transition-all flex-1 md:flex-none md:w-auto">
                     <div class="relative flex-1">
@@ -421,7 +418,7 @@
 
                                             <div class=" flex items-center justify-between">
                                                  <p class="text-[8px] font-black ${isActive ? 'text-primary' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
-                                                 <div class="h-5 w-5 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                 <div class="h-5 w-5 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                                                  </div>
                                             </div>

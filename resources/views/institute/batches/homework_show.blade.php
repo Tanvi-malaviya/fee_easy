@@ -9,7 +9,7 @@
             <div>
                 <div class="flex items-center gap-3 text-[11px] font-bold text-[#ff6c00] uppercase tracking-[0.15em] mb-2">
                     <a href="{{ route('institute.batches.homework', $id) }}"
-                        class="flex items-center gap-2 hover:text-orange-800 transition-colors">
+                        class="flex items-center gap-2  transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
@@ -23,8 +23,8 @@
                     </svg>
                     <span id="header-batch-name">Loading...</span>
                 </div>
-                <h1 id="header-homework-title" class="text-3xl font-bold text-slate-900 tracking-tight mb-1">Loading...</h1>
-                <p class="text-[13px] font-medium text-slate-500 tracking-wide">
+                <h1 id="header-homework-title" class="text-xl font-semibold text-slate-800 tracking-tight mb-1">Loading...</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">
                     Assigned: <span id="header-assigned-date">...</span> &bull; Due: <span id="header-due-date">...</span>
                 </p>
             </div>
@@ -51,7 +51,6 @@
             <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex mb-4">
                 <div id="bar-submitted" class="h-full bg-[#ff6c00] transition-all duration-1000" style="width: 0%"></div>
                 <div id="bar-pending" class="h-full bg-orange-300 transition-all duration-1000" style="width: 0%"></div>
-                <div id="bar-missing" class="h-full bg-rose-700 transition-all duration-1000" style="width: 0%"></div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
@@ -68,10 +67,6 @@
                     class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
                     <span class="w-2.5 h-2.5 rounded-full bg-orange-300"></span> PENDING (<span
                         id="legend-pending">0</span>)
-                </button>
-                <button onclick="filterByStatus('missing')" id="btn-missing"
-                    class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-700"></span> MISSING (<span id="legend-missing">0</span>)
                 </button>
             </div>
         </div>
@@ -152,7 +147,7 @@
                         if (!submissionsMap[student.id]) {
                             submissionsMap[student.id] = {
                                 student_id: student.id,
-                                status: isPastDue ? 'Missing' : 'Pending',
+                                status: 'Pending',
                                 score: 0
                             };
                         } else {
@@ -160,7 +155,7 @@
                             const s = submissionsMap[student.id].status.toLowerCase();
                             if (s === 'submitted') submissionsMap[student.id].status = 'Submitted';
                             else if (s === 'pending') submissionsMap[student.id].status = 'Pending';
-                            else if (s === 'missing') submissionsMap[student.id].status = 'Missing';
+                            else if (s === 'missing') submissionsMap[student.id].status = 'Pending';
                             else if (s === 'late') submissionsMap[student.id].status = 'Late';
 
                             if (submissionsMap[student.id].score === null) {
@@ -227,25 +222,21 @@
         }
 
         function updateProgressCounts() {
-            let submittedCount = 0, pendingCount = 0, missingCount = 0;
+            let submittedCount = 0, pendingCount = 0;
             const total = students.length;
             students.forEach(s => {
                 const st = (submissionsMap[s.id].status || '').toLowerCase();
                 if (st === 'submitted' || st === 'late') submittedCount++;
-                else if (st === 'missing') missingCount++;
                 else pendingCount++;
             });
             document.getElementById('progress-submitted-count').innerText = submittedCount;
             document.getElementById('legend-submitted').innerText = submittedCount;
             document.getElementById('legend-pending').innerText = pendingCount;
-            document.getElementById('legend-missing').innerText = missingCount;
             const subPct = total ? (submittedCount / total) * 100 : 0;
             const penPct = total ? (pendingCount / total) * 100 : 0;
-            const misPct = total ? (missingCount / total) * 100 : 0;
             document.getElementById('progress-percentage').innerText = subPct.toFixed(1) + '% COMPLETE';
             document.getElementById('bar-submitted').style.width = subPct + '%';
             document.getElementById('bar-pending').style.width = penPct + '%';
-            document.getElementById('bar-missing').style.width = misPct + '%';
         }
 
         function showActionBar() {
@@ -303,9 +294,6 @@
                 } else if (status === 'late') {
                     badgeEl.className = 'px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest';
                     badgeEl.innerText = 'Late';
-                } else if (status === 'missing') {
-                    badgeEl.className = 'px-2.5 py-1 bg-rose-600 text-white rounded-full text-[9px] font-bold uppercase tracking-widest';
-                    badgeEl.innerText = 'Missing';
                 } else {
                     badgeEl.className = 'px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[9px] font-bold uppercase tracking-widest';
                     badgeEl.innerText = 'Pending';
@@ -321,8 +309,7 @@
             const btns = {
                 all: document.getElementById('btn-all'),
                 submitted: document.getElementById('btn-submitted'),
-                pending: document.getElementById('btn-pending'),
-                missing: document.getElementById('btn-missing')
+                pending: document.getElementById('btn-pending')
             };
 
             Object.keys(btns).forEach(key => {
@@ -349,13 +336,11 @@
             // Progress
             let submittedCount = 0;
             let pendingCount = 0;
-            let missingCount = 0;
             const total = students.length;
 
             students.forEach(student => {
                 const status = (submissionsMap[student.id].status || '').toLowerCase();
                 if (status === 'submitted' || status === 'late') submittedCount++;
-                else if (status === 'missing') missingCount++;
                 else pendingCount++;
             });
 
@@ -364,7 +349,6 @@
             document.getElementById('legend-all').innerText = total;
             document.getElementById('legend-submitted').innerText = submittedCount;
             document.getElementById('legend-pending').innerText = pendingCount;
-            document.getElementById('legend-missing').innerText = missingCount;
 
             // Filter students for grid
             let filteredStudents = students;
@@ -375,18 +359,14 @@
                 });
             } else if (currentFilter === 'pending') {
                 filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'pending');
-            } else if (currentFilter === 'missing') {
-                filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'missing');
             }
 
             const subPct = total ? (submittedCount / total) * 100 : 0;
             const penPct = total ? (pendingCount / total) * 100 : 0;
-            const misPct = total ? (missingCount / total) * 100 : 0;
 
             document.getElementById('progress-percentage').innerText = subPct.toFixed(1) + '% COMPLETE';
             document.getElementById('bar-submitted').style.width = subPct + '%';
             document.getElementById('bar-pending').style.width = penPct + '%';
-            document.getElementById('bar-missing').style.width = misPct + '%';
 
             // Grid
             const container = document.getElementById('student-grid');
@@ -397,22 +377,18 @@
 
             container.innerHTML = filteredStudents.map(student => {
                 const sub = submissionsMap[student.id];
-                const isMissing = sub.status === 'Missing';
                 const isClosed = homeworkData.is_closed;
 
                 const status = (sub.status || '').toLowerCase();
                 let statusBadge = '';
                 if (status === 'submitted') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-orange-50 text-[#ff6c00] border border-orange-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Submitted</span>`;
                 else if (status === 'late') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Late</span>`;
-                else if (status === 'missing') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-rose-600 text-white rounded-full text-[9px] font-bold uppercase tracking-widest">Missing</span>`;
                 else statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[9px] font-bold uppercase tracking-widest">Pending</span>`;
 
-                const borderClass = isMissing ? 'border-rose-200' : 'border-slate-100';
-
-                const scoreControls = (isMissing || isClosed)
+                const scoreControls = isClosed
                     ? `<div class="flex items-center justify-between px-1">
                                 <span class="text-slate-300 font-medium text-xs">-</span>
-                                <span class="text-slate-400 font-bold text-[14px] w-10 text-center">${isMissing ? 0 : sub.score}</span>
+                                <span class="text-slate-400 font-bold text-[14px] w-10 text-center">${sub.score}</span>
                                 <span class="text-slate-300 font-medium text-xs">+</span>
                            </div>`
                     : `<div class="bg-slate-50 rounded-lg p-1 flex items-center justify-between border border-slate-100">
@@ -422,7 +398,7 @@
                            </div>`;
 
                 return `
-                            <div class="bg-white rounded-xl p-3 border ${borderClass} shadow-sm flex flex-col h-full relative max-w-[230px] w-full hover:shadow-md hover:border-orange-200 transition-all">
+                            <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex flex-col h-full relative max-w-[230px] w-full hover:shadow-md hover:border-orange-200 transition-all">
                                 <div class="flex items-start justify-between mb-2">
                                     <div class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
                                         <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=1e293b&color=fff&bold=true" class="w-full h-full object-cover">

@@ -36,7 +36,7 @@ class InstituteHomeworkController extends Controller
             ])
             ->withCount('submissions')
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(12);
 
         // Transform to include pending students
         $homeworks->each(function($homework) {

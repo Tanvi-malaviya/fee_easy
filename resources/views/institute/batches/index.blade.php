@@ -7,10 +7,8 @@
         <div id="list-view" class="space-y-2 animate-in fade-in duration-500">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="pt-1">
-                    <h1 class="text-2xl font-bold text-slate-800 tracking-tight leading-tight">Batch Management</h1>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manage academic cohorts
-                        &
-                        enrollment status.</p>
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight leading-tight">Batch Management</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage academic cohorts & enrollment status.</p>
                 </div>
 
                 <div class="flex items-center gap-2 pt-1">
@@ -38,11 +36,11 @@
                         Search
                     </button>
                 </div>
-                <div class="flex items-center gap-2 w-full md:w-auto">
+                <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
                     <button onclick="exportBatches()"
-                        class="btn-white btn-md">Export</button>
+                        class="btn-white btn-md flex-1 md:flex-none flex justify-center items-center">Export</button>
                     <button onclick="toggleFormView(true)"
-                        class="btn-brand btn-md whitespace-nowrap bg-primary hover:bg-primary">
+                        class="btn-brand btn-md whitespace-nowrap bg-primary hover:bg-primary flex-1 md:flex-none flex justify-center items-center">
                         Intilize new batch
                     </button>
                 </div>

@@ -8,8 +8,8 @@
         <!-- Page Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between">
             <div>
-                <h1 class="text-3xl font-extrabold text-[#111827] tracking-tight">Attendance History</h1>
-                <!-- <p class="text-sm text-slate-500 mt-1 font-medium">Review and manage past attendance records.</p> -->
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Attendance History</h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Review and manage past attendance records.</p>
             </div>
 
             <div class="flex items-center gap-2">

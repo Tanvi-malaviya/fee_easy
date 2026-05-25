@@ -5,9 +5,10 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 lg:shrink-0">
             <div class="flex items-center gap-4 md:gap-12">
-                <h1 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
-                    Leads Management
-                </h1>
+                <div>
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Leads Management</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Track, nurture, and convert your student inquiries.</p>
+                </div>
             </div>
 
             <div class="flex items-center gap-4">

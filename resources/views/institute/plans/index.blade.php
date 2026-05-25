@@ -10,8 +10,8 @@
             <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
-            <h1 class="text-xl font-bold text-slate-800 leading-tight">Subscription Plans</h1>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Choose the perfect plan for your institute's growth</p>
+            <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Subscription Plans</h1>
+            <p class="text-xs text-slate-400 mt-0.5 font-medium">Choose the perfect plan for your institute's growth</p>
         </div>
     </div>
 
@@ -57,7 +57,7 @@
         @endfor
     </div>
 
-    <div id="plans-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 hidden">
+    <div id="plans-container" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 hidden">
         <!-- Plans dynamically injected here -->
     </div>
 

@@ -16,8 +16,8 @@
                     </svg>
                 </a>
                 <div>
-                    <h1 class="text-3xl font-extrabold text-[#111827] tracking-tight">Mark Attendance</h1>
-                    <!-- <p class="text-sm text-slate-500 mt-1 font-medium">Record daily scholar presence for your sessions.</p> -->
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Mark Attendance</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Record daily scholar presence for your sessions.</p>
                 </div>
             </div>
 

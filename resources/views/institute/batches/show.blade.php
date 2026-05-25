@@ -15,10 +15,9 @@
                     Back to Batches
                 </a>
                 <div class="flex items-center gap-4">
-                    <h1 id="batch-name-heading" class="text-3xl md:text-3xl font-medium text-slate-700 tracking-tight">Loading
-                        Batch...</h1>
+                    <h1 id="batch-name-heading" class="text-xl font-semibold text-slate-800 tracking-tight">Loading Batch...</h1>
                 </div>
-                <p class="text-sm font-bold text-slate-400 mt-2 flex items-center gap-2">
+                <p class="text-xs text-slate-400 mt-0.5 font-medium flex items-center gap-2">
                     Batch ID: <span id="batch-id-text" class="text-slate-600">---</span>
                     <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                     <span id="batch-description-text">---</span>

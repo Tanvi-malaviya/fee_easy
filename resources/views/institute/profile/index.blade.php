@@ -21,7 +21,7 @@
                     </div>
 
                     <div class="md:pt-12">
-                        <h1 id="view-institute_name" class="text-2xl font-[550] text-slate-800 tracking-tight">
+                        <h1 id="view-institute_name" class="text-xl font-semibold text-slate-800 tracking-tight">
                             {{ auth()->guard('institute')->user()->name }}</h1>
                         <div
                             class="flex flex-wrap items-center gap-3 mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-widest">

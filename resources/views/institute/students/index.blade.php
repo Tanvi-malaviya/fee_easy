@@ -10,22 +10,22 @@
             class="bg-white p-2 rounded-xl border border-slate-100 shadow-sm flex flex-col lg:flex-row items-center gap-3 mb-2">
             <!-- Title -->
             <div class="px-3 border-r border-slate-100 hidden lg:block">
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">Student Management</h1>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Student Management</h1>
             </div>
 
             <!-- Mobile Title -->
             <div class="lg:hidden w-full px-2 mb-1">
-                <h1 class="text-lg font-bold text-slate-800 tracking-tight">Student Management</h1>
+                <h1 class="text-lg font-semibold text-slate-800 tracking-tight">Student Management</h1>
             </div>
 
             <!-- Integrated Search Bar -->
 
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-2 w-full lg:w-auto lg:ml-auto pr-1">
-                <div class="flex-1 relative w-full lg:max-w-md">
-                    <div
-                        class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-lg focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
+            <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto lg:ml-auto pr-1">
+                <!-- Search Bar -->
+                <div class="relative w-full sm:w-64 md:w-80">
+                    <div class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-lg focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
                         <div class="pl-2.5 pr-2 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -34,23 +34,27 @@
                         </div>
                         <input type="text" id="search-input" onkeypress="if(event.key === 'Enter') fetchStudents()"
                             placeholder="Search students..."
-                            class="flex-1 bg-transparent border-none py-1.5 text-sm font-medium outline-none">
-                        <button onclick="fetchStudents()" class="btn-brand btn-sm bg-primary bg-primary hover:bg-primary">
+                            class="flex-1 bg-transparent border-none py-1.5 text-xs sm:text-sm font-medium outline-none min-w-0">
+                        <button onclick="fetchStudents()" class="btn-brand btn-sm bg-primary hover:bg-primary shrink-0">
                             Search
                         </button>
                     </div>
                 </div>
-                <button onclick="openExportModal()" class="btn-white btn-md">
-                    <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Export
-                </button>
-                <a href="{{ route('institute.students.create') }}" class="btn-brand btn-md bg-primary hover:bg-primary">
-                    + New Student
-                </a>
+
+                <!-- Secondary Buttons -->
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                    <button onclick="openExportModal()" class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
+                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export
+                    </button>
+                    <a href="{{ route('institute.students.create') }}" class="btn-brand btn-md bg-primary hover:bg-primary flex-1 sm:flex-none flex justify-center items-center text-center">
+                        + New Student
+                    </a>
+                </div>
             </div>
         </div>
 
