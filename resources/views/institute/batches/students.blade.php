@@ -246,6 +246,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Empty State Template -->
+    <template id="students-empty-state">
+        <x-empty-state title="No scholars found" subtitle="Assign scholars to this batch to see them here." icon="students" />
+    </template>
+
     <script>
         const BATCH_ID = "{{ $id }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -535,12 +541,7 @@
         function renderStudents(students) {
             const container = document.getElementById('student-grid');
             if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-10 text-center flex flex-col items-center">
-                            <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            </div>
-                            <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">No Scholars Found</p>
-                        </div>`;
+                container.innerHTML = document.getElementById('students-empty-state').innerHTML;
                 return;
             }
             container.innerHTML = students.map(student => {

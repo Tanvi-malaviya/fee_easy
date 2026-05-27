@@ -38,6 +38,7 @@
                                 onchange="previewImage(event)">
                         </div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">Student Photo</p>
+                        <p id="profile-image-error" class="text-rose-500 text-[10px] font-bold mt-1 max-w-[130px] text-center hidden"></p>
                     </div>
 
                     <!-- Information Column -->
@@ -54,7 +55,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             <div class="space-y-1">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Student
+                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
                                     Name</label>
                                 <input type="text" name="name" required value="{{ old('name') }}"
                                     placeholder="Arjun Malhotra"
@@ -98,8 +99,7 @@
                             </div>
 
                             <div class="space-y-1">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Standard
-                                    / Grade</label>
+                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Graduation</label>
                                 <input type="text" name="standard" value="{{ old('standard') }}"
                                     placeholder="e.g. 10th Grade"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('standard') border-rose-500 @enderror">
@@ -108,7 +108,7 @@
                             </div>
 
                             <div class="space-y-1">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Guardian
+                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Parent
                                     Name</label>
                                 <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
                                     placeholder="Mr. Rajesh Malhotra"
@@ -158,14 +158,14 @@
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">City</label>
-                            <input type="text" name="city" value="{{ old('city') }}" placeholder="Gurgaon"
+                            <input type="text" name="city" value="{{ old('city') }}" placeholder="Ahmedabad"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">State</label>
-                            <input type="text" name="state" value="{{ old('state') }}" placeholder="Haryana"
+                            <input type="text" name="state" value="{{ old('state') }}" placeholder="Gujarat"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
@@ -202,12 +202,33 @@
 
     <script>
         function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const errorEl = document.getElementById('profile-image-error');
+
+            // Check file size (2MB = 2048 * 1024 bytes)
+            if (file.size > 2 * 1024 * 1024) {
+                if (errorEl) {
+                    errorEl.innerText = "Image size must not exceed 2MB.";
+                    errorEl.classList.remove('hidden');
+                }
+                event.target.value = ""; // Clear input
+                document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=New+Student&color=7F9CF5&background=EBF4FF";
+                return;
+            } else {
+                if (errorEl) {
+                    errorEl.innerText = "";
+                    errorEl.classList.add('hidden');
+                }
+            }
+
             const reader = new FileReader();
             reader.onload = function () {
                 const output = document.getElementById('image-preview');
                 output.src = reader.result;
             }
-            reader.readAsDataURL(event.target.files[0]);
+            reader.readAsDataURL(file);
         }
     </script>
 

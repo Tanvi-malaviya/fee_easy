@@ -14,6 +14,7 @@ class Student extends Authenticatable
     protected $appends = ['profile_image_url'];
 
     protected $fillable = [
+        'enrollment_id',
         'name',
         'email',
         'phone',
@@ -90,5 +91,35 @@ class Student extends Authenticatable
             return \Illuminate\Support\Facades\Storage::disk('public')->url($this->profile_image);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($student) {
+            if (empty($student->enrollment_id)) {
+                $year = date('Y');
+                $institute = $student->institute ?? \App\Models\Institute::find($student->institute_id);
+                $code = $institute ? ($institute->institute_code ?? 'INST') : 'INST';
+                $prefix = $year . $code;
+
+                // Find the last serial number for this prefix
+                $lastEnrollmentId = \DB::table('students')
+                    ->where('institute_id', $student->institute_id)
+                    ->where('enrollment_id', 'like', $prefix . '%')
+                    ->orderBy('enrollment_id', 'desc')
+                    ->value('enrollment_id');
+
+                $nextNumber = 1;
+                if ($lastEnrollmentId) {
+                    if (preg_match('/(\d+)$/', $lastEnrollmentId, $matches)) {
+                        $nextNumber = intval($matches[1]) + 1;
+                    }
+                }
+
+                $student->enrollment_id = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+            }
+        });
     }
 }

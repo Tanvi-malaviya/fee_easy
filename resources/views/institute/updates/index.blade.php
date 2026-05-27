@@ -311,7 +311,10 @@
                 </button>
             </div>
         </div>
-    </div>
+    <!-- Empty State Template -->
+    <template id="updates-empty-state">
+        <x-empty-state title="No updates found" subtitle="Try adjusting your filters or search query." icon="updates" class="md:ml-16" />
+    </template>
 
     <script>
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -549,7 +552,7 @@
         function renderUpdates(updates) {
             const container = document.getElementById('update-feed');
             if (updates.length === 0) {
-                container.innerHTML = `<div class="p-8 md:p-20 text-center text-slate-400 italic bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 md:ml-16">No updates posted yet.</div>`;
+                container.innerHTML = document.getElementById('updates-empty-state').innerHTML;
                 return;
             }
 

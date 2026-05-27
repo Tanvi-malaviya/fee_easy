@@ -18,6 +18,7 @@ class Institute extends Authenticatable
         'phone',
         'password',
         'institute_name',
+        'institute_code',
         'logo',
         'address',
         'address_line_2',
@@ -145,5 +146,27 @@ class Institute extends Authenticatable
     public function staffSalaries()
     {
         return $this->hasMany(StaffSalary::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($institute) {
+            if (empty($institute->institute_code)) {
+                $name = $institute->institute_name ?? $institute->name ?? 'INST';
+                $cleanName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
+                $prefix = substr($cleanName, 0, 3);
+                if (strlen($prefix) < 2) {
+                    $prefix = 'INST';
+                }
+
+                do {
+                    $code = $prefix . mt_rand(100, 999);
+                } while (\DB::table('institutes')->where('institute_code', $code)->exists());
+
+                $institute->institute_code = $code;
+            }
+        });
     }
 }

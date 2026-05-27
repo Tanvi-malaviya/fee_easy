@@ -275,6 +275,10 @@
             </div>
         </div>
     </div>
+    <!-- Empty State Template -->
+    <template id="expenses-empty-state">
+        <x-empty-state title="No transactions found" subtitle="Record daily expenses or payments to see records here." icon="expenses" plain="true" />
+    </template>
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -463,7 +467,7 @@
                 pageNumbers.innerHTML = pagesHtml;
 
                 if (!transactions || transactions.length === 0) {
-                    body.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">No transactions found</td></tr>';
+                    body.innerHTML = `<tr><td colspan="5" class="py-12 text-center">${document.getElementById('expenses-empty-state').innerHTML}</td></tr>`;
                     return;
                 }
 

@@ -126,6 +126,10 @@
         </div>
 
         @push('modals')
+            <!-- Empty State Template -->
+            <template id="students-empty-state">
+                <x-empty-state title="No students found" subtitle="Try adjusting your filters or add a new student." icon="students" />
+            </template>
                 <!-- Export Selection Modal -->
                 <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
                     <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -384,10 +388,7 @@
             const container = document.getElementById('student-grid');
 
             if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">
-                                                        <svg class="w-16 h-16 mb-4 opacity-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                                        <p class="font-bold text-sm uppercase tracking-widest text-slate-300">No students found</p>
-                                                    </div>`;
+                container.innerHTML = document.getElementById('students-empty-state').innerHTML;
                 return;
             }
 
@@ -426,7 +427,8 @@
                                                     <img src="${student.profile_image_url}" class="w-full h-full object-cover">
                                                 </div>
                                                 <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
-                                                <p class="text-[10px] font-bold text-slate-400 mt-0.5">${student.email || 'no-email@tuoora.edu'}</p>
+                                                ${student.enrollment_id ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight">${student.enrollment_id}</span></div>` : ''}
+                                                <p class="text-[10px] font-bold text-slate-400 mt-1">${student.email || 'no-email@tuoora.edu'}</p>
                                             </div>
 
                                             <!-- Metrics Section -->

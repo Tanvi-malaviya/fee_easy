@@ -1,6 +1,33 @@
 @extends('layouts.institute')
 
 @section('content')
+    @php
+        $feeStatusText = 'Full Paid';
+        $feeStatusBg = 'bg-emerald-50/30';
+        $feeStatusBorder = 'border-emerald-100';
+        $feeStatusLabel = 'text-emerald-600/50';
+        $feeStatusValue = 'text-emerald-700';
+
+        if (!$student->monthly_fee || $student->monthly_fee == 0) {
+            $feeStatusText = 'No Fee';
+            $feeStatusBg = 'bg-slate-50';
+            $feeStatusBorder = 'border-slate-200';
+            $feeStatusLabel = 'text-slate-400';
+            $feeStatusValue = 'text-slate-500';
+        } elseif ($balance >= $student->monthly_fee) {
+            $feeStatusText = 'Pending';
+            $feeStatusBg = 'bg-rose-50/30';
+            $feeStatusBorder = 'border-rose-100';
+            $feeStatusLabel = 'text-rose-600/50';
+            $feeStatusValue = 'text-rose-700';
+        } elseif ($balance > 0) {
+            $feeStatusText = 'Partial Dues';
+            $feeStatusBg = 'bg-amber-50/30';
+            $feeStatusBorder = 'border-amber-100';
+            $feeStatusLabel = 'text-amber-600/50';
+            $feeStatusValue = 'text-amber-700';
+        }
+    @endphp
     <div class="max-w-6xl mx-auto">
         <!-- Breadcrumb & Actions -->
         <div class="flex items-center justify-between mb-1">
@@ -35,7 +62,7 @@
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-2">
             <!-- Profile Header Card (2/3) -->
             <div
                 class="lg:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm p-4 h-full flex flex-col justify-center">
@@ -44,7 +71,7 @@
                         <div class="h-20 w-20 rounded-xl bg-slate-50 overflow-hidden border-2 border-white shadow-md">
                             <img src="{{ $student->profile_image_url }}" class="w-full h-full object-cover">
                         </div>
-                        <div
+                        <!-- <div
                             class="absolute -bottom-1 -left-1 bg-emerald-500 text-white px-2 py-0.5 rounded-lg text-[8px] font-bold uppercase tracking-widest border-2 border-white shadow-sm">
                             <div class="flex items-center gap-1">
                                 <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
@@ -54,14 +81,14 @@
                                 </svg>
                                 {{ $student->status == 1 ? 'Enrolled' : 'Inactive' }}
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="flex-1 text-center md:text-left">
                         <h1 class="text-xl font-semibold text-slate-800 tracking-tight">{{ $student->name }}</h1>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">Student ID:
+                        <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">Enrollment ID:
                             <span
-                                class="text-slate-500 font-bold">TU-{{ $student->created_at->format('Y') }}-{{ str_pad($student->id, 4, '0', STR_PAD_LEFT) }}</span>
+                                class="text-slate-500 font-bold">{{ $student->enrollment_id }}</span>
                         </p>
 
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
@@ -70,11 +97,11 @@
                                 </p>
                                 <p class="text-sm font-bold text-slate-700">{{ $averageGrade }}/10</p>
                             </div>
-                            <div class="bg-emerald-50/30 rounded-xl px-3 py-2 border border-emerald-100 min-w-[90px]">
-                                <p class="text-[8px] font-bold text-emerald-600/50 uppercase tracking-widest mb-0.5">Payment
+                            <div class="{{ $feeStatusBg }} rounded-xl px-3 py-2 border {{ $feeStatusBorder }} min-w-[90px]">
+                                <p class="text-[8px] font-bold {{ $feeStatusLabel }} uppercase tracking-widest mb-0.5">Payment
                                     Status</p>
-                                <p class="text-sm font-bold text-emerald-700">
-                                    {{ $balance > 0 ? 'Partial Dues' : 'Full Paid' }}
+                                <p class="text-sm font-bold {{ $feeStatusValue }}">
+                                    {{ $feeStatusText }}
                                 </p>
                             </div>
                             <div class="bg-blue-50/30 rounded-xl px-3 py-2 border border-blue-100 min-w-[90px]">
@@ -144,12 +171,22 @@
                     </p>
                 </div>
                 <div>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Guardian Name</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Parent Name</p>
                     <p class="text-sm font-semibold text-slate-600 leading-tight">{{ $student->guardian_name ?: 'N/A' }}</p>
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Phone Number</p>
                     <p class="text-sm font-semibold text-slate-600 leading-tight">+91 {{ $student->phone }}</p>
+                </div>
+                <div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email Address</p>
+                    <p class="text-sm font-semibold text-slate-600 leading-tight">{{ $student->email }}</p>
+                </div>
+                <div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date of Birth</p>
+                    <p class="text-sm font-semibold text-slate-600 leading-tight">
+                        {{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('M d, Y') : 'N/A' }}
+                    </p>
                 </div>
                 <div class="lg:col-span-4 pt-3 border-t border-slate-50">
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Residential Address</p>

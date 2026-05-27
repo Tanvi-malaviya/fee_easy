@@ -151,6 +151,11 @@
     </div>
 </div>
 
+<!-- Empty State Template -->
+<template id="fees-empty-state">
+    <x-empty-state title="No transaction records found" subtitle="Log fee payments to see records here." icon="fees" />
+</template>
+
 <script>
     const CSRF_TOKEN = "{{ csrf_token() }}";
     
@@ -368,7 +373,7 @@
     function renderFees(fees) {
         const container = document.getElementById('fee-cards-container');
         if (fees.length === 0) {
-            container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400 font-medium italic text-xs">No records found.</div>`;
+            container.innerHTML = document.getElementById('fees-empty-state').innerHTML;
             return;
         }
 

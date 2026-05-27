@@ -23,7 +23,6 @@ class DashboardMockSeeder extends Seeder
         $student = Student::updateOrCreate(
             ['email' => 'tanvimalaviya2004@gmail.com'],
             [
-                'id' => 1,
                 'name' => 'sanjana',
                 'phone' => '9910256145',
                 'password' => bcrypt('n2gmoeTAeT'),
@@ -63,7 +62,7 @@ class DashboardMockSeeder extends Seeder
 
         // 2. Seed Attendance for this week
         $startOfWeek = Carbon::now()->startOfWeek();
-        
+
         // Monday Attendance: Present
         Attendance::firstOrCreate(
             ['student_id' => $student->id, 'date' => $startOfWeek->copy()->toDateString()],

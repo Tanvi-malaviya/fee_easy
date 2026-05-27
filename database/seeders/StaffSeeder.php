@@ -14,6 +14,8 @@ class StaffSeeder extends Seeder
      */
     public function run(): void
     {
+        $instituteId = \App\Models\Institute::first()->id ?? 1;
+
         // Departments
         $depts = [
             'Administrative Affairs',
@@ -26,7 +28,10 @@ class StaffSeeder extends Seeder
         ];
 
         foreach ($depts as $dept) {
-            StaffDepartment::create(['name' => $dept]);
+            StaffDepartment::create([
+                'name' => $dept,
+                'institute_id' => $instituteId,
+            ]);
         }
 
         // Roles
@@ -42,11 +47,15 @@ class StaffSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            StaffRole::create(['name' => $role]);
+            StaffRole::create([
+                'name' => $role,
+                'institute_id' => $instituteId,
+            ]);
         }
 
         // Sample Staff
         Staff::create([
+            'institute_id' => $instituteId,
             'employee_id' => 'EMP-2045',
             'full_name' => 'Sarah Chen',
             'email' => 'sarah.chen@example.com',
@@ -59,6 +68,7 @@ class StaffSeeder extends Seeder
         ]);
 
         Staff::create([
+            'institute_id' => $instituteId,
             'employee_id' => 'EMP-2098',
             'full_name' => 'Marcus Thorne',
             'email' => 'marcus.t@example.com',

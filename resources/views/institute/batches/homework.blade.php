@@ -254,6 +254,13 @@
         }
     </style>
 
+    <!-- Empty State Template -->
+    <template id="homework-empty-state">
+        <x-empty-state title="No Assignments Yet" subtitle="Your scholars are waiting for their first task." icon="homework">
+           
+        </x-empty-state>
+    </template>
+
     <script>
         const BATCH_ID = "{{ $id }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -357,15 +364,7 @@
         function renderHomeworks(homeworks) {
             const container = document.getElementById('homework-grid');
             if (homeworks.length === 0) {
-                container.innerHTML = `
-                                    <div class="col-span-full py-10 text-center flex flex-col items-center">
-                                        <div class="h-24 w-24 bg-slate-50 rounded-[1rem] flex items-center justify-center text-slate-200 mb-6 border border-slate-100">
-                                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                                        </div>
-                                        <h3 class="text-xl font-black text-slate-800 mb-2">No Assignments Yet</h3>
-                                        <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-6">Your scholars are waiting for their first task</p>
-                                        <button onclick="openAddHomeworkModal()" class="text-blue-600 font-black text-xs hover:underline uppercase tracking-widest">Create One Now</button>
-                                    </div>`;
+                container.innerHTML = document.getElementById('homework-empty-state').innerHTML;
                 return;
             }
 

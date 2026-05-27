@@ -276,6 +276,10 @@
                             <input type="text" name="institute_name" id="field-institute_name" placeholder="Enter Institute Name" class="input">
                         </div>
                         <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Institute Code</label>
+                            <input type="text" name="institute_code" id="field-institute_code" placeholder="e.g. TA" class="input uppercase" max="10">
+                        </div>
+                        <div class="space-y-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Owner Name</label>
                             <input type="text" name="name" id="field-name" placeholder="Enter Owner Name" class="input">
                         </div>
@@ -528,7 +532,12 @@
                         document.getElementById('modal-logo-preview').src = data.logo_url;
                     }
 
-                    document.getElementById('view-institute_name').innerText = data.institute_name || data.name || 'Institute';
+                    document.getElementById('view-institute_name').innerHTML = `
+                        ${data.institute_name || data.name || 'Institute'}
+                        <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
+                            ${data.institute_code || ''}
+                        </span>
+                    `;
                     document.getElementById('view-city').innerText = data.city || 'Location';
                     document.getElementById('view-email').innerText = data.email || '';
 
@@ -570,6 +579,7 @@
 
                     // Populate form fields
                     document.getElementById('field-institute_name').value = data.institute_name || '';
+                    document.getElementById('field-institute_code').value = data.institute_code || '';
                     document.getElementById('field-name').value = data.name || '';
                     document.getElementById('field-email').value = data.email || '';
                     document.getElementById('field-phone').value = data.phone || '';

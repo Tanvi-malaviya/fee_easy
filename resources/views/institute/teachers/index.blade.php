@@ -153,6 +153,11 @@
         </div>
     </div>
 
+    <!-- Empty State Template -->
+    <template id="teachers-empty-state">
+        <x-empty-state title="No teachers registered yet" subtitle="Add teachers to manage subjects and daily attendance." icon="teacher" plain="true" />
+    </template>
+
     <script>
         const API_URL = "/api/v1/institute/teachers";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -176,7 +181,7 @@
         function renderTeachers(items) {
             const container = document.getElementById('teacher-table-body');
             if (items.length === 0) {
-                container.innerHTML = `<tr><td colspan="5" class="px-8 py-20 text-center text-slate-400 font-medium italic">No teachers registered yet.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="5" class="px-8 py-16 text-center">${document.getElementById('teachers-empty-state').innerHTML}</td></tr>`;
                 return;
             }
 

@@ -876,7 +876,18 @@
                 </div>
             </div>
         </div>
-    </div>
+    <!-- Empty State Templates -->
+    <template id="staff-empty-state">
+        <x-empty-state title="No staff members found" subtitle="Try adjusting your filters or add a new staff member." icon="staff" />
+    </template>
+    
+    <template id="attendance-empty-state">
+        <x-empty-state title="No attendance records found" subtitle="Log attendance to see entries here." icon="calendar" plain="true" />
+    </template>
+
+    <template id="salary-empty-state">
+        <x-empty-state title="No salary records found" subtitle="Record salary payments to track history here." icon="salary" plain="true" />
+    </template>
 
     <script>
         const API_URL = "{{ url('api/v1/institute/staff') }}";
@@ -1039,17 +1050,7 @@
             if (!grid) return;
 
             if (staffMembers.length === 0) {
-                grid.innerHTML = `
-                                                    <div class="col-span-full py-20 flex flex-col items-center text-center bg-white rounded-3xl border border-slate-100 w-full">
-                                                        <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                            </svg>
-                                                        </div>
-                                                        <h3 class="text-xl font-bold text-slate-800 mb-1">No staff members found</h3>
-                                                        <p class="text-sm text-slate-400">Try adjusting your filters or add a new staff member.</p>
-                                                    </div>
-                                                `;
+                grid.innerHTML = document.getElementById('staff-empty-state').innerHTML;
                 return;
             }
 
@@ -1453,15 +1454,7 @@
                 tbody.innerHTML = `
                                                     <tr>
                                                         <td colspan="6" class="px-6 py-12 text-center">
-                                                            <div class="flex flex-col items-center">
-                                                                <div class="h-14 w-14 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
-                                                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                                    </svg>
-                                                                </div>
-                                                                <h3 class="text-sm font-bold text-slate-800">No attendance records found</h3>
-                                                                <p class="text-xs text-slate-400">Log attendance to see entries here.</p>
-                                                            </div>
+                                                            ${document.getElementById('attendance-empty-state').innerHTML}
                                                         </td>
                                                     </tr>
                                                 `;
@@ -1799,7 +1792,7 @@
             if (!tbody) return;
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs italic">No salary records found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center">${document.getElementById('salary-empty-state').innerHTML}</td></tr>`;
                 return;
             }
 
