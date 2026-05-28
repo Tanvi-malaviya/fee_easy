@@ -45,6 +45,7 @@
                             Search
                         </button>
                     </div>
+                    @if(Auth::guard('institute')->user()->hasActiveSubscription())
                     <button onclick="openAddHomeworkModal()"
                         class="px-5 py-3 bg-primary hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-md shadow-orange-700/10 transition-all flex items-center justify-center gap-2 w-full sm:w-auto shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -52,6 +53,7 @@
                         </svg>
                         Add Homework
                     </button>
+                    @endif
                 </div>
             </div>
         </div>

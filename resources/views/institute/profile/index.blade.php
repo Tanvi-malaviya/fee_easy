@@ -3,6 +3,26 @@
 @section('content')
     <div class="max-w-[1200px] mx-auto pb-6 pt-2">
 
+        @if (!auth()->guard('institute')->user()->isProfileComplete())
+            <!-- Incomplete Profile Warning Alert Banner -->
+            <div class="mb-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border-2 border-orange-500/20 rounded-2xl p-5 shadow-lg shadow-orange-500/5 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/20 animate-pulse">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight">Complete Your Profile Setup</h4>
+                        <p class="text-xs text-slate-600 font-semibold leading-relaxed mt-0.5">Please provide your <strong>Phone Number, Address, City, State, and Pincode</strong> below. Completing your profile is required to gain full access to your institute dashboard and core portal features.</p>
+                    </div>
+                </div>
+                <button onclick="openEditMode()" class="w-full md:w-auto px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-md transition-all shrink-0 hover:scale-[1.02] active:scale-95">
+                    Configure Profile
+                </button>
+            </div>
+        @endif
+
         <!-- Premium Profile Header -->
         <div
             class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 overflow-hidden relative mb-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -292,8 +312,12 @@
                             <input type="text" name="phone" id="field-phone" placeholder="Phone Number" class="input">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</label>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address Line 1</label>
                             <input type="text" name="address" id="field-address" placeholder="Flat, House no., Building" class="input">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address Line 2</label>
+                            <input type="text" name="address_line_2" id="field-address_line_2" placeholder="Area, Street, Sector" class="input">
                         </div>
                         <div class="">
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City</label>
@@ -302,6 +326,14 @@
                         <div class="">
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">State</label>
                             <input type="text" name="state" id="field-state" placeholder="State" class="input">
+                        </div>
+                        <div class="">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Country</label>
+                            <input type="text" name="country" id="field-country" placeholder="Country" class="input">
+                        </div>
+                        <div class="">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pincode / Zip</label>
+                            <input type="text" name="pincode" id="field-pincode" placeholder="Pincode" class="input">
                         </div>
                     </div>
 
@@ -515,7 +547,12 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', fetchProfile);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProfile();
+            @if (!auth()->guard('institute')->user()->isProfileComplete())
+                openEditMode();
+            @endif
+        });
 
         async function fetchProfile() {
             try {
@@ -584,8 +621,11 @@
                     document.getElementById('field-email').value = data.email || '';
                     document.getElementById('field-phone').value = data.phone || '';
                     document.getElementById('field-address').value = data.address || '';
+                    document.getElementById('field-address_line_2').value = data.address_line_2 || '';
                     document.getElementById('field-city').value = data.city || '';
                     document.getElementById('field-state').value = data.state || '';
+                    document.getElementById('field-country').value = data.country || 'India';
+                    document.getElementById('field-pincode').value = data.pincode || '';
                 }
             } catch (error) { console.error('Error fetching profile:', error); }
         }

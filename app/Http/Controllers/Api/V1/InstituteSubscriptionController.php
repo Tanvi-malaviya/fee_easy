@@ -33,54 +33,42 @@ class InstituteSubscriptionController extends Controller
     public function renew(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'days' => 'required|integer|min:1',
-            'payment_gateway' => 'nullable|string|max:255',
-            'payment_source' => 'nullable|string|max:255',
-            'transaction_id' => 'nullable|string|max:255',
+            'transaction_id' => 'required|string|unique:subscription_renewals,transaction_id',
+            'screenshot'     => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120',
+            'message'        => 'nullable|string|max:500',
         ]);
 
         $institute = $request->user();
-        $subscription = $institute->subscriptions()
-            ->whereIn('status', ['active', 'trial'])
-            ->latest('end_date')
+
+        // Prevent duplicate pending submissions
+        $existing = \App\Models\SubscriptionRenewal::where('institute_id', $institute->id)
+            ->where('status', 'pending')
             ->first();
 
-        $now = Carbon::now();
-        $startDate = $subscription && $subscription->end_date && $subscription->end_date->greaterThan($now)
-            ? $subscription->end_date
-            : $now;
-
-        if (! $subscription) {
-            $subscription = Subscription::create([
-                'institute_id' => $institute->id,
-                'plan_name' => 'Subscription Renewal',
-                'amount' => $request->amount,
-                'start_date' => $startDate,
-                'end_date' => $startDate->copy()->addDays($request->days),
-                'status' => 'active',
-            ]);
-        } else {
-            $subscription->update([
-                'amount' => $request->amount,
-                'end_date' => $startDate->copy()->addDays($request->days),
-                'status' => 'active',
-            ]);
+        if ($existing) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You already have a pending renewal request under review.',
+            ], 400);
         }
 
-        SubscriptionPayment::create([
-            'subscription_id' => $subscription->id,
-            'amount' => $request->amount,
-            'payment_gateway' => $request->payment_gateway,
-            'payment_source' => $request->payment_source,
+        $path = null;
+        if ($request->hasFile('screenshot')) {
+            $path = $request->file('screenshot')->store('payment_proofs', 'public');
+        }
+
+        $renewal = \App\Models\SubscriptionRenewal::create([
+            'institute_id' => $institute->id,
             'transaction_id' => $request->transaction_id,
-            'paid_at' => $now,
+            'screenshot' => $path,
+            'message' => $request->message,
+            'status' => 'pending',
         ]);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Subscription renewed successfully.',
-            'data' => $subscription,
+            'message' => 'Your subscription renewal request has been submitted successfully. We will review and activate it shortly!',
+            'data' => $renewal
         ]);
     }
 

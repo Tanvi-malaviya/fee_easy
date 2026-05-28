@@ -23,10 +23,12 @@
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Download PDF
             </button>
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <button onclick="openFeeModal()" class="px-3 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
                 Add Transaction
             </button>
+            @endif
         </div>
     </div>
 

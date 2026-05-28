@@ -15,6 +15,7 @@
                     </svg>
                     Bookmarks
                 </button>
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <button onclick="openNoteModal()"
                     class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,6 +23,7 @@
                     </svg>
                     New Note
                 </button>
+                @endif
             </div>
         </div>
 

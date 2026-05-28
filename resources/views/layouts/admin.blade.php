@@ -227,6 +227,13 @@
                     <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">All Subscriptions</span>
                 </a>
 
+                <a href="{{ route('departments.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('departments.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Departments</span>
+                </a>
+
                 <div x-show="!sidebarCollapsed" class="sidebar-text px-4 mt-8 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     Finance Management
                 </div>

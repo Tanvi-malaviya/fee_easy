@@ -1,6 +1,9 @@
 @extends('layouts.institute')
 
 @section('content')
+    @php
+        $staffList = \App\Models\Staff::where('institute_id', Auth::guard('institute')->id())->orderBy('full_name')->get();
+    @endphp
     <div class="max-w-[1600px] mx-auto ">
 
         <!-- MAIN LIST VIEW -->
@@ -39,10 +42,12 @@
                 <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
                     <button onclick="exportBatches()"
                         class="btn-white btn-md flex-1 md:flex-none flex justify-center items-center">Export</button>
+                    @if(Auth::guard('institute')->user()->hasActiveSubscription())
                     <button onclick="toggleFormView(true)"
                         class="btn-brand btn-md whitespace-nowrap bg-primary hover:bg-primary flex-1 md:flex-none flex justify-center items-center">
                         Intilize new batch
                     </button>
+                    @endif
                 </div>
             </div>
 
@@ -167,12 +172,43 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom
-                                    / Venue</label>
-                                <input type="text" name="classroom" id="field-classroom"
-                                    placeholder="e.g. Room 101, Main Hall"
-                                    class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom / Venue</label>
+                                    <input type="text" name="classroom" id="field-classroom"
+                                        placeholder="e.g. Room 101, Main Hall"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                </div>
+                                <div class="space-y-1 relative">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned Staff</label>
+                                    <button type="button" onclick="toggleBatchModalDropdown('staff')"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                        <span id="modal-staff-label" class="text-slate-400">Select Staff</span>
+                                        <svg id="modal-staff-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div id="modal-staff-menu"
+                                        class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
+                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                            <button type="button"
+                                                onclick="selectBatchModalOption('staff', '', 'None')"
+                                                class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                None
+                                            </button>
+                                            @foreach($staffList as $staff)
+                                                <button type="button"
+                                                    onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
+                                                    class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                    {{ $staff->full_name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="staff_id" id="field-staff" value="">
+                                </div>
                             </div>
                         </div>
 
@@ -237,6 +273,7 @@
     <script>
         const API_URL = "/api/v1/institute/batches";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+        const staffListJs = @json($staffList);
 
         document.addEventListener('DOMContentLoaded', () => fetchBatches());
 
@@ -308,6 +345,15 @@
                 const icon = icons[idx % icons.length];
                 const statusBadge = '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
 
+                const savedStaffId = localStorage.getItem('batch_staff_' + batch.id);
+                let staffHtml = '';
+                if (savedStaffId) {
+                    const staffObj = staffListJs.find(s => s.id == savedStaffId);
+                    if (staffObj) {
+                        staffHtml = `<div class="flex items-center gap-2 text-primary/80"><svg class="w-3 h-3 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${staffObj.full_name}</span></div>`;
+                    }
+                }
+
                 return `
                                     <div class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col cursor-pointer" onclick="window.location.href='/institute/batches/${batch.id}'">
                                         <!-- Card Body -->
@@ -327,6 +373,7 @@
                                             <div class="space-y-2 text-slate-500">
                                                 <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-[10px] font-bold">${formatTime12Hour(batch.start_time)} - ${formatTime12Hour(batch.end_time)}</span></div>
                                                 <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('')}</div></div>
+                                                ${staffHtml}
                                             </div>
                                         </div>
                                         <!-- Footer Actions -->
@@ -411,12 +458,50 @@
                     document.getElementById('field-description').value = '';
                     document.getElementById('form-title').innerText = 'Manage Batch';
                     document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+
+                    // Reset custom staff select dropdown
+                    document.getElementById('field-staff').value = '';
+                    const labelEl = document.getElementById('modal-staff-label');
+                    labelEl.innerText = 'Select Staff';
+                    labelEl.classList.add('text-slate-400');
+                    labelEl.classList.remove('text-slate-800');
                 }
             } else {
                 modal.classList.add('hidden');
                 document.body.style.overflow = ''; // Restore scroll
+                // Hide custom menu if open
+                document.getElementById('modal-staff-menu').classList.add('hidden');
+                document.getElementById('modal-staff-chevron').classList.remove('rotate-180');
             }
         }
+
+        window.toggleBatchModalDropdown = (type) => {
+            const menu = document.getElementById(`modal-${type}-menu`);
+            const chevron = document.getElementById(`modal-${type}-chevron`);
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        };
+
+        window.selectBatchModalOption = (type, value, label) => {
+            document.getElementById(`field-${type}`).value = value;
+            const labelEl = document.getElementById(`modal-${type}-label`);
+            labelEl.innerText = label;
+            if (value === '') {
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-800');
+            } else {
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            }
+            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
+            document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
+        };
 
         function openEditForm(batch) {
             toggleFormView(true, true);
@@ -432,6 +517,21 @@
             document.getElementById('field-classroom').value = batch.classroom || '';
             const days = batch.days || [];
             document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
+
+            // Load and pre-select staff from localStorage
+            const savedStaffId = localStorage.getItem('batch_staff_' + batch.id) || '';
+            document.getElementById('field-staff').value = savedStaffId;
+            const staffObj = staffListJs.find(s => s.id == savedStaffId);
+            const labelEl = document.getElementById('modal-staff-label');
+            if (staffObj) {
+                labelEl.innerText = staffObj.full_name;
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            } else {
+                labelEl.innerText = 'Select Staff';
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-800');
+            }
         }
 
         document.getElementById('batch-form').addEventListener('submit', async (e) => {
@@ -449,6 +549,8 @@
             // Clean payload: remove days[] and ensure days is an array
             const payload = Object.fromEntries(formData.entries());
             delete payload['days[]'];
+            const staffIdToSave = payload.staff_id;
+            delete payload.staff_id;
             payload.days = days;
 
             toggleSubmitLoading(true);
@@ -474,6 +576,17 @@
 
                 if (resp.ok && result.status === 'success') {
                     showToast(result.message || 'Batch saved successfully');
+                    
+                    // Save staff selection to localStorage
+                    const batchId = id || result.data.id;
+                    if (batchId) {
+                        if (staffIdToSave) {
+                            localStorage.setItem('batch_staff_' + batchId, staffIdToSave);
+                        } else {
+                            localStorage.removeItem('batch_staff_' + batchId);
+                        }
+                    }
+
                     toggleFormView(false);
                     fetchBatches();
                 } else {

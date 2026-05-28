@@ -123,6 +123,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openAddModal()"
                             class="px-4 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:translate-y-[-1px] shadow-lg shadow-orange-900/10 active:scale-95 transition-all whitespace-nowrap shrink-0 sm:w-auto w-full">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,6 +131,7 @@
                             </svg>
                             Add Staff
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-2 overflow-visible flex-wrap sm:flex-nowrap w-full lg:w-auto">
@@ -216,6 +218,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openAttendanceModal()"
                             class="px-4 py-2 bg-[#FF6B00] text-white rounded-lg text-xs font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,6 +227,7 @@
                             </svg>
                             Log Attendance
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
@@ -317,6 +321,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openSalaryModal()"
                             class="px-4 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,6 +330,7 @@
                             </svg>
                             Add Salary
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
@@ -446,8 +452,10 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size
-                                2MB.</p>
+                             <div>
+                                <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size 2MB.</p>
+                                <span id="error-profile_image" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -459,65 +467,34 @@
                             <span id="error-full_name" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Role</label>
-                                <div class="relative group" id="modal-role-dropdown">
-                                    <button type="button" onclick="toggleModalSelect('role')" id="modal-role-btn"
-                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
-                                        <span id="modal-role-label">Select Role</span>
-                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-role-menu"
-                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            @foreach($roles as $role)
-                                                <button type="button"
-                                                    onclick="selectModalOption('role', '{{ $role->id }}', '{{ $role->name }}')"
-                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $role->name }}
-                                                </button>
-                                            @endforeach
-                                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
+                            <div class="relative group" id="modal-dept-dropdown">
+                                <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
+                                    <span id="modal-dept-label">Select Department</span>
+                                    <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="modal-dept-menu"
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                        @foreach($departments as $dept)
+                                            <button type="button"
+                                                onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                {{ $dept->name }}
+                                            </button>
+                                        @endforeach
                                     </div>
-                                    <input type="hidden" name="staff_role_id" id="field-role" required>
                                 </div>
-                                <span id="error-staff_role_id"
-                                    class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                                <input type="hidden" name="staff_department_id" id="field-dept" required>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
-                                <div class="relative group" id="modal-dept-dropdown">
-                                    <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
-                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
-                                        <span id="modal-dept-label">Select Department</span>
-                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-dept-menu"
-                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            @foreach($departments as $dept)
-                                                <button type="button"
-                                                    onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
-                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $dept->name }}
-                                                </button>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="staff_department_id" id="field-dept" required>
-                                </div>
-                                <span id="error-staff_department_id"
-                                    class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
-                            </div>
+                            <span id="error-staff_department_id"
+                                class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1140,10 +1117,23 @@
 
         // Modal Functions
         window.previewImage = (input) => {
+            const errorEl = document.getElementById('error-profile_image');
+            if (errorEl) errorEl.innerText = '';
+
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    if (errorEl) {
+                        errorEl.innerText = 'The profile image must not be greater than 2MB.';
+                    }
+                    input.value = ''; // Reset file input
+                    document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true";
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (e) => document.getElementById('image-preview').src = e.target.result;
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         };
 
@@ -1175,8 +1165,6 @@
             document.getElementById('image-preview').src = 'https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true';
 
             // Reset custom selects
-            document.getElementById('field-role').value = '';
-            document.getElementById('modal-role-label').innerText = 'Select Role';
             document.getElementById('field-dept').value = '';
             document.getElementById('modal-dept-label').innerText = 'Select Department';
 
@@ -1199,8 +1187,6 @@
             document.getElementById('field-phone').value = staff.phone || '';
 
             // Set custom select values
-            document.getElementById('field-role').value = staff.staff_role_id;
-            document.getElementById('modal-role-label').innerText = staff.role ? staff.role.name : 'Select Role';
             document.getElementById('field-dept').value = staff.staff_department_id;
             document.getElementById('modal-dept-label').innerText = staff.department ? staff.department.name : 'Select Department';
 

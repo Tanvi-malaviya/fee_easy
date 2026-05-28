@@ -100,6 +100,7 @@
                     </svg>
                     Export
                 </button>
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <button onclick="openEnrollModal()"
                     class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,6 +109,7 @@
                     </svg>
                     Assign Student
                 </button>
+                @endif
             </div>
         </div>
 
@@ -374,7 +376,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
-                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: #TUA-${String(student.id).padStart(4, '0')}</p>
+                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: ${student.enrollment_id || '#TUA-' + String(student.id).padStart(4, '0')}</p>
                                 </div>
                                 <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
                                     <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
@@ -573,7 +575,7 @@
                                             <!-- ID Badge -->
                                             <div class="absolute top-4 right-4">
                                                 <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                    ID: #ST-${String(student.id).padStart(4, '0')}
+                                                    ID: ${student.enrollment_id || '#ST-' + String(student.id).padStart(4, '0')}
                                                 </span>
                                             </div>
 

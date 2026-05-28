@@ -1,6 +1,9 @@
 @extends('layouts.institute')
 
 @section('content')
+    @php
+        $staffList = \App\Models\Staff::where('institute_id', Auth::guard('institute')->id())->with('department')->orderBy('full_name')->get();
+    @endphp
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
     <div class="max-w-[1400px] mx-auto pb-4 px-4 sm:px-6">
         <!-- Breadcrumb & Actions -->
@@ -389,6 +392,7 @@
     <script>
         const BATCH_ID = "{{ $id }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+        const staffListJs = @json($staffList);
         const API_BATCH_URL = `/api/v1/institute/batches/${BATCH_ID}`;
         const API_STUDENTS_URL = `/api/v1/institute/students?batch_id=${BATCH_ID}`;
         let allStudents = [];
@@ -439,9 +443,26 @@
                         document.getElementById('batch-description-text').innerText = batch.description;
                     }
 
-                    // Mock Instructor data if not available (following design)
-                    if (batch.subject) {
-                        document.getElementById('instructor-role').innerText = batch.subject;
+                    // Retrieve Assigned Staff from localStorage
+                    const savedStaffId = localStorage.getItem('batch_staff_' + batch.id);
+                    if (savedStaffId) {
+                        const staffObj = staffListJs.find(s => s.id == savedStaffId);
+                        if (staffObj) {
+                            document.getElementById('instructor-name').innerText = staffObj.full_name;
+                            document.getElementById('instructor-role').innerText = staffObj.department ? staffObj.department.name : 'Staff';
+                            document.getElementById('instructor-email').innerText = staffObj.email || 'No email provided';
+                            document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staffObj.full_name)}&background=EEF2FF&color=4F46E5&bold=true`;
+                        } else {
+                            document.getElementById('instructor-name').innerText = 'Not Assigned';
+                            document.getElementById('instructor-role').innerText = 'No Instructor';
+                            document.getElementById('instructor-email').innerText = 'No email provided';
+                            document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=Instructor&background=F1F5F9&color=64748B&bold=true`;
+                        }
+                    } else {
+                        document.getElementById('instructor-name').innerText = 'Not Assigned';
+                        document.getElementById('instructor-role').innerText = 'No Instructor';
+                        document.getElementById('instructor-email').innerText = 'No email provided';
+                        document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=Instructor&background=F1F5F9&color=64748B&bold=true`;
                     }
                 }
             } catch (error) {

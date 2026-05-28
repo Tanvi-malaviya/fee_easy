@@ -7,6 +7,7 @@ use App\Models\Institute;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -167,10 +168,14 @@ class InstituteStudentController extends Controller
             $profileImagePath = $file->store('students', 'public');
         }
 
+        // Generate a random password just like Web StudentController
+        $password = Str::random(10);
+
         $student = Student::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'password' => Hash::make($password),
             'institute_id' => $request->user()->id,
             'batch_id' => $request->batch_id,
             'standard' => $request->standard,
@@ -181,6 +186,17 @@ class InstituteStudentController extends Controller
             'status' => 1,
             'id_hash' => Str::random(32), // Unique secure hash for ID card
         ]);
+
+        // Send password to student via email
+        try {
+            Mail::raw("Welcome to Tuoora! Your account has been created. Your login password is: " . $password . ". Please use your email to login.", function ($message) use ($student) {
+                $message->to($student->email)
+                    ->subject('Your Account Password - Tuoora');
+            });
+        } catch (\Exception $e) {
+            // Log error or handle gracefully if mail fails
+            \Log::error("Failed to send welcome email to student via API: " . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',

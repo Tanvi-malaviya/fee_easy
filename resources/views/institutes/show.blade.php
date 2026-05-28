@@ -38,10 +38,13 @@
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3.5 gap-x-6 flex-grow">
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Institute</span>
-                        <div class="flex items-center gap-2 mt-1"><span
-                                class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</span><span
-                                class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider @if($institute->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($institute->status == 'suspended') bg-amber-50 text-amber-600 border border-amber-100 @else bg-red-50 text-red-600 border border-red-100 @endif">●
-                                {{ $institute->status }}</span></div>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            <span class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</span>
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider whitespace-nowrap @if($institute->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($institute->status == 'suspended') bg-amber-50 text-amber-600 border border-amber-100 @else bg-red-50 text-red-600 border border-red-100 @endif">
+                                <span class="w-1 h-1 rounded-full @if($institute->status == 'active') bg-emerald-500 @elseif($institute->status == 'suspended') bg-amber-500 @else bg-red-500 @endif"></span>
+                                {{ $institute->status }}
+                            </span>
+                        </div>
                     </div>
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</span>
                         <p class="text-sm font-bold text-gray-900 mt-1">{{ $institute->name }}</p>
@@ -67,14 +70,14 @@
                 </div>
             </div>
         </div>
-
+ 
         {{-- Tab Nav --}}
         <div class="bg-white border border-gray-100 rounded-xl shadow-sm mb-1.5 p-1">
             <div class="flex overflow-x-auto no-scrollbar gap-1 px-1">
                 @foreach(['subscriptions' => 'Subscriptions', 'students' => 'Students', 'staff' => 'Staff', 'batches' => 'Batches', 'financials' => 'Financials', 'leads' => 'Leads', 'updates' => 'Updates', 'notes' => 'Notes'] as $tab => $label)
                     <button @click="activeTab = '{{ $tab }}'"
-                        :class="activeTab === '{{ $tab }}' ? 'bg-white text-primary border-primary shadow-sm' : 'text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50/50'"
-                        class="px-5 py-2 border-2 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap">{{ $label }}</button>
+                        :class="activeTab === '{{ $tab }}' ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50/50'"
+                        class="px-5 py-2 border-0 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap focus:outline-none">{{ $label }}</button>
                 @endforeach
             </div>
         </div>

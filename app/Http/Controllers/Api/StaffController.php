@@ -82,8 +82,8 @@ class StaffController extends Controller
             'employee_id' => 'nullable',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email:rfc,dns|unique:staff,email,NULL,id,institute_id,' . $instituteId,
-            'staff_role_id' => 'required|exists:staff_roles,id,institute_id,' . $instituteId,
-            'staff_department_id' => 'required|exists:staff_departments,id,institute_id,' . $instituteId,
+            'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
+            'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric',
             'phone' => 'required|string|max:10',
@@ -148,8 +148,8 @@ class StaffController extends Controller
             'employee_id' => 'nullable',
             'full_name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email:rfc,dns|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
-            'staff_role_id' => 'sometimes|required|exists:staff_roles,id,institute_id,' . $instituteId,
-            'staff_department_id' => 'sometimes|required|exists:staff_departments,id,institute_id,' . $instituteId,
+            'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
+            'staff_department_id' => 'sometimes|required|exists:staff_departments,id',
             'employment_type' => 'sometimes|required|in:Salary,Hourly',
             'base_salary' => 'sometimes|required|numeric',
             'phone' => 'sometimes|required|string|max:10',
@@ -213,8 +213,7 @@ class StaffController extends Controller
      */
     public function getDepartments(Request $request)
     {
-        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
-        return response()->json(StaffDepartment::where('institute_id', $instituteId)->get());
+        return response()->json(StaffDepartment::orderBy('name')->get());
     }
 
     /**
@@ -238,12 +237,10 @@ class StaffController extends Controller
      */
     public function storeDepartment(Request $request)
     {
-        $instituteId = auth('institute')->id() ?? ($request->user() ? $request->user()->id : null);
         $request->validate(['name' => 'required|string|max:255']);
 
         $department = StaffDepartment::create([
-            'name' => $request->name,
-            'institute_id' => $instituteId
+            'name' => $request->name
         ]);
 
         return response()->json(['message' => 'Department created successfully', 'data' => $department], 201);

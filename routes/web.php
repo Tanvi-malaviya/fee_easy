@@ -41,6 +41,7 @@ Route::middleware(array_filter([
 
         // Institutes Management
         Route::resource('institutes', App\Http\Controllers\Web\InstituteController::class);
+        Route::resource('departments', App\Http\Controllers\Web\DepartmentController::class);
         Route::post('institutes/{institute}/status', [App\Http\Controllers\Web\InstituteController::class, 'updateStatus'])->name('institutes.status');
         Route::delete('institutes/{institute}/students/{student}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStudent'])->name('institutes.students.destroy');
         Route::delete('institutes/{institute}/staff/{staff}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStaff'])->name('institutes.staff.destroy');
@@ -54,6 +55,8 @@ Route::middleware(array_filter([
         Route::patch('subscriptions/{subscription}/cancel', [App\Http\Controllers\Web\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
         Route::patch('subscriptions/{subscription}/change-plan', [App\Http\Controllers\Web\SubscriptionController::class, 'changePlan'])->name('subscriptions.changePlan');
         Route::patch('subscriptions/{subscription}/convert', [App\Http\Controllers\Web\SubscriptionController::class, 'convertToPaid'])->name('subscriptions.convert');
+        Route::patch('subscriptions/renewals/{renewal}/approve', [App\Http\Controllers\Web\SubscriptionController::class, 'approveRenewal'])->name('subscriptions.renewals.approve');
+        Route::patch('subscriptions/renewals/{renewal}/reject', [App\Http\Controllers\Web\SubscriptionController::class, 'rejectRenewal'])->name('subscriptions.renewals.reject');
 
         // Plan Management
         Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
@@ -124,8 +127,9 @@ Route::prefix('institute')->name('institute.')->group(function () {
             })->name('profile.edit');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+            Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
-            Route::middleware('profile_complete')->group(function () {
+            Route::middleware(['profile_complete', 'check_subscription'])->group(function () {
                 Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
 
                 // Student Management

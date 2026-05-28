@@ -68,6 +68,19 @@ class Institute extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
+    public function subscriptionRenewals()
+    {
+        return $this->hasMany(SubscriptionRenewal::class);
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->subscriptions()
+            ->whereIn('status', ['active', 'trial'])
+            ->where('end_date', '>=', now()->startOfDay())
+            ->exists();
+    }
+
     public function students()
     {
         return $this->hasMany(Student::class);

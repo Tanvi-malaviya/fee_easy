@@ -169,9 +169,9 @@ class StudentController extends Controller
 
         // Send password to student via email
         try {
-            Mail::raw("Welcome to FeeEasy! Your account has been created. Your login password is: " . $password . ". Please use your email to login.", function ($message) use ($student) {
+            Mail::raw("Welcome to Tuoora! Your account has been created. Your login password is: " . $password . ". Please use your email to login.", function ($message) use ($student) {
                 $message->to($student->email)
-                    ->subject('Your Account Password - FeeEasy');
+                    ->subject('Your Account Password - Tuoora');
             });
         } catch (\Exception $e) {
             // Log error or handle gracefully if mail fails

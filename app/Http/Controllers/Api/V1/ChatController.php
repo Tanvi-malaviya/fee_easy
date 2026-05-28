@@ -57,11 +57,20 @@ class ChatController extends Controller
             }
         }
 
+        $maxSize = 10240; // Default 10MB
+        if ($request->input('type') === 'image') {
+            $maxSize = 2048; // 2MB
+        } elseif ($request->input('type') === 'video') {
+            $maxSize = 20480; // 20MB
+        } elseif ($request->input('type') === 'audio') {
+            $maxSize = 10240; // 10MB
+        }
+
         $request->validate([
             'receiver_id' => 'required|integer|exists:' . $receiverTable . ',id',
             'message' => 'nullable|string',
             'type' => 'required|in:text,image,video,document,audio,location,contact',
-            'attachment' => 'nullable|file|max:20480', // Max 20MB
+            'attachment' => 'nullable|file|max:' . $maxSize,
         ]);
 
         $attachmentPath = null;
@@ -86,7 +95,7 @@ class ChatController extends Controller
         // Trigger real-time FCM push notification to receiver mobile phone
         if ($message->receiver && !empty($message->receiver->fcm_token)) {
             $senderName = $user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone';
-            
+
             // Set descriptive body for non-text messages
             $body = $message->message;
             if ($message->type !== 'text') {
@@ -103,7 +112,7 @@ class ChatController extends Controller
 
             (new \App\Services\FCMService())->sendToUser(
                 $message->receiver,
-                "New message from " . $senderName,
+                $senderName,
                 $body,
                 [
                     'type' => 'chat',
@@ -256,7 +265,9 @@ class ChatController extends Controller
             }
         }
 
-        $messages = ChatMessage::with(['sender', 'receiver'])
+        $perPage = $request->query('per_page', 20);
+
+        $paginator = ChatMessage::with(['sender', 'receiver'])
             ->where(function ($query) use ($user, $userClass, $user_id, $otherClass) {
                 // Sent by me, received by other
                 $query->where('sender_id', $user->id)
@@ -273,10 +284,13 @@ class ChatController extends Controller
                     ->where('receiver_type', $userClass)
                     ->where('deleted_by_receiver', false);
             })
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
 
-        $formattedMessages = $messages->map(function ($msg) {
+        // Reverse the items so the oldest comes first chronologically in the page dataset
+        $reversedMessages = collect($paginator->items())->reverse()->values();
+
+        $formattedMessages = $reversedMessages->map(function ($msg) {
             return [
                 'id' => $msg->id,
                 'sender_id' => $msg->sender_id,
@@ -305,9 +319,13 @@ class ChatController extends Controller
             ];
         });
 
+        // Set the reversed formatted collection as the paginator items
+        $paginatedData = $paginator->toArray();
+        $paginatedData['data'] = $formattedMessages->toArray();
+
         return response()->json([
             'status' => 'success',
-            'data' => $formattedMessages
+            'data' => $paginatedData
         ]);
     }
 
@@ -427,21 +445,7 @@ class ChatController extends Controller
                 return $s;
             });
 
-            $staff = \App\Models\Staff::where('institute_id', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
-                $s->type = 'Staff';
-                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
-                return $s;
-            });
-
-            $institutes = \App\Models\Institute::where('id', '!=', $user->id)
-                ->select('id', 'institute_name as name', 'logo as profile_image')
-                ->get()->map(function ($i) {
-                    $i->type = 'Institute';
-                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
-                    return $i;
-                });
-
-            return response()->json($students->concat($staff)->concat($institutes));
+            return response()->json($students);
         }
 
         if ($user instanceof \App\Models\Student || $user instanceof \App\Models\StudentParent) {

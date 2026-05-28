@@ -286,11 +286,6 @@ class StudentHomeworkController extends Controller
         return response()->json([
             'status'  => 'success',
             'message' => 'Assignment submitted successfully.',
-            'data'    => [
-                'submission_id' => $submission->id,
-                'status'        => $submission->status,
-                'submitted_at'  => $submission->created_at->toISOString(),
-            ],
         ], 201);
     }
 

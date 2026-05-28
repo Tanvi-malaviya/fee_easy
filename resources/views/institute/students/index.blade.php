@@ -51,9 +51,11 @@
                         </svg>
                         Export
                     </button>
+                    @if($institute->hasActiveSubscription())
                     <a href="{{ route('institute.students.create') }}" class="btn-brand btn-md bg-primary hover:bg-primary flex-1 sm:flex-none flex justify-center items-center text-center">
                         + New Student
                     </a>
+                    @endif
                 </div>
             </div>
         </div>

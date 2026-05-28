@@ -94,7 +94,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/forgot-password', [InstituteAuthController::class, 'sendResetPasswordEmail']);
         Route::post('/reset-password', [InstituteAuthController::class, 'resetPassword']);
 
-        Route::middleware('auth:sanctum,institute')->group(function () {
+        Route::middleware(['auth:sanctum,institute', 'check_subscription'])->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteProfileController::class, 'show']);
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
