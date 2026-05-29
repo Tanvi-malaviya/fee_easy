@@ -349,18 +349,12 @@
                         </div>
 
                         <!-- Default share institute ID -->
-                        <div class="bg-gradient-to-r from-orange-50/70 to-amber-50/30 border border-orange-100/60 rounded-xl p-3 shadow-sm flex items-center justify-between">
-                            <div>
-                                <h4 class="text-[9px] font-black text-orange-800 uppercase tracking-wider">Institute Reference</h4>
-                                <div class="text-[10px] text-slate-500 mt-0.5 font-medium space-y-0.5">
-                                    <div>ID: <strong class="text-slate-800" id="ref-inst-id">ST-{{ sprintf('%04d', $institute->id) }}</strong></div>
-                                    <div>Code: <strong class="text-slate-800" id="ref-inst-code">{{ $institute->institute_code }}</strong></div>
-                                </div>
+                        <div class="bg-gradient-to-r from-orange-50/70 to-amber-50/30 border border-orange-100/60 rounded-xl p-3 shadow-sm">
+                            <h4 class="text-[9px] font-black text-orange-800 uppercase tracking-wider">Institute Reference</h4>
+                            <div class="text-[10px] text-slate-500 mt-0.5 font-medium space-y-0.5">
+                                <div>ID: <strong class="text-slate-800" id="ref-inst-id">ST-{{ sprintf('%04d', $institute->id) }}</strong></div>
+                                <div>Code: <strong class="text-slate-800" id="ref-inst-code">{{ $institute->institute_code }}</strong></div>
                             </div>
-                            <button onclick="copyInstituteDetails()" class="px-2.5 py-1.5 bg-white border border-orange-200 hover:border-orange-300 text-orange-600 text-[9px] font-bold rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2m-5 10h5m-5 4h5m-2-8h2" /></svg>
-                                Copy
-                            </button>
                         </div>
                     </div>
 
@@ -479,7 +473,6 @@
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    alert(result.message);
                     closeRenewModal();
                     window.location.reload();
                 } else {

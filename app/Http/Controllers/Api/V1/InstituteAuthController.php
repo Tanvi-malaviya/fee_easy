@@ -17,6 +17,13 @@ class InstituteAuthController extends Controller
 {
     public function register(Request $request)
     {
+        // Delete pending, unverified registration with the same email if it exists
+        if ($request->filled('email')) {
+            \App\Models\Institute::where('email', $request->email)
+                ->where('status', 'pending')
+                ->delete();
+        }
+
         $request->validate([
             'institute_name' => 'required|string|max:255',
             'email' => 'required|email|unique:institutes,email',
@@ -236,6 +243,7 @@ class InstituteAuthController extends Controller
         }
 
         $token = $institute->createToken('institute_token')->plainTextToken;
+        $subscription = $institute->subscriptions()->latest()->first();
 
         return response()->json([
             'status' => 'success',
@@ -254,7 +262,8 @@ class InstituteAuthController extends Controller
                         !empty($institute->logo),
                 ],
                 $institute->toArray()
-            )
+            ),
+            'subscription' => $subscription
         ]);
     }
 

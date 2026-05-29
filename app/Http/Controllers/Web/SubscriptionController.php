@@ -292,6 +292,28 @@ class SubscriptionController extends Controller
             'paid_at' => now(),
         ]);
 
+        // 4. Send notifications (DB + FCM Push)
+        $notifTitle = "✅ Subscription Renewal Approved!";
+        $notifBody = "Your subscription renewal request for the '{$plan->name}' plan has been approved. Thank you for your payment!";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        if (!empty($institute->fcm_token)) {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'plan_name' => $plan->name,
+                'status' => 'approved',
+            ]);
+        }
+
         Activity::log("Manual renewal approved for {$institute->institute_name} (Plan: {$plan->name})");
 
         return redirect()->back()->with('success', "Renewal approved successfully. Subscription activated for {$institute->institute_name}.");
@@ -305,6 +327,29 @@ class SubscriptionController extends Controller
         $renewal->update([
             'status' => 'rejected',
         ]);
+
+        $institute = $renewal->institute;
+
+        // Send notifications (DB + FCM Push)
+        $notifTitle = "❌ Subscription Renewal Rejected";
+        $notifBody = "Your subscription renewal request has been rejected. Please verify your payment screenshot/transaction ID and submit again, or contact support.";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        if (!empty($institute->fcm_token)) {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'status' => 'rejected',
+            ]);
+        }
 
         Activity::log("Manual renewal rejected for {$renewal->institute->institute_name}");
 

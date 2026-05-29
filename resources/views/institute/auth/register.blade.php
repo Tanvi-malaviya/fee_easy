@@ -53,13 +53,16 @@
         }
 
         .logo-box { 
-            text-align: center; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 0.2rem; 
         }
         .logo-box img { 
             height: 40px; 
             width: 120px;
             object-fit: contain;
+            display: block;
         }
         .logo-subtitle {
             font-size: 0.7rem;

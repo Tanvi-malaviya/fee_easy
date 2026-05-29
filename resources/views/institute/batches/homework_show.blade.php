@@ -29,14 +29,7 @@
                 </p>
             </div>
 
-            <button id="send-reminder-btn" onclick="sendManualReminder()"
-                class="hidden px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 self-start md:self-end">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.02 6.02 0 00-4.902-5.903m-2.8-.2L7 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                Send Reminder
-            </button>
+
         </div>
 
         <!-- Progress Overview -->
@@ -132,21 +125,7 @@
                     const dueDate = new Date(homeworkData.due_date);
                     const isPastDue = new Date() > dueDate;
 
-                    // Toggle Send Reminder button only if 3 or fewer days are left AND it's not closed
-                    const today = new Date();
-                    dueDate.setHours(0, 0, 0, 0);
-                    today.setHours(0, 0, 0, 0);
-                    const diffTime = dueDate - today;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                    const reminderBtn = document.getElementById('send-reminder-btn');
-                    if (reminderBtn) {
-                        if (diffDays >= 0 && diffDays <= 3 && !homeworkData.is_closed) {
-                            reminderBtn.classList.remove('hidden');
-                        } else {
-                            reminderBtn.classList.add('hidden');
-                        }
-                    }
 
                     students.forEach(student => {
                         if (!submissionsMap[student.id]) {
@@ -176,38 +155,7 @@
             }
         }
 
-        async function sendManualReminder() {
-            const btn = document.getElementById('send-reminder-btn');
-            btn.disabled = true;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg> Sending...`;
 
-            try {
-                const response = await fetch(`/api/v1/institute/homeworks/${HOMEWORK_ID}/reminder`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN
-                    }
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    showToast(result.message || 'Reminders sent successfully!');
-                } else {
-                    showToast(result.message || 'Failed to send reminders', 'error');
-                }
-            } catch (error) {
-                showToast('Connection error', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
-        }
 
         function updateScore(studentId, change) {
             const sub = submissionsMap[studentId];
