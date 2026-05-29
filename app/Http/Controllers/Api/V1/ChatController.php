@@ -319,13 +319,17 @@ class ChatController extends Controller
             ];
         });
 
-        // Set the reversed formatted collection as the paginator items
-        $paginatedData = $paginator->toArray();
-        $paginatedData['data'] = $formattedMessages->toArray();
-
         return response()->json([
             'status' => 'success',
-            'data' => $paginatedData
+            'data' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'next_page_url' => $paginator->nextPageUrl(),
+                'prev_page_url' => $paginator->previousPageUrl(),
+                'data' => $formattedMessages->toArray()
+            ]
         ]);
     }
 

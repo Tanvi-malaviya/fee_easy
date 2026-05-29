@@ -25,11 +25,17 @@ class SendHomeworkReminders extends Command
      */
     public function handle(): void
     {
-        $tomorrow = Carbon::tomorrow()->toDateString();
+        $threeDaysFromNow = Carbon::now()->addDays(3)->toDateString();
+        $twoDaysFromNow = Carbon::now()->addDays(2)->toDateString();
+        $tomorrow = Carbon::now()->addDays(1)->toDateString();
 
-        // Find all homeworks due tomorrow (still active — tomorrow hasn't passed yet)
-        $homeworks = Homework::whereDate('due_date', $tomorrow)
-            ->with(['batch.students.parent'])
+        // Find all homeworks due in 3 days, 2 days, or tomorrow
+        $homeworks = Homework::where(function($query) use ($threeDaysFromNow, $twoDaysFromNow, $tomorrow) {
+                $query->whereDate('due_date', $threeDaysFromNow)
+                      ->orWhereDate('due_date', $twoDaysFromNow)
+                      ->orWhereDate('due_date', $tomorrow);
+            })
+            ->with(['batch.students.parent', 'submissions'])
             ->get();
 
         if ($homeworks->isEmpty()) {
@@ -41,10 +47,29 @@ class SendHomeworkReminders extends Command
         $count = 0;
 
         foreach ($homeworks as $homework) {
+            $dueDate = Carbon::parse($homework->due_date)->startOfDay();
+            $today = Carbon::now()->startOfDay();
+            $daysLeft = $today->diffInDays($dueDate);
+
+            if ($daysLeft <= 0 || $daysLeft > 3) {
+                continue;
+            }
+
+            // Exclude students who already submitted
+            $submittedStudentIds = $homework->submissions->pluck('student_id')->toArray();
             $students = $homework->batch->students ?? collect();
 
-            $notifTitle = "Homework Due Tomorrow 📚";
-            $notifBody  = "Reminder: \"{$homework->title}\" is due tomorrow. Submit on time! (If already submitted, please ignore.)";
+            if ($daysLeft == 1) {
+                $dayText = "tomorrow";
+                $parentDayText = "tomorrow";
+                $notifTitle = "Homework Due Tomorrow 📚";
+            } else {
+                $dayText = "in {$daysLeft} days";
+                $parentDayText = "in {$daysLeft} days";
+                $notifTitle = "Homework Due in {$daysLeft} Days 📚";
+            }
+
+            $notifBody  = "Reminder: \"{$homework->title}\" is due {$dayText}. Submit on time!";
             $notifData  = [
                 'type'        => 'homework_reminder',
                 'homework_id' => (string) $homework->id,
@@ -52,6 +77,11 @@ class SendHomeworkReminders extends Command
             ];
 
             foreach ($students as $student) {
+                // If student already submitted, skip reminder
+                if (in_array($student->id, $submittedStudentIds)) {
+                    continue;
+                }
+
                 // DB notification → student
                 Notification::create([
                     'user_type'    => 'student',
@@ -71,7 +101,7 @@ class SendHomeworkReminders extends Command
                 // DB notification → parent
                 if ($student->parent) {
                     $parentTitle = "Homework Reminder: {$student->name}";
-                    $parentBody  = "{$student->name}'s homework \"{$homework->title}\" is due tomorrow! (If already submitted, please ignore.)";
+                    $parentBody  = "{$student->name}'s homework \"{$homework->title}\" is due {$parentDayText}!";
 
                     Notification::create([
                         'user_type'    => 'parent',
@@ -92,7 +122,7 @@ class SendHomeworkReminders extends Command
                 $count++;
             }
 
-            $this->info("Reminded {$students->count()} student(s) for homework: \"{$homework->title}\"");
+            $this->info("Reminded student(s) for homework: \"{$homework->title}\" ({$daysLeft} day(s) left)");
         }
 
         $this->info("Total: {$count} notification(s) sent.");
