@@ -6,14 +6,20 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h1 class="text-xl font-semibold text-slate-800 tracking-tight leading-tight">Edit Institute Profile</h1>
-                <p class="text-xs text-slate-400 mt-0.5 font-medium leading-relaxed">Update your institute details and institutional settings</p>
+                <h1 class="text-xl font-semibold text-slate-800 tracking-tight leading-tight">
+                    {{ auth()->guard('institute')->user()->isProfileComplete() ? 'Edit Institute Profile' : 'Setup Institute Profile' }}
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium leading-relaxed">
+                    {{ auth()->guard('institute')->user()->isProfileComplete() ? 'Update your institute details and institutional settings' : 'Complete your profile setup to unlock full access to the portal' }}
+                </p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('institute.profile.index') }}"
-                    class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">
-                    Discard Changes
-                </a>
+                @if (auth()->guard('institute')->user()->isProfileComplete())
+                    <a href="{{ route('institute.profile.index') }}"
+                        class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                        Discard Changes
+                    </a>
+                @endif
                 <button onclick="document.getElementById('profile-form').requestSubmit()"
                     class="px-5 py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all">
                     Save Changes
@@ -23,6 +29,7 @@
 
         <form id="profile-form" class="space-y-4" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="institute_code" id="field-institute_code">
 
             <!-- Institute Identity -->
             <div class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-5">
@@ -36,8 +43,12 @@
                         <div
                             class="h-24 w-24 bg-white rounded-xl p-1 shadow-2xl border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                             <img id="profile-logo-preview"
-                                src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : 'https://ui-avatars.com/?name=' . urlencode(auth()->guard('institute')->user()->name) . '&background=ff6c00&color=fff' }}"
-                                class="w-full h-full object-cover rounded-xl">
+                                src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : '' }}"
+                                class="w-full h-full object-cover rounded-xl {{ auth()->guard('institute')->user()->logo ? '' : 'hidden' }}">
+                            
+                            <div id="profile-logo-placeholder" class="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-white text-3xl font-black shadow-inner uppercase {{ auth()->guard('institute')->user()->logo ? 'hidden' : '' }}">
+                                {{ substr(auth()->guard('institute')->user()->institute_name ?? auth()->guard('institute')->user()->name ?? 'I', 0, 1) }}
+                            </div>
                         </div>
                         <div
                             class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -203,12 +214,30 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     const data = result.data;
+                    const logoPreview = document.getElementById('profile-logo-preview');
+                    const logoPlaceholder = document.getElementById('profile-logo-placeholder');
+                    
                     if (data.logo_url) {
-                        document.getElementById('profile-logo-preview').src = data.logo_url;
+                        if (logoPreview) {
+                            logoPreview.src = data.logo_url;
+                            logoPreview.classList.remove('hidden');
+                        }
+                        if (logoPlaceholder) {
+                            logoPlaceholder.classList.add('hidden');
+                        }
+                    } else {
+                        if (logoPreview) {
+                            logoPreview.classList.add('hidden');
+                        }
+                        if (logoPlaceholder) {
+                            logoPlaceholder.innerText = (data.institute_name || data.name || 'I').substring(0, 1).toUpperCase();
+                            logoPlaceholder.classList.remove('hidden');
+                        }
                     }
 
                     // Populate form fields
                     document.getElementById('field-institute_name').value = data.institute_name || '';
+                    document.getElementById('field-institute_code').value = data.institute_code || '';
                     document.getElementById('field-name').value = data.name || '';
                     document.getElementById('field-email').value = data.email || '';
                     document.getElementById('field-phone').value = data.phone || '';
@@ -251,6 +280,8 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.getElementById('profile-logo-preview').src = e.target.result;
+                    document.getElementById('profile-logo-preview').classList.remove('hidden');
+                    document.getElementById('profile-logo-placeholder').classList.add('hidden');
                 }
                 reader.readAsDataURL(input.files[0]);
             }

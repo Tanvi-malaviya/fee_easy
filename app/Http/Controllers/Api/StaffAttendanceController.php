@@ -15,7 +15,7 @@ class StaffAttendanceController extends Controller
     public function index(Request $request)
     {
         $instituteId = $request->user()->id;
-        $query = StaffAttendance::where('institute_id', $instituteId)->with(['staff:id,full_name,employee_id,staff_department_id', 'staff.department:id,name']);
+        $query = StaffAttendance::where('institute_id', $instituteId)->with(['staff:id,full_name,employee_id,staff_department_id,profile_image', 'staff.department:id,name']);
 
         if ($request->has('date')) {
             $query->where('date', $request->date);

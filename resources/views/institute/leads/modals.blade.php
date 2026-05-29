@@ -74,8 +74,7 @@
 
                     <div class="col-span-1">
                         <label
-                            class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Lead
-                            Source</label>
+                            class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Reference</label>
                         <div class="relative">
                             <input type="text" name="reference" placeholder="Social Media, referral..."
                                 class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
@@ -87,19 +86,7 @@
                         </div>
                     </div>
 
-                    <div class="col-span-1 sm:col-span-2">
-                        <label
-                            class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Referrer</label>
-                        <div class="relative">
-                            <input type="text" name="referer" placeholder="Name of Referrer"
-                                class="w-full pl-4 pr-12 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
-                            <svg class="w-5 h-5 absolute right-4 top-2 text-slate-300" fill="currentColor"
-                                viewBox="0 0 24 24">
-                                <path
-                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                            </svg>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div id="lead-error"

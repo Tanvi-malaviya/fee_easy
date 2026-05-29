@@ -114,7 +114,15 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">No institutes found to manage.</td>
+                                    <td colspan="5" class="p-0">
+                                        <x-empty-state 
+                                            title="No institutes found" 
+                                            subtitle="No institutes found to manage WhatsApp integrations." 
+                                            icon="users"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>

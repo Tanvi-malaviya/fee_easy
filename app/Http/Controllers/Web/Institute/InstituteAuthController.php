@@ -90,7 +90,7 @@ class InstituteAuthController extends Controller
                 'institute_name' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:institutes'],
-                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'password' => ['required', 'string', 'min:8'],
             ]);
 
             $otp = rand(100000, 999999);
@@ -258,6 +258,8 @@ class InstituteAuthController extends Controller
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|string|max:10',
                 'address' => 'required|string',
+                'address_line_2' => 'nullable|string|max:255',
+                'country' => 'required|string|max:255',
                 'logo' => 'nullable|image|max:2048',
             ]);
 
@@ -266,7 +268,7 @@ class InstituteAuthController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
             }
 
-            $data = $request->only(['phone', 'city', 'state', 'pincode', 'address']);
+            $data = $request->only(['phone', 'city', 'state', 'pincode', 'address', 'address_line_2', 'country']);
 
             if ($request->hasFile('logo')) {
                 $path = $request->file('logo')->store('institute_logos', 'public');

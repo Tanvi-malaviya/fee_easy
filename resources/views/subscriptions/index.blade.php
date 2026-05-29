@@ -382,7 +382,15 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-bold uppercase tracking-widest opacity-50">No subscriptions found</td>
+                                    <td colspan="5" class="p-0">
+                                        <x-empty-state 
+                                            title="No subscriptions found" 
+                                            subtitle="No subscription records matching your filters were found." 
+                                            icon="fees"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -50,6 +50,14 @@
     </tr>
 @empty
     <tr>
-        <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">No broadcasts sent yet.</td>
+        <td colspan="5" class="p-0">
+            <x-empty-state 
+                title="No broadcasts sent yet" 
+                subtitle="Use 'ADD MESSAGE' to compose and dispatch your first system broadcast." 
+                icon="notes"
+                plain="true"
+                class="py-12"
+            />
+        </td>
     </tr>
 @endforelse

@@ -23,7 +23,7 @@ class InstituteBatchController extends Controller
 
         $query = Batch::where('institute_id', $request->user()->id)
             ->withCount('students')
-            ->with('students:id,name,batch_id');
+            ->with('students:id,name,batch_id,profile_image');
 
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';

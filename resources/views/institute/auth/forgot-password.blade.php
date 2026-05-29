@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password - Tuoora</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -58,8 +59,8 @@
         }
 
         .logo-box img {
-            height: 60px;
-            width: auto;
+            height: 32px;
+            width: 100px;
             object-fit: contain;
         }
 
@@ -74,12 +75,14 @@
         }
 
         .logo-section p {
-            font-size: 0.6rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 800;
             color: #FF6B00;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1.25rem;
+            opacity: 0.9;
         }
 
         .instruction-text {
@@ -206,13 +209,13 @@
         <div class="login-card">
             <div class="logo-section">
                 <div class="logo-box">
-                    <img src="{{ asset('images/turooa.png') }}" alt="Logo">
+                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
                 </div>
                 <h1>Tuoora</h1>
-                <p>Management System</p>
+               
             </div>
 
-            <h2 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 0.4rem; font-weight: 700;">Reset Password</h2>
+            <h2 style="font-size: 1.1rem; color: #000; margin-bottom: 0.4rem; font-weight: 700;">Reset Password</h2>
             <p class="instruction-text">Enter your registered email address and we'll send you an OTP to reset your password.</p>
 
             <form id="forgot-password-form">

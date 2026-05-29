@@ -291,7 +291,15 @@
                 </form>
             </div>
         </div>
-    </div>
+
+    <!-- Empty State Templates -->
+    <template id="notes-empty-state">
+        <x-empty-state title="No notes found in this workspace" subtitle="Create your first note in this workspace to get started." icon="notes" />
+    </template>
+
+    <template id="bookmarks-empty-state">
+        <x-empty-state title="No bookmarked notes found" subtitle="Bookmark important notes to find them quickly here." icon="notes" />
+    </template>
 
     @push('scripts')
         <script>
@@ -415,8 +423,14 @@
                 }
 
                 if (filtered.length === 0) {
-                    const message = showBookmarkedOnly ? 'No bookmarked notes found.' : 'No notes found in this workspace.';
-                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold">${message}</div>`;
+                    const templateId = showBookmarkedOnly ? 'bookmarks-empty-state' : 'notes-empty-state';
+                    const template = document.getElementById(templateId);
+                    if (template) {
+                        grid.innerHTML = template.innerHTML;
+                    } else {
+                        const message = showBookmarkedOnly ? 'No bookmarked notes found.' : 'No notes found in this workspace.';
+                        grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold">${message}</div>`;
+                    }
                     return;
                 }
 

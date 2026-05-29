@@ -16,7 +16,7 @@ class StaffSalaryController extends Controller
     public function index(Request $request)
     {
         $instituteId = $request->user()->id;
-        $query = StaffSalary::where('institute_id', $instituteId)->with('staff:id,full_name,employee_id');
+        $query = StaffSalary::where('institute_id', $instituteId)->with('staff:id,full_name,employee_id,profile_image');
 
         if ($request->has('month')) {
             $query->where('month', $request->month);

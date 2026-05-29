@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Institute - FeeEasy</title>
+       <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,7 +34,7 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 580px;
+            max-width: 480px;
             padding: 5px;
             animation: fadeIn 0.8s ease-out;
         }
@@ -45,19 +46,30 @@
 
         .register-card {
             background: #ffffff;
-            border-radius: 1.5rem;
-            padding: 0.75rem 1.75rem;
+            border-radius: 1.25rem;
+            padding: 1.25rem 1.5rem;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
             border: 1px solid #f1f5f9;
         }
 
         .logo-box { 
             text-align: center; 
-            margin-bottom: 0.35rem; 
+            margin-bottom: 0.2rem; 
         }
         .logo-box img { 
-            height: 30px; 
-            width: auto;
+            height: 40px; 
+            width: 120px;
+            object-fit: contain;
+        }
+        .logo-subtitle {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #FF6B00;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.9;
         }
 
         /* Timeline Section Fixed */
@@ -65,18 +77,18 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1.15rem;
             position: relative;
-            padding: 0 4.5rem;
+            padding: 0 2.5rem;
         }
 
         .timeline-line {
             position: absolute;
-            top: 10px;
-            left: 5.5rem;
-            right: 5.5rem;
+            top: 12px;
+            left: 3.5rem;
+            right: 3.5rem;
             height: 2px;
-            background: #f1f5f9;
+            background: #e2e8f0;
             z-index: 0;
             overflow: hidden;
         }
@@ -102,21 +114,21 @@
         }
 
         .step-circle {
-            height: 20px;
-            width: 20px;
+            height: 24px;
+            width: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 800;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             background: white;
-            border: 1.5px solid #f1f5f9;
+            border: 2px solid #e2e8f0;
         }
         
-        .step-active { background: #FF6B00; color: white; border-color: #FF6B00; box-shadow: 0 5px 15px rgba(255, 107, 0, 0.3); transform: scale(1.1); }
-        .step-completed { background: #22c55e; color: white; border-color: #22c55e; }
+        .step-active { background: #FF6B00; color: white; border-color: #FF6B00; box-shadow: 0 4px 10px rgba(255, 107, 0, 0.25); transform: scale(1.05); }
+        .step-completed { background: #10b981; color: white; border-color: #10b981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15); }
         .step-pending { color: #94a3b8; }
         
         .step-label {
@@ -142,27 +154,31 @@
         .header-section h2 { font-size: 1.15rem; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; }
         .header-section p { font-size: 0.65rem; font-weight: 700; color: #FF6B00; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0px; }
 
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem 0.65rem; }
         .form-group-full { grid-column: span 2; }
+        
+        .setup-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem 0.5rem; }
+        .col-span-3 { grid-column: span 3; }
+        .col-span-2 { grid-column: span 2; }
 
         .form-label {
             display: block;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.15rem;
-            padding-left: 0.1rem;
+            margin-bottom: 0.35rem;
+            padding-left: 0.2rem;
         }
 
         .input-field {
             width: 100%;
-            height: 2.5rem;
-            padding: 0 0.85rem;
-            background: #f8fafc;
-            border: 1.5px solid transparent;
-            border-radius: 0.75rem;
+            height: 2.4rem;
+            padding: 0 1rem;
+            background: #fcfdfe;
+            border: 2px solid #f1f5f9;
+            border-radius: 0.65rem;
             font-size: 0.8rem;
             font-weight: 600;
             color: #1e293b;
@@ -170,26 +186,31 @@
             outline: none;
         }
 
-        .input-field:focus { border-color: #FF6B00; background: #ffffff; }
+        .input-field:focus { 
+            border-color: #FF6B00; 
+            background: #ffffff; 
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.05);
+        }
 
         .submit-btn {
             width: 100%;
-            height: 2.75rem;
+            height: 2.4rem;
             background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 0.85rem;
-            font-size: 0.85rem;
+            border-radius: 0.65rem;
+            font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 0.5rem;
+            margin-top: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 8px 16px rgba(255, 107, 0, 0.12);
         }
 
         .submit-btn:hover { background: #e66000; transform: translateY(-1px); }
@@ -197,15 +218,20 @@
 
         .otp-container { display: flex; justify-content: center; gap: 0.5rem; margin: 0.75rem 0; }
         .otp-input {
-            width: 40px;
-            height: 50px;
+            width: 38px;
+            height: 44px;
             text-align: center;
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            border: 1.5px solid #f1f5f9;
-            border-radius: 0.75rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 0.65rem;
             background: #fcfdfe;
             outline: none;
+            transition: all 0.3s ease;
+        }
+        .otp-input:focus {
+            border-color: #FF6B00;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.05);
         }
 
         /* Setup Profile Ultra Compact */
@@ -223,16 +249,21 @@
 
         .logo-upload {
             position: relative;
-            width: 65px;
-            height: 65px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            border: 1.5px dashed #cbd5e1;
+            border: 2px dashed #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            background: #f8fafc;
+            background: #fcfdfe;
             overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .logo-upload:hover {
+            border-color: #FF6B00;
+            background: #ffffff;
         }
         .logo-upload img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .logo-upload i { font-size: 1rem; color: #94a3b8; }
@@ -274,7 +305,7 @@
     <div class="register-wrapper">
         <div class="register-card">
             <div class="logo-box">
-                <img src="{{ asset('images/turooa.png') }}" alt="Turooa Logo">
+                <img src="{{ asset('images/2-remove.png') }}" alt="Turooa Logo">
             </div>
 
             <div class="timeline-container">
@@ -300,10 +331,7 @@
 
             <!-- STEP 1: REGISTRATION -->
             <div class="step-content {{ $initialStep == 1 ? 'active' : '' }}" id="step1">
-                <div class="header-section">
-                    <h2>Join FeeEasy</h2>
-                    <p>Smart Management</p>
-                </div>
+                
                 <form id="registerForm">
                     @csrf
                     <div class="form-grid">
@@ -322,14 +350,10 @@
                             <input type="email" name="email" class="input-field" placeholder="email@example.com" required>
                             <span class="error-message" id="error-email"></span>
                         </div>
-                        <div>
+                        <div class="form-group-full">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="input-field" placeholder="••••" required>
+                            <input type="password" name="password" class="input-field" placeholder="••••••••" required>
                             <span class="error-message" id="error-password"></span>
-                        </div>
-                        <div>
-                            <label class="form-label">Confirm</label>
-                            <input type="password" name="password_confirmation" class="input-field" placeholder="••••" required>
                         </div>
                     </div>
                     <button type="submit" class="submit-btn" id="btn1">
@@ -389,31 +413,41 @@
                             <span class="logo-label">Institute Logo</span>
                         </div>
 
-                        <div class="form-grid">
-                            <div>
+                        <div class="setup-grid">
+                            <div class="col-span-3">
                                 <label class="form-label">Phone Number</label>
-                                <input type="text" name="phone" class="input-field" placeholder="+91 00000 00000" required>
+                                <input type="text" name="phone" class="input-field" placeholder="10 digit number" required>
                                 <span class="error-message" id="error-phone"></span>
                             </div>
-                            <div>
+                            <div class="col-span-3">
+                                <label class="form-label">Country</label>
+                                <input type="text" name="country" class="input-field" placeholder="Country" required>
+                                <span class="error-message" id="error-country"></span>
+                            </div>
+                            <div class="col-span-2">
                                 <label class="form-label">City</label>
                                 <input type="text" name="city" class="input-field" placeholder="City" required>
                                 <span class="error-message" id="error-city"></span>
                             </div>
-                            <div>
+                            <div class="col-span-2">
                                 <label class="form-label">State</label>
                                 <input type="text" name="state" class="input-field" placeholder="State" required>
                                 <span class="error-message" id="error-state"></span>
                             </div>
-                            <div>
+                            <div class="col-span-2">
                                 <label class="form-label">Pincode</label>
                                 <input type="text" name="pincode" class="input-field" placeholder="Pincode" required>
                                 <span class="error-message" id="error-pincode"></span>
                             </div>
-                            <div class="form-group-full">
-                                <label class="form-label">Address</label>
+                            <div class="col-span-3">
+                                <label class="form-label">Address Line 1</label>
                                 <input type="text" name="address" class="input-field" placeholder="Area, Landmark" required>
                                 <span class="error-message" id="error-address"></span>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="form-label">Address Line 2 (Optional)</label>
+                                <input type="text" name="address_line_2" class="input-field" placeholder="Apartment, suite, unit, etc.">
+                                <span class="error-message" id="error-address_line_2"></span>
                             </div>
                         </div>
                         <button type="submit" class="submit-btn" id="btn3">
@@ -505,6 +539,25 @@
                 if (e.key >= 0 && e.key <= 9 && index < otpInputs.length - 1) otpInputs[index + 1].focus();
                 else if (e.key === 'Backspace' && index > 0) otpInputs[index - 1].focus();
                 document.getElementById('fullOtp').value = Array.from(otpInputs).map(i => i.value).join('');
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim();
+                const digits = pastedData.replace(/\D/g, '').substring(0, otpInputs.length);
+                
+                if (digits) {
+                    const chars = digits.split('');
+                    otpInputs.forEach((inp, idx) => {
+                        inp.value = chars[idx] || '';
+                    });
+                    
+                    // Focus the last filled input or the last input
+                    const focusIndex = Math.min(digits.length - 1, otpInputs.length - 1);
+                    if (focusIndex >= 0) otpInputs[focusIndex].focus();
+                    
+                    document.getElementById('fullOtp').value = Array.from(otpInputs).map(i => i.value).join('');
+                }
             });
         });
 

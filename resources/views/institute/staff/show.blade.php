@@ -418,7 +418,7 @@
 
             document.getElementById('field-salary').value = staff.base_salary;
 
-            const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+            const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
             document.getElementById('image-preview').src = profileImg;
 
             document.getElementById('add-staff-modal').classList.remove('hidden');

@@ -31,13 +31,14 @@ class InstituteStudentController extends Controller
             $query->has('fees');
         }
 
-        // Search Filter (Name, Email, Phone)
+        // Search Filter (Name, Email, Phone, Enrollment ID)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('enrollment_id', 'like', "%{$search}%");
             });
         }
 

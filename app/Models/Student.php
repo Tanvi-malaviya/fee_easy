@@ -11,7 +11,7 @@ class Student extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $appends = ['profile_image_url'];
+    protected $appends = ['profile_image_url', 'is_birthday_today'];
 
     protected $fillable = [
         'enrollment_id',
@@ -91,6 +91,17 @@ class Student extends Authenticatable
             return \Illuminate\Support\Facades\Storage::disk('public')->url($this->profile_image);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    public function getIsBirthdayTodayAttribute()
+    {
+       
+
+        if ($this->dob) {
+            $dob = \Carbon\Carbon::parse($this->dob);
+            return $dob->format('m-d') === \Carbon\Carbon::today()->format('m-d');
+        }
+        return false;
     }
 
     protected static function boot()

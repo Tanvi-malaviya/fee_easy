@@ -444,7 +444,7 @@
                                         </div>
                                         <div>
                                             <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
-                                            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">${student.email ? student.email.split('@')[0].substring(0, 15) : 'STUDENT'}</p>
+                                            <p class="text-[10px] font-medium text-slate-400 truncate max-w-[220px]" title="${student.email || ''}">${student.email || 'STUDENT'}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-6">

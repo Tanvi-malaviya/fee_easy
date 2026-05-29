@@ -191,7 +191,7 @@ class InstituteHomeworkController extends Controller
                     $q->select('id', 'name', 'subject');
                     $q->with([
                         'students' => function ($sq) {
-                            $sq->select('id', 'name', 'profile_image', 'batch_id');
+                            $sq->select('id', 'name', 'profile_image', 'batch_id', 'enrollment_id');
                         }
                     ]);
                 }

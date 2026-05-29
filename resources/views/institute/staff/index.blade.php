@@ -873,6 +873,56 @@
         const PRIMARY_HOVER = '#e66000';
 
         let staffListData = [];
+        let departmentsListData = [];
+
+        async function fetchDepartments() {
+            try {
+                const response = await fetch("{{ url('api/v1/institute/staff-departments') }}", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    }
+                });
+                const result = await response.json();
+                if (Array.isArray(result)) {
+                    departmentsListData = result;
+                    renderDepartmentsDropdowns(result);
+                }
+            } catch (error) {
+                console.error('Error fetching departments:', error);
+            }
+        }
+
+        function renderDepartmentsDropdowns(departments) {
+            // 1. Populate the filter dropdown:
+            const filterMenu = document.querySelector('#dept-dropdown-menu .py-1');
+            if (filterMenu) {
+                let html = `<button type="button" onclick="selectCustomOption('dept', '', 'All Departments')"
+                    class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">All Departments</button>`;
+                
+                departments.forEach(dept => {
+                    html += `<button type="button"
+                        onclick="selectCustomOption('dept', '${dept.id}', '${dept.name.replace(/'/g, "\\'")}')"
+                        class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">${dept.name}</button>`;
+                });
+                filterMenu.innerHTML = html;
+            }
+
+            // 2. Populate the modal select dropdown:
+            const modalMenu = document.querySelector('#modal-dept-menu .py-1');
+            if (modalMenu) {
+                let html = '';
+                departments.forEach(dept => {
+                    html += `<button type="button"
+                        onclick="selectModalOption('dept', '${dept.id}', '${dept.name.replace(/'/g, "\\'")}')"
+                        class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                        ${dept.name}
+                    </button>`;
+                });
+                modalMenu.innerHTML = html;
+            }
+        }
 
         window.toggleStaffDropdown = () => {
             const menu = document.getElementById('attendance-staff-menu');
@@ -919,6 +969,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchStaff();
+            fetchDepartments();
 
             const searchInput = document.getElementById('staff-search');
             const searchBtn = document.getElementById('search-btn');
@@ -1032,7 +1083,7 @@
             }
 
             const cardsHtml = staffMembers.map(staff => {
-                const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+                const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
                 const statusColor = staff.status === 'active' || staff.status === 1 ? 'bg-emerald-500' : 'bg-slate-300';
 
                 return `
@@ -1167,6 +1218,7 @@
             // Reset custom selects
             document.getElementById('field-dept').value = '';
             document.getElementById('modal-dept-label').innerText = 'Select Department';
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -1189,6 +1241,7 @@
             // Set custom select values
             document.getElementById('field-dept').value = staff.staff_department_id;
             document.getElementById('modal-dept-label').innerText = staff.department ? staff.department.name : 'Select Department';
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             if (staff.employment_type === 'Hourly') {
                 document.getElementById('employment-hourly').checked = true;
@@ -1198,7 +1251,7 @@
 
             document.getElementById('field-salary').value = staff.base_salary;
 
-            const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+            const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
             document.getElementById('image-preview').src = profileImg;
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
@@ -1206,6 +1259,7 @@
         };
 
         window.closeAddModal = () => {
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
             document.getElementById('add-staff-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
         };
@@ -1449,9 +1503,7 @@
                 return;
             }
             const pagContainer = document.getElementById('attendance-pagination-container');
-            if (pagContainer) pagContainer.classList.remove('hidden');
-
-            tbody.innerHTML = data.map(item => {
+            if (pagContainer) pagContainer.classList.remove('hidden');             tbody.innerHTML = data.map(item => {
                 const staff = item.staff || {};
                 const dept = staff.department ? staff.department.name : 'N/A';
                 const initial = staff.full_name ? staff.full_name.charAt(0).toUpperCase() : '?';
@@ -1461,11 +1513,15 @@
                 const dateObj = new Date(item.date);
                 const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+                const avatarHtml = staff.profile_url
+                    ? `<img src="${staff.profile_url}" alt="${staff.full_name}" class="h-7 w-7 rounded-full object-cover border border-slate-100 shadow-sm">`
+                    : `<div class="h-7 w-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">${initial}</div>`;
+
                 return `
                                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                                         <td class="px-4 py-3">
                                                             <div class="flex items-center gap-2.5">
-                                                                <div class="h-7 w-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">${initial}</div>
+                                                                ${avatarHtml}
                                                                 <span class="text-xs font-bold text-slate-700">${staff.full_name || 'Unknown'}</span>
                                                             </div>
                                                         </td>
@@ -1782,17 +1838,22 @@
                 return;
             }
 
-            tbody.innerHTML = data.map(item => `
+            tbody.innerHTML = data.map(item => {
+                const staff = item.staff || {};
+                const initial = staff.full_name ? staff.full_name.charAt(0).toUpperCase() : '?';
+                const avatarHtml = staff.profile_url
+                    ? `<img src="${staff.profile_url}" alt="${staff.full_name}" class="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-sm">`
+                    : `<div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">${initial}</div>`;
+
+                return `
                                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                                     <td class="px-4 py-3">
                                                         <div class="flex items-center gap-3">
-                                                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
-                                                                ${item.staff.full_name.charAt(0)}
-                                                            </div>
-                                                            <div class="font-bold text-slate-700 text-xs">${item.staff.full_name}</div>
+                                                            ${avatarHtml}
+                                                            <div class="font-bold text-slate-700 text-xs">${staff.full_name || 'Unknown'}</div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-4 py-3 text-xs font-bold text-slate-500">${item.staff.employee_id || 'STF-' + item.staff.id}</td>
+                                                    <td class="px-4 py-3 text-xs font-bold text-slate-500">${staff.employee_id || 'STF-' + staff.id}</td>
                                                     <td class="px-4 py-3 text-xs text-slate-500">${new Date(item.payment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                                                     <td class="px-4 py-3">
                                                         <span class="flex items-center gap-1.5 text-[10px] font-bold ${item.payment_method === 'Online' ? 'text-blue-600' : 'text-amber-600'}">
@@ -1818,7 +1879,8 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            `).join('');
+                `;
+            }).join('');
         }
 
         function renderSalaryPagination(pagination) {
