@@ -48,4 +48,36 @@ class DashboardController extends Controller
 
         return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students'));
     }
+
+    /**
+     * Submit an offline subscription renewal request.
+     */
+    public function submitRenewal(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|string|max:255',
+            'screenshot' => 'required|image|max:10240', // Max 10MB
+            'message' => 'nullable|string|max:1000',
+        ]);
+
+        $institute = Auth::guard('institute')->user();
+
+        $path = null;
+        if ($request->hasFile('screenshot')) {
+            $path = $request->file('screenshot')->store('renewal_screenshots', 'public');
+        }
+
+        \App\Models\SubscriptionRenewal::create([
+            'institute_id' => $institute->id,
+            'transaction_id' => $request->transaction_id,
+            'screenshot' => $path,
+            'message' => $request->message,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your subscription renewal request has been submitted successfully. We will review and activate it shortly!',
+        ]);
+    }
 }

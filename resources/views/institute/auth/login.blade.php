@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Institute Login - Tuoora</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Outfit', sans-serif; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
             background-color: #f8fafc;
             min-height: 100vh;
             display: flex;
@@ -40,8 +46,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-card {
@@ -61,9 +74,9 @@
         }
 
         .logo-box img {
-            height: 60px;
-            width: auto;
-            object-contain: contain;
+            height: 32px;
+            width: 100px;
+           object-fit: contain;
         }
 
         .logo-section h1 {
@@ -76,12 +89,14 @@
         }
 
         .logo-section p {
-            font-size: 0.65rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 800;
             color: #FF6B00;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1.25rem;
+            opacity: 0.9;
         }
 
         .form-group {
@@ -134,7 +149,7 @@
             transition: all 0.3s ease;
         }
 
-        .input-field:focus + .input-icon {
+        .input-field:focus+.input-icon {
             color: #FF6B00;
         }
 
@@ -229,6 +244,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="bg-pattern"></div>
 
@@ -236,10 +252,10 @@
         <div class="login-card">
             <div class="logo-section">
                 <div class="logo-box">
-                    <img src="{{ asset('images/turooa.png') }}" alt="Logo">
+                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
                 </div>
                 <!-- <h1>Tuoora</h1> -->
-                <p>Management System</p>
+                <p>Empowering Institutes</p>
             </div>
 
             @if ($errors->any())
@@ -252,11 +268,12 @@
 
             <form method="POST" action="{{ route('institute.login') }}">
                 @csrf
-                
+
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
                     <div class="input-wrapper">
-                        <input type="email" name="email" required value="{{ $email ?? old('email') }}" class="input-field" placeholder="admin@institute.com">
+                        <input type="email" name="email" required value="{{ $email ?? old('email') }}"
+                            class="input-field" placeholder="admin@institute.com">
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
                 </div>
@@ -264,7 +281,8 @@
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" required value="{{ $password ?? '' }}" class="input-field" placeholder="••••••••">
+                        <input type="password" name="password" required value="{{ $password ?? '' }}"
+                            class="input-field" placeholder="••••••••">
                         <i class="fas fa-lock input-icon"></i>
                     </div>
                 </div>
@@ -288,4 +306,5 @@
         </div>
     </div>
 </body>
+
 </html>

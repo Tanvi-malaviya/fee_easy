@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified_institute' => \App\Http\Middleware\EnsureInstituteIsVerified::class,
         'profile_complete' => \App\Http\Middleware\EnsureInstituteProfileIsComplete::class,
         'active_institute' => \App\Http\Middleware\EnsureInstituteIsActive::class,
+        'check_subscription' => \App\Http\Middleware\EnsureHasActiveSubscription::class,
     ];
 }

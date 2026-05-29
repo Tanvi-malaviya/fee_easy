@@ -28,6 +28,10 @@ class Staff extends Model
 
     protected $appends = ['profile_url'];
 
+    protected $hidden = [
+        'profile_image',
+    ];
+
     public function getProfileUrlAttribute()
     {
         return $this->profile_image

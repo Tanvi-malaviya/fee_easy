@@ -18,7 +18,7 @@
                 </button>
             </div>
             <h1 id="page-title" class="text-xl font-semibold text-slate-800 tracking-tight">Reports Hub</h1>
-            <p id="page-subtitle" class="text-xs text-slate-400 mt-0.5 font-medium">Access real-time academic analytics,
+            <p id="page-subtitle" class="text-xs mb-2 text-slate-400 mt-0.5 font-medium">Access real-time academic analytics,
                 financial summaries, and student progress metrics through our centralized reporting engine.</p>
         </div>
 
@@ -43,10 +43,10 @@
 
             <!-- Section: Hub -->
             <div id="section-hub" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-4">
                     <!-- Attendance Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-orange-50 rounded-xl flex items-center justify-center text-[#ff6c00] mb-3 shadow-sm">
@@ -68,7 +68,7 @@
 
                     <!-- Fees Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-500 mb-3 shadow-sm">
@@ -91,7 +91,7 @@
 
                     <!-- Performance Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-[24px] border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 mb-3 shadow-sm">

@@ -8,6 +8,7 @@
                 <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Financial Overview</h1>
                 <p class="text-xs text-slate-400 mt-0.5 font-medium">Track and manage institutional expenses in real-time</p>
             </div>
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <div class="flex items-center gap-2">
                 <div class="relative">
                     <button onclick="document.getElementById('month-picker').showPicker()"
@@ -32,6 +33,24 @@
                     Add Expense
                 </button>
             </div>
+            @else
+            <div class="flex items-center gap-2">
+                <div class="relative">
+                    <button onclick="document.getElementById('month-picker').showPicker()"
+                        class="bg-white border border-slate-100 rounded-xl px-3 py-1.5 flex items-center gap-2 shadow-sm hover:border-primary/30 transition-all cursor-pointer group">
+                        <span id="current-month-display"
+                            class="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">May
+                            2026</span>
+                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <input type="month" id="month-picker" class="absolute inset-0 opacity-0 pointer-events-none"
+                        onchange="handleMonthChange(this.value)">
+                </div>
+            </div>
+            @endif
         </div>
 
         <!-- Dashboard Stats Grid -->
@@ -275,6 +294,10 @@
             </div>
         </div>
     </div>
+    <!-- Empty State Template -->
+    <template id="expenses-empty-state">
+        <x-empty-state title="No transactions found" subtitle="Record daily expenses or payments to see records here." icon="expenses" plain="true" />
+    </template>
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -463,7 +486,7 @@
                 pageNumbers.innerHTML = pagesHtml;
 
                 if (!transactions || transactions.length === 0) {
-                    body.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">No transactions found</td></tr>';
+                    body.innerHTML = `<tr><td colspan="5" class="py-12 text-center">${document.getElementById('expenses-empty-state').innerHTML}</td></tr>`;
                     return;
                 }
 

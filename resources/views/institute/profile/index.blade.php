@@ -3,6 +3,26 @@
 @section('content')
     <div class="max-w-[1200px] mx-auto pb-6 pt-2">
 
+        @if (!auth()->guard('institute')->user()->isProfileComplete())
+            <!-- Incomplete Profile Warning Alert Banner -->
+            <div class="mb-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border-2 border-orange-500/20 rounded-2xl p-5 shadow-lg shadow-orange-500/5 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/20 animate-pulse">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight">Complete Your Profile Setup</h4>
+                        <p class="text-xs text-slate-600 font-semibold leading-relaxed mt-0.5">Please provide your <strong>Phone Number, Address, City, State, and Pincode</strong> below. Completing your profile is required to gain full access to your institute dashboard and core portal features.</p>
+                    </div>
+                </div>
+                <a href="{{ route('institute.profile.edit') }}" class="w-full md:w-auto px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-md transition-all shrink-0 hover:scale-[1.02] active:scale-95 text-center flex items-center justify-center">
+                    Configure Profile
+                </a>
+            </div>
+        @endif
+
         <!-- Premium Profile Header -->
         <div
             class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 overflow-hidden relative mb-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -16,8 +36,12 @@
                     <div
                         class="h-28 w-28 bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                         <img id="profile-logo-preview"
-                            src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : 'https://ui-avatars.com/?name=' . urlencode(auth()->guard('institute')->user()->name) . '&background=ff6c00&color=fff' }}"
-                            class="w-full h-full object-cover rounded-xl">
+                            src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : '' }}"
+                            class="w-full h-full object-cover rounded-xl {{ auth()->guard('institute')->user()->logo ? '' : 'hidden' }}">
+                        
+                        <div id="profile-logo-placeholder" class="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-white text-4xl font-black shadow-inner uppercase {{ auth()->guard('institute')->user()->logo ? 'hidden' : '' }}">
+                            {{ substr(auth()->guard('institute')->user()->institute_name ?? auth()->guard('institute')->user()->name ?? 'I', 0, 1) }}
+                        </div>
                     </div>
 
                     <div class="md:pt-12">
@@ -51,7 +75,7 @@
 
                 <a href="{{ route('institute.profile.edit') }}"
                     class="px-5 py-2.5 bg-[#e05f00] hover:bg-[#c44f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all md:pt-3 flex items-center justify-center h-fit">
-                    Edit Profile
+                    {{ auth()->guard('institute')->user()->isProfileComplete() ? 'Edit Profile' : 'Complete Setup' }}
                 </a>
             </div>
         </div>
@@ -241,78 +265,7 @@
             </div>
         </div>
 
-        <!-- Edit Mode Section -->
-        <div id="profile-edit-section" class="hidden animate-in fade-in duration-300">
-            <div class="bg-white rounded-[1.5rem] shadow-xl border border-slate-100/50 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-[550] text-slate-800">Edit Institute Profile</h3>
-                    <button onclick="closeEditMode()" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl font-bold text-xs transition-colors">
-                        Back to View
-                    </button>
-                </div>
 
-                <form id="profile-form" class="space-y-4" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="flex items-center gap-4 border-b pb-4 border-slate-50">
-                        <div class="relative group cursor-pointer" onclick="document.getElementById('logo-input').click()">
-                            <img id="modal-logo-preview" 
-                                 src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : 'https://ui-avatars.com/?name=' . urlencode(auth()->guard('institute')->user()->name) . '&background=ff6c00&color=fff' }}" 
-                                 class="h-16 w-16 rounded-2xl object-cover border-2 border-slate-100 shadow-sm transition-transform group-hover:scale-105">
-                            <div class="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-700">Institute Logo</h4>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Click to upload image</p>
-                        </div>
-                        <input type="file" id="logo-input" name="logo" class="hidden" accept="image/*" onchange="previewLogo(this)">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Institute Name</label>
-                            <input type="text" name="institute_name" id="field-institute_name" placeholder="Enter Institute Name" class="input">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Owner Name</label>
-                            <input type="text" name="name" id="field-name" placeholder="Enter Owner Name" class="input">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                            <input type="email" name="email" id="field-email" placeholder="email@example.com" class="input">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                            <input type="text" name="phone" id="field-phone" placeholder="Phone Number" class="input">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</label>
-                            <input type="text" name="address" id="field-address" placeholder="Flat, House no., Building" class="input">
-                        </div>
-                        <div class="">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City</label>
-                            <input type="text" name="city" id="field-city" placeholder="City" class="input">
-                        </div>
-                        <div class="">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">State</label>
-                            <input type="text" name="state" id="field-state" placeholder="State" class="input">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-2">
-                        <button type="button" onclick="closeEditMode()" class="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
-                            Cancel
-                        </button>
-                        <button type="submit" id="save-profile-btn" class="px-8 py-2.5 bg-[#ff6c00] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-orange-500/10 hover:scale-[1.01] transition-all flex items-center justify-center gap-2">
-                            <span>Save Changes</span>
-                            <div id="save-loader" class="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin hidden"></div>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     <!-- Password Modal (Remains as modal since it's a small action) -->
@@ -523,12 +476,33 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     const data = result.data;
+                    const logoPreview = document.getElementById('profile-logo-preview');
+                    const logoPlaceholder = document.getElementById('profile-logo-placeholder');
+                    
                     if (data.logo_url) {
-                        document.getElementById('profile-logo-preview').src = data.logo_url;
-                        document.getElementById('modal-logo-preview').src = data.logo_url;
+                        if (logoPreview) {
+                            logoPreview.src = data.logo_url;
+                            logoPreview.classList.remove('hidden');
+                        }
+                        if (logoPlaceholder) {
+                            logoPlaceholder.classList.add('hidden');
+                        }
+                    } else {
+                        if (logoPreview) {
+                            logoPreview.classList.add('hidden');
+                        }
+                        if (logoPlaceholder) {
+                            logoPlaceholder.innerText = (data.institute_name || data.name || 'I').substring(0, 1).toUpperCase();
+                            logoPlaceholder.classList.remove('hidden');
+                        }
                     }
 
-                    document.getElementById('view-institute_name').innerText = data.institute_name || data.name || 'Institute';
+                    document.getElementById('view-institute_name').innerHTML = `
+                        ${data.institute_name || data.name || 'Institute'}
+                        <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
+                            ${data.institute_code || ''}
+                        </span>
+                    `;
                     document.getElementById('view-city').innerText = data.city || 'Location';
                     document.getElementById('view-email').innerText = data.email || '';
 
@@ -568,61 +542,18 @@
                         }
                     }
 
-                    // Populate form fields
-                    document.getElementById('field-institute_name').value = data.institute_name || '';
-                    document.getElementById('field-name').value = data.name || '';
-                    document.getElementById('field-email').value = data.email || '';
-                    document.getElementById('field-phone').value = data.phone || '';
-                    document.getElementById('field-address').value = data.address || '';
-                    document.getElementById('field-city').value = data.city || '';
-                    document.getElementById('field-state').value = data.state || '';
                 }
             } catch (error) { console.error('Error fetching profile:', error); }
         }
-
-        document.getElementById('profile-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('save-profile-btn');
-            const loader = document.getElementById('save-loader');
-            btn.disabled = true; loader.classList.remove('hidden');
-
-            try {
-                const formData = new FormData(e.target);
-                const response = await fetch('/api/v1/institute/profile/update', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                if (response.ok) { 
-                    showToast('Profile updated successfully!'); 
-                    closeEditMode();
-                    fetchProfile(); 
-                } else { 
-                    showToast('Error updating profile', 'error'); 
-                }
-            } catch (error) { showToast('Something went wrong.', 'error'); }
-            finally { btn.disabled = false; loader.classList.add('hidden'); }
-        });
 
         function previewLogo(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.getElementById('profile-logo-preview').src = e.target.result;
-                    document.getElementById('modal-logo-preview').src = e.target.result;
                 }
                 reader.readAsDataURL(input.files[0]);
             }
-        }
-
-        function openEditMode() { 
-            document.getElementById('profile-view-section').classList.add('hidden'); 
-            document.getElementById('profile-edit-section').classList.remove('hidden'); 
-        }
-
-        function closeEditMode() { 
-            document.getElementById('profile-edit-section').classList.add('hidden'); 
-            document.getElementById('profile-view-section').classList.remove('hidden'); 
         }
 
         function openPasswordModal() { document.getElementById('password-modal').classList.replace('hidden', 'flex'); document.body.style.overflow = 'hidden'; }

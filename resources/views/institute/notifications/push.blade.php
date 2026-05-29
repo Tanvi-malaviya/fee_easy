@@ -134,6 +134,7 @@
             </div>
 
             {{-- Send Button --}}
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <button type="button" onclick="sendPushNotification()" id="send-btn"
                 class="w-full py-3.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:translate-y-[-1px] hover:shadow-xl hover:shadow-orange-500/30 active:scale-95 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,6 +142,11 @@
                 </svg>
                 Send Push Notification
             </button>
+            @else
+            <div class="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl text-sm font-bold text-center border border-slate-200">
+                Subscription Expired - Sending Disabled
+            </div>
+            @endif
         </div>
 
         {{-- ── Preview Panel ── --}}

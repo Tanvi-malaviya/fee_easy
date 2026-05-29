@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('subscription:check-expiry')->dailyAt('09:00');
         $schedule->command('homework:send-reminders')->dailyAt('08:00');
+        $schedule->command('birthday:send-notifications')->dailyAt('08:00');
     }
 
     /**

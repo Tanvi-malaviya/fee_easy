@@ -123,6 +123,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openAddModal()"
                             class="px-4 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:translate-y-[-1px] shadow-lg shadow-orange-900/10 active:scale-95 transition-all whitespace-nowrap shrink-0 sm:w-auto w-full">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,6 +131,7 @@
                             </svg>
                             Add Staff
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-2 overflow-visible flex-wrap sm:flex-nowrap w-full lg:w-auto">
@@ -216,6 +218,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openAttendanceModal()"
                             class="px-4 py-2 bg-[#FF6B00] text-white rounded-lg text-xs font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,6 +227,7 @@
                             </svg>
                             Log Attendance
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
@@ -317,6 +321,7 @@
                             </button>
                         </div>
 
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
                         <button onclick="openSalaryModal()"
                             class="px-4 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,6 +330,7 @@
                             </svg>
                             Add Salary
                         </button>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
@@ -446,8 +452,10 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size
-                                2MB.</p>
+                             <div>
+                                <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size 2MB.</p>
+                                <span id="error-profile_image" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -459,65 +467,34 @@
                             <span id="error-full_name" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Role</label>
-                                <div class="relative group" id="modal-role-dropdown">
-                                    <button type="button" onclick="toggleModalSelect('role')" id="modal-role-btn"
-                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
-                                        <span id="modal-role-label">Select Role</span>
-                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-role-menu"
-                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            @foreach($roles as $role)
-                                                <button type="button"
-                                                    onclick="selectModalOption('role', '{{ $role->id }}', '{{ $role->name }}')"
-                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $role->name }}
-                                                </button>
-                                            @endforeach
-                                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
+                            <div class="relative group" id="modal-dept-dropdown">
+                                <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
+                                    <span id="modal-dept-label">Select Department</span>
+                                    <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="modal-dept-menu"
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                        @foreach($departments as $dept)
+                                            <button type="button"
+                                                onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                {{ $dept->name }}
+                                            </button>
+                                        @endforeach
                                     </div>
-                                    <input type="hidden" name="staff_role_id" id="field-role" required>
                                 </div>
-                                <span id="error-staff_role_id"
-                                    class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                                <input type="hidden" name="staff_department_id" id="field-dept" required>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
-                                <div class="relative group" id="modal-dept-dropdown">
-                                    <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
-                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
-                                        <span id="modal-dept-label">Select Department</span>
-                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-dept-menu"
-                                        class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            @foreach($departments as $dept)
-                                                <button type="button"
-                                                    onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
-                                                    class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $dept->name }}
-                                                </button>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="staff_department_id" id="field-dept" required>
-                                </div>
-                                <span id="error-staff_department_id"
-                                    class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
-                            </div>
+                            <span id="error-staff_department_id"
+                                class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -876,7 +853,18 @@
                 </div>
             </div>
         </div>
-    </div>
+    <!-- Empty State Templates -->
+    <template id="staff-empty-state">
+        <x-empty-state title="No staff members found" subtitle="Try adjusting your filters or add a new staff member." icon="staff" />
+    </template>
+    
+    <template id="attendance-empty-state">
+        <x-empty-state title="No attendance records found" subtitle="Log attendance to see entries here." icon="calendar" plain="true" />
+    </template>
+
+    <template id="salary-empty-state">
+        <x-empty-state title="No salary records found" subtitle="Record salary payments to track history here." icon="salary" plain="true" />
+    </template>
 
     <script>
         const API_URL = "{{ url('api/v1/institute/staff') }}";
@@ -885,6 +873,56 @@
         const PRIMARY_HOVER = '#e66000';
 
         let staffListData = [];
+        let departmentsListData = [];
+
+        async function fetchDepartments() {
+            try {
+                const response = await fetch("{{ url('api/v1/institute/staff-departments') }}", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    }
+                });
+                const result = await response.json();
+                if (Array.isArray(result)) {
+                    departmentsListData = result;
+                    renderDepartmentsDropdowns(result);
+                }
+            } catch (error) {
+                console.error('Error fetching departments:', error);
+            }
+        }
+
+        function renderDepartmentsDropdowns(departments) {
+            // 1. Populate the filter dropdown:
+            const filterMenu = document.querySelector('#dept-dropdown-menu .py-1');
+            if (filterMenu) {
+                let html = `<button type="button" onclick="selectCustomOption('dept', '', 'All Departments')"
+                    class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">All Departments</button>`;
+                
+                departments.forEach(dept => {
+                    html += `<button type="button"
+                        onclick="selectCustomOption('dept', '${dept.id}', '${dept.name.replace(/'/g, "\\'")}')"
+                        class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">${dept.name}</button>`;
+                });
+                filterMenu.innerHTML = html;
+            }
+
+            // 2. Populate the modal select dropdown:
+            const modalMenu = document.querySelector('#modal-dept-menu .py-1');
+            if (modalMenu) {
+                let html = '';
+                departments.forEach(dept => {
+                    html += `<button type="button"
+                        onclick="selectModalOption('dept', '${dept.id}', '${dept.name.replace(/'/g, "\\'")}')"
+                        class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                        ${dept.name}
+                    </button>`;
+                });
+                modalMenu.innerHTML = html;
+            }
+        }
 
         window.toggleStaffDropdown = () => {
             const menu = document.getElementById('attendance-staff-menu');
@@ -931,6 +969,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchStaff();
+            fetchDepartments();
 
             const searchInput = document.getElementById('staff-search');
             const searchBtn = document.getElementById('search-btn');
@@ -1039,22 +1078,12 @@
             if (!grid) return;
 
             if (staffMembers.length === 0) {
-                grid.innerHTML = `
-                                                    <div class="col-span-full py-20 flex flex-col items-center text-center bg-white rounded-3xl border border-slate-100 w-full">
-                                                        <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                            </svg>
-                                                        </div>
-                                                        <h3 class="text-xl font-bold text-slate-800 mb-1">No staff members found</h3>
-                                                        <p class="text-sm text-slate-400">Try adjusting your filters or add a new staff member.</p>
-                                                    </div>
-                                                `;
+                grid.innerHTML = document.getElementById('staff-empty-state').innerHTML;
                 return;
             }
 
             const cardsHtml = staffMembers.map(staff => {
-                const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+                const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
                 const statusColor = staff.status === 'active' || staff.status === 1 ? 'bg-emerald-500' : 'bg-slate-300';
 
                 return `
@@ -1139,10 +1168,23 @@
 
         // Modal Functions
         window.previewImage = (input) => {
+            const errorEl = document.getElementById('error-profile_image');
+            if (errorEl) errorEl.innerText = '';
+
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    if (errorEl) {
+                        errorEl.innerText = 'The profile image must not be greater than 2MB.';
+                    }
+                    input.value = ''; // Reset file input
+                    document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true";
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (e) => document.getElementById('image-preview').src = e.target.result;
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         };
 
@@ -1174,10 +1216,9 @@
             document.getElementById('image-preview').src = 'https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true';
 
             // Reset custom selects
-            document.getElementById('field-role').value = '';
-            document.getElementById('modal-role-label').innerText = 'Select Role';
             document.getElementById('field-dept').value = '';
             document.getElementById('modal-dept-label').innerText = 'Select Department';
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -1198,10 +1239,9 @@
             document.getElementById('field-phone').value = staff.phone || '';
 
             // Set custom select values
-            document.getElementById('field-role').value = staff.staff_role_id;
-            document.getElementById('modal-role-label').innerText = staff.role ? staff.role.name : 'Select Role';
             document.getElementById('field-dept').value = staff.staff_department_id;
             document.getElementById('modal-dept-label').innerText = staff.department ? staff.department.name : 'Select Department';
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             if (staff.employment_type === 'Hourly') {
                 document.getElementById('employment-hourly').checked = true;
@@ -1211,7 +1251,7 @@
 
             document.getElementById('field-salary').value = staff.base_salary;
 
-            const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+            const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
             document.getElementById('image-preview').src = profileImg;
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
@@ -1219,6 +1259,7 @@
         };
 
         window.closeAddModal = () => {
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
             document.getElementById('add-staff-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
         };
@@ -1453,15 +1494,7 @@
                 tbody.innerHTML = `
                                                     <tr>
                                                         <td colspan="6" class="px-6 py-12 text-center">
-                                                            <div class="flex flex-col items-center">
-                                                                <div class="h-14 w-14 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
-                                                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                                    </svg>
-                                                                </div>
-                                                                <h3 class="text-sm font-bold text-slate-800">No attendance records found</h3>
-                                                                <p class="text-xs text-slate-400">Log attendance to see entries here.</p>
-                                                            </div>
+                                                            ${document.getElementById('attendance-empty-state').innerHTML}
                                                         </td>
                                                     </tr>
                                                 `;
@@ -1470,9 +1503,7 @@
                 return;
             }
             const pagContainer = document.getElementById('attendance-pagination-container');
-            if (pagContainer) pagContainer.classList.remove('hidden');
-
-            tbody.innerHTML = data.map(item => {
+            if (pagContainer) pagContainer.classList.remove('hidden');             tbody.innerHTML = data.map(item => {
                 const staff = item.staff || {};
                 const dept = staff.department ? staff.department.name : 'N/A';
                 const initial = staff.full_name ? staff.full_name.charAt(0).toUpperCase() : '?';
@@ -1482,11 +1513,15 @@
                 const dateObj = new Date(item.date);
                 const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+                const avatarHtml = staff.profile_url
+                    ? `<img src="${staff.profile_url}" alt="${staff.full_name}" class="h-7 w-7 rounded-full object-cover border border-slate-100 shadow-sm">`
+                    : `<div class="h-7 w-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">${initial}</div>`;
+
                 return `
                                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                                         <td class="px-4 py-3">
                                                             <div class="flex items-center gap-2.5">
-                                                                <div class="h-7 w-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] font-bold">${initial}</div>
+                                                                ${avatarHtml}
                                                                 <span class="text-xs font-bold text-slate-700">${staff.full_name || 'Unknown'}</span>
                                                             </div>
                                                         </td>
@@ -1799,21 +1834,26 @@
             if (!tbody) return;
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs italic">No salary records found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center">${document.getElementById('salary-empty-state').innerHTML}</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = data.map(item => `
+            tbody.innerHTML = data.map(item => {
+                const staff = item.staff || {};
+                const initial = staff.full_name ? staff.full_name.charAt(0).toUpperCase() : '?';
+                const avatarHtml = staff.profile_url
+                    ? `<img src="${staff.profile_url}" alt="${staff.full_name}" class="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-sm">`
+                    : `<div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">${initial}</div>`;
+
+                return `
                                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                                     <td class="px-4 py-3">
                                                         <div class="flex items-center gap-3">
-                                                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
-                                                                ${item.staff.full_name.charAt(0)}
-                                                            </div>
-                                                            <div class="font-bold text-slate-700 text-xs">${item.staff.full_name}</div>
+                                                            ${avatarHtml}
+                                                            <div class="font-bold text-slate-700 text-xs">${staff.full_name || 'Unknown'}</div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-4 py-3 text-xs font-bold text-slate-500">${item.staff.employee_id || 'STF-' + item.staff.id}</td>
+                                                    <td class="px-4 py-3 text-xs font-bold text-slate-500">${staff.employee_id || 'STF-' + staff.id}</td>
                                                     <td class="px-4 py-3 text-xs text-slate-500">${new Date(item.payment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                                                     <td class="px-4 py-3">
                                                         <span class="flex items-center gap-1.5 text-[10px] font-bold ${item.payment_method === 'Online' ? 'text-blue-600' : 'text-amber-600'}">
@@ -1839,7 +1879,8 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            `).join('');
+                `;
+            }).join('');
         }
 
         function renderSalaryPagination(pagination) {

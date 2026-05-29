@@ -68,6 +68,11 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-orange-300"></span> PENDING (<span
                         id="legend-pending">0</span>)
                 </button>
+                <button onclick="filterByStatus('reviewed')" id="btn-reviewed"
+                    class="px-3 py-1.5 bg-white border border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> REVIEWED (<span
+                        id="legend-reviewed">0</span>)
+                </button>
             </div>
         </div>
 
@@ -85,7 +90,7 @@
     <div class="fixed bottom-10 right-10 z-[100] flex items-center gap-4 bg-white p-2.5 pl-6 rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 opacity-0 translate-y-4 transition-all duration-300"
         id="action-bar">
         <div class="text-right">
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Auto-saving...</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">saving...</p>
             <p class="text-[11px] font-medium text-[#ff6c00] italic">Last updated just now</p>
         </div>
         <button onclick="publishGrades()" id="publish-btn"
@@ -215,22 +220,28 @@
             if (score > 10) score = 10;
 
             sub.score = score;
-            if (sub.status === 'Pending') sub.status = 'Submitted';
 
             document.getElementById(`score-${studentId}`).innerText = score;
             showActionBar();
         }
 
         function updateProgressCounts() {
-            let submittedCount = 0, pendingCount = 0;
+            let submittedCount = 0, pendingCount = 0, reviewedCount = 0;
             const total = students.length;
             students.forEach(s => {
                 const st = (submissionsMap[s.id].status || '').toLowerCase();
-                if (st === 'submitted' || st === 'late') submittedCount++;
-                else pendingCount++;
+                if (st === 'reviewed') {
+                    reviewedCount++;
+                    submittedCount++;
+                } else if (st === 'submitted' || st === 'late') {
+                    submittedCount++;
+                } else {
+                    pendingCount++;
+                }
             });
             document.getElementById('progress-submitted-count').innerText = submittedCount;
-            document.getElementById('legend-submitted').innerText = submittedCount;
+            document.getElementById('legend-submitted').innerText = submittedCount - reviewedCount;
+            document.getElementById('legend-reviewed').innerText = reviewedCount;
             document.getElementById('legend-pending').innerText = pendingCount;
             const subPct = total ? (submittedCount / total) * 100 : 0;
             const penPct = total ? (pendingCount / total) * 100 : 0;
@@ -264,9 +275,20 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     showToast('Grades published successfully!');
-                    // Update all badges and counts AFTER successful publish
-                    updateAllBadges();
-                    updateProgressCounts();
+                    
+                    // Locally update status of submissions that have scores to 'Reviewed'
+                    students.forEach(student => {
+                        const sub = submissionsMap[student.id];
+                        if (sub) {
+                            const currentStatus = (sub.status || '').toLowerCase();
+                            // If student had submitted/late, OR score > 0, set status to Reviewed
+                            if (currentStatus === 'submitted' || currentStatus === 'late' || (sub.score !== null && sub.score > 0)) {
+                                sub.status = 'Reviewed';
+                            }
+                        }
+                    });
+
+                    renderUI();
                     setTimeout(() => {
                         document.getElementById('action-bar').classList.add('opacity-0', 'translate-y-4');
                     }, 2000);
@@ -288,7 +310,10 @@
                 const badgeEl = document.getElementById(`badge-${student.id}`);
                 if (!badgeEl) return;
                 const status = (sub.status || '').toLowerCase();
-                if (status === 'submitted') {
+                if (status === 'reviewed') {
+                    badgeEl.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest';
+                    badgeEl.innerText = 'Reviewed';
+                } else if (status === 'submitted') {
                     badgeEl.className = 'px-2.5 py-1 bg-orange-50 text-[#ff6c00] border border-orange-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest';
                     badgeEl.innerText = 'Submitted';
                 } else if (status === 'late') {
@@ -309,7 +334,8 @@
             const btns = {
                 all: document.getElementById('btn-all'),
                 submitted: document.getElementById('btn-submitted'),
-                pending: document.getElementById('btn-pending')
+                pending: document.getElementById('btn-pending'),
+                reviewed: document.getElementById('btn-reviewed')
             };
 
             Object.keys(btns).forEach(key => {
@@ -336,19 +362,27 @@
             // Progress
             let submittedCount = 0;
             let pendingCount = 0;
+            let reviewedCount = 0;
             const total = students.length;
 
             students.forEach(student => {
                 const status = (submissionsMap[student.id].status || '').toLowerCase();
-                if (status === 'submitted' || status === 'late') submittedCount++;
-                else pendingCount++;
+                if (status === 'reviewed') {
+                    reviewedCount++;
+                    submittedCount++;
+                } else if (status === 'submitted' || status === 'late') {
+                    submittedCount++;
+                } else {
+                    pendingCount++;
+                }
             });
 
             document.getElementById('progress-submitted-count').innerText = submittedCount;
             document.getElementById('progress-total-count').innerText = total;
             document.getElementById('legend-all').innerText = total;
-            document.getElementById('legend-submitted').innerText = submittedCount;
+            document.getElementById('legend-submitted').innerText = submittedCount - reviewedCount;
             document.getElementById('legend-pending').innerText = pendingCount;
+            document.getElementById('legend-reviewed').innerText = reviewedCount;
 
             // Filter students for grid
             let filteredStudents = students;
@@ -359,6 +393,8 @@
                 });
             } else if (currentFilter === 'pending') {
                 filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'pending');
+            } else if (currentFilter === 'reviewed') {
+                filteredStudents = students.filter(s => (submissionsMap[s.id].status || '').toLowerCase() === 'reviewed');
             }
 
             const subPct = total ? (submittedCount / total) * 100 : 0;
@@ -381,7 +417,8 @@
 
                 const status = (sub.status || '').toLowerCase();
                 let statusBadge = '';
-                if (status === 'submitted') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-orange-50 text-[#ff6c00] border border-orange-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Submitted</span>`;
+                if (status === 'reviewed') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Reviewed</span>`;
+                else if (status === 'submitted') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-orange-50 text-[#ff6c00] border border-orange-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Submitted</span>`;
                 else if (status === 'late') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Late</span>`;
                 else statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[9px] font-bold uppercase tracking-widest">Pending</span>`;
 
@@ -397,17 +434,19 @@
                                 <button onclick="updateScore(${student.id}, 1)" class="h-6 w-6 rounded bg-white shadow-sm flex items-center justify-center text-[#ff6c00] font-black hover:bg-slate-100 transition-colors">+</button>
                            </div>`;
 
+                const enrollmentIdDisplay = student.enrollment_id || `ID: #ST-${student.id.toString().padStart(4, '0')}`;
+
                 return `
                             <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex flex-col h-full relative max-w-[230px] w-full hover:shadow-md hover:border-orange-200 transition-all">
                                 <div class="flex items-start justify-between mb-2">
-                                    <div class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=1e293b&color=fff&bold=true" class="w-full h-full object-cover">
+                                    <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden shadow-sm border border-slate-100">
+                                        <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=1e293b&color=fff&bold=true'}" class="w-full h-full object-cover">
                                     </div>
                                     ${statusBadge}
                                 </div>
 
                                 <h4 class="text-[13px] font-bold text-slate-900 mb-0.5 truncate">${student.name}</h4>
-                                <p class="text-[10px] font-medium text-slate-400 mb-3 truncate">ID: #ST-${student.id.toString().padStart(4, '0')}</p>
+                                <p class="text-[10px] font-medium text-slate-400 mb-3 truncate">${enrollmentIdDisplay}</p>
 
                                 <div class="mt-auto">
                                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Assignment Score</p>

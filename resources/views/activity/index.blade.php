@@ -60,9 +60,14 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="py-20 text-center">
-                                    <div class="text-4xl mb-4 opacity-30">🛰️</div>
-                                    <p class="text-gray-400 font-bold">Waiting for new activities...</p>
+                                <div class="p-0">
+                                    <x-empty-state 
+                                        title="No activities recorded" 
+                                        subtitle="Waiting for new activities and system events to occur." 
+                                        icon="notes"
+                                        plain="true"
+                                        class="py-20"
+                                    />
                                 </div>
                             @endforelse
                         </div>

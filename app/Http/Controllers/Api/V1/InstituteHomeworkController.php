@@ -18,7 +18,8 @@ class InstituteHomeworkController extends Controller
         }
 
         $query = $request->user()
-            ->homeworks();
+            ->homeworks()
+            ->whereDate('due_date', '>=', \Carbon\Carbon::yesterday()->toDateString());
 
         if ($request->has('batch_id')) {
             $query->where('batch_id', $request->batch_id);
@@ -27,46 +28,15 @@ class InstituteHomeworkController extends Controller
         $homeworks = $query->select('id', 'batch_id', 'title', 'description', 'due_date', 'attachment', 'created_at')
             ->with([
                 'batch' => function($q) {
-                    $q->select('id', 'name')->withCount('students')->with('students:id,name,batch_id');
-                },
-                'submissions' => function ($q) {
-                    $q->select('id', 'homework_id', 'student_id', 'score', 'status')
-                        ->with('student:id,name');
+                    $q->select('id', 'name')->withCount('students');
                 }
             ])
             ->withCount('submissions')
             ->orderByDesc('created_at')
             ->paginate(12);
 
-        // Transform to include pending students
+        // Transform list items minimally
         $homeworks->each(function($homework) {
-            $submissions = $homework->submissions->keyBy('student_id');
-            $allSubmissions = [];
-
-            if ($homework->batch && $homework->batch->students) {
-                foreach ($homework->batch->students as $student) {
-                    if ($submissions->has($student->id)) {
-                        $sub = $submissions->get($student->id);
-                        $allSubmissions[] = $sub;
-                    } else {
-                        $allSubmissions[] = [
-                            'id' => null,
-                            'homework_id' => $homework->id,
-                            'student_id' => $student->id,
-                            'score' => 0,
-                            'status' => 'pending',
-                            'student' => [
-                                'id' => $student->id,
-                                'name' => $student->name,
-                                'profile_image_url' => $student->profile_image_url // Assuming this accessor exists
-                            ]
-                        ];
-                    }
-                }
-            }
-            
-            $homework->setRelation('submissions', collect($allSubmissions));
-            
             if ($homework->attachment) {
                 $homework->attachment = asset('storage/' . $homework->attachment);
             }
@@ -80,7 +50,15 @@ class InstituteHomeworkController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $homeworks,
+            'data' => [
+                'current_page' => $homeworks->currentPage(),
+                'data'         => $homeworks->items(),
+                'from'         => $homeworks->firstItem(),
+                'last_page'    => $homeworks->lastPage(),
+                'per_page'     => $homeworks->perPage(),
+                'to'           => $homeworks->lastItem(),
+                'total'        => $homeworks->total(),
+            ],
         ]);
     }
 
@@ -213,7 +191,7 @@ class InstituteHomeworkController extends Controller
                     $q->select('id', 'name', 'subject');
                     $q->with([
                         'students' => function ($sq) {
-                            $sq->select('id', 'name', 'profile_image', 'batch_id');
+                            $sq->select('id', 'name', 'profile_image', 'batch_id', 'enrollment_id');
                         }
                     ]);
                 }
@@ -360,8 +338,13 @@ class InstituteHomeworkController extends Controller
             // Standardize status to Title Case for consistency
             $status = ucfirst(strtolower($gradeData['status']));
             
+            // If a score is provided, status is Reviewed
+            if ($gradeData['score'] !== null && $gradeData['score'] !== '') {
+                $status = 'Reviewed';
+            }
+
             // Validate standardized status
-            if (!in_array($status, ['Pending', 'Missing', 'Late', 'Submitted'])) {
+            if (!in_array($status, ['Pending', 'Missing', 'Late', 'Submitted', 'Reviewed'])) {
                 continue;
             }
 
@@ -378,8 +361,8 @@ class InstituteHomeworkController extends Controller
                 continue;
             }
 
-            // Only notify if status is 'Submitted' (meaning graded/published successfully)
-            if ($status === 'Submitted') {
+            // Only notify if status is 'Submitted' or 'Reviewed' (meaning graded/published successfully)
+            if ($status === 'Submitted' || $status === 'Reviewed') {
                 $scoreText = $gradeData['score'] !== null ? "Score: {$gradeData['score']}" : "Graded successfully";
                 $notifTitle = "Homework Graded! 🌟";
                 $notifBody = "Your homework \"{$homework->title}\" has been graded. {$scoreText}!";

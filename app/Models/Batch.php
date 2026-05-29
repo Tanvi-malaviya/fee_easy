@@ -18,7 +18,6 @@ class Batch extends Model
         'start_time',
         'end_time',
         'days',
-        'max_capacity',
         'classroom',
     ];
 
@@ -26,14 +25,18 @@ class Batch extends Model
         'days' => 'array',
     ];
 
+    protected $hidden = [
+        'max_capacity',
+    ];
+
     public function getStartTimeAttribute($value)
     {
-        return $value ? date('H:i', strtotime($value)) : null;
+        return $value ? date('h:i A', strtotime($value)) : null;
     }
 
     public function getEndTimeAttribute($value)
     {
-        return $value ? date('H:i', strtotime($value)) : null;
+        return $value ? date('h:i A', strtotime($value)) : null;
     }
 
     public function institute()

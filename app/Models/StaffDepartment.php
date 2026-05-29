@@ -9,12 +9,7 @@ class StaffDepartment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'institute_id'];
-
-    public function institute()
-    {
-        return $this->belongsTo(Institute::class);
-    }
+    protected $fillable = ['name'];
 
     public function staff()
     {

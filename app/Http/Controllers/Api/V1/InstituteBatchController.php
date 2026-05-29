@@ -23,7 +23,7 @@ class InstituteBatchController extends Controller
 
         $query = Batch::where('institute_id', $request->user()->id)
             ->withCount('students')
-            ->with('students:id,name,batch_id');
+            ->with('students:id,name,batch_id,profile_image');
 
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
@@ -110,7 +110,6 @@ class InstituteBatchController extends Controller
             'start_time' => 'required|string',
             'end_time' => 'required|string',
             'days' => 'required|array|min:1',
-            'max_capacity' => 'nullable|integer|min:1',
             'classroom' => 'nullable|string|max:255',
         ]);
 
@@ -132,7 +131,6 @@ class InstituteBatchController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'days' => $request->days,
-            'max_capacity' => $request->max_capacity ?? 30,
             'classroom' => $request->classroom,
         ]);
 
@@ -169,11 +167,10 @@ class InstituteBatchController extends Controller
             'start_time' => 'sometimes|required|string',
             'end_time' => 'sometimes|required|string',
             'days' => 'sometimes|required|array|min:1',
-            'max_capacity' => 'nullable|integer|min:1',
             'classroom' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'max_capacity', 'classroom']);
+        $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom']);
         
         if (isset($data['days']) && is_array($data['days'])) {
             if (count($data['days']) !== count(array_unique($data['days']))) {

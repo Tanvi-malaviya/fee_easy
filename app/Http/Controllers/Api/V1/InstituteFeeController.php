@@ -20,7 +20,7 @@ class InstituteFeeController extends Controller
 
         $query = Fee::where('institute_id', $request->user()->id)
             ->with(['student' => function($q) {
-                $q->select('id', 'name', 'email', 'batch_id', 'monthly_fee');
+                $q->select('id', 'name', 'email', 'batch_id', 'monthly_fee', 'profile_image');
             }, 'student.batch', 'payments']);
 
         if ($request->filled('status')) {
@@ -36,7 +36,8 @@ class InstituteFeeController extends Controller
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
             $query->whereHas('student', function($q) use ($searchTerm) {
-                $q->where('name', 'like', $searchTerm);
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('enrollment_id', 'like', $searchTerm);
             });
         }
 
@@ -126,7 +127,7 @@ class InstituteFeeController extends Controller
             \Illuminate\Support\Facades\DB::commit();
             
             // Load student and payments relations for the frontend
-            $fee->load(['student:id,name', 'payments']);
+            $fee->load(['student:id,name,profile_image', 'payments']);
 
             return response()->json([
                 'status' => 'success',

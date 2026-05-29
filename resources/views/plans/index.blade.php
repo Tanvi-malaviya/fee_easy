@@ -166,8 +166,15 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">No subscription
-                                        plans found.</td>
+                                    <td colspan="4" class="p-0">
+                                        <x-empty-state 
+                                            title="No subscription plans found" 
+                                            subtitle="No subscription plans matching your filters were found." 
+                                            icon="fees"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>

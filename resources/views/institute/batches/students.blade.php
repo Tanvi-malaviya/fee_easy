@@ -100,6 +100,7 @@
                     </svg>
                     Export
                 </button>
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <button onclick="openEnrollModal()"
                     class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,6 +109,7 @@
                     </svg>
                     Assign Student
                 </button>
+                @endif
             </div>
         </div>
 
@@ -246,6 +248,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Empty State Template -->
+    <template id="students-empty-state">
+        <x-empty-state title="No scholars found" subtitle="Assign scholars to this batch to see them here." icon="students" />
+    </template>
+
     <script>
         const BATCH_ID = "{{ $id }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -368,7 +376,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
-                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: #TUA-${String(student.id).padStart(4, '0')}</p>
+                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: ${student.enrollment_id || '#TUA-' + String(student.id).padStart(4, '0')}</p>
                                 </div>
                                 <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
                                     <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
@@ -436,7 +444,7 @@
                                         </div>
                                         <div>
                                             <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
-                                            <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">${student.email ? student.email.split('@')[0].substring(0, 15) : 'STUDENT'}</p>
+                                            <p class="text-[10px] font-medium text-slate-400 truncate max-w-[220px]" title="${student.email || ''}">${student.email || 'STUDENT'}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-6">
@@ -535,12 +543,7 @@
         function renderStudents(students) {
             const container = document.getElementById('student-grid');
             if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-10 text-center flex flex-col items-center">
-                            <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            </div>
-                            <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">No Scholars Found</p>
-                        </div>`;
+                container.innerHTML = document.getElementById('students-empty-state').innerHTML;
                 return;
             }
             container.innerHTML = students.map(student => {
@@ -572,7 +575,7 @@
                                             <!-- ID Badge -->
                                             <div class="absolute top-4 right-4">
                                                 <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                    ID: #ST-${String(student.id).padStart(4, '0')}
+                                                    ID: ${student.enrollment_id || '#ST-' + String(student.id).padStart(4, '0')}
                                                 </span>
                                             </div>
 

@@ -15,6 +15,7 @@
                     </svg>
                     Bookmarks
                 </button>
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <button onclick="openNoteModal()"
                     class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,6 +23,7 @@
                     </svg>
                     New Note
                 </button>
+                @endif
             </div>
         </div>
 
@@ -289,7 +291,15 @@
                 </form>
             </div>
         </div>
-    </div>
+
+    <!-- Empty State Templates -->
+    <template id="notes-empty-state">
+        <x-empty-state title="No notes found in this workspace" subtitle="Create your first note in this workspace to get started." icon="notes" />
+    </template>
+
+    <template id="bookmarks-empty-state">
+        <x-empty-state title="No bookmarked notes found" subtitle="Bookmark important notes to find them quickly here." icon="notes" />
+    </template>
 
     @push('scripts')
         <script>
@@ -413,8 +423,14 @@
                 }
 
                 if (filtered.length === 0) {
-                    const message = showBookmarkedOnly ? 'No bookmarked notes found.' : 'No notes found in this workspace.';
-                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold">${message}</div>`;
+                    const templateId = showBookmarkedOnly ? 'bookmarks-empty-state' : 'notes-empty-state';
+                    const template = document.getElementById(templateId);
+                    if (template) {
+                        grid.innerHTML = template.innerHTML;
+                    } else {
+                        const message = showBookmarkedOnly ? 'No bookmarked notes found.' : 'No notes found in this workspace.';
+                        grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold">${message}</div>`;
+                    }
                     return;
                 }
 

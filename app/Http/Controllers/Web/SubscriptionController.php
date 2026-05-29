@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\Institute;
 use App\Models\Plan;
 use App\Models\SubscriptionPayment;
+use App\Models\SubscriptionRenewal;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -58,7 +59,14 @@ class SubscriptionController extends Controller
             'total_revenue' => $paginatedItems->where('status', 'active')->sum('amount'),
         ];
         
-        return view('subscriptions.index', compact('subscriptions', 'institutes', 'plans', 'stats'));
+        $pendingRenewals = SubscriptionRenewal::with('institute')
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $currency = \App\Models\SystemSetting::get('currency_symbol', '₹');
+        
+        return view('subscriptions.index', compact('subscriptions', 'institutes', 'plans', 'stats', 'pendingRenewals', 'currency'));
     }
 
     /**
@@ -234,5 +242,72 @@ class SubscriptionController extends Controller
     {
         $subscription->delete();
         return redirect()->route('subscriptions.index')->with('success', 'Subscription record deleted.');
+    }
+
+    /**
+     * Approve an offline subscription renewal request.
+     */
+    public function approveRenewal(Request $request, SubscriptionRenewal $renewal)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $plan = Plan::find($request->plan_id);
+        $institute = $renewal->institute;
+
+        // 1. Update the renewal request status
+        $renewal->update([
+            'status' => 'approved',
+        ]);
+
+        // 2. Activate or create their subscription
+        $subscription = Subscription::where('institute_id', $institute->id)->first();
+        $endDate = now()->addDays($plan->duration_days);
+
+        if ($subscription) {
+            $subscription->update([
+                'plan_name' => $plan->name,
+                'amount' => $plan->price,
+                'start_date' => now(),
+                'end_date' => $endDate,
+                'status' => 'active',
+            ]);
+        } else {
+            $subscription = Subscription::create([
+                'institute_id' => $institute->id,
+                'plan_name' => $plan->name,
+                'amount' => $plan->price,
+                'start_date' => now(),
+                'end_date' => $endDate,
+                'status' => 'active',
+            ]);
+        }
+
+        // 3. Record subscription payment
+        SubscriptionPayment::create([
+            'subscription_id' => $subscription->id,
+            'amount' => $plan->price,
+            'payment_source' => 'offline_renewal',
+            'paid_at' => now(),
+        ]);
+
+        Activity::log("Manual renewal approved for {$institute->institute_name} (Plan: {$plan->name})");
+
+        return redirect()->back()->with('success', "Renewal approved successfully. Subscription activated for {$institute->institute_name}.");
+    }
+
+    /**
+     * Reject an offline subscription renewal request.
+     */
+    public function rejectRenewal(Request $request, SubscriptionRenewal $renewal)
+    {
+        $renewal->update([
+            'status' => 'rejected',
+        ]);
+
+        Activity::log("Manual renewal rejected for {$renewal->institute->institute_name}");
+
+        return redirect()->back()->with('success', "Renewal request has been rejected.");
     }
 }

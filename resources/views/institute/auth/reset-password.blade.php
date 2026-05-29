@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password - Tuoora</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Outfit', sans-serif; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
             background-color: #f8fafc;
             min-height: 100vh;
             display: flex;
@@ -32,19 +38,26 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
             animation: fadeIn 0.6s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-card {
             background: #ffffff;
             border-radius: 1.25rem;
-            padding: 1rem 1.5rem;
+            padding: 1.25rem 1.5rem;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
             border: 1px solid #f1f5f9;
             text-align: center;
@@ -58,8 +71,8 @@
         }
 
         .logo-box img {
-            height: 60px;
-            width: auto;
+            height: 32px;
+            width: 100px;
             object-fit: contain;
         }
 
@@ -74,12 +87,14 @@
         }
 
         .logo-section p {
-            font-size: 0.6rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 800;
             color: #FF6B00;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1.25rem;
+            opacity: 0.9;
         }
 
         .form-group {
@@ -104,12 +119,12 @@
 
         .input-field {
             width: 100%;
-            height: 2.8rem;
+            height: 2.4rem;
             padding: 0 1.25rem 0 3rem;
             background: #fcfdfe;
             border: 2px solid #f1f5f9;
-            border-radius: 0.85rem;
-            font-size: 0.85rem;
+            border-radius: 0.65rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #1e293b;
             transition: all 0.3s ease;
@@ -133,18 +148,18 @@
 
         .submit-btn {
             width: 100%;
-            height: 2.8rem;
+            height: 2.4rem;
             background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 0.85rem;
-            font-size: 0.8rem;
+            border-radius: 0.65rem;
+            font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(255, 107, 0, 0.15);
+            box-shadow: 0 8px 16px rgba(255, 107, 0, 0.12);
             margin-top: 0.5rem;
         }
 
@@ -172,10 +187,12 @@
             z-index: 100;
             transform: translateX(150%);
             transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
-        #toast.show { transform: translateX(0); }
+        #toast.show {
+            transform: translateX(0);
+        }
 
         .otp-input {
             letter-spacing: 0.5em;
@@ -185,6 +202,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="bg-pattern"></div>
     <div id="toast"></div>
@@ -193,21 +211,24 @@
         <div class="login-card">
             <div class="logo-section">
                 <div class="logo-box">
-                    <img src="{{ asset('images/turooa.png') }}" alt="Logo">
+                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
                 </div>
                 <h1>Tuoora</h1>
-                <p>Management System</p>
+
             </div>
 
-            <h2 style="font-size: 1.1rem; color: #1e293b; margin-bottom: 0.4rem; font-weight: 700;">Set New Password</h2>
-            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">Enter the code sent to your email and your new password.</p>
+            <h2 style="font-size: 1.1rem; color: #000; margin-bottom: 0.4rem; font-weight: 700;">Set New Password
+            </h2>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">Enter the code sent to your email and
+                your new password.</p>
 
             <form id="reset-password-form">
                 @csrf
                 <div class="form-group">
-                    <label class="form-label">Verification Code (OTP)</label>
+                    <label class="form-label">Verification Code</label>
                     <div class="input-wrapper">
-                        <input type="text" name="otp" id="otp" required maxlength="6" class="input-field otp-input" placeholder="000000">
+                        <input type="text" name="otp" id="otp" required maxlength="6" class="input-field otp-input"
+                            placeholder="000000">
                         <i class="fas fa-shield-alt input-icon"></i>
                     </div>
                 </div>
@@ -215,7 +236,8 @@
                 <div class="form-group">
                     <label class="form-label">New Password</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" id="password" required class="input-field" placeholder="••••••••">
+                        <input type="password" name="password" id="password" required class="input-field"
+                            placeholder="••••••••">
                         <i class="fas fa-lock input-icon"></i>
                     </div>
                 </div>
@@ -223,7 +245,8 @@
                 <div class="form-group">
                     <label class="form-label">Confirm New Password</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password_confirmation" id="password_confirmation" required class="input-field" placeholder="••••••••">
+                        <input type="password" name="password_confirmation" id="password_confirmation" required
+                            class="input-field" placeholder="••••••••">
                         <i class="fas fa-check-double input-icon"></i>
                     </div>
                 </div>
@@ -232,6 +255,17 @@
                     Reset Password
                 </button>
             </form>
+
+            <div class="resend-wrapper" style="text-align: center; margin-top: 1.15rem;">
+                <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Didn't receive the code? </span>
+                <a href="javascript:void(0)" id="resend-btn" style="font-size: 0.75rem; color: #FF6B00; font-weight: 700; text-decoration: none; transition: color 0.2s;">Resend OTP</a>
+            </div>
+
+            <!-- <div style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 0.85rem;">
+                <a href="{{ route('institute.password.request') }}" style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" onmouseover="this.style.color='#FF6B00'" onmouseout="this.style.color='#64748b'">
+                    <i class="fas fa-arrow-left"></i> Request New Code
+                </a>
+            </div> -->
         </div>
     </div>
 
@@ -249,7 +283,7 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const password = document.getElementById('password').value;
             const confirm = document.getElementById('password_confirmation').value;
 
@@ -294,6 +328,45 @@
                 submitBtn.textContent = 'Reset Password';
             }
         });
+
+        // Resend OTP Direct Ajax logic
+        const resendBtn = document.getElementById('resend-btn');
+
+        resendBtn.addEventListener('click', async () => {
+            if (!resendBtn) return;
+            resendBtn.style.pointerEvents = 'none';
+            resendBtn.style.opacity = '0.6';
+            resendBtn.textContent = 'Sending...';
+
+            try {
+                const response = await fetch("{{ route('institute.password.email') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: "{{ session('reset_email') }}"
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('OTP resent successfully!');
+                } else {
+                    showToast(result.message || 'Error resending OTP.', true);
+                }
+            } catch (error) {
+                showToast('Something went wrong.', true);
+            } finally {
+                resendBtn.textContent = 'Resend OTP';
+                resendBtn.style.pointerEvents = 'auto';
+                resendBtn.style.opacity = '1';
+            }
+        });
     </script>
 </body>
+
 </html>

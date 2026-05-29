@@ -178,8 +178,10 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size
-                                2MB.</p>
+                            <div>
+                                <p class="text-[10px] text-slate-400 max-w-[200px]">Upload a professional headshot. Max size 2MB.</p>
+                                <span id="error-profile_image" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -188,61 +190,34 @@
                             <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Full Name</label>
                             <input type="text" name="full_name" id="field-name" required placeholder="e.g. Jonathan Smith"
                                 class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
+                            <span id="error-full_name" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="relative">
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Role</label>
-                                <button type="button" onclick="toggleModalDropdown('role')"
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
-                                    <span id="modal-role-label" class="text-slate-400">Select Role</span>
-                                    <svg id="modal-role-chevron" class="w-4 h-4 text-slate-400 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M19 9l-7 7-7-7" />
+                        <div class="relative">
+                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Department</label>
+                            <button type="button" onclick="toggleModalDropdown('dept')"
+                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                <span id="modal-dept-label" class="text-slate-400">Select Department</span>
+                                <svg id="modal-dept-chevron" class="w-4 h-4 text-slate-400 transition-transform"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M19 9l-7 7-7-7" />
                                     </svg>
-                                </button>
-                                <div id="modal-role-menu"
-                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                        @foreach(App\Models\StaffRole::where('institute_id', Auth::guard('institute')->id())->get() as $role)
-                                            <button type="button"
-                                                onclick="selectModalOption('role', '{{ $role->id }}', '{{ $role->name }}')"
-                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                {{ $role->name }}
-                                            </button>
-                                        @endforeach
-                                    </div>
+                            </button>
+                            <div id="modal-dept-menu"
+                                class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                    @foreach(App\Models\StaffDepartment::orderBy('name')->get() as $dept)
+                                        <button type="button"
+                                            onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
+                                            class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                            {{ $dept->name }}
+                                        </button>
+                                    @endforeach
                                 </div>
-                                <input type="hidden" name="staff_role_id" id="field-role-id" required>
-                                <span id="error-staff_role_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
-                            <div class="relative">
-                                <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Department</label>
-                                <button type="button" onclick="toggleModalDropdown('dept')"
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
-                                    <span id="modal-dept-label" class="text-slate-400">Select Department</span>
-                                    <svg id="modal-dept-chevron" class="w-4 h-4 text-slate-400 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                                <div id="modal-dept-menu"
-                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                        @foreach(App\Models\StaffDepartment::where('institute_id', Auth::guard('institute')->id())->get() as $dept)
-                                            <button type="button"
-                                                onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
-                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                {{ $dept->name }}
-                                            </button>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <input type="hidden" name="staff_department_id" id="field-dept-id" required>
-                                <span id="error-staff_department_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
-                            </div>
+                            <input type="hidden" name="staff_department_id" id="field-dept-id" required>
+                            <span id="error-staff_department_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -250,11 +225,13 @@
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Email Address</label>
                                 <input type="email" name="email" id="field-email" required placeholder="j.smith@company.com"
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
+                                <span id="error-email" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Phone Number</label>
                                 <input type="text" name="phone" id="field-phone" required placeholder="+1 (555) 000-0000"
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
+                                <span id="error-phone" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                         </div>
 
@@ -287,6 +264,7 @@
                                     <input type="number" name="base_salary" id="field-salary" required placeholder="25,000"
                                         class="w-full pl-8 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all">
                                 </div>
+                                <span id="error-base_salary" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
                         </div>
                     </div>
@@ -425,9 +403,6 @@
             document.getElementById('field-name').value = staff.full_name;
             
             // Set custom dropdown values
-            if (staff.role) {
-                selectModalOption('role', staff.staff_role_id, staff.role.name);
-            }
             if (staff.department) {
                 selectModalOption('dept', staff.staff_department_id, staff.department.name);
             }
@@ -443,7 +418,7 @@
 
             document.getElementById('field-salary').value = staff.base_salary;
 
-            const profileImg = staff.profile_image ? `/storage/${staff.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
+            const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
             document.getElementById('image-preview').src = profileImg;
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
@@ -456,12 +431,25 @@
         }
 
         function previewImage(input) {
+            const errorEl = document.getElementById('error-profile_image');
+            if (errorEl) errorEl.innerText = '';
+
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    if (errorEl) {
+                        errorEl.innerText = 'The profile image must not be greater than 2MB.';
+                    }
+                    input.value = ''; // Reset file input
+                    document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true";
+                    return;
+                }
+
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('image-preview').src = e.target.result;
                 }
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         }
 
@@ -507,6 +495,10 @@
         const addForm = document.getElementById('add-staff-form');
         addForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('[id^="error-"]').forEach(el => el.innerText = '');
+
             const formData = new FormData(addForm);
             const staffId = document.getElementById('staff_id').value;
             const submitBtn = document.getElementById('submit-btn');
@@ -534,7 +526,18 @@
                 const result = await response.json();
 
                 if (response.status === 422) {
-                    // Handle validation errors if any
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(key => {
+                            const errorEl = document.getElementById(`error-${key}`);
+                            if (errorEl) {
+                                let errorMsg = result.errors[key][0];
+                                // Clean messages
+                                errorMsg = errorMsg.replace('staff role id', 'staff role')
+                                    .replace('staff department id', 'staff department');
+                                errorEl.innerText = errorMsg;
+                            }
+                        });
+                    }
                     return;
                 }
 

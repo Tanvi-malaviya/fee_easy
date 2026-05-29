@@ -14,6 +14,123 @@
     <div class="">
         <div class="max-w-7xl mx-auto">
         
+            @if(isset($pendingRenewals) && $pendingRenewals->count() > 0)
+                <!-- Pending Renewal Requests Panel -->
+                <div class="mb-8 bg-gradient-to-br from-amber-50/40 to-orange-50/20 border border-amber-200/60 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="h-9 w-9 bg-amber-100 text-amber-800 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50 shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-800 tracking-tight">Manual Offline Renewal Verification</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">Verify transaction references and activate subscriptions</p>
+                        </div>
+                        <span class="ml-auto px-2.5 py-1 bg-amber-500 text-white text-[10px] font-black rounded-lg uppercase tracking-wider shadow-sm shadow-amber-500/10">
+                            {{ $pendingRenewals->count() }} Pending
+                        </span>
+                    </div>
+
+                    <div class="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-100">
+                                <thead class="bg-slate-50/50">
+                                    <tr>
+                                        <th class="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Institute Details</th>
+                                        <th class="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Transaction ID</th>
+                                        <th class="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payment Proof</th>
+                                        <th class="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Message</th>
+                                        <th class="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Submitted</th>
+                                        <th class="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-100">
+                                    @foreach($pendingRenewals as $renewal)
+                                        <tr class="hover:bg-slate-50/40 transition-colors">
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                <div class="text-xs font-black text-slate-800 leading-tight">{{ $renewal->institute->institute_name }}</div>
+                                                <div class="text-[10px] text-slate-400 font-bold mt-1">ID: ST-{{ sprintf('%04d', $renewal->institute->id) }} | Code: {{ $renewal->institute->institute_code }}</div>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded-lg border border-slate-200">
+                                                    {{ $renewal->transaction_id }}
+                                                </span>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                @if($renewal->screenshot)
+                                                    <a href="{{ Storage::url($renewal->screenshot) }}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-bold rounded-lg transition-all border border-primary/20">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                        View Screenshot Proof
+                                                    </a>
+                                                @else
+                                                    <span class="text-[10px] text-slate-400 italic">No proof image</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-5 py-4">
+                                                <div class="text-xs text-slate-600 font-medium max-w-[200px] truncate" title="{{ $renewal->message ?? 'No notes' }}">
+                                                    {{ $renewal->message ?? '-' }}
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                <div class="text-[10px] font-bold text-slate-700">{{ $renewal->created_at->format('d M, Y') }}</div>
+                                                <div class="text-[9px] text-slate-400 font-medium mt-0.5">{{ $renewal->created_at->diffForHumans() }}</div>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                <div class="flex justify-end items-center gap-2">
+                                                    <!-- Approve Button Triggers Modal -->
+                                                    <button @click="$dispatch('open-modal', 'approve-renewal-{{ $renewal->id }}')" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-md shadow-emerald-500/10 hover:shadow-lg transition-all active:scale-95">
+                                                        Approve
+                                                    </button>
+ 
+                                                    <!-- Reject Form -->
+                                                    <form action="{{ route('subscriptions.renewals.reject', $renewal) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to reject this manual renewal proof?')">
+                                                        @csrf @method('PATCH')
+                                                        <button type="submit" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all active:scale-95">
+                                                            Reject
+                                                        </button>
+                                                    </form>
+                                                </div>
+ 
+                                                <!-- Approval Dropdown Modal for Plan Selection -->
+                                                <x-modal name="approve-renewal-{{ $renewal->id }}" :show="false" focusable>
+                                                    <form method="post" action="{{ route('subscriptions.renewals.approve', $renewal) }}" class="p-5 text-left">
+                                                        @csrf @method('PATCH')
+                                                        <h2 class="text-base font-bold text-slate-900 leading-tight">Approve Subscription Renewal</h2>
+                                                        <p class="mt-1 text-[10px] text-slate-500 font-medium border-b border-slate-50 pb-2.5">
+                                                            Select the package to activate for <strong>{{ $renewal->institute->institute_name }}</strong>.
+                                                        </p>
+ 
+                                                        <div class="mt-4">
+                                                            <x-input-label for="plan_id" value="Select Billing Plan" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1" />
+                                                            <select name="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-primary focus:ring-primary rounded-xl shadow-sm text-sm font-bold py-2.5 px-3 transition outline-none" required>
+                                                                @foreach($plans as $plan)
+                                                                    <option value="{{ $plan->id }}">{{ $plan->name }} - {{ $currency }}{{ number_format($plan->price, 0) }} ({{ $plan->duration_days }} days)</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+ 
+                                                        <div class="mt-5 flex justify-end gap-2">
+                                                            <button type="button" x-on:click="$dispatch('close')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3">Cancel</button>
+                                                            <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:opacity-90 transition min-w-[120px]">
+                                                                <span class="btn-content">Activate Plan</span>
+                                                                <span class="hidden btn-loader">
+                                                                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                    </svg>
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </x-modal>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Filters & Search -->
             <div class=" rounded-2xl  mb-3">
@@ -265,7 +382,15 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-bold uppercase tracking-widest opacity-50">No subscriptions found</td>
+                                    <td colspan="5" class="p-0">
+                                        <x-empty-state 
+                                            title="No subscriptions found" 
+                                            subtitle="No subscription records matching your filters were found." 
+                                            icon="fees"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>

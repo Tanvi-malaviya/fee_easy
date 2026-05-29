@@ -19,15 +19,18 @@
                 <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage and distribute educational files, videos, and visual assets.</p>
             </div>
 
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <button onclick="openUploadModal()" class="px-5 py-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/10 transition-all flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 Upload Resource
             </button>
+            @endif
         </div>
 
         <!-- Resources Grid -->
         <div id="resources-grid" class="flex flex-wrap gap-3 mb-8">
             <!-- Quick Add Card -->
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <div onclick="openUploadModal()" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-primary/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
                 <div class="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
@@ -35,6 +38,7 @@
                 <p class="text-xs font-bold text-slate-800">Quick Add</p>
                 <p class="text-[10px] text-slate-400 mt-1">Drag & drop files here</p>
             </div>
+            @endif
 
             <!-- Grid Items rendered dynamically -->
         </div>

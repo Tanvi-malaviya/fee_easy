@@ -38,10 +38,13 @@
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3.5 gap-x-6 flex-grow">
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Institute</span>
-                        <div class="flex items-center gap-2 mt-1"><span
-                                class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</span><span
-                                class="px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider @if($institute->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($institute->status == 'suspended') bg-amber-50 text-amber-600 border border-amber-100 @else bg-red-50 text-red-600 border border-red-100 @endif">●
-                                {{ $institute->status }}</span></div>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            <span class="text-sm font-bold text-gray-900">{{ $institute->institute_name }}</span>
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider whitespace-nowrap @if($institute->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($institute->status == 'suspended') bg-amber-50 text-amber-600 border border-amber-100 @else bg-red-50 text-red-600 border border-red-100 @endif">
+                                <span class="w-1 h-1 rounded-full @if($institute->status == 'active') bg-emerald-500 @elseif($institute->status == 'suspended') bg-amber-500 @else bg-red-500 @endif"></span>
+                                {{ $institute->status }}
+                            </span>
+                        </div>
                     </div>
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</span>
                         <p class="text-sm font-bold text-gray-900 mt-1">{{ $institute->name }}</p>
@@ -67,14 +70,14 @@
                 </div>
             </div>
         </div>
-
+ 
         {{-- Tab Nav --}}
         <div class="bg-white border border-gray-100 rounded-xl shadow-sm mb-1.5 p-1">
             <div class="flex overflow-x-auto no-scrollbar gap-1 px-1">
                 @foreach(['subscriptions' => 'Subscriptions', 'students' => 'Students', 'staff' => 'Staff', 'batches' => 'Batches', 'financials' => 'Financials', 'leads' => 'Leads', 'updates' => 'Updates', 'notes' => 'Notes'] as $tab => $label)
                     <button @click="activeTab = '{{ $tab }}'"
-                        :class="activeTab === '{{ $tab }}' ? 'bg-white text-primary border-primary shadow-sm' : 'text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50/50'"
-                        class="px-5 py-2 border-2 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap">{{ $label }}</button>
+                        :class="activeTab === '{{ $tab }}' ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50/50'"
+                        class="px-5 py-2 border-0 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap focus:outline-none">{{ $label }}</button>
                 @endforeach
             </div>
         </div>
@@ -125,8 +128,15 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-12 text-center text-gray-400 font-bold text-sm">No
-                                            subscription records found.</td>
+                                        <td colspan="4" class="p-0">
+                                            <x-empty-state 
+                                                title="No subscriptions found" 
+                                                subtitle="No subscription records found for this institute." 
+                                                icon="fees"
+                                                plain="true"
+                                                class="py-12"
+                                            />
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -145,14 +155,13 @@
                             {{ $stats['students_count'] }} Students</span>
                     </div>
                     @if($institute->students->isEmpty())
-                        <div class="flex flex-col items-center justify-center py-16 text-gray-300">
-                            <svg class="w-16 h-16 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            <p class="text-sm font-bold uppercase tracking-widest text-gray-300">No student records found
-                            </p>
-                        </div>
+                        <x-empty-state 
+                            title="No students found" 
+                            subtitle="No student admissions records found for this institute." 
+                            icon="students"
+                            plain="true"
+                            class="py-16"
+                        />
                     @else
                         <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                             @foreach($institute->students as $idx => $student)
@@ -307,8 +316,15 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">
-                                                No staff records found.</td>
+                                            <td colspan="6" class="p-0">
+                                                <x-empty-state 
+                                                    title="No staff found" 
+                                                    subtitle="No staff records found for this institute." 
+                                                    icon="teacher"
+                                                    plain="true"
+                                                    class="py-12"
+                                                />
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -372,8 +388,15 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">
-                                                No attendance records found.</td>
+                                            <td colspan="5" class="p-0">
+                                                <x-empty-state 
+                                                    title="No attendance records" 
+                                                    subtitle="No attendance records found for this institute's staff." 
+                                                    icon="teacher"
+                                                    plain="true"
+                                                    class="py-12"
+                                                />
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -441,8 +464,15 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">
-                                                No salary records found.</td>
+                                            <td colspan="6" class="p-0">
+                                                <x-empty-state 
+                                                    title="No salary records" 
+                                                    subtitle="No salary payout records found for this institute's staff." 
+                                                    icon="teacher"
+                                                    plain="true"
+                                                    class="py-12"
+                                                />
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -499,7 +529,17 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="px-4 py-12 text-center text-gray-400 font-bold text-sm">No batch records found.</td></tr>
+                                <tr>
+                                    <td colspan="6" class="p-0">
+                                        <x-empty-state 
+                                            title="No batches found" 
+                                            subtitle="No batch records found for this institute." 
+                                            icon="notes"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -614,13 +654,6 @@
                                         </span>
                                         <span class="font-bold text-gray-700">{{ $lead->reference ?? 'N/A' }}</span>
                                     </div>
-                                    <div>
-                                        <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                            Referrer
-                                        </span>
-                                        <span class="font-bold text-gray-700">{{ $lead->referer ?? 'N/A' }}</span>
-                                    </div>
                                     <div class="col-span-2">
                                         <span class="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -637,11 +670,14 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="col-span-full py-12 text-center">
-                                <div class="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                </div>
-                                <p class="text-sm font-bold text-gray-400">No leads found.</p>
+                            <div class="col-span-full p-0">
+                                <x-empty-state 
+                                    title="No leads found" 
+                                    subtitle="No leads found for this institute." 
+                                    icon="users"
+                                    plain="true"
+                                    class="py-12"
+                                />
                             </div>
                         @endforelse
                     </div>
@@ -735,11 +771,14 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="col-span-full py-12 text-center">
-                                <div class="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
-                                </div>
-                                <p class="text-sm font-bold text-gray-400">No updates published yet</p>
+                            <div class="col-span-full p-0">
+                                <x-empty-state 
+                                    title="No updates published yet" 
+                                    subtitle="No daily updates or announcements found for this institute." 
+                                    icon="notes"
+                                    plain="true"
+                                    class="py-12"
+                                />
                             </div>
                         @endforelse
                     </div>
@@ -822,7 +861,15 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="col-span-full text-center py-12 text-gray-400 font-bold text-sm uppercase tracking-widest">No notes uploaded yet</div>
+                            <div class="col-span-full p-0">
+                                <x-empty-state 
+                                    title="No notes uploaded yet" 
+                                    subtitle="No notes or study materials found for this institute." 
+                                    icon="notes"
+                                    plain="true"
+                                    class="py-12"
+                                />
+                            </div>
                         @endforelse
                     </div>
                 </div>
@@ -861,7 +908,17 @@
                                     <td class="px-6 py-4"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($log->status == 'sent') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($log->status == 'failed') bg-red-50 text-red-600 border border-red-100 @else bg-blue-50 text-blue-600 border border-blue-100 @endif">{{ $log->status }}</span></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400 font-bold text-sm uppercase tracking-widest">No chat logs available</td></tr>
+                                <tr>
+                                    <td colspan="4" class="p-0">
+                                        <x-empty-state 
+                                            title="No chat logs available" 
+                                            subtitle="No messaging or WhatsApp log history found for this institute." 
+                                            icon="teacher"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>

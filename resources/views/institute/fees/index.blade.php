@@ -23,10 +23,12 @@
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Download PDF
             </button>
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <button onclick="openFeeModal()" class="px-3 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
                 Add Transaction
             </button>
+            @endif
         </div>
     </div>
 
@@ -151,6 +153,11 @@
     </div>
 </div>
 
+<!-- Empty State Template -->
+<template id="fees-empty-state">
+    <x-empty-state title="No transaction records found" subtitle="Log fee payments to see records here." icon="fees" />
+</template>
+
 <script>
     const CSRF_TOKEN = "{{ csrf_token() }}";
     
@@ -231,7 +238,7 @@
         const list = document.getElementById('student-options-list');
         const filtered = allStudents.filter(s => 
             s.name.toLowerCase().includes(query.toLowerCase()) || 
-            (s.student_id && s.student_id.toLowerCase().includes(query.toLowerCase()))
+            (s.enrollment_id && s.enrollment_id.toLowerCase().includes(query.toLowerCase()))
         );
 
         if (filtered.length === 0) {
@@ -240,13 +247,16 @@
         }
 
         list.innerHTML = filtered.map(s => {
-            const displayId = s.student_id || `STU-${String(s.id).padStart(4, '0')}`;
+            const displayId = s.enrollment_id || `STU-${String(s.id).padStart(4, '0')}`;
+            const hasRealImage = s.profile_image_url && !s.profile_image_url.includes('ui-avatars.com');
+            const studentAvatar = hasRealImage
+                ? `<img src="${s.profile_image_url}" alt="${s.name}" class="h-6 w-6 rounded-md object-cover border border-slate-100">`
+                : `<div class="h-6 w-6 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center text-[9px] font-black group-hover:bg-[#f97316] group-hover:text-white transition-all">${s.name.charAt(0).toUpperCase()}</div>`;
+
             return `
             <div onclick="selectStudent('${s.id}', '${s.name}', '${displayId}')" class="flex items-center justify-between p-2 hover:bg-orange-50 rounded-lg cursor-pointer transition-colors group">
                 <div class="flex items-center gap-2">
-                    <div class="h-6 w-6 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center text-[9px] font-black group-hover:bg-[#f97316] group-hover:text-white transition-all">
-                        ${s.name.charAt(0).toUpperCase()}
-                    </div>
+                    ${studentAvatar}
                     <div>
                         <p class="text-xs font-bold text-slate-700">${s.name}</p>
                         <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${displayId}</p>
@@ -368,7 +378,7 @@
     function renderFees(fees) {
         const container = document.getElementById('fee-cards-container');
         if (fees.length === 0) {
-            container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400 font-medium italic text-xs">No records found.</div>`;
+            container.innerHTML = document.getElementById('fees-empty-state').innerHTML;
             return;
         }
 
@@ -409,14 +419,17 @@
                 statusText = 'DUE';
             }
 
+            const hasRealImage = student.profile_image_url && !student.profile_image_url.includes('ui-avatars.com');
+            const avatarHtml = hasRealImage
+                ? `<img src="${student.profile_image_url}" alt="${name}" class="h-8 w-8 rounded-full object-cover border-2 border-white shadow-sm">`
+                : `<div class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">${initials}</div>`;
+
             return `
             <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-3 flex flex-col justify-between hover:shadow-md transition-all">
                 <div>
                     <!-- Top Row -->
                     <div class="flex items-center justify-between mb-2">
-                        <div class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">
-                            ${initials}
-                        </div>
+                        ${avatarHtml}
                         <span class="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold tracking-wider ${statusClass}">
                             ${statusText}
                         </span>

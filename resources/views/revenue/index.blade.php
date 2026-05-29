@@ -221,7 +221,15 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic font-medium">No transactions match your criteria.</td>
+                                    <td colspan="5" class="p-0">
+                                        <x-empty-state 
+                                            title="No transactions found" 
+                                            subtitle="No transaction records match your search or filter criteria." 
+                                            icon="fees"
+                                            plain="true"
+                                            class="py-12"
+                                        />
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>

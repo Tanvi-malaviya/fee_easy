@@ -1,6 +1,9 @@
 @extends('layouts.institute')
 
 @section('content')
+    @php
+        $staffList = \App\Models\Staff::where('institute_id', Auth::guard('institute')->id())->orderBy('full_name')->get();
+    @endphp
     <div class="max-w-[1600px] mx-auto ">
 
         <!-- MAIN LIST VIEW -->
@@ -39,10 +42,12 @@
                 <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
                     <button onclick="exportBatches()"
                         class="btn-white btn-md flex-1 md:flex-none flex justify-center items-center">Export</button>
+                    @if(Auth::guard('institute')->user()->hasActiveSubscription())
                     <button onclick="toggleFormView(true)"
                         class="btn-brand btn-md whitespace-nowrap bg-primary hover:bg-primary flex-1 md:flex-none flex justify-center items-center">
                         Intilize new batch
                     </button>
+                    @endif
                 </div>
             </div>
 
@@ -119,8 +124,8 @@
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
                                         (₹)</label>
-                                    <input type="text" name="fees" id="field-fees" required placeholder="0" inputmode="numeric"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    <input type="text" name="fees" id="field-fees" required placeholder="0"
+                                        inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                                 <div class="space-y-1">
@@ -149,8 +154,8 @@
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="col-span-2 space-y-1">
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="space-y-1">
                                     <label
                                         class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
                                     <div class="flex flex-wrap gap-1.5">
@@ -166,31 +171,55 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                <div class="col-span-1 space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Max
-                                        Seats</label>
-                                    <input type="text" name="max_capacity" id="field-capacity" placeholder="30" inputmode="numeric"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom / Venue</label>
+                                    <input type="text" name="classroom" id="field-classroom"
+                                        placeholder="e.g. Room 101, Main Hall"
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom
-                                    / Venue</label>
-                                <input type="text" name="classroom" id="field-classroom"
-                                    placeholder="e.g. Room 101, Main Hall"
-                                    class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                <div class="space-y-1 relative">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned Staff</label>
+                                    <button type="button" onclick="toggleBatchModalDropdown('staff')"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                        <span id="modal-staff-label" class="text-slate-400">Select Staff</span>
+                                        <svg id="modal-staff-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div id="modal-staff-menu"
+                                        class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
+                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                            <button type="button"
+                                                onclick="selectBatchModalOption('staff', '', 'None')"
+                                                class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                None
+                                            </button>
+                                            @foreach($staffList as $staff)
+                                                <button type="button"
+                                                    onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
+                                                    class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                    {{ $staff->full_name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="staff_id" id="field-staff" value="">
+                                </div>
                             </div>
                         </div>
 
                         <!-- Footer Actions -->
-                        <div class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
-                            <button type="button" onclick="toggleFormView(false)"
-                                class="btn-white btn-md">Cancel</button>
-                            <button type="submit" id="submit-btn"
-                                class="btn-brand btn-md bg-primary hover:bg-primary">
+                        <div
+                            class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
+                            <button type="button" onclick="toggleFormView(false)" class="btn-white btn-md">Cancel</button>
+                            <button type="submit" id="submit-btn" class="btn-brand btn-md bg-primary hover:bg-primary">
                                 <span id="btn-text ">Save Batch</span>
-                                <span id="btn-loader" class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                <span id="btn-loader"
+                                    class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             </button>
                         </div>
                     </form>
@@ -230,15 +259,21 @@
                             </div>
                         </div>
                     </div>
-                  
+
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Empty State Template -->
+    <template id="batches-empty-state">
+        <x-empty-state title="No batches found" subtitle="Try adjusting your filters or add a new batch." icon="batches" />
+    </template>
+
     <script>
         const API_URL = "/api/v1/institute/batches";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+        const staffListJs = @json($staffList);
 
         document.addEventListener('DOMContentLoaded', () => fetchBatches());
 
@@ -273,56 +308,91 @@
             window.open(`${API_URL}/export`, '_blank');
         }
 
+        function formatTime12Hour(timeStr) {
+            if (!timeStr) return '--:--';
+            if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr;
+            const parts = timeStr.split(':');
+            if (parts.length < 2) return timeStr;
+            let hours = parseInt(parts[0], 10);
+            const minutes = parts[1];
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function convert12To24(time12h) {
+            if (!time12h) return '';
+            if (!time12h.includes('AM') && !time12h.includes('PM')) return time12h;
+            const [time, modifier] = time12h.split(' ');
+            let [hours, minutes] = time.split(':');
+            hours = parseInt(hours, 10);
+            if (modifier === 'PM' && hours < 12) hours = hours + 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+            return `${String(hours).padStart(2, '0')}:${minutes}`;
+        }
+
         function renderBatches(items) {
             const container = document.getElementById('batch-grid');
             if (items.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase tracking-widest">No batches found</p></div>`;
+                container.innerHTML = document.getElementById('batches-empty-state').innerHTML;
                 return;
             }
 
             const icons = ['💻', '🎨', '🧪', '📈', '🏛️', '🛡️', '📱', '🧠'];
             container.innerHTML = items.map((batch, idx) => {
                 const studentsCount = batch.students_count || 0;
-                const maxCapacity = batch.max_capacity || 30;
-                const progress = Math.min((studentsCount / maxCapacity) * 100, 100);
                 const icon = icons[idx % icons.length];
-                let statusBadge = progress >= 100
-                    ? '<span class="px-2 py-0.5 bg-rose-50 text-rose-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Full</span>'
-                    : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
+                const statusBadge = '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
+
+                const savedStaffId = localStorage.getItem('batch_staff_' + batch.id);
+                let staffHtml = '';
+                if (savedStaffId) {
+                    const staffObj = staffListJs.find(s => s.id == savedStaffId);
+                    if (staffObj) {
+                        staffHtml = `<div class="flex items-center gap-2 text-primary/80"><svg class="w-3 h-3 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${staffObj.full_name}</span></div>`;
+                    }
+                }
 
                 return `
-                        <div class="bg-white p-4 rounded-[1rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-                            <div class="flex items-start justify-between mb-2">
-                                <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">${icon}</div>
-                                <!-- Actions Small Card -->
-                                <div class="flex items-center bg-white border border-slate-100 rounded-xl p-1 shadow-sm gap-0.5">
-                                    <a href="/institute/batches/${batch.id}" class="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-emerald-50 hover:text-emerald-500 transition-all" title="View Details">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    </a>
-                                    <button onclick='openEditForm(${JSON.stringify(batch).replace(/'/g, "&apos;")})' class="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-500 transition-all" title="Edit Batch">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                    </button>
-                                    <button onclick="deleteBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}')" class="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all" title="Delete Batch">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="space-y-1 mb-1">
-                                <h4 class="text-sm font-bold text-slate-800 leading-tight">${batch.name}</h4>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${batch.subject}</span>
-                                    <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold uppercase">₹${batch.fees || '0'}</span>
-                                </div>
-                            </div>
-                            <p class="text-[10px] font-bold text-slate-400 line-clamp-2 mb-4 leading-relaxed">${batch.description || 'No description provided.'}</p>
-                            <div class="space-y-2 mb-4 text-slate-500">
-                                <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-[10px] font-bold">${batch.start_time || '--'} - ${batch.end_time || '--'}</span></div>
-                                <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('')}</div></div>
-                            </div>
-                            <div class="flex items-center justify-between mb-1.5">${statusBadge}<span class="text-[9px] font-bold text-slate-800">${studentsCount}/${maxCapacity} Students</span></div>
-                            <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden"><div class="h-full bg-primary transition-all duration-500" style="width: ${progress}%"></div></div>
-                        </div>
-                    `;
+                                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col cursor-pointer" onclick="window.location.href='/institute/batches/${batch.id}'">
+                                        <!-- Card Body -->
+                                        <div class="p-4 flex-1">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">${icon}</div>
+                                                ${statusBadge}
+                                            </div>
+                                            <div class="space-y-1 mb-1">
+                                                <h4 class="text-sm font-bold text-slate-800 leading-tight">${batch.name}</h4>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${batch.subject}</span>
+                                                    <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold uppercase">₹${batch.fees || '0'}</span>
+                                                </div>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-slate-400 line-clamp-2 mb-4 leading-relaxed">${batch.description || 'No description provided.'}</p>
+                                            <div class="space-y-2 text-slate-500">
+                                                <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-[10px] font-bold">${formatTime12Hour(batch.start_time)} - ${formatTime12Hour(batch.end_time)}</span></div>
+                                                <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('')}</div></div>
+                                                ${staffHtml}
+                                            </div>
+                                        </div>
+                                        <!-- Footer Actions -->
+                                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                                            <a href="/institute/batches/${batch.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                View
+                                            </a>
+                                            <div class="flex items-center gap-3">
+                                                <button onclick='event.stopPropagation(); openEditForm(${JSON.stringify(batch).replace(/'/g, "&apos;")})' class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                </button>
+                                                <button onclick="event.stopPropagation(); deleteBatch(${batch.id}, '${batch.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Delete">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
             }).join('');
         }
 
@@ -339,8 +409,8 @@
 
             // Previous Button
             html += `<button onclick="fetchBatches(${data.current_page - 1})" ${data.current_page === 1 ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                </button>`;
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                            </button>`;
 
             // Smart Page Numbers
             const maxVisible = 5;
@@ -369,8 +439,8 @@
 
             // Next Button
             html += `<button onclick="fetchBatches(${data.current_page + 1})" ${data.current_page === data.last_page ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                </button>`;
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                            </button>`;
 
             html += `</div>`;
             container.innerHTML = html;
@@ -388,12 +458,50 @@
                     document.getElementById('field-description').value = '';
                     document.getElementById('form-title').innerText = 'Manage Batch';
                     document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+
+                    // Reset custom staff select dropdown
+                    document.getElementById('field-staff').value = '';
+                    const labelEl = document.getElementById('modal-staff-label');
+                    labelEl.innerText = 'Select Staff';
+                    labelEl.classList.add('text-slate-400');
+                    labelEl.classList.remove('text-slate-800');
                 }
             } else {
                 modal.classList.add('hidden');
                 document.body.style.overflow = ''; // Restore scroll
+                // Hide custom menu if open
+                document.getElementById('modal-staff-menu').classList.add('hidden');
+                document.getElementById('modal-staff-chevron').classList.remove('rotate-180');
             }
         }
+
+        window.toggleBatchModalDropdown = (type) => {
+            const menu = document.getElementById(`modal-${type}-menu`);
+            const chevron = document.getElementById(`modal-${type}-chevron`);
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        };
+
+        window.selectBatchModalOption = (type, value, label) => {
+            document.getElementById(`field-${type}`).value = value;
+            const labelEl = document.getElementById(`modal-${type}-label`);
+            labelEl.innerText = label;
+            if (value === '') {
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-800');
+            } else {
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            }
+            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
+            document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
+        };
 
         function openEditForm(batch) {
             toggleFormView(true, true);
@@ -403,12 +511,27 @@
             document.getElementById('field-subject').value = batch.subject;
             document.getElementById('field-fees').value = batch.fees || '';
             document.getElementById('field-description').value = batch.description || '';
-            document.getElementById('field-start').value = batch.start_time || '';
-            document.getElementById('field-end').value = batch.end_time || '';
-            document.getElementById('field-capacity').value = batch.max_capacity || '';
+            document.getElementById('field-start').value = convert12To24(batch.start_time) || '';
+            document.getElementById('field-end').value = convert12To24(batch.end_time) || '';
+
             document.getElementById('field-classroom').value = batch.classroom || '';
             const days = batch.days || [];
             document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
+
+            // Load and pre-select staff from localStorage
+            const savedStaffId = localStorage.getItem('batch_staff_' + batch.id) || '';
+            document.getElementById('field-staff').value = savedStaffId;
+            const staffObj = staffListJs.find(s => s.id == savedStaffId);
+            const labelEl = document.getElementById('modal-staff-label');
+            if (staffObj) {
+                labelEl.innerText = staffObj.full_name;
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            } else {
+                labelEl.innerText = 'Select Staff';
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-800');
+            }
         }
 
         document.getElementById('batch-form').addEventListener('submit', async (e) => {
@@ -426,6 +549,8 @@
             // Clean payload: remove days[] and ensure days is an array
             const payload = Object.fromEntries(formData.entries());
             delete payload['days[]'];
+            const staffIdToSave = payload.staff_id;
+            delete payload.staff_id;
             payload.days = days;
 
             toggleSubmitLoading(true);
@@ -451,6 +576,17 @@
 
                 if (resp.ok && result.status === 'success') {
                     showToast(result.message || 'Batch saved successfully');
+                    
+                    // Save staff selection to localStorage
+                    const batchId = id || result.data.id;
+                    if (batchId) {
+                        if (staffIdToSave) {
+                            localStorage.setItem('batch_staff_' + batchId, staffIdToSave);
+                        } else {
+                            localStorage.removeItem('batch_staff_' + batchId);
+                        }
+                    }
+
                     toggleFormView(false);
                     fetchBatches();
                 } else {

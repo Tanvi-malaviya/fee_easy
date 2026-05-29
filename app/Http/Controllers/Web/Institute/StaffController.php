@@ -16,7 +16,7 @@ class StaffController extends Controller
     {
         $institute = Auth::guard('institute')->user();
         $roles = StaffRole::where('institute_id', $institute->id)->get();
-        $departments = StaffDepartment::where('institute_id', $institute->id)->get();
+        $departments = StaffDepartment::orderBy('name')->get();
         $totalStaff = Staff::where('institute_id', $institute->id)->count();
 
         return view('institute.staff.index', compact('roles', 'departments', 'totalStaff'));
@@ -30,16 +30,14 @@ class StaffController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:staff,email',
             'phone' => 'nullable|string|max:20',
-            'staff_role_id' => 'required|exists:staff_roles,id',
+            'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric|min:0',
             'profile_image' => 'nullable|image|max:2048',
         ], [
-            'staff_role_id.required' => 'staff role is required',
             'staff_department_id.required' => 'staff department is required',
         ], [
-            'staff_role_id' => 'staff role',
             'staff_department_id' => 'staff department',
         ]);
 
@@ -101,7 +99,7 @@ class StaffController extends Controller
         $institute = Auth::guard('institute')->user();
         $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
         $roles = StaffRole::where('institute_id', $institute->id)->get();
-        $departments = StaffDepartment::where('institute_id', $institute->id)->get();
+        $departments = StaffDepartment::orderBy('name')->get();
 
         return view('institute.staff.edit', compact('staff', 'roles', 'departments'));
     }
@@ -115,16 +113,14 @@ class StaffController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:staff,email,' . $id,
             'phone' => 'nullable|string|max:20',
-            'staff_role_id' => 'required|exists:staff_roles,id',
+            'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric|min:0',
             'profile_image' => 'nullable|image|max:2048',
         ], [
-            'staff_role_id.required' => 'staff role is required',
             'staff_department_id.required' => 'staff department is required',
         ], [
-            'staff_role_id' => 'staff role',
             'staff_department_id' => 'staff department',
         ]);
 

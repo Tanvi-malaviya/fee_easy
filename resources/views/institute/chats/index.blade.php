@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- Active Chat -->
-                <div id="active-chat" class="hidden flex-1 flex flex-col overflow-hidden">
+                <div id="active-chat" class="hidden flex-1 flex flex-col overflow-hidden relative">
                     <!-- Chat Header -->
                     <div
                         class="p-4 border-b border-slate-50 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
@@ -95,8 +95,57 @@
                         <!-- Messages will be injected here -->
                     </div>
 
+                    <!-- Scroll to bottom button -->
+                    <button id="scroll-bottom-btn" onclick="scrollToBottom()"
+                        class="hidden absolute bottom-24 right-6 z-40 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 h-8 w-8 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95 duration-200">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
+                        </svg>
+                    </button>
+
                     <!-- Input Area -->
                     <div class="p-4 border-t border-slate-50 bg-white relative">
+                        <!-- Voice Recording Overlay -->
+                        <div id="voice-record-panel" class="hidden flex-1 items-center justify-between bg-slate-50 border border-slate-100 rounded-2xl p-2 pr-3 absolute inset-y-4 inset-x-4 z-30">
+                            <div class="flex items-center gap-3 pl-3">
+                                <!-- Recording Indicator (pulsing red dot) -->
+                                <span id="voice-record-indicator" class="relative flex h-3 w-3">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+                                <!-- Review Player (hidden by default) -->
+                                <button type="button" id="voice-play-btn" onclick="toggleVoicePlayback()" class="hidden h-7 w-7 bg-primary/10 text-primary rounded-full items-center justify-center hover:bg-primary/20 transition-all shrink-0">
+                                    <!-- Play Icon -->
+                                    <svg id="voice-play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                    <!-- Pause Icon (hidden by default) -->
+                                    <svg id="voice-pause-icon" class="hidden w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                    </svg>
+                                </button>
+                                <span id="voice-record-status" class="text-xs font-bold text-slate-600 tracking-wide">Recording...</span>
+                                <span id="voice-record-timer" class="text-xs font-bold text-primary font-mono ml-2">00:00</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="cancelVoiceRecording()" class="px-3 py-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all">
+                                    Cancel
+                                </button>
+                                <!-- Stop Recording Button -->
+                                <button type="button" id="voice-stop-btn" onclick="stopVoiceRecording()" class="h-9 w-9 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 6h12v12H6z"/>
+                                    </svg>
+                                </button>
+                                <!-- Send Recording Button -->
+                                <button type="button" id="voice-send-btn" onclick="sendVoiceRecording()" class="hidden h-9 w-9 bg-primary hover:bg-primary/90 text-white rounded-xl items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Attachment Dropdown Menu -->
                         <div id="attachment-menu"
                             class="hidden absolute bottom-20 left-4 bg-white border border-slate-100 rounded-3xl p-3 shadow-2xl flex flex-col gap-2 z-50 w-52 transform scale-95 opacity-0 transition-all duration-200 origin-bottom-left">
@@ -159,6 +208,15 @@
                             </button>
                             <input type="text" id="message-input" placeholder="Type your message here..."
                                 class="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm py-2 text-slate-600 outline-none">
+                            
+                            <!-- Voice Record Button -->
+                            <button type="button" id="voice-record-btn" onclick="startVoiceRecording()" title="Record Voice Message"
+                                class="h-10 w-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                                </svg>
+                            </button>
+
                             <button type="submit" id="send-btn"
                                 class="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/10 hover:scale-105 active:scale-95 transition-all shrink-0">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -355,6 +413,9 @@
             let currentConversations = [];
             let activeConversation = null;
             let messages = [];
+            let currentMessagesPage = 1;
+            let hasMoreMessages = true;
+            let isFetchingMessages = false;
             const currentUserId = {{ auth('institute')->id() }};
 
             function updateMobileView() {
@@ -702,6 +763,12 @@
                 console.log('🔄 Selecting conversation with:', { userId, userType, userName });
                 activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName, user_logo: logoUrl || null };
                 console.log('✅ Active conversation now set to:', activeConversation);
+                
+                // Reset pagination parameters for new conversation
+                currentMessagesPage = 1;
+                hasMoreMessages = true;
+                isFetchingMessages = false;
+                
                 updateMobileView();
 
                 document.getElementById('chat-empty-state').classList.add('hidden');
@@ -721,26 +788,59 @@
 
                 const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
                 renderConversationList(searchTerm); // Update active class
-                await fetchMessages(userId, userType);
+                await fetchMessages(userId, userType, 1);
                 console.log('📨 Messages fetched, total:', messages.length);
             }
 
-            async function fetchMessages(userId, userType) {
+            async function fetchMessages(userId, userType, page = 1) {
+                if (isFetchingMessages) return;
+                isFetchingMessages = true;
+
                 const container = document.getElementById('messages-container');
-                container.innerHTML = '<div class="flex-1 flex items-center justify-center h-full"><div class="h-8 w-8 border-2 border-slate-100 border-t-primary rounded-full animate-spin"></div></div>';
+                
+                // Show loader centered overlay ONLY during the very first page load
+                if (page === 1) {
+                    container.innerHTML = '<div class="flex-1 flex items-center justify-center h-full"><div class="h-8 w-8 border-2 border-slate-100 border-t-primary rounded-full animate-spin"></div></div>';
+                }
 
                 try {
-                    const response = await fetch(`/api/v1/chat/messages/${userId}?type=${userType}`, {
+                    const response = await fetch(`/api/v1/chat/messages/${userId}?type=${userType}&page=${page}&per_page=20`, {
                         headers: { 'Accept': 'application/json' }
                     });
                     const result = await response.json();
                     if (result.status === 'success') {
-                        messages = result.data;
-                        renderMessages();
-                        scrollToBottom();
+                        // Laravel Pagination response has 'data' under result.data
+                        const paginatedResponse = result.data;
+                        const newMsgs = paginatedResponse.data || [];
+                        const lastPage = paginatedResponse.last_page || 1;
+                        const currentPage = paginatedResponse.current_page || 1;
+
+                        if (page === 1) {
+                            messages = newMsgs;
+                            renderMessages();
+                            scrollToBottom();
+                        } else {
+                            if (newMsgs.length > 0) {
+                                // Save scroll height to lock/retain scroll relative position
+                                const oldScrollHeight = container.scrollHeight;
+                                const oldScrollTop = container.scrollTop;
+
+                                // Prepend older messages to the top
+                                messages = [...newMsgs, ...messages];
+                                renderMessages();
+
+                                // Retain position relative to top
+                                container.scrollTop = oldScrollTop + (container.scrollHeight - oldScrollHeight);
+                            }
+                        }
+
+                        currentMessagesPage = currentPage;
+                        hasMoreMessages = currentPage < lastPage;
                     }
                 } catch (error) {
                     console.error('Error fetching messages:', error);
+                } finally {
+                    isFetchingMessages = false;
                 }
             }
 
@@ -825,10 +925,25 @@
                         return;
                     }
                     console.log('🎨 Rendering', messages.length, 'messages');
+                    let lastDateLabel = '';
                     container.innerHTML = messages.map((msg, idx) => {
                         const isMe = msg.sender_type === 'Institute' && msg.sender_id == currentUserId;
                         const senderName = msg.sender?.name || msg.sender?.full_name || 'U';
                         const senderInitial = senderName.substring(0, 1).toUpperCase() || '?';
+
+                        // Date Divider logic
+                        const currentDateLabel = getMessageDateLabel(msg.created_at);
+                        let dateDividerHtml = '';
+                        if (currentDateLabel && currentDateLabel !== lastDateLabel) {
+                            lastDateLabel = currentDateLabel;
+                            dateDividerHtml = `
+                                <div class="flex items-center justify-center my-4 w-full select-none">
+                                    <span class="bg-slate-100 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm border border-slate-200/50">
+                                        ${currentDateLabel}
+                                    </span>
+                                </div>
+                            `;
+                        }
 
                         // Ensure senderLogo is a full URL (relative paths get storage prefix)
                         // Fallback to activeConversation.user_logo if msg.sender has no image
@@ -859,6 +974,7 @@
                         if (isMe) {
                             // Sent message: NO avatar, tick OUTSIDE bubble bottom-right
                             return `
+                                ${dateDividerHtml}
                                 <div class="flex flex-col items-end max-w-[75%] ml-auto">
                                     <div class="bg-primary text-white shadow-sm px-3 py-2 rounded-2xl rounded-br-none">
                                         ${renderMessageContent(msg, true)}
@@ -872,6 +988,7 @@
                         } else {
                             // Received message: avatar on left, time below bubble
                             return `
+                                ${dateDividerHtml}
                                 <div class="flex items-start gap-2 max-w-[75%]">
                                     ${otherAvatarHtml}
                                     <div class="space-y-0.5">
@@ -970,6 +1087,34 @@
                 try {
                     const date = new Date(dateStr);
                     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                    return '';
+                }
+            }
+
+            function getMessageDateLabel(dateString) {
+                if (!dateString) return '';
+                try {
+                    const msgDate = new Date(dateString);
+                    const today = new Date();
+                    const yesterday = new Date();
+                    yesterday.setDate(today.getDate() - 1);
+
+                    const msgDateString = msgDate.toDateString();
+                    const todayString = today.toDateString();
+                    const yesterdayString = yesterday.toDateString();
+
+                    if (msgDateString === todayString) {
+                        return 'Today';
+                    } else if (msgDateString === yesterdayString) {
+                        return 'Yesterday';
+                    } else {
+                        return msgDate.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    }
                 } catch (e) {
                     return '';
                 }
@@ -1155,6 +1300,34 @@
                 if (!input.files || input.files.length === 0 || !activeConversation) return;
                 const file = input.files[0];
 
+                // Client-side file size validation limits
+                let limitBytes = 10 * 1024 * 1024; // Default 10MB
+                let limitText = "10MB";
+
+                if (type === 'image') {
+                    limitBytes = 2 * 1024 * 1024; // 2MB
+                    limitText = "2MB";
+                } else if (type === 'video') {
+                    limitBytes = 20 * 1024 * 1024; // 20MB
+                    limitText = "20MB";
+                } else if (type === 'audio') {
+                    limitBytes = 10 * 1024 * 1024; // 10MB
+                    limitText = "10MB";
+                } else if (type === 'document') {
+                    limitBytes = 10 * 1024 * 1024; // 10MB
+                    limitText = "10MB";
+                }
+
+                if (file.size > limitBytes) {
+                    if (typeof showToast === 'function') {
+                        showToast(`The ${type} size must not be greater than ${limitText}.`, 'error');
+                    } else {
+                        alert(`The ${type} size must not be greater than ${limitText}.`);
+                    }
+                    input.value = ''; // Reset input
+                    return;
+                }
+
                 // Clear input value so same file can be uploaded again
                 input.value = '';
 
@@ -1188,6 +1361,15 @@
                         renderMessages();
                         scrollToBottom();
                         setTimeout(() => fetchConversations(), 300);
+                    } else if (result.errors || result.message) {
+                        const errorMsg = result.errors && result.errors.attachment
+                            ? result.errors.attachment[0]
+                            : (result.message || 'Failed to upload attachment');
+                        if (typeof showToast === 'function') {
+                            showToast(errorMsg, 'error');
+                        } else {
+                            alert(errorMsg);
+                        }
                     }
                 } catch (error) {
                     console.error('Error uploading chat media:', error);
@@ -1285,6 +1467,203 @@
                 } catch (error) {
                     console.error('Error sharing contact:', error);
                 }
+            }
+
+            // Scroll to bottom button & infinite scroll pagination listener
+            document.getElementById('messages-container').addEventListener('scroll', function() {
+                const container = this;
+                const btn = document.getElementById('scroll-bottom-btn');
+                
+                // Show/hide scroll to bottom button
+                if (container.scrollHeight - container.scrollTop - container.clientHeight > 200) {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+
+                // Infinite scroll: load older messages when hitting the top
+                if (container.scrollTop < 5 && hasMoreMessages && !isFetchingMessages && activeConversation) {
+                    fetchMessages(activeConversation.user_id, activeConversation.user_type, currentMessagesPage + 1);
+                }
+            });
+
+            // Voice Recording Implementation
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let recordingTimerInterval = null;
+            let recordingStartTime = null;
+            let recordedAudioBlob = null;
+            let playbackAudio = null;
+
+            async function startVoiceRecording() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    if (typeof showToast === 'function') {
+                        showToast("Your browser does not support audio recording.", "error");
+                    } else {
+                        alert("Your browser does not support audio recording.");
+                    }
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    recordedAudioBlob = null;
+                    playbackAudio = null;
+
+                    mediaRecorder.ondataavailable = function(event) {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = function() {
+                        recordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        stream.getTracks().forEach(track => track.stop()); // Release microphone
+
+                        if (audioChunks.length === 0 || recordedAudioBlob.size < 100) {
+                            cleanupVoiceRecordingUI();
+                            return;
+                        }
+
+                        // Shift to Review State
+                        showReviewUI();
+                    };
+
+                    mediaRecorder.start();
+                    
+                    // Show voice record panel UI
+                    const panel = document.getElementById('voice-record-panel');
+                    panel.classList.remove('hidden');
+                    panel.classList.add('flex');
+                    
+                    // Reset UI to recording state
+                    document.getElementById('voice-record-indicator').classList.remove('hidden');
+                    document.getElementById('voice-play-btn').classList.add('hidden');
+                    document.getElementById('voice-record-status').innerText = 'Recording...';
+                    document.getElementById('voice-stop-btn').classList.remove('hidden');
+                    document.getElementById('voice-send-btn').classList.add('hidden');
+                    document.getElementById('voice-send-btn').classList.remove('flex');
+
+                    recordingStartTime = Date.now();
+                    updateRecordingTimer();
+                    recordingTimerInterval = setInterval(updateRecordingTimer, 1000);
+
+                } catch (err) {
+                    console.error("Error accessing microphone:", err);
+                    if (typeof showToast === 'function') {
+                        showToast("Microphone permission denied or unavailable.", "error");
+                    } else {
+                        alert("Microphone permission denied or unavailable.");
+                    }
+                }
+            }
+
+            function updateRecordingTimer() {
+                const elapsedMs = Date.now() - recordingStartTime;
+                const elapsedSec = Math.floor(elapsedMs / 1000);
+                const minutes = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+                const seconds = String(elapsedSec % 60).padStart(2, '0');
+                document.getElementById('voice-record-timer').innerText = `${minutes}:${seconds}`;
+            }
+
+            function stopVoiceRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                clearInterval(recordingTimerInterval);
+            }
+
+            function showReviewUI() {
+                // UI changes for review mode
+                document.getElementById('voice-record-indicator').classList.add('hidden');
+                
+                const playBtn = document.getElementById('voice-play-btn');
+                playBtn.classList.remove('hidden');
+                playBtn.classList.add('flex');
+                
+                document.getElementById('voice-record-status').innerText = 'Voice Note';
+                document.getElementById('voice-stop-btn').classList.add('hidden');
+                
+                const sendBtn = document.getElementById('voice-send-btn');
+                sendBtn.classList.remove('hidden');
+                sendBtn.classList.add('flex');
+            }
+
+            function toggleVoicePlayback() {
+                if (!recordedAudioBlob) return;
+
+                if (!playbackAudio) {
+                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                    playbackAudio = new Audio(audioUrl);
+                    playbackAudio.onended = () => {
+                        resetVoicePlaybackUI();
+                    };
+                }
+
+                const playIcon = document.getElementById('voice-play-icon');
+                const pauseIcon = document.getElementById('voice-pause-icon');
+
+                if (playbackAudio.paused) {
+                    playbackAudio.play();
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                } else {
+                    playbackAudio.pause();
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                }
+            }
+
+            function resetVoicePlaybackUI() {
+                const playIcon = document.getElementById('voice-play-icon');
+                const pauseIcon = document.getElementById('voice-pause-icon');
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+
+            async function sendVoiceRecording() {
+                if (!recordedAudioBlob) return;
+
+                // Stop playback if playing
+                if (playbackAudio) {
+                    playbackAudio.pause();
+                }
+
+                // Create a file object to reuse the existing upload handler
+                const file = new File([recordedAudioBlob], `voice_${Date.now()}.wav`, { type: 'audio/wav' });
+                
+                const fakeInput = {
+                    files: [file],
+                    value: ''
+                };
+
+                cleanupVoiceRecordingUI();
+                await handleFileUpload(fakeInput, 'audio');
+            }
+
+            function cancelVoiceRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.onstop = null; // Prevent callback
+                    mediaRecorder.stop();
+                }
+                if (playbackAudio) {
+                    playbackAudio.pause();
+                }
+                cleanupVoiceRecordingUI();
+            }
+
+            function cleanupVoiceRecordingUI() {
+                clearInterval(recordingTimerInterval);
+                const panel = document.getElementById('voice-record-panel');
+                panel.classList.add('hidden');
+                panel.classList.remove('flex');
+                
+                // Release audio playback resources
+                recordedAudioBlob = null;
+                playbackAudio = null;
+                resetVoicePlaybackUI();
             }
 
             // Initial Load

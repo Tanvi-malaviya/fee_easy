@@ -33,6 +33,7 @@ class InstituteProfileController extends Controller
 
         $request->validate([
             'institute_name' => 'required|string|max:255',
+            'institute_code' => 'required|string|max:10|alpha_dash|unique:institutes,institute_code,' . $institute->id,
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
@@ -47,6 +48,7 @@ class InstituteProfileController extends Controller
 
         $data = $request->only([
             'institute_name',
+            'institute_code',
             'name',
             'phone',
             'address',

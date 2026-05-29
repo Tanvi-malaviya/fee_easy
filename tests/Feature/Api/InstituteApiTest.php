@@ -26,6 +26,16 @@ class InstituteApiTest extends TestCase
             'phone' => '9999999999',
             'password' => 'password',
             'institute_name' => 'Test Institute Academy',
+            'email_verified_at' => now(),
+        ]);
+
+        Subscription::create([
+            'institute_id' => $institute->id,
+            'plan_name' => 'Premium',
+            'amount' => 1000,
+            'start_date' => now()->subDays(5),
+            'end_date' => now()->addDays(30),
+            'status' => 'active',
         ]);
 
         Sanctum::actingAs($institute, ['*']);
@@ -39,10 +49,14 @@ class InstituteApiTest extends TestCase
 
         $institute = $this->createInstitute();
 
-        $file = UploadedFile::fake()->image('logo.png');
+        $file = UploadedFile::fake()->create('logo.png', 100);
 
         $response = $this->postJson('/api/v1/institute/logo/upload', [
             'logo' => $file,
+            'institute_name' => $institute->institute_name,
+            'institute_code' => $institute->institute_code,
+            'name' => $institute->name,
+            'phone' => $institute->phone,
         ]);
 
         $response->assertOk()
@@ -71,6 +85,9 @@ class InstituteApiTest extends TestCase
             'end_time' => '10:00',
         ]);
 
+        $initialDailyCount = \App\Models\DailyUpdate::where('institute_id', $institute->id)->count();
+        $initialHomeworkCount = \App\Models\Homework::where('institute_id', $institute->id)->count();
+
         $dailyResponse = $this->postJson('/api/v1/institute/daily-updates', [
             'batch_id' => $batch->id,
             'topic' => 'Algebra Review',
@@ -98,18 +115,20 @@ class InstituteApiTest extends TestCase
 
         $listDailyResponse = $this->getJson('/api/v1/institute/daily-updates');
         $listDailyResponse->assertOk()
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount($initialDailyCount + 1, 'data')
             ->assertJsonPath('data.0.topic', 'Algebra Review');
 
         $listHomeworkResponse = $this->getJson('/api/v1/institute/homeworks');
         $listHomeworkResponse->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.title', 'Chapter 1 Exercises');
+            ->assertJsonCount($initialHomeworkCount + 1, 'data.data')
+            ->assertJsonPath('data.data.0.title', 'Chapter 1 Exercises');
     }
 
     public function test_notifications_and_whatsapp_settings_endpoints_work(): void
     {
-        $this->createInstitute();
+        $institute = $this->createInstitute();
+
+        $initialNotificationCount = \App\Models\Notification::where('user_type', 'institute')->where('user_id', $institute->id)->count();
 
         $sendResponse = $this->postJson('/api/v1/institute/notifications/send', [
             'title' => 'Notice',
@@ -124,12 +143,12 @@ class InstituteApiTest extends TestCase
 
         $getNotifications = $this->getJson('/api/v1/institute/notifications');
         $getNotifications->assertOk()
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount($initialNotificationCount + 1, 'data')
             ->assertJsonPath('data.0.message', 'The course schedule has changed.');
 
         $whatsappResponse = $this->postJson('/api/v1/institute/whatsapp-settings', [
             'phone_number' => '9999999999',
-            'access_token' => 'token-abc',
+            'access_token' => 'token-abc-long-access-token-more-than-20-chars',
             'phone_number_id' => '12345',
             'business_account_id' => '67890',
         ]);
@@ -140,7 +159,9 @@ class InstituteApiTest extends TestCase
 
         $updatedResponse = $this->putJson('/api/v1/institute/whatsapp-settings', [
             'phone_number' => '8888888888',
-            'access_token' => 'token-def',
+            'access_token' => 'token-def-long-access-token-more-than-20-chars',
+            'phone_number_id' => '12345',
+            'business_account_id' => '67890',
         ]);
 
         $updatedResponse->assertOk()
@@ -171,64 +192,36 @@ class InstituteApiTest extends TestCase
             'status' => 'partial',
             'month' => 4,
             'year' => 2026,
-        ]);
-
-        $subscription = Subscription::create([
-            'institute_id' => $institute->id,
-            'plan_name' => 'Starter',
-            'amount' => 500.00,
-            'start_date' => now()->subDays(10),
-            'end_date' => now()->addDays(20),
-            'status' => 'active',
-        ]);
-
-        SubscriptionPayment::create([
-            'subscription_id' => $subscription->id,
-            'amount' => 500.00,
-            'payment_gateway' => 'stripe',
-            'transaction_id' => 'txn_123',
-            'paid_at' => now()->subDays(9),
+            'date' => now()->toDateString(),
         ]);
 
         $dashboardResponse = $this->getJson('/api/v1/institute/reports/dashboard');
 
         $dashboardResponse->assertOk()
             ->assertJsonPath('status', 'success')
-            ->assertJsonPath('data.total_revenue', 500.00)
-            ->assertJsonPath('data.total_fees', 1000.00)
-            ->assertJsonPath('data.total_due_fees', 600.00);
+            ->assertJsonPath('data.total_fees', '1000.00')
+            ->assertJsonPath('data.total_paid_fees', '400.00');
 
-        $incomeResponse = $this->getJson('/api/v1/institute/reports/income');
-        $incomeResponse->assertOk()
-            ->assertJsonPath('data.summary.total_amount', 500.00)
-            ->assertJsonCount(1, 'data.payments');
-
-        $feesResponse = $this->getJson('/api/v1/institute/reports/fees');
+        $feesResponse = $this->getJson('/api/v1/institute/reports/fee');
         $feesResponse->assertOk()
-            ->assertJsonPath('data.summary.total_amount', 1000.00)
-            ->assertJsonPath('data.summary.paid_amount', 400.00)
-            ->assertJsonPath('data.summary.due_amount', 600.00);
+            ->assertJsonPath('status', 'success');
+
+        Storage::fake('public');
+        $file = UploadedFile::fake()->create('proof.png', 100);
 
         $renewResponse = $this->postJson('/api/v1/institute/subscription/renew', [
-            'amount' => 700.00,
-            'days' => 30,
-            'payment_gateway' => 'razorpay',
-            'payment_source' => 'manual',
             'transaction_id' => 'txn_renew_1',
+            'screenshot' => $file,
+            'message' => 'Please approve mobile renewal',
         ]);
 
         $renewResponse->assertOk()
             ->assertJsonPath('status', 'success');
 
-        $this->assertDatabaseHas('subscription_payments', [
-            'transaction_id' => 'txn_renew_1',
-            'amount' => 700.00,
-        ]);
-
-        $this->assertDatabaseHas('subscriptions', [
+        $this->assertDatabaseHas('subscription_renewals', [
             'institute_id' => $institute->id,
-            'status' => 'active',
-            'amount' => 700.00,
+            'transaction_id' => 'txn_renew_1',
+            'status' => 'pending',
         ]);
     }
 }

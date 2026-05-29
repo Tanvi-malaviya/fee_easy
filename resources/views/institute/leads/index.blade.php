@@ -1,16 +1,17 @@
 @extends('layouts.institute')
 
 @section('content')
-    <div class="lg:h-[calc(100vh-20px)] lg:flex lg:flex-col lg:overflow-hidden">
+    <div class="max-w-[1600px] mx-auto w-full">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 lg:shrink-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
             <div class="flex items-center gap-4 md:gap-12">
                 <div>
-                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight">Leads Management</h1>
-                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Track, nurture, and convert your student inquiries.</p>
+                    <h1 class="text-xl font-semibold text-slate-800 tracking-tight text-left">Leads Management</h1>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium text-left">Track, nurture, and convert your student inquiries.</p>
                 </div>
             </div>
 
+            @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <div class="flex items-center gap-4">
                 <button onclick="openLeadModal()"
                     class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-[#ea580c] transition-all flex items-center gap-2">
@@ -20,60 +21,55 @@
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
 
-                    Add Lead
+                    Add Lead    
                 </button>
             </div>
+            @endif
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-20 lg:pb-0 lg:flex-1 lg:min-h-0">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:h-[calc(100vh-13.5rem)] lg:min-h-[450px]">
 
             <!-- Sidebar -->
             <div id="leads-sidebar" class="col-span-1 lg:col-span-3 lg:h-full">
-
-                <div class="h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="h-full flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
 
                             <!-- Search Area -->
-                            <div class="p-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
+                            <div class="p-4 border-b border-slate-50 shrink-0 bg-white">
+                                <div class="relative w-full">
+                                    <!-- Search Icon (Left) -->
+                                    <svg class="w-4 h-4 absolute left-3.5 top-[13px] text-slate-400 pointer-events-none" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    
+                                    <!-- Input Field -->
+                                    <input type="text" id="lead-search" placeholder="Search leads..."
+                                        class="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-semibold focus:bg-white focus:border-[#ff6c00] transition-all outline-none text-slate-600 placeholder-slate-400">
 
-                                <div class="flex gap-2">
-
-                                    <div class="relative flex-1">
-                                        <input type="text" id="lead-search" placeholder="Search leads..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#ff6c00]/20 transition-all outline-none">
-
-                                        <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                    </div>
-
+                                    <!-- Search Button (Right - Embedded) -->
                                     <button onclick="fetchLeads()"
-                                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#ea580c] transition-all flex items-center justify-center shadow-sm">
-
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                        class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-primary text-white rounded-xl hover:opacity-90 active:scale-95 transition-all flex items-center justify-center shadow-sm">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
-
                                     </button>
                                 </div>
                             </div>
 
                             <!-- List Container -->
                             <div id="lead-list-container"
-                                class="flex-1 overflow-y-auto divide-y divide-gray-100 custom-scrollbar">
+                                class="flex-1 overflow-y-auto divide-y divide-slate-50 custom-scrollbar">
 
                                 <!-- Loader -->
                                 <div class="p-12 text-center loader-container">
-
                                     <div
-                                        class="h-8 w-8 border-[3px] border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mx-auto mb-3">
+                                        class="h-8 w-8 border-[3px] border-slate-100 border-t-primary rounded-full animate-spin mx-auto mb-3">
                                     </div>
-
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                         Loading Leads...
                                     </p>
                                 </div>
@@ -82,42 +78,38 @@
                         </div>
                     </div>
 
-                <!-- Details Area -->
-                <div id="detail-panel" class="col-span-1 lg:col-span-9 rounded-xl flex flex-col relative lg:h-full lg:overflow-y-auto">
+                <!-- Details Area (Separate floating cards design restored as requested) -->
+                <div id="detail-panel" class="col-span-1 lg:col-span-9 rounded-xl flex flex-col relative lg:h-full lg:overflow-y-auto space-y-4 pb-4 custom-scrollbar">
 
-                    <!-- Empty State -->
+                    <!-- Empty State (Styled as a gorgeous floating card) -->
                     <div id="detail-empty"
-                        class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gray-50/30 lg:min-h-0 min-h-[500px]">
+                        class="flex-1 flex flex-col items-center justify-center p-12 text-center bg-white rounded-2xl border border-slate-100 shadow-sm lg:min-h-0 min-h-[500px]">
 
                         <div
-                            class="h-20 w-20 bg-gray-100 rounded-full flex items-center justify-center mb-6 text-gray-400">
-
+                            class="h-20 w-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 text-slate-300 border border-slate-100">
                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                             </svg>
-
                         </div>
 
-                        <h3 class="text-base font-bold text-gray-800 mb-2 tracking-tight">
+                        <h3 class="text-base font-bold text-slate-800 mb-2 tracking-tight">
                             Select a Lead
                         </h3>
 
-                        <p class="text-xs text-gray-400 max-w-[240px] leading-relaxed">
+                        <p class="text-xs text-slate-400 max-w-[240px] leading-relaxed font-semibold">
                             Choose a lead from the sidebar to view their full profile,
                             interaction history, and analytics.
                         </p>
                     </div>
 
-                    <!-- Detail Loader -->
+                    <!-- Detail Loader (Styled as a floating card) -->
                     <div id="lead-detail-loader"
-                        class="hidden h-full bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center p-12 lg:min-h-0 min-h-[500px]">
-
+                        class="hidden h-full bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center p-12 lg:min-h-0 min-h-[500px]">
                         <div
-                            class="h-12 w-12 border-4 border-gray-100 border-t-[#ff6c00] rounded-full animate-spin mb-4">
+                            class="h-12 w-12 border-4 border-slate-50 border-t-primary rounded-full animate-spin mb-4">
                         </div>
-
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">
                             Fetching Details...
                         </p>
                     </div>
@@ -125,30 +117,29 @@
                     <!-- Content Area -->
                     <div id="detail-content" class="hidden flex flex-col gap-2">
 
-                        <!-- Header Card -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                                <div class="flex items-center gap-2 sm:gap-4">
+                        <!-- Header Card (Restored as Floating Card) -->
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-4">
                                     <button onclick="backToLeadsList()" class="lg:hidden h-8 w-8 flex items-center justify-center text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
                                     </button>
                                     <div id="lead-avatar"
-                                        class="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-orange-200 shrink-0">
+                                        class="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center text-lg font-bold text-white shadow-lg shadow-orange-100 shrink-0">
                                         JM
                                     </div>
                                     <div>
-                                        <h2 id="detail-name" class="text-xl md:text-2xl font-bold text-gray-800 mb-0.5">Julianne Moore</h2>
-                                        <div class="flex items-center gap-2 text-gray-400 font-medium">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <h2 id="detail-name" class="text-lg font-black text-slate-800 tracking-tight leading-none mb-1.5 text-left">Julianne Moore</h2>
+                                        <div class="flex items-center gap-2 text-slate-400">
+                                            <svg class="w-3.5 h-3.5 text-primary/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
                                             </svg>
-                                            <span id="detail-course" class="text-xs">Advanced UX Research Course</span>
+                                            <span id="detail-course" class="text-xs font-semibold text-slate-500">Advanced UX Research Course</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex flex-wrap items-center gap-2">
+                                <div class="flex items-center gap-2 shrink-0">
                                     <button onclick="editLead()"
                                         class="px-4 py-1.5 bg-white border-2 border-[#007B8A] text-[#007B8A] rounded-xl text-xs font-bold hover:bg-[#007B8A]/5 transition-all flex items-center gap-2">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,81 +158,64 @@
                             </div>
                         </div>
 
-                       <!-- Info Cards Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <!-- Info Cards Grid (Contact Info Card & Reference Card side-by-side) -->
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             <!-- Contact Info Card -->
-                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                                <div class="flex items-center justify-between mb-6">
-                                    <div class="h-8 w-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500">
+                            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 space-y-4">
+                                <div class="flex items-center gap-2.5 mb-1 pb-2 border-b border-slate-50">
+                                    <div class="h-8 w-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact Information
-                                    </h3>
+                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Contact Information</h3>
                                 </div>
-                                <div class="space-y-6">
-                                    <div class="flex flex-wrap gap-x-12 gap-y-4">
+                                <div class="space-y-4">
+                                    <div class="flex flex-wrap gap-x-12 gap-y-4 text-left">
                                         <div class="min-w-[180px] max-w-full">
                                             <label
-                                                class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Email
-                                                Address</label>
-                                            <p id="detail-email" class="text-sm font-bold text-gray-700 break-all">
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Email Address</label>
+                                            <p id="detail-email" class="text-xs font-bold text-slate-700 break-all">
                                                 julianne.m@example.com</p>
                                         </div>
                                         <div class="min-w-[140px]">
                                             <label
-                                                class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Phone
-                                                Number</label>
-                                            <p id="detail-phone" class="text-sm font-bold text-gray-700">+1 (555) 098-7654</p>
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Phone Number</label>
+                                            <p id="detail-phone" class="text-xs font-bold text-slate-700">+1 (555) 098-7654</p>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div class="text-left">
                                         <label
-                                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Address</label>
-                                        <p id="detail-address" class="text-sm font-bold text-gray-700 leading-relaxed">1248
+                                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Address</label>
+                                        <p id="detail-address" class="text-xs font-bold text-slate-700 leading-relaxed">1248
                                             Oakwood Ave, Suite 400, San Francisco, CA 94105</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Reference Card -->
-                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                                <div class="flex items-center justify-between mb-6">
-                                    <div class="h-8 w-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500">
+                            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 space-y-4">
+                                <div class="flex items-center gap-2.5 mb-1 pb-2 border-b border-slate-50">
+                                    <div class="h-8 w-8 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Reference</h3>
+                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Reference & Acquisition</h3>
                                 </div>
-                                <div class="space-y-6">
-                                    <div>
-                                        <label
-                                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Lead
-                                            Source</label>
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <path
-                                                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                                            </svg>
-                                            <p id="detail-source" class="text-sm font-bold text-gray-700">Alumni Referral</p>
-                                        </div>
-                                    </div>
+                                <div class="space-y-4 text-left">
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label
-                                                class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Referrer</label>
-                                            <p id="detail-referrer" class="text-sm font-bold text-gray-700">David Smith (Cohort
-                                                #12)</p>
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Lead Source</label>
+                                            <p id="detail-source" class="text-xs font-bold text-slate-700">Alumni Referral</p>
                                         </div>
                                         <div>
                                             <label
-                                                class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Acquisition
-                                                Date</label>
-                                            <p id="detail-date" class="text-sm font-bold text-gray-700">Oct 24, 2023</p>
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Acquisition Date</label>
+                                            <p id="detail-date" class="text-xs font-bold text-slate-700">Oct 24, 2023</p>
                                         </div>
                                     </div>
                                 </div>
@@ -249,34 +223,40 @@
                         </div>
 
                         <!-- Interaction Notes -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500">
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-50 mb-4">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="h-8 w-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Interaction Notes</h3>
+                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Interaction Timeline</h3>
                                 </div>
+                                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                                 <button onclick="openNoteModal()"
-                                    class="text-[11px] font-bold text-primary hover:underline flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    class="text-xs font-extrabold text-primary hover:text-primary/95 transition-all flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
                                     Add Note
                                 </button>
+                                @endif
                             </div>
 
                             <div id="notes-timeline"
-                                class="space-y-0 relative before:absolute before:left-[13px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-gray-100">
+                                class="space-y-0 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-slate-100">
                                 <!-- Notes injected here -->
                             </div>
                         </div>
 
+                        <!-- Spacing at the bottom of detail-content to fix flexbox scroll padding bug! -->
+                        <div class="h-8 shrink-0"></div>
+
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -286,6 +266,19 @@
 
         @push('scripts')
             <script>
+                if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                }
+                window.scrollTo(0, 0);
+                document.addEventListener('DOMContentLoaded', () => {
+                    window.scrollTo(0, 0);
+                });
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 50);
+                });
+
                 const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 let currentLeads = [];
                 let selectedLeadId = null;
@@ -381,32 +374,29 @@
                     }
 
                     if (filteredLeads.length === 0) {
-                        container.innerHTML = `<div class="p-12 text-center text-xs font-medium text-gray-400">No leads found</div>`;
+                        container.innerHTML = `<div class="p-12 text-center text-xs font-semibold text-slate-400">No leads found</div>`;
                         return;
                     }
 
-                    container.innerHTML = filteredLeads.map(lead => {
+                    container.innerHTML = `<div class="p-3 space-y-1">` + filteredLeads.map(lead => {
                         const isActive = String(selectedLeadId) == String(lead.id);
+                        const initials = lead.full_name ? lead.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'L';
                         return `
                             <div onclick="selectLead('${lead.id}')" 
-                                class="relative p-5 cursor-pointer hover:bg-gray-50 transition-all ${isActive ? 'bg-[#ff6c00]/5' : ''}">
-                                <div class="flex items-start justify-between mb-1">
-                                    <h4 class="text-sm font-bold ${isActive ? 'text-[#ff6c00]' : 'text-gray-800'}">${lead.full_name}</h4>
+                                class="flex items-center gap-3 p-3 cursor-pointer rounded-xl transition-all select-none ${isActive ? 'bg-primary/10 text-primary font-bold' : 'hover:bg-slate-50 text-slate-700'}">
+                                <div class="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${isActive ? 'bg-primary text-white shadow-md' : 'bg-slate-100 text-slate-500'}">
+                                    ${initials}
                                 </div>
-                                <p class="text-xs ${isActive ? 'text-orange-900/60' : 'text-gray-600'} font-medium mb-3 truncate">${lead.course_selection || 'General Inquiry'}</p>
-                                <div class="flex items-center gap-4 text-[10px] font-bold ${isActive ? 'text-orange-400' : 'text-gray-500'}">
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        ${getTimeAgo(lead.created_at)}
+                                <div class="flex-1 min-w-0 text-left">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <h4 class="text-xs font-extrabold truncate ${isActive ? 'text-primary' : 'text-slate-800'}">${lead.full_name}</h4>
+                                        <span class="text-[9px] font-bold text-slate-400 shrink-0">${getTimeAgo(lead.created_at)}</span>
                                     </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                                        ${lead.reference || 'Referral'}
-                                    </div>
+                                    <p class="text-[10px] font-semibold ${isActive ? 'text-primary/75' : 'text-slate-500'} truncate">${lead.course_selection || 'General Inquiry'}</p>
                                 </div>
                             </div>
                         `;
-                    }).join('');
+                    }).join('') + `</div>`;
                 }
 
                 async function selectLead(id) {
@@ -437,7 +427,6 @@
                             document.getElementById('detail-phone').textContent = lead.phone || 'N/A';
                             document.getElementById('detail-address').textContent = lead.address || 'N/A';
                             document.getElementById('detail-source').textContent = lead.reference || 'N/A';
-                            document.getElementById('detail-referrer').textContent = lead.referer || 'N/A';
                             document.getElementById('detail-date').textContent = lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
                             document.getElementById('lead-avatar').textContent = lead.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                             renderTimeline(lead.notes);
@@ -448,20 +437,20 @@
                 function renderTimeline(notes) {
                     const timeline = document.getElementById('notes-timeline');
                     if (!notes || notes.length === 0) {
-                        timeline.innerHTML = '<p class="text-xs text-gray-400 font-medium italic py-4 pl-10">No records found.</p>';
+                        timeline.innerHTML = '<p class="text-xs text-slate-400 font-bold italic py-4 pl-6">No records found.</p>';
                         return;
                     }
                     timeline.innerHTML = notes.map((note, index) => `
-                        <div class="relative pl-10 pb-5">
-                            <div class="absolute left-0 top-0.5 h-[26px] w-[26px] rounded-full bg-white border-2 ${index === 0 ? 'border-orange-500' : 'border-sky-200'} flex items-center justify-center z-10">
-                                <div class="h-1 w-1 rounded-full ${index === 0 ? 'bg-orange-500' : 'bg-sky-200'}"></div>
+                        <div class="relative pl-8 pb-5">
+                            <div class="absolute left-0 top-0.5 h-[16px] w-[16px] rounded-full bg-white border-2 ${index === 0 ? 'border-primary' : 'border-slate-200'} flex items-center justify-center z-10 shadow-sm">
+                                <div class="h-1.5 w-1.5 rounded-full ${index === 0 ? 'bg-primary' : 'bg-slate-200'}"></div>
                             </div>
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-xs font-bold text-gray-800">${note.title}</h4>
-                                <span class="text-[10px] font-bold text-gray-300">${new Date(note.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <h4 class="text-xs font-extrabold text-slate-800">${note.title}</h4>
+                                <span class="text-[9px] font-black text-slate-400">${new Date(note.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
-                            <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                <p class="text-[11px] font-medium text-gray-500 leading-relaxed">${note.note}</p>
+                            <div class="bg-slate-50/50 rounded-2xl p-3 border border-slate-100 text-left">
+                                <p class="text-[11px] font-semibold text-slate-500 leading-relaxed">${note.note}</p>
                             </div>
                         </div>
                     `).join('');
@@ -564,7 +553,6 @@
                     form.elements['address'].value = lead.address || '';
                     form.elements['course_selection'].value = lead.course_selection || '';
                     form.elements['reference'].value = lead.reference || '';
-                    form.elements['referer'].value = lead.referer || '';
                 }
 
                 function openConfirmModal(title, message, itemName, onConfirm) {
@@ -681,11 +669,14 @@
             }
 
             body {
-                font-family: 'Inter', -apple-system, sans-serif;
+                font-family: 'Outfit', sans-serif;
                 overflow-x: hidden;
             }
 
             @media (min-width: 1024px) {
+                body {
+                    overflow-y: hidden !important;
+                }
                 main {
                     padding-bottom: 6px !important;
                 }
