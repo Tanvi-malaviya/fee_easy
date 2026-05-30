@@ -174,6 +174,65 @@
 
 <body class="font-sans antialiased bg-gray-50 text-gray-900 overflow-hidden h-screen">
 
+    <!-- Floating Sleek Toast Notification System -->
+    <div x-data="{
+            toasts: [],
+            addToast(message, type = 'success') {
+                const id = Date.now();
+                this.toasts.push({ id, message, type });
+                setTimeout(() => this.removeToast(id), 5000);
+            },
+            removeToast(id) {
+                this.toasts = this.toasts.filter(t => t.id !== id);
+            }
+        }"
+        x-init="
+            @if(session('success')) addToast('{{ session('success') }}', 'success'); @endif
+            @if(session('error')) addToast('{{ session('error') }}', 'error'); @endif
+            @if($errors->any()) addToast('{{ $errors->first() }}', 'error'); @endif
+        "
+        class="fixed top-5 right-5 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none"
+    >
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="pointer-events-auto flex items-center p-4 rounded-2xl shadow-xl border bg-white/90 backdrop-blur-md"
+                 :class="{
+                     'border-emerald-100 text-emerald-800 shadow-emerald-500/5': toast.type === 'success',
+                     'border-rose-100 text-rose-800 shadow-rose-500/5': toast.type === 'error'
+                 }"
+            >
+                <!-- Icon -->
+                <div class="mr-3 p-2 rounded-xl"
+                     :class="{
+                         'bg-emerald-50 text-emerald-600': toast.type === 'success',
+                         'bg-rose-50 text-rose-600': toast.type === 'error'
+                     }"
+                >
+                    <template x-if="toast.type === 'success'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </template>
+                    <template x-if="toast.type === 'error'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </template>
+                </div>
+                <!-- Content -->
+                <div class="flex-1 mr-2">
+                    <p class="text-[9px] font-black uppercase tracking-wider text-slate-400" x-text="toast.type === 'success' ? 'Success' : 'Attention'"></p>
+                    <p class="text-xs font-semibold mt-0.5 text-slate-700" x-text="toast.message"></p>
+                </div>
+                <!-- Dismiss button -->
+                <button @click="removeToast(toast.id)" class="text-slate-400 hover:text-slate-600 transition shrink-0 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </template>
+    </div>
+
     <div class="flex h-screen overflow-hidden bg-gray-50" x-data="layout()" x-init="init()" x-cloak>
 
         <!-- Mobile Overlay -->

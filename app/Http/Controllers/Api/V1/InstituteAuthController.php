@@ -46,7 +46,7 @@ class InstituteAuthController extends Controller
         ]);
 
         try {
-            Mail::to($institute->email)->send(new OtpMail($otp));
+            Mail::to($institute->email)->send(new OtpMail($otp, $institute->name));
         } catch (\Exception $e) {
             // Log or ignore gracefully depending on testing configs
         }
@@ -102,6 +102,12 @@ class InstituteAuthController extends Controller
 
         $token = $institute->createToken('institute_token')->plainTextToken;
 
+        try {
+            Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name));
+        } catch (\Exception $e) {
+            // Log or ignore gracefully
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'OTP verified successfully.',
@@ -126,7 +132,7 @@ class InstituteAuthController extends Controller
         ]);
 
         try {
-            Mail::to($institute->email)->send(new OtpMail($otp));
+            Mail::to($institute->email)->send(new OtpMail($otp, $institute->name));
         } catch (\Exception $e) {
             // Log or ignore gracefully depending on testing configs
         }
@@ -152,7 +158,7 @@ class InstituteAuthController extends Controller
         ]);
 
         try {
-            Mail::to($institute->email)->send(new OtpMail($otp));
+            Mail::to($institute->email)->send(new \App\Mail\ForgotPasswordMail($otp, $institute->name));
         } catch (\Exception $e) {
             // Log gracefully
         }

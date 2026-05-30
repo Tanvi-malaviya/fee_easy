@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuoora Email Templates</title>
+<!--
+  ============================================================
+  TUOORA — EMAIL TEMPLATES
+  ============================================================
+  6 templates included:
+    1. Register — OTP Send
+    2. Account Activated (after verification)
+    3. Forgot Password — OTP Send
+    4. New Plan Subscribed (from Admin)
+    5. Student Added — Credentials + App Link
+    6. Fees Invoice from Institute
+
+  NOTES FOR DEVELOPERS:
+  - Each template is wrapped in a <div class="email-template"> block.
+  - Replace {{PLACEHOLDERS}} with dynamic values from your backend.
+  - Logo: replace the LOGO_URL placeholder src once you provide the logo.
+  - Email-safe: table-based layout, inline-friendly styles.
+  - The grey page background + selector bar below are PREVIEW ONLY.
+    When sending, copy only the inner table markup of a single template.
+  ============================================================
+-->
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #eef2f6;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .preview-bar {
+    max-width: 640px;
+    margin: 24px auto 8px;
+    padding: 0 12px;
+  }
+  .preview-bar h2 {
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin: 0 0 14px;
+    text-align: center;
+  }
+  .preview-bar .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .preview-bar .tabs button {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .preview-bar .tabs button:hover { border-color:#1f7a6e; color:#1f7a6e; }
+  .preview-bar .tabs button.active {
+    background:#1f7a6e; color:#fff; border-color:#1f7a6e;
+  }
+  .email-template { display: none; }
+  .email-template.show { display: block; }
+
+  /* ---- shared email styles ---- */
+  .em-wrap {
+    width: 100%;
+    background: #eef2f6;
+    padding: 28px 0 48px;
+  }
+  .em-card {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(15,42,57,0.08);
+  }
+  .em-header {
+    background: linear-gradient(135deg,#1f7a6e 0%,#155e63 55%,#0f3d4f 100%);
+    padding: 30px 40px;
+    text-align: center;
+  }
+  .em-logo {
+    height: 42px;
+    display: inline-block;
+  }
+  .em-logo-fallback {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ffffff;
+    margin: 0;
+  }
+  .em-logo-fallback span { color: #ffd66b; }
+  .em-tagline {
+    margin: 6px 0 0;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+  }
+  .em-banner {
+    height: 6px;
+    background: linear-gradient(90deg,#ffd66b 0%,#f5a623 100%);
+  }
+  .em-body {
+    padding: 40px 44px 8px;
+    color: #334155;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .em-icon {
+    width: 72px; height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+  }
+  .em-title {
+    text-align: center;
+    font-size: 23px;
+    font-weight: 700;
+    color: #0f3d4f;
+    margin: 0 0 6px;
+  }
+  .em-sub {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    margin: 0 0 26px;
+  }
+  .em-otp {
+    text-align: center;
+    margin: 8px auto 26px;
+  }
+  .em-otp .code {
+    display: inline-block;
+    background: #f1f7f6;
+    border: 1px dashed #1f7a6e;
+    border-radius: 12px;
+    padding: 16px 30px;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 12px;
+    color: #155e63;
+  }
+  .em-btn {
+    display: inline-block;
+    background: linear-gradient(135deg,#1f7a6e,#155e63);
+    color: #ffffff !important;
+    text-decoration: none;
+    padding: 14px 34px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .em-center { text-align: center; margin: 8px 0 28px; }
+  .em-note {
+    background: #fff8e6;
+    border-left: 4px solid #f5a623;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #7a5c10;
+    margin: 4px 0 24px;
+  }
+  .em-cred {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 24px;
+    font-size: 14px;
+  }
+  .em-cred td {
+    padding: 11px 16px;
+    border: 1px solid #e2e8f0;
+  }
+  .em-cred td.k {
+    background: #f1f7f6;
+    font-weight: 600;
+    color: #0f3d4f;
+    width: 38%;
+  }
+  .em-inv {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 16px;
+    font-size: 14px;
+  }
+  .em-inv th {
+    background: #0f3d4f;
+    color: #fff;
+    text-align: left;
+    padding: 11px 14px;
+    font-size: 13px;
+  }
+  .em-inv td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+  }
+  .em-inv tr.total td {
+    font-weight: 700;
+    color: #0f3d4f;
+    font-size: 16px;
+    border-bottom: none;
+    border-top: 2px solid #0f3d4f;
+  }
+  .em-meta {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 18px; font-size: 13px; color:#64748b;
+  }
+  .em-meta td { padding: 3px 0; }
+  .em-meta td.r { text-align: right; }
+  .em-footer {
+    background: #0f3d4f;
+    padding: 28px 40px;
+    text-align: center;
+  }
+  .em-sign {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 18px;
+    text-align: left;
+  }
+  .em-sign strong { color: #ffffff; }
+  .em-sign .accent { color: #ffd66b; }
+  .em-footer .links a {
+    color: #9fc4c0;
+    text-decoration: none;
+    font-size: 12px;
+    margin: 0 8px;
+  }
+  .em-footer .copy {
+    color: #64829a;
+    font-size: 11px;
+    margin: 14px 0 0;
+  }
+  .em-divider { height:1px; background:#1c5366; margin: 0 0 18px; }
+
+  /* ---- institute-branded header (templates 5 & 6) ---- */
+  .em-header-inst {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 26px 40px;
+    text-align: center;
+  }
+  .em-inst-logo {
+    height: 46px;
+    display: inline-block;
+  }
+  .em-inst-logo-fallback {
+    width: 56px; height: 56px;
+    line-height: 56px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: #0f3d4f;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .em-inst-name {
+    margin: 6px 0 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f3d4f;
+  }
+  .em-inst-sub {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  /* ---- minimal "generated by" footer ---- */
+  .em-footer-min {
+    background: #f1f5f9;
+    padding: 20px 40px;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+  }
+  .em-footer-min .gen {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 0;
+  }
+  .em-footer-min .gen strong { color: #1f7a6e; }
+  @media (max-width:620px){
+    .em-body{padding:28px 24px 6px;}
+    .em-header{padding:24px;}
+    .em-otp .code{font-size:26px;letter-spacing:8px;padding:14px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== PREVIEW SELECTOR (remove when deploying) ===== -->
+<div class="preview-bar">
+  <h2>Tuoora · Email Templates Preview</h2>
+  <div class="tabs">
+    <button data-t="t1" class="active">1 · Register OTP</button>
+    <button data-t="t2">2 · Account Activated</button>
+    <button data-t="t3">3 · Forgot Password</button>
+    <button data-t="t4">4 · Plan Subscribed</button>
+    <button data-t="t5">5 · Student Added</button>
+    <button data-t="t6">6 · Fees Invoice</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHARED HEADER + FOOTER are repeated inside each template
+     so each block is self-contained and copy-paste ready.
+     ============================================================ -->
+
+<!-- ================= TEMPLATE 1: REGISTER OTP ================= -->
+<div class="email-template show" id="t1">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <!-- HEADER -->
+    <tr><td class="em-header">
+      <!-- Replace with: <img class="em-logo" src="LOGO_URL" alt="Tuoora"> -->
+      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <p class="em-tagline">Learn · Grow · Achieve</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <!-- BODY -->
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#128274;</div>
+      <h1 class="em-title">Verify Your Account</h1>
+      <p class="em-sub">Welcome to Tuoora! Use the code below to complete your registration.</p>
+      <p>Hi <strong>{{USER_NAME}}</strong>,</p>
+      <p>Thank you for signing up. Please enter this One-Time Password to verify your email address:</p>
+      <div class="em-otp"><span class="code">{{OTP_CODE}}</span></div>
+      <div class="em-note">This code expires in <strong>{{OTP_EXPIRY}} minutes</strong>. If you didn't request this, please ignore this email.</div>
+    </td></tr>
+    <!-- FOOTER -->
+    <tr><td class="em-footer">
+      <p class="em-sign">
+        Warm regards,<br>
+        <strong>The Tuoora Team</strong><br>
+        <span class="accent">support@tuoora.com</span>
+      </p>
+      <div class="em-divider"></div>
+      <div class="links">
+        <a href="#">Help Center</a>·<a href="#">Privacy</a>·<a href="#">Contact</a>
+      </div>
+      <p class="copy">© {{YEAR}} Tuoora. All rights reserved.</p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<!-- ================= TEMPLATE 2: ACCOUNT ACTIVATED ================= -->
+<div class="email-template" id="t2">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <tr><td class="em-header">
+      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <p class="em-tagline">Learn · Grow · Achieve</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#e6f6ec;color:#1f9d55;">&#10004;</div>
+      <h1 class="em-title">Account Activated!</h1>
+      <p class="em-sub">Your Tuoora account is now active and ready to use.</p>
+      <p>Hi <strong>{{USER_NAME}}</strong>,</p>
+      <p>Congratulations! Your email has been successfully verified and your account is now fully activated. You can now access all your courses, resources, and learning tools.</p>
+      <div class="em-center"><a href="{{LOGIN_URL}}" class="em-btn">Start Learning</a></div>
+      <div class="em-note">Tip: Complete your profile to get personalized course recommendations.</div>
+    </td></tr>
+    <tr><td class="em-footer">
+      <p class="em-sign">
+        Warm regards,<br>
+        <strong>The Tuoora Team</strong><br>
+        <span class="accent">support@tuoora.com</span>
+      </p>
+      <div class="em-divider"></div>
+      <div class="links">
+        <a href="#">Help Center</a>·<a href="#">Privacy</a>·<a href="#">Contact</a>
+      </div>
+      <p class="copy">© {{YEAR}} Tuoora. All rights reserved.</p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<!-- ================= TEMPLATE 3: FORGOT PASSWORD OTP ================= -->
+<div class="email-template" id="t3">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <tr><td class="em-header">
+      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <p class="em-tagline">Learn · Grow · Achieve</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#fdeeee;color:#d9534f;">&#128273;</div>
+      <h1 class="em-title">Reset Your Password</h1>
+      <p class="em-sub">Use the verification code below to reset your password.</p>
+      <p>Hi <strong>{{USER_NAME}}</strong>,</p>
+      <p>We received a request to reset the password for your Tuoora account. Enter the following code to proceed:</p>
+      <div class="em-otp"><span class="code">{{OTP_CODE}}</span></div>
+      <div class="em-note">This code expires in <strong>{{OTP_EXPIRY}} minutes</strong>. If you didn't request a password reset, please ignore this email — your account is still secure.</div>
+    </td></tr>
+    <tr><td class="em-footer">
+      <p class="em-sign">
+        Warm regards,<br>
+        <strong>The Tuoora Team</strong><br>
+        <span class="accent">support@tuoora.com</span>
+      </p>
+      <div class="em-divider"></div>
+      <div class="links">
+        <a href="#">Help Center</a>·<a href="#">Privacy</a>·<a href="#">Contact</a>
+      </div>
+      <p class="copy">© {{YEAR}} Tuoora. All rights reserved.</p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<!-- ================= TEMPLATE 4: PLAN SUBSCRIBED ================= -->
+<div class="email-template" id="t4">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <tr><td class="em-header">
+      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <p class="em-tagline">Learn · Grow · Achieve</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#fff3df;color:#f5a623;">&#127881;</div>
+      <h1 class="em-title">Your Plan is Active</h1>
+      <p class="em-sub">A new subscription plan has been assigned to your account.</p>
+      <p>Hi <strong>{{USER_NAME}}</strong>,</p>
+      <p>Great news! The following plan has been activated for you by your administrator:</p>
+      <table class="em-cred" role="presentation">
+        <tr><td class="k">Plan Name</td><td>{{PLAN_NAME}}</td></tr>
+        <tr><td class="k">Validity</td><td>{{START_DATE}} – {{END_DATE}}</td></tr>
+        <tr><td class="k">Status</td><td style="color:#1f9d55;font-weight:600;">Active</td></tr>
+      </table>
+      <p>You now have access to all features included in this plan. Open the app to explore what's new.</p>
+      <div class="em-center"><a href="{{APP_URL}}" class="em-btn">Open App</a></div>
+    </td></tr>
+    <tr><td class="em-footer">
+      <p class="em-sign">
+        Warm regards,<br>
+        <strong>The Tuoora Team</strong><br>
+        <span class="accent">support@tuoora.com</span>
+      </p>
+      <div class="em-divider"></div>
+      <div class="links">
+        <a href="#">Help Center</a>·<a href="#">Privacy</a>·<a href="#">Contact</a>
+      </div>
+      <p class="copy">© {{YEAR}} Tuoora. All rights reserved.</p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<!-- ================= TEMPLATE 5: STUDENT ADDED ================= -->
+<div class="email-template" id="t5">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <!-- INSTITUTE HEADER -->
+    <tr><td class="em-header-inst">
+      <!-- Replace fallback with: <img class="em-inst-logo" src="{{INSTITUTE_LOGO_URL}}" alt="{{INSTITUTE_NAME}}"> -->
+      <div class="em-inst-logo-fallback">{{INSTITUTE_INITIAL}}</div>
+      <p class="em-inst-name">{{INSTITUTE_NAME}}</p>
+      <p class="em-inst-sub">Student Account Created</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#127891;</div>
+      <h1 class="em-title">Welcome to Tuoora!</h1>
+      <p class="em-sub">Your student account has been created by {{INSTITUTE_NAME}}.</p>
+      <p>Hi <strong>{{STUDENT_NAME}}</strong>,</p>
+      <p>An account has been created for you. Use the credentials below to log in to the Tuoora Student App:</p>
+      <table class="em-cred" role="presentation">
+        <tr><td class="k">Login Email</td><td>{{STUDENT_EMAIL}}</td></tr>
+        <tr><td class="k">Password</td><td><strong>{{TEMP_PASSWORD}}</strong></td></tr>
+        <tr><td class="k">Institute</td><td>{{INSTITUTE_NAME}}</td></tr>
+      </table>
+      <div class="em-note">For your security, please change your password after your first login.</div>
+      <div class="em-center"><a href="{{STUDENT_APP_URL}}" class="em-btn">Download Student App</a></div>
+      <p style="text-align:center;font-size:13px;color:#64748b;">
+        Available on <a href="{{PLAYSTORE_URL}}" style="color:#1f7a6e;">Google Play</a> &nbsp;·&nbsp; <a href="{{APPSTORE_URL}}" style="color:#1f7a6e;">App Store</a>
+      </p>
+    </td></tr>
+    <tr><td class="em-footer-min">
+      <p class="gen">Generated by <strong>Tuoora</strong></p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<!-- ================= TEMPLATE 6: FEES INVOICE ================= -->
+<div class="email-template" id="t6">
+<table role="presentation" class="em-wrap" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+  <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
+    <!-- INSTITUTE HEADER -->
+    <tr><td class="em-header-inst">
+      <!-- Replace fallback with: <img class="em-inst-logo" src="{{INSTITUTE_LOGO_URL}}" alt="{{INSTITUTE_NAME}}"> -->
+      <div class="em-inst-logo-fallback">{{INSTITUTE_INITIAL}}</div>
+      <p class="em-inst-name">{{INSTITUTE_NAME}}</p>
+      <p class="em-inst-sub">Fee Invoice</p>
+    </td></tr>
+    <tr><td class="em-banner"></td></tr>
+    <tr><td class="em-body">
+      <div class="em-icon" style="background:#eef2fb;color:#3b5bdb;">&#129534;</div>
+      <h1 class="em-title">Fee Invoice</h1>
+      <p class="em-sub">A new invoice has been generated by {{INSTITUTE_NAME}}.</p>
+      <p>Hi <strong>{{STUDENT_NAME}}</strong>,</p>
+      <table class="em-meta" role="presentation">
+        <tr><td>Invoice No: <strong>{{INVOICE_NO}}</strong></td><td class="r">Date: {{INVOICE_DATE}}</td></tr>
+        <tr><td>Due Date: <strong>{{DUE_DATE}}</strong></td><td class="r">Status: <span style="color:#d9534f;font-weight:600;">{{STATUS}}</span></td></tr>
+      </table>
+      <table class="em-inv" role="presentation">
+        <tr><th>Description</th><th style="text-align:right;">Amount</th></tr>
+        <tr><td>{{FEE_ITEM_1}}</td><td style="text-align:right;">{{AMOUNT_1}}</td></tr>
+        <tr><td>{{FEE_ITEM_2}}</td><td style="text-align:right;">{{AMOUNT_2}}</td></tr>
+        <tr><td>Tax / GST</td><td style="text-align:right;">{{TAX}}</td></tr>
+        <tr class="total"><td>Total Due</td><td style="text-align:right;">{{TOTAL}}</td></tr>
+      </table>
+      <div class="em-center"><a href="{{PAYMENT_URL}}" class="em-btn">Pay Now</a></div>
+      <div class="em-note">Please complete the payment before the due date to avoid late charges. For any queries regarding this invoice, contact your institute.</div>
+    </td></tr>
+    <tr><td class="em-footer-min">
+      <p class="gen">Generated by <strong>Tuoora</strong></p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</div>
+
+<script>
+  // PREVIEW SWITCHER ONLY — not part of the email markup
+  document.querySelectorAll('.preview-bar button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.preview-bar button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.email-template').forEach(t=>t.classList.remove('show'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.t).classList.add('show');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>

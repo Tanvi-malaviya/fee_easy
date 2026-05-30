@@ -19,6 +19,7 @@ class Batch extends Model
         'end_time',
         'days',
         'classroom',
+        'staff_id',
     ];
 
     protected $casts = [
@@ -42,6 +43,11 @@ class Batch extends Model
     public function institute()
     {
         return $this->belongsTo(Institute::class);
+    }
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
     }
 
     public function students()

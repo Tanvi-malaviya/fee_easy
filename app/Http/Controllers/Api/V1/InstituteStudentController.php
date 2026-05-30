@@ -190,10 +190,14 @@ class InstituteStudentController extends Controller
 
         // Send password to student via email
         try {
-            Mail::raw("Welcome to Tuoora! Your account has been created. Your login password is: " . $password . ". Please use your email to login.", function ($message) use ($student) {
-                $message->to($student->email)
-                    ->subject('Your Account Password - Tuoora');
-            });
+            $institute = $request->user();
+            Mail::to($student->email)->send(new \App\Mail\StudentAddedMail(
+                $student->name,
+                $student->email,
+                $password,
+                $institute->institute_name,
+                $institute->logo
+            ));
         } catch (\Exception $e) {
             // Log error or handle gracefully if mail fails
             \Log::error("Failed to send welcome email to student via API: " . $e->getMessage());

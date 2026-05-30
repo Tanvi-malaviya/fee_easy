@@ -12,13 +12,13 @@
     <tr><td class="em-banner"></td></tr>
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#128274;</div>
-      <h1 class="em-title">Verify Your Account</h1>
-      <p class="em-sub">Welcome to Tuoora! Use the code below to complete your registration.</p>
+      <div class="em-icon" style="background:#fdeeee;color:#d9534f;">&#128273;</div>
+      <h1 class="em-title">Reset Your Password</h1>
+      <p class="em-sub">Use the verification code below to reset your password.</p>
       <p>Hi <strong>{{ $userName }}</strong>,</p>
-      <p>Thank you for signing up. Please enter this One-Time Password to verify your email address:</p>
+      <p>We received a request to reset the password for your Tuoora account. Enter the following code to proceed:</p>
       <div class="em-otp"><span class="code">{{ $otp }}</span></div>
-      <div class="em-note">This code expires in <strong>10 minutes</strong>. If you didn't request this, please ignore this email.</div>
+      <div class="em-note">This code expires in <strong>15 minutes</strong>. If you didn't request a password reset, please ignore this email — your account is still secure.</div>
     </td></tr>
     <!-- FOOTER -->
     <tr><td class="em-footer">

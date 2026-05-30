@@ -125,6 +125,38 @@ class InstituteFeeController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
+
+            // Send invoice email to the student
+            try {
+                $student = \App\Models\Student::find($request->student_id);
+                $institute = $request->user();
+                if ($student && $student->email) {
+                    $invoiceNo = "INV-" . \Carbon\Carbon::parse($fee->date)->format('Ymd') . "-" . str_pad($fee->id, 4, '0', STR_PAD_LEFT);
+                    $invoiceDate = \Carbon\Carbon::parse($fee->date)->format('d M, Y');
+                    $dueDate = \Carbon\Carbon::parse($fee->date)->addDays(10)->format('d M, Y');
+                    $paymentUrl = url("/institute/fees/receipts/" . $fee->id);
+
+                    \Illuminate\Support\Facades\Mail::to($student->email)->send(new \App\Mail\FeeInvoiceMail(
+                        $student->name,
+                        $student->email,
+                        $invoiceNo,
+                        $invoiceDate,
+                        $dueDate,
+                        $fee->status,
+                        "Monthly Academic Fee",
+                        $fee->total_amount,
+                        "",
+                        0,
+                        0,
+                        $fee->total_amount,
+                        $paymentUrl,
+                        $institute->institute_name,
+                        $institute->logo
+                    ));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Failed to send Fee Invoice email: " . $e->getMessage());
+            }
             
             // Load student and payments relations for the frontend
             $fee->load(['student:id,name,profile_image', 'payments']);

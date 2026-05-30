@@ -65,7 +65,7 @@ class InstituteAuthController extends Controller
                 Session::put('registration_otp_expires_at', Carbon::now()->addMinutes(10));
                 Session::save();
                 try {
-                    Mail::to($user->email)->send(new OtpMail($otp));
+                    Mail::to($user->email)->send(new OtpMail($otp, $user->name));
                 } catch (\Exception $e) {
                     Log::error('Registration Mail Error: ' . $e->getMessage());
                 }
@@ -108,7 +108,7 @@ class InstituteAuthController extends Controller
 
             // Send OTP email
             try {
-                Mail::to($request->email)->send(new OtpMail($otp));
+                Mail::to($request->email)->send(new OtpMail($otp, $request->name));
             } catch (\Exception $e) {
                 Log::error('Registration Mail Error: ' . $e->getMessage());
                 // We still proceed so the user can try to resend or see the error
@@ -207,6 +207,12 @@ class InstituteAuthController extends Controller
 
             Auth::guard('institute')->login($institute);
 
+            try {
+                Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name, route('institute.login')));
+            } catch (\Exception $e) {
+                Log::error('Activation Mail Error: ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Email verified successfully.',
@@ -238,7 +244,8 @@ class InstituteAuthController extends Controller
         Session::save();
 
         try {
-            Mail::to($email)->send(new OtpMail($otp));
+            $name = Session::get('registration_data')['name'] ?? 'User';
+            Mail::to($email)->send(new OtpMail($otp, $name));
             return response()->json(['status' => 'success', 'message' => 'New OTP sent.']);
         } catch (\Exception $e) {
             Log::error('Resend OTP Error: ' . $e->getMessage());
@@ -359,9 +366,9 @@ class InstituteAuthController extends Controller
         Session::save();
 
         try {
-            Mail::raw("Your Tuoora password reset code is: $otp", function ($message) use ($request) {
-                $message->to($request->email)->subject('Password Reset Code - Tuoora');
-            });
+            $institute = Institute::where('email', $request->email)->first();
+            $name = $institute ? $institute->name : 'User';
+            Mail::to($request->email)->send(new \App\Mail\ForgotPasswordMail($otp, $name));
             return response()->json(['status' => 'success', 'message' => 'OTP sent to your email.']);
         } catch (\Exception $e) {
             Log::error('Password Reset Mail Error: ' . $e->getMessage());
