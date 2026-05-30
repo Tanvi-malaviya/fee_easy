@@ -443,21 +443,13 @@
                         document.getElementById('batch-description-text').innerText = batch.description;
                     }
 
-                    // Retrieve Assigned Staff from localStorage
-                    const savedStaffId = localStorage.getItem('batch_staff_' + batch.id);
-                    if (savedStaffId) {
-                        const staffObj = staffListJs.find(s => s.id == savedStaffId);
-                        if (staffObj) {
-                            document.getElementById('instructor-name').innerText = staffObj.full_name;
-                            document.getElementById('instructor-role').innerText = staffObj.department ? staffObj.department.name : 'Staff';
-                            document.getElementById('instructor-email').innerText = staffObj.email || 'No email provided';
-                            document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staffObj.full_name)}&background=EEF2FF&color=4F46E5&bold=true`;
-                        } else {
-                            document.getElementById('instructor-name').innerText = 'Not Assigned';
-                            document.getElementById('instructor-role').innerText = 'No Instructor';
-                            document.getElementById('instructor-email').innerText = 'No email provided';
-                            document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=Instructor&background=F1F5F9&color=64748B&bold=true`;
-                        }
+                    // Load Assigned Staff from batch object
+                    if (batch.staff) {
+                        const staffObj = batch.staff;
+                        document.getElementById('instructor-name').innerText = staffObj.full_name;
+                        document.getElementById('instructor-role').innerText = staffObj.department ? staffObj.department.name : 'Staff';
+                        document.getElementById('instructor-email').innerText = staffObj.email || 'No email provided';
+                        document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staffObj.full_name)}&background=EEF2FF&color=4F46E5&bold=true`;
                     } else {
                         document.getElementById('instructor-name').innerText = 'Not Assigned';
                         document.getElementById('instructor-role').innerText = 'No Instructor';

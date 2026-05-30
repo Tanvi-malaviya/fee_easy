@@ -217,3 +217,57 @@ Route::prefix('institute')->name('institute.')->group(function () {
 Route::prefix('admin')->group(function () {
     require __DIR__ . '/auth.php';
 });
+
+// =========================================================================
+// TEMPORARY EMAIL PREVIEWS (Safe for Development, preview in browser)
+// =========================================================================
+Route::get('/mail-preview/otp', function () {
+    return new \App\Mail\OtpMail('123456', 'John Doe');
+});
+
+Route::get('/mail-preview/account-activated', function () {
+    return new \App\Mail\AccountActivatedMail('John Doe');
+});
+
+Route::get('/mail-preview/forgot-password', function () {
+    return new \App\Mail\ForgotPasswordMail('852963', 'John Doe');
+});
+
+Route::get('/mail-preview/subscription-status', function () {
+    return new \App\Mail\SubscriptionStatusMail(
+        'Noble Academy', 
+        'Pro Gold Annual Plan', 
+        now()->addYear()->toDateTimeString(), 
+        9999, 
+        'assigned'
+    );
+});
+
+Route::get('/mail-preview/student-added', function () {
+    return new \App\Mail\StudentAddedMail(
+        'Rohan Sharma', 
+        'rohan@example.com', 
+        'secureP@ss123', 
+        'Noble Academy'
+    );
+});
+
+Route::get('/mail-preview/fee-invoice', function () {
+    return new \App\Mail\FeeInvoiceMail(
+        'Rohan Sharma', 
+        'rohan@example.com', 
+        'INV-20260530-0042', 
+        now()->format('d M, Y'), 
+        now()->addDays(10)->format('d M, Y'), 
+        'Unpaid', 
+        'Monthly Tuition Fee', 
+        1500, 
+        'Lab & Library Fee', 
+        300, 
+        50, 
+        1850, 
+        '#', 
+        'Noble Academy'
+    );
+});
+

@@ -9,20 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OtpMail extends Mailable
+class AccountActivatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $otp;
     public $userName;
+    public $loginUrl;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($otp, $userName = 'User')
+    public function __construct($userName, $loginUrl = null)
     {
-        $this->otp = $otp;
         $this->userName = $userName;
+        $this->loginUrl = $loginUrl ?: url('/institute/login');
     }
 
     /**
@@ -31,7 +31,7 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Verification Code - Tuoora',
+            subject: 'Account Activated successfully - Tuoora',
         );
     }
 
@@ -41,10 +41,10 @@ class OtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.otp',
+            view: 'emails.account_activated',
             with: [
-                'otp' => $this->otp,
                 'userName' => $this->userName,
+                'loginUrl' => $this->loginUrl,
             ],
         );
     }

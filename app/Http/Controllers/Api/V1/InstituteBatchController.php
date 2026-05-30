@@ -23,7 +23,7 @@ class InstituteBatchController extends Controller
 
         $query = Batch::where('institute_id', $request->user()->id)
             ->withCount('students')
-            ->with('students:id,name,batch_id,profile_image');
+            ->with(['students:id,name,batch_id,profile_image', 'staff']);
 
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
@@ -66,6 +66,7 @@ class InstituteBatchController extends Controller
 
         $batch = Batch::where('institute_id', $request->user()->id)
             ->withCount('students')
+            ->with('staff')
             ->find($id);
 
         if (!$batch) {
@@ -111,6 +112,7 @@ class InstituteBatchController extends Controller
             'end_time' => 'required|string',
             'days' => 'required|array|min:1',
             'classroom' => 'nullable|string|max:255',
+            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $request->user()->id,
         ]);
 
         if ($request->has('days') && is_array($request->days)) {
@@ -132,12 +134,13 @@ class InstituteBatchController extends Controller
             'end_time' => $request->end_time,
             'days' => $request->days,
             'classroom' => $request->classroom,
+            'staff_id' => $request->staff_id,
         ]);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Batch created successfully',
-            'data' => $batch
+            'data' => $batch->load('staff')
         ], 201);
     }
 
@@ -168,9 +171,10 @@ class InstituteBatchController extends Controller
             'end_time' => 'sometimes|required|string',
             'days' => 'sometimes|required|array|min:1',
             'classroom' => 'nullable|string|max:255',
+            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $request->user()->id,
         ]);
 
-        $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom']);
+        $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
         
         if (isset($data['days']) && is_array($data['days'])) {
             if (count($data['days']) !== count(array_unique($data['days']))) {
@@ -252,7 +256,7 @@ class InstituteBatchController extends Controller
         return response()->json([
             'status'  => 'success',
             'message' => 'Batch updated successfully',
-            'data'    => $batch->fresh()
+            'data'    => $batch->fresh()->load('staff')
         ]);
     }
 
@@ -290,6 +294,7 @@ class InstituteBatchController extends Controller
 
         $batches = Batch::where('institute_id', $request->user()->id)
             ->withCount('students')
+            ->with('staff')
             ->get();
 
         $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches'));

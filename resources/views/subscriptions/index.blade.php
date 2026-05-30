@@ -14,9 +14,27 @@
     <div class="">
         <div class="max-w-7xl mx-auto">
         
+            <!-- Sleek Modern Tabs -->
+            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-fit mb-6 border border-slate-200/50 shadow-inner">
+                <button onclick="switchTab('all')" id="tab-all" class="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 bg-white text-slate-800 shadow-sm border border-slate-200/40">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                    All Subscriptions
+                </button>
+                <button onclick="switchTab('requests')" id="tab-requests" class="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 text-slate-500 hover:text-slate-700">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                    Pending Requests
+                    @if(isset($pendingRenewals) && $pendingRenewals->count() > 0)
+                        <span class="px-1.5 py-0.5 bg-amber-500 text-white text-[9px] font-black rounded-md leading-none shadow-sm">
+                            {{ $pendingRenewals->count() }}
+                        </span>
+                    @endif
+                </button>
+            </div>
+
             @if(isset($pendingRenewals) && $pendingRenewals->count() > 0)
-                <!-- Pending Renewal Requests Panel -->
-                <div class="mb-8 bg-gradient-to-br from-amber-50/40 to-orange-50/20 border border-amber-200/60 rounded-2xl p-6 shadow-sm">
+                <div id="pending-requests-section">
+                    <!-- Pending Renewal Requests Panel -->
+                    <div class="mb-8 bg-gradient-to-br from-amber-50/40 to-orange-50/20 border border-amber-200/60 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center gap-2.5 mb-4">
                         <div class="h-9 w-9 bg-amber-100 text-amber-800 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50 shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -130,7 +148,19 @@
                         </div>
                     </div>
                 </div>
+                </div>
             @endif
+
+            <!-- No Pending Requests Card -->
+            <div id="no-pending-requests-message" class="hidden py-12 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center mb-8">
+                <div class="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <h3 class="text-sm font-bold text-slate-800">All caught up!</h3>
+                <p class="text-xs text-slate-400 mt-1">There are no pending offline subscription renewal requests to verify.</p>
+            </div>
+
+            <div id="all-subscriptions-section">
 
             <!-- Filters & Search -->
             <div class=" rounded-2xl  mb-3">
@@ -292,7 +322,7 @@
                                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                                          </svg>
                                                      </button>
-                                                     <button @click="$dispatch('open-modal', 'extend-subscription-{{ $subscription->id }}')"
+                                                     <button @click="$dispatch('open-modal', 'extend-subscription-{{ $subscription->id }}'); setTimeout(() => { const f = document.getElementById('extend-form-{{ $subscription->id }}'); if (f) f.reset(); }, 50);"
                                                          title="Extend Subscription"
                                                          class="no-loader inline-flex items-center justify-center w-8 h-8 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg hover:bg-emerald-100 transition transform active:scale-95">
                                                          <!-- Calendar/extend icon -->
@@ -333,7 +363,7 @@
                                                 </div>
 
                                                     <div class="mt-5 flex justify-end gap-2">
-                                                        <button type="button" x-on:click="$dispatch('close')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3">Cancel</button>
+                                                        <button type="button" x-on:click="$el.closest('form').reset(); $dispatch('close')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3">Cancel</button>
                                                         <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-primary text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition min-w-[110px]">
                                                             <span class="btn-content">Confirm Payment</span>
                                                             <span class="hidden btn-loader">
@@ -348,24 +378,24 @@
                                         </x-modal>
 
                                         <x-modal name="extend-subscription-{{ $subscription->id }}" :show="false" focusable>
-                                            <form method="post" action="{{ route('subscriptions.extend', $subscription) }}" class="p-5 text-left">
+                                             <form id="extend-form-{{ $subscription->id }}" method="post" action="{{ route('subscriptions.extend', $subscription) }}" class="p-5 text-left">
                                                 @csrf @method('PATCH')
                                                 <h2 class="text-base font-bold text-gray-900 leading-tight">Extend Subscription</h2>
                                                 <p class="mt-1 text-[10px] text-gray-500 font-medium border-b border-gray-50 pb-2.5">Enter extension details below.</p>
                                                 
-                                                <div class="mt-4 space-y-3.5">
-                                                    <div>
-                                                        <x-input-label for="days" value="Extension Duration (Days)" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
-                                                        <x-text-input id="days" name="days" type="number" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="e.g. 30" required />
-                                                    </div>
-                                                    <div>
-                                                        <x-input-label for="amount" value="Amount Received ({{ $currency }})" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
-                                                        <x-text-input id="amount" name="amount" type="number" step="0.01" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="0.00" required />
-                                                    </div>
-                                                </div>
+                                                 <div class="mt-4 space-y-3.5">
+                                                     <div>
+                                                         <x-input-label for="days" value="Extension Duration (Days)" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
+                                                         <x-text-input id="days" name="days" type="number" min="1" onkeypress="return event.charCode >= 48" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="e.g. 30" required />
+                                                     </div>
+                                                     <div>
+                                                         <x-input-label for="amount" value="Amount Received ({{ $currency }})" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
+                                                         <x-text-input id="amount" name="amount" type="number" min="0" step="0.01" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="0.00" required />
+                                                     </div>
+                                                 </div>
                                                 
                                                 <div class="mt-5 flex justify-end gap-2">
-                                                    <button type="button" x-on:click="$dispatch('close')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3">Cancel</button>
+                                                    <button type="button" x-on:click="$el.closest('form').reset(); $dispatch('close')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3">Cancel</button>
                                                     <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-primary text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition min-w-[110px]">
                                                         <span class="btn-content">Extend Validity</span>
                                                         <span class="hidden btn-loader">
@@ -403,8 +433,49 @@
                     </div>
                 @endif
             </div>
+            </div> <!-- End of all-subscriptions-section -->
 
             <script>
+                // Interactive Tab-Switching Logic with LocalStorage Persistence
+                function switchTab(tab) {
+                    const tabAll = document.getElementById('tab-all');
+                    const tabRequests = document.getElementById('tab-requests');
+                    const pendingSec = document.getElementById('pending-requests-section');
+                    const noPendingMsg = document.getElementById('no-pending-requests-message');
+                    const allSubsSec = document.getElementById('all-subscriptions-section');
+
+                    if (tab === 'all') {
+                        // All Tab Selected
+                        if (tabAll) tabAll.className = "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 bg-white text-slate-800 shadow-sm border border-slate-200/40";
+                        if (tabRequests) tabRequests.className = "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 text-slate-500 hover:text-slate-700";
+
+                        if (pendingSec) pendingSec.classList.add('hidden');
+                        if (noPendingMsg) noPendingMsg.classList.add('hidden');
+                        if (allSubsSec) allSubsSec.classList.remove('hidden');
+                        
+                        localStorage.setItem('active_subscription_tab', 'all');
+                    } else {
+                        // Requests Tab Selected
+                        if (tabAll) tabAll.className = "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 text-slate-500 hover:text-slate-700";
+                        if (tabRequests) tabRequests.className = "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 bg-white text-slate-800 shadow-sm border border-slate-200/40";
+
+                        if (pendingSec) {
+                            pendingSec.classList.remove('hidden');
+                            if (noPendingMsg) noPendingMsg.classList.add('hidden');
+                        } else {
+                            if (noPendingMsg) noPendingMsg.classList.remove('hidden');
+                        }
+                        if (allSubsSec) allSubsSec.classList.add('hidden');
+                        
+                        localStorage.setItem('active_subscription_tab', 'requests');
+                    }
+                }
+
+                // Restore previous active tab on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    const storedTab = localStorage.getItem('active_subscription_tab') || 'all';
+                    switchTab(storedTab);
+                });
                 document.addEventListener('DOMContentLoaded', function() {
                     const searchInput = document.getElementById('search-input');
                     const searchForm = document.getElementById('search-form');

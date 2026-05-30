@@ -212,8 +212,6 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <div class="text-sm font-bold text-emerald-600">
                                             {{ $currency }}{{ number_format($payment->amount, 0) }}</div>
-                                        <div class="text-[10px] font-mono text-gray-400 italic">ID:
-                                            {{ $payment->transaction_id ?? '---' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <span class="px-2.5 py-1 inline-flex text-[10px] font-bold rounded uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Success</span>

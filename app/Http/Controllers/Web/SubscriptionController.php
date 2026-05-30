@@ -106,6 +106,48 @@ class SubscriptionController extends Controller
             ]);
         }
 
+        $institute = $subscription->institute;
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
+                $institute->institute_name,
+                $plan->name,
+                $endDate,
+                $plan->price,
+                'assigned'
+            ));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription assigned email: " . $e->getMessage());
+        }
+
+        // Send DB Notification
+        $notifTitle = "🎉 New Subscription Assigned";
+        $notifBody = "A new subscription for the plan '{$plan->name}' has been assigned to your institute by the administrator.";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        // Send FCM Notification
+        if (!empty($institute->fcm_token)) {
+            try {
+                $fcmService = app(\App\Services\FCMService::class);
+                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $plan->name,
+                    'status' => 'assigned',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send subscription assigned FCM: " . $e->getMessage());
+            }
+        }
+
         Activity::log("New subscription assigned: {$subscription->plan_name} to {$subscription->institute->institute_name}");
 
         return redirect()->route('subscriptions.index')->with('success', 'Plan assigned successfully.');
@@ -137,6 +179,48 @@ class SubscriptionController extends Controller
                 'payment_source' => 'admin',
                 'paid_at' => now(),
             ]);
+        }
+
+        $institute = $subscription->institute;
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
+                $institute->institute_name,
+                $subscription->plan_name,
+                $newEndDate,
+                $request->days,
+                'extended'
+            ));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription extended email: " . $e->getMessage());
+        }
+
+        // Send DB Notification
+        $notifTitle = "📅 Subscription Validity Extended";
+        $notifBody = "Your subscription validity has been extended by {$request->days} days by the administrator. New expiry date: " . $newEndDate->format('d M, Y') . ".";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        // Send FCM Notification
+        if (!empty($institute->fcm_token)) {
+            try {
+                $fcmService = app(\App\Services\FCMService::class);
+                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $subscription->plan_name,
+                    'status' => 'extended',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send subscription extended FCM: " . $e->getMessage());
+            }
         }
 
         Activity::log("Subscription extended for: {$subscription->institute->institute_name} (+{$request->days} days)");
@@ -194,6 +278,48 @@ class SubscriptionController extends Controller
             ]);
         }
 
+        $institute = $subscription->institute;
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
+                $institute->institute_name,
+                $plan->name,
+                $endDate,
+                $plan->price,
+                'converted'
+            ));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription converted email: " . $e->getMessage());
+        }
+
+        // Send DB Notification
+        $notifTitle = "✨ Trial Account Converted to Paid!";
+        $notifBody = "Your trial account has been successfully converted to a paid subscription for the plan '{$plan->name}'. Thank you for your support!";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        // Send FCM Notification
+        if (!empty($institute->fcm_token)) {
+            try {
+                $fcmService = app(\App\Services\FCMService::class);
+                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $plan->name,
+                    'status' => 'converted',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send subscription converted FCM: " . $e->getMessage());
+            }
+        }
+
         Activity::log("Trial converted to paid plan: {$plan->name} for {$subscription->institute->institute_name}");
 
         return redirect()->back()->with('success', 'Trial converted to paid subscription.');
@@ -228,6 +354,48 @@ class SubscriptionController extends Controller
                 'payment_source' => 'admin',
                 'paid_at' => now(),
             ]);
+        }
+
+        $institute = $subscription->institute;
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
+                $institute->institute_name,
+                $plan->name,
+                $endDate,
+                $plan->price,
+                'changed'
+            ));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription changed email: " . $e->getMessage());
+        }
+
+        // Send DB Notification
+        $notifTitle = "🔄 Subscription Plan Changed";
+        $notifBody = "Your subscription plan has been changed/upgraded to '{$plan->name}' by the administrator. New expiry date: " . $endDate->format('d M, Y') . ".";
+        
+        \App\Models\Notification::create([
+            'user_type' => 'institute',
+            'user_id' => $institute->id,
+            'title' => $notifTitle,
+            'message' => $notifBody,
+            'type' => 'subscription_alert',
+            'is_read' => false,
+        ]);
+
+        // Send FCM Notification
+        if (!empty($institute->fcm_token)) {
+            try {
+                $fcmService = app(\App\Services\FCMService::class);
+                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $plan->name,
+                    'status' => 'changed',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send subscription changed FCM: " . $e->getMessage());
+            }
         }
 
         Activity::log("Subscription plan changed to: {$plan->name} for {$subscription->institute->institute_name}");
@@ -292,6 +460,19 @@ class SubscriptionController extends Controller
             'paid_at' => now(),
         ]);
 
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
+                $institute->institute_name,
+                $plan->name,
+                $endDate,
+                $plan->price,
+                'approved'
+            ));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription approved email: " . $e->getMessage());
+        }
+
         // 4. Send notifications (DB + FCM Push)
         $notifTitle = "✅ Subscription Renewal Approved!";
         $notifBody = "Your subscription renewal request for the '{$plan->name}' plan has been approved. Thank you for your payment!";
@@ -306,12 +487,16 @@ class SubscriptionController extends Controller
         ]);
 
         if (!empty($institute->fcm_token)) {
-            $fcmService = app(\App\Services\FCMService::class);
-            $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                'type' => 'subscription_alert',
-                'plan_name' => $plan->name,
-                'status' => 'approved',
-            ]);
+            try {
+                $fcmService = app(\App\Services\FCMService::class);
+                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+                    'type' => 'subscription_alert',
+                    'plan_name' => $plan->name,
+                    'status' => 'approved',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send subscription approved FCM: " . $e->getMessage());
+            }
         }
 
         Activity::log("Manual renewal approved for {$institute->institute_name} (Plan: {$plan->name})");

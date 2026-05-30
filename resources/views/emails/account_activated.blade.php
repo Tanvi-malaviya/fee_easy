@@ -12,13 +12,13 @@
     <tr><td class="em-banner"></td></tr>
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#128274;</div>
-      <h1 class="em-title">Verify Your Account</h1>
-      <p class="em-sub">Welcome to Tuoora! Use the code below to complete your registration.</p>
+      <div class="em-icon" style="background:#e6f6ec;color:#1f9d55;">&#10004;</div>
+      <h1 class="em-title">Account Activated!</h1>
+      <p class="em-sub">Your Tuoora account is now active and ready to use.</p>
       <p>Hi <strong>{{ $userName }}</strong>,</p>
-      <p>Thank you for signing up. Please enter this One-Time Password to verify your email address:</p>
-      <div class="em-otp"><span class="code">{{ $otp }}</span></div>
-      <div class="em-note">This code expires in <strong>10 minutes</strong>. If you didn't request this, please ignore this email.</div>
+      <p>Congratulations! Your email has been successfully verified and your account is now fully activated. You can now access all your dashboard, resources, student registry, and financial management tools.</p>
+      <div class="em-center"><a href="{{ $loginUrl }}" class="em-btn">Start Managing</a></div>
+      <div class="em-note">Tip: Complete your profile setup to start adding batches, courses, and students.</div>
     </td></tr>
     <!-- FOOTER -->
     <tr><td class="em-footer">

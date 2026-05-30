@@ -345,13 +345,9 @@
                 const icon = icons[idx % icons.length];
                 const statusBadge = '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
 
-                const savedStaffId = localStorage.getItem('batch_staff_' + batch.id);
                 let staffHtml = '';
-                if (savedStaffId) {
-                    const staffObj = staffListJs.find(s => s.id == savedStaffId);
-                    if (staffObj) {
-                        staffHtml = `<div class="flex items-center gap-2 text-primary/80"><svg class="w-3 h-3 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${staffObj.full_name}</span></div>`;
-                    }
+                if (batch.staff) {
+                    staffHtml = `<div class="flex items-center gap-2 text-primary/80"><svg class="w-3 h-3 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${batch.staff.full_name}</span></div>`;
                 }
 
                 return `
@@ -518,10 +514,10 @@
             const days = batch.days || [];
             document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
 
-            // Load and pre-select staff from localStorage
-            const savedStaffId = localStorage.getItem('batch_staff_' + batch.id) || '';
-            document.getElementById('field-staff').value = savedStaffId;
-            const staffObj = staffListJs.find(s => s.id == savedStaffId);
+            // Load and pre-select staff from batch object
+            const batchStaffId = batch.staff_id || '';
+            document.getElementById('field-staff').value = batchStaffId;
+            const staffObj = staffListJs.find(s => s.id == batchStaffId);
             const labelEl = document.getElementById('modal-staff-label');
             if (staffObj) {
                 labelEl.innerText = staffObj.full_name;
@@ -549,8 +545,6 @@
             // Clean payload: remove days[] and ensure days is an array
             const payload = Object.fromEntries(formData.entries());
             delete payload['days[]'];
-            const staffIdToSave = payload.staff_id;
-            delete payload.staff_id;
             payload.days = days;
 
             toggleSubmitLoading(true);
@@ -576,17 +570,6 @@
 
                 if (resp.ok && result.status === 'success') {
                     showToast(result.message || 'Batch saved successfully');
-                    
-                    // Save staff selection to localStorage
-                    const batchId = id || result.data.id;
-                    if (batchId) {
-                        if (staffIdToSave) {
-                            localStorage.setItem('batch_staff_' + batchId, staffIdToSave);
-                        } else {
-                            localStorage.removeItem('batch_staff_' + batchId);
-                        }
-                    }
-
                     toggleFormView(false);
                     fetchBatches();
                 } else {
