@@ -5,6 +5,51 @@
         <!-- Toast Notifications Container -->
         <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
+
+         <!-- Stats Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
+            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
+                <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Students</p>
+                    <h3 id="stat-total-students" class="text-xl font-bold text-slate-800 leading-none">...</h3>
+                </div>
+            </div>
+
+
+
+            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
+                <div class="h-9 w-9 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Performance</p>
+                    <h3 id="stat-performance" class="text-xl font-bold text-slate-800 leading-none">...</h3>
+                </div>
+            </div>
+
+            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
+                <div class="h-9 w-9 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pending Fees</p>
+                    <h3 id="stat-pending-fees" class="text-xl font-bold text-slate-800 leading-none">...</h3>
+                </div>
+            </div>
+        </div>
+
         <!-- Premium Header & Action Row -->
         <div
             class="bg-white p-2 rounded-xl border border-slate-100 shadow-sm flex flex-col lg:flex-row items-center gap-3 mb-2">
@@ -68,49 +113,7 @@
             </div>
         </div>
 
-        <!-- Stats Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Students</p>
-                    <h3 id="stat-total-students" class="text-xl font-bold text-slate-800 leading-none">...</h3>
-                </div>
-            </div>
-
-
-
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="h-9 w-9 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Performance</p>
-                    <h3 id="stat-performance" class="text-xl font-bold text-slate-800 leading-none">...</h3>
-                </div>
-            </div>
-
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="h-9 w-9 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pending Fees</p>
-                    <h3 id="stat-pending-fees" class="text-xl font-bold text-slate-800 leading-none">...</h3>
-                </div>
-            </div>
-        </div>
+       
 
 
 
@@ -465,15 +468,15 @@
 
                                             <!-- Footer Actions -->
                                             <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                                <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
+                                                <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px]  transition-all">
                                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     View
                                                 </a>
                                                 <div class="flex items-center gap-3">
-                                                    <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
+                                                    <a href="/institute/students/${student.id}/edit" class="action-btn text-blue-500 hover:text-blue-500 transition-all" title="Edit">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </a>
-                                                    <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Delete">
+                                                    <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-rose-500 hover:text-rose-500 transition-all" title="Delete">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                     </button>
                                                 </div>
