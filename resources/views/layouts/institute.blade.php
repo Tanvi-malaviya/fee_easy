@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,13 +10,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tuoora Institute Panel</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- Brand Styles -->
     <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
 
@@ -44,87 +46,142 @@
     </script>
 
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #F8F9FA; }
-        .nav-link.active { color: #FF6B00; }
-        .nav-link.active::after { content: ''; position: absolute; bottom: -20px; left: 0; right: 0; height: 3px; background: #FF6B00; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .btn-primary { background-color: #FF6B00; color: white; transition: all 0.3s; }
-        .btn-primary:hover { background-color: #e66000; transform: translateY(-1px); }
-        
-        .card-premium { background-color: white; border: 1px solid #f1f5f9; border-radius: 2rem; transition: all 0.3s; }
-        .card-premium:hover { shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); transform: translateY(-2px); }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #F8F9FA;
+        }
+
+        .nav-link.active {
+            color: #FF6B00;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #FF6B00;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .btn-primary {
+            background-color: #FF6B00;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #e66000;
+            transform: translateY(-1px);
+        }
+
+        .card-premium {
+            background-color: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card-premium:hover {
+            shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            pointer-events: none;
+        }
     </style>
 </head>
+
 <body class="bg-[#F8F9FA] text-slate-900 antialiased overflow-x-hidden">
+    <div class="bg-pattern"></div>
 
     <!-- TOP NAVBAR -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-[100] shadow-sm">
         <div class="max-w-[1600px] mx-auto h-full px-6 flex items-center justify-between">
-            
+
             <!-- Logo Section -->
             <div class="flex items-center gap-3">
-                <button id="mobile-sidebar-toggle" class="lg:hidden h-9 w-9 flex items-center justify-center text-slate-400 bg-slate-50 rounded-xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                <button id="mobile-sidebar-toggle"
+                    class="lg:hidden h-9 w-9 flex items-center justify-center text-slate-400 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
                 </button>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain" onerror="this.style.display='none'">
+                        <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                            onerror="this.style.display='none'">
                     </a>
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="hidden lg:flex items-center gap-10 h-full">
-                @php
-                    $navItems = [
-                        ['route' => 'institute.dashboard', 'label' => 'Dashboard'],
-                        ['route' => 'institute.students.index', 'label' => 'Students'],
-                        ['route' => 'institute.batches.index', 'label' => 'Batch'],
-                         ['route' => 'institute.fees.index', 'label' => 'Finance'],
-                        ['route' => 'institute.reports.index', 'label' => 'Report'],
-                       
-                    ];
-                @endphp
-
-                @foreach($navItems as $item)
-                    @php 
-                        $active = request()->routeIs($item['route']) || (request()->is('institute/batches/*') && $item['label'] == 'Batch') || (request()->is('institute/students/*') && $item['label'] == 'Students');
-                    @endphp
-                    <a href="{{ route($item['route']) }}" 
-                       class="relative h-full flex items-center text-[14px] font-bold transition-all {{ $active ? 'text-[#FF6B00]' : 'text-slate-500 hover:text-slate-800' }}">
-                        {{ $item['label'] }}
-                        @if($active)
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF6B00] rounded-full"></div>
-                        @endif
-                    </a>
-                @endforeach
-            </nav>
+            <!-- Welcome Message -->
+            <div class="hidden lg:flex items-center">
+                <span class="text-slate-500 text-[15px] font-medium">
+                    Hello, <span
+                        class="font-black text-slate-800 tracking-tight">{{ auth('institute')->user()->institute_name ?? auth('institute')->user()->name }}</span>
+                    👋
+                </span>
+            </div>
 
             <!-- Right Profile Section -->
             <div class="flex items-center gap-2 sm:gap-4">
-                <a href="{{ route('institute.notifications.index') }}" class="text-slate-400 hover:text-slate-800 transition-colors relative p-2 rounded-xl hover:bg-slate-50 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    <span id="notif-dot" class="absolute top-2 right-2 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
+                <a href="{{ route('institute.notifications.index') }}"
+                    class="text-slate-400 hover:text-slate-800 transition-colors relative p-2 rounded-xl hover:bg-slate-50 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <span id="notif-dot"
+                        class="absolute top-2 right-2 h-2.5 w-2.5 bg-[#FF6B00] rounded-full border-2 border-white hidden"></span>
                 </a>
-                
+
                 <div class="h-6 w-[1px] bg-slate-200 hidden lg:block"></div>
 
-                <a href="{{ route('institute.profile.index') }}" class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0 hidden sm:block">
-                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" 
-                         class="h-full w-full object-cover">
+                <a href="{{ route('institute.profile.index') }}"
+                    class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0 hidden sm:block">
+                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}"
+                        class="h-full w-full object-cover">
                 </a>
 
-                <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                     class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group hidden lg:flex"
                     title="Logout">
-                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </button>
 
@@ -136,59 +193,60 @@
     </header>
 
     <!-- MOBILE MENU (Slide-over) -->
-    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] opacity-0 pointer-events-none transition-opacity duration-300"></div>
-    <div id="mobile-menu-panel" class="fixed top-0 bottom-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[201] -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <div id="mobile-menu-backdrop"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] opacity-0 pointer-events-none transition-opacity duration-300">
+    </div>
+    <div id="mobile-menu-panel"
+        class="fixed top-0 bottom-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[201] -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <!-- Close & Logo Header -->
         <div class="py-3 px-4 flex items-center justify-between border-b border-slate-100">
             <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                    onerror="this.style.display='none'">
             </a>
-            <button id="close-menu" class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button id="close-menu"
+                class="h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
             </button>
         </div>
 
         <!-- Profile Card -->
-        <a href="{{ route('institute.profile.index') }}" class="py-3 px-4 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+        <a href="{{ route('institute.profile.index') }}"
+            class="py-3 px-4 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between hover:bg-slate-50 transition-colors group">
             <div class="flex items-center gap-2.5 overflow-hidden">
-                <div class="h-10 w-10 rounded-xl bg-white overflow-hidden border border-slate-200 shrink-0 shadow-sm group-hover:border-orange-500 transition-colors">
-                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}" class="h-full w-full object-cover">
+                <div
+                    class="h-10 w-10 rounded-xl bg-white overflow-hidden border border-slate-200 shrink-0 shadow-sm group-hover:border-orange-500 transition-colors">
+                    <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}"
+                        class="h-full w-full object-cover">
                 </div>
                 <div class="overflow-hidden text-left">
-                    <h4 class="text-xs font-extrabold text-slate-800 truncate group-hover:text-[#FF6B00] transition-colors">{{ auth('institute')->user()->institute_name ?? auth('institute')->user()->name }}</h4>
+                    <h4
+                        class="text-xs font-extrabold text-slate-800 truncate group-hover:text-[#FF6B00] transition-colors">
+                        {{ auth('institute')->user()->institute_name ?? auth('institute')->user()->name }}</h4>
                     <p class="text-[9px] font-medium text-slate-400 truncate">{{ auth('institute')->user()->email }}</p>
                 </div>
             </div>
             <span class="text-slate-400 group-hover:text-[#FF6B00] transition-colors pl-2">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                </svg>
             </span>
         </a>
 
         <!-- Navigation Links -->
         <div class="flex-1 py-3 px-3 flex flex-col gap-1 overflow-y-auto custom-scrollbar">
-            @foreach($navItems as $item)
-                @php 
-                    $active = request()->routeIs($item['route']) || (request()->is('institute/batches/*') && $item['label'] == 'Batch') || (request()->is('institute/students/*') && $item['label'] == 'Students');
-                    
-                    $icon = '';
-                    if ($item['label'] == 'Dashboard') {
-                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>';
-                    } elseif ($item['label'] == 'Students') {
-                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
-                    } elseif ($item['label'] == 'Batch') {
-                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>';
-                    } elseif ($item['label'] == 'Report') {
-                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9-1V3a2 2 0 012-2h2a2 2 0 012 2v15a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>';
-                    } elseif ($item['label'] == 'Finance') {
-                        $icon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-                    }
-                @endphp
-                <a href="{{ route($item['route']) }}" 
-                   class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ $active ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <span class="{{ $active ? 'text-[#FF6B00]' : 'text-slate-400' }}">{!! $icon !!}</span>
-                    <span>{{ $item['label'] }}</span>
-                </a>
-            @endforeach
+            <a href="{{ route('institute.dashboard') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.dashboard') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.dashboard') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+                    </svg>
+                </span>
+                <span>Dashboard Home</span>
+            </a>
         </div>
 
         <!-- Logout Section in Mobile Menu -->
@@ -196,7 +254,8 @@
             <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                 class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 rounded-lg text-[10px] font-bold transition-all shadow-sm">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 Sign Out
             </button>
@@ -204,12 +263,13 @@
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="mt-16 px-4 md:px-6 pt-2 pb-3">
+    <main class="mt-16 px-4 md:px-6 pt-2 pb-3 relative">
         @yield('content')
     </main>
 
     <!-- Global Components -->
-    <div id="global-loader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/60 backdrop-blur-[2px] hidden transition-all duration-300">
+    <div id="global-loader"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/60 backdrop-blur-[2px] hidden transition-all duration-300">
         <div class="flex flex-col items-center">
             <div class="h-12 w-12 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
             <span class="mt-4 text-[10px] font-black text-slate-500 tracking-widest uppercase">Processing...</span>
@@ -217,18 +277,24 @@
     </div>
 
     <div id="toast-container" class="fixed top-6 right-6 z-[100] space-y-3 pointer-events-none"></div>
-    
+
     <!-- Custom Confirmation Modal -->
-    <div id="confirm-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden transition-all duration-300">
-        <div class="bg-white rounded-[1.2rem] p-5 max-w-[340px] w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100" id="confirm-modal-content">
+    <div id="confirm-modal"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden transition-all duration-300">
+        <div class="bg-white rounded-[1.2rem] p-5 max-w-[340px] w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100"
+            id="confirm-modal-content">
             <div class="flex items-center gap-3 mb-3.5">
-                <div class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center text-[#FF6B00] shrink-0 border border-orange-100">
+                <div
+                    class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center text-[#FF6B00] shrink-0 border border-orange-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
                 <div>
-                    <h3 id="confirm-modal-title" class="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 uppercase">Confirm</h3>
+                    <h3 id="confirm-modal-title"
+                        class="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 uppercase">Confirm
+                    </h3>
                     <p class="text-[9px] font-bold text-[#FF6B00] uppercase tracking-[0.15em]">Irreversible Action</p>
                 </div>
             </div>
@@ -239,10 +305,11 @@
                 <button id="confirm-modal-cancel" onclick="closeConfirmModal()"
                     class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
                 <button id="confirm-modal-ok"
-                    class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes, Proceed</button>
+                    class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes,
+                    Proceed</button>
             </div>
 
-          
+
         </div>
     </div>
 
@@ -294,7 +361,7 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-tertiary' : 'bg-rose-600';
-            const icon = type === 'success' 
+            const icon = type === 'success'
                 ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>'
                 : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>';
 
@@ -327,20 +394,20 @@
             const modal = document.getElementById('confirm-modal');
             const content = document.getElementById('confirm-modal-content');
             const okBtn = document.getElementById('confirm-modal-ok');
-            
+
             if (!modal || !content || !okBtn) return;
 
             document.getElementById('confirm-modal-title').innerText = title;
             document.getElementById('confirm-modal-message').innerHTML = message;
-            
+
             okBtn.innerText = okText;
             okBtn.className = `flex-1 px-4 py-2.5 ${okClass} text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all`;
-            
+
             okBtn.onclick = () => {
                 if (onConfirm) onConfirm();
                 closeConfirmModal();
             };
-            
+
             modal.classList.remove('hidden');
             setTimeout(() => {
                 content.classList.remove('scale-95', 'opacity-0');
@@ -349,9 +416,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            
+
             // Mobile Menu Toggle registered globally above
         });
+
+        // Global Subscription Helper
+        function handleExpiredSubscription(event) {
+            event.preventDefault();
+            showConfirmModal(
+                'Subscription Expired',
+                'Your subscription has expired. Please renew your subscription to perform this action.',
+                function () {
+                    window.location.href = "{{ route('institute.subscription.renew.show') }}";
+                },
+                'Renew Now',
+                'bg-[#FF6B00] shadow-orange-900/20'
+            );
+        }
 
         // Real-time notification polling
         let seenNotifications = new Set();
@@ -376,7 +457,7 @@
                             }
                         }
                     });
-                    
+
                     const dot = document.getElementById('notif-dot');
                     if (dot) {
                         if (hasUnread) {
@@ -406,137 +487,138 @@
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-messaging-compat.js"></script>
     <script>
-        @if(auth('institute')->check())
-            const firebaseConfig = {
-                apiKey: "{{ config('services.firebase.api_key') }}",
-                authDomain: "{{ config('services.firebase.auth_domain') }}",
-                projectId: "{{ config('services.firebase.project_id') }}",
-                storageBucket: "{{ config('services.firebase.storage_bucket') }}",
-                messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
-                appId: "{{ config('services.firebase.app_id') }}"
-            };
+            @if(auth('institute')->check())
+                const firebaseConfig = {
+                    apiKey: "{{ config('services.firebase.api_key') }}",
+                    authDomain: "{{ config('services.firebase.auth_domain') }}",
+                    projectId: "{{ config('services.firebase.project_id') }}",
+                    storageBucket: "{{ config('services.firebase.storage_bucket') }}",
+                    messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
+                    appId: "{{ config('services.firebase.app_id') }}"
+                };
 
-            // Initialize Firebase only if the client configuration is available in .env
-            if (firebaseConfig.apiKey && firebaseConfig.messagingSenderId) {
-                firebase.initializeApp(firebaseConfig);
-                const messaging = firebase.messaging();
+                // Initialize Firebase only if the client configuration is available in .env
+                if (firebaseConfig.apiKey && firebaseConfig.messagingSenderId) {
+                    firebase.initializeApp(firebaseConfig);
+                    const messaging = firebase.messaging();
 
-                // Foreground message handler
-                messaging.onMessage((payload) => {
-                    console.log('Foreground message received: ', payload);
-                    
-                    const senderId = payload.data && payload.data.sender_id;
-                    const senderType = payload.data && payload.data.sender_type;
-                    const currentUserId = '{{ auth('institute')->id() }}';
-                    const isMe = senderId && (senderId == currentUserId) && (senderType === 'Institute');
-                    
-                    // Do not notify about own sent messages
-                    if (isMe) {
-                        return;
-                    }
+                    // Foreground message handler
+                    messaging.onMessage((payload) => {
+                        console.log('Foreground message received: ', payload);
 
-                    const title = (payload.notification && payload.notification.title) || 
-                                  (payload.data && payload.data.title) || 
-                                  'New Notification';
-                    const body = (payload.notification && payload.notification.body) || 
-                                 (payload.data && payload.data.body) || 
-                                 (payload.data && payload.data.message) || 
-                                 '';
-                    
-                    const isChatPage = window.location.pathname.includes('/institute/chats');
-                    const isChatMsg = (payload.data && payload.data.type === 'chat');
+                        const senderId = payload.data && payload.data.sender_id;
+                        const senderType = payload.data && payload.data.sender_type;
+                        const currentUserId = '{{ auth('institute')->id() }}';
+                        const isMe = senderId && (senderId == currentUserId) && (senderType === 'Institute');
 
-                    // If we are on the chats page and it is a chat message, let the chats page Echo handle it
-                    if (isChatPage && isChatMsg) {
-                        return;
-                    }
-
-                    // Show toast inside the app only if the tab is visible/active
-                    if (!document.hidden) {
-                        if (typeof showToast === 'function') {
-                            showToast(`${title}: ${body}`, 'success');
+                        // Do not notify about own sent messages
+                        if (isMe) {
+                            return;
                         }
-                    }
 
-                    // Play notification sound
-                    try {
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-                        
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-                        
-                        oscillator.type = 'sine';
-                        oscillator.frequency.value = 587.33; // D5 note
-                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
-                        
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.12);
-                    } catch (e) {
-                        console.log('Audio feedback failed:', e);
-                    }
-                });
+                        const title = (payload.notification && payload.notification.title) ||
+                            (payload.data && payload.data.title) ||
+                            'New Notification';
+                        const body = (payload.notification && payload.notification.body) ||
+                            (payload.data && payload.data.body) ||
+                            (payload.data && payload.data.message) ||
+                            '';
 
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('{{ asset("firebase-messaging-sw.js") }}')
-                        .then((registration) => {
-                            console.log('FCM Service Worker registered successfully.');
-                            
-                            // Request Notification permission
-                            return Notification.requestPermission().then((permission) => {
-                                if (permission === 'granted') {
-                                    const vapidKey = "{{ config('services.firebase.vapid_key') }}";
-                                    const tokenOptions = { serviceWorkerRegistration: registration };
-                                    if (vapidKey) {
-                                        tokenOptions.vapidKey = vapidKey;
-                                    }
+                        const isChatPage = window.location.pathname.includes('/institute/chats');
+                        const isChatMsg = (payload.data && payload.data.type === 'chat');
 
-                                    return messaging.getToken(tokenOptions).then((currentToken) => {
-                                        if (currentToken) {
-                                            sendTokenToServer(currentToken);
-                                        } else {
-                                            console.warn('No FCM token received.');
+                        // If we are on the chats page and it is a chat message, let the chats page Echo handle it
+                        if (isChatPage && isChatMsg) {
+                            return;
+                        }
+
+                        // Show toast inside the app only if the tab is visible/active
+                        if (!document.hidden) {
+                            if (typeof showToast === 'function') {
+                                showToast(`${title}: ${body}`, 'success');
+                            }
+                        }
+
+                        // Play notification sound
+                        try {
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+
+                            oscillator.type = 'sine';
+                            oscillator.frequency.value = 587.33; // D5 note
+                            gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+
+                            oscillator.start();
+                            oscillator.stop(audioContext.currentTime + 0.12);
+                        } catch (e) {
+                            console.log('Audio feedback failed:', e);
+                        }
+                    });
+
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.register('{{ asset("firebase-messaging-sw.js") }}')
+                            .then((registration) => {
+                                console.log('FCM Service Worker registered successfully.');
+
+                                // Request Notification permission
+                                return Notification.requestPermission().then((permission) => {
+                                    if (permission === 'granted') {
+                                        const vapidKey = "{{ config('services.firebase.vapid_key') }}";
+                                        const tokenOptions = { serviceWorkerRegistration: registration };
+                                        if (vapidKey) {
+                                            tokenOptions.vapidKey = vapidKey;
                                         }
-                                    });
-                                } else {
-                                    console.warn('Notification permission denied.');
-                                }
-                            });
-                        })
-                        .catch((err) => {
-                            console.error('FCM Service Worker registration failed:', err);
-                        });
-                }
 
-                function sendTokenToServer(token) {
-                    const storageKey = 'fcm_token_user_{{ auth('institute')->id() }}';
-                    if (localStorage.getItem(storageKey) === token) {
-                        return; // Already registered for this session
+                                        return messaging.getToken(tokenOptions).then((currentToken) => {
+                                            if (currentToken) {
+                                                sendTokenToServer(currentToken);
+                                            } else {
+                                                console.warn('No FCM token received.');
+                                            }
+                                        });
+                                    } else {
+                                        console.warn('Notification permission denied.');
+                                    }
+                                });
+                            })
+                            .catch((err) => {
+                                console.error('FCM Service Worker registration failed:', err);
+                            });
                     }
 
-                    fetch('{{ route("institute.fcm-token.update") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ fcm_token: token })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            localStorage.setItem(storageKey, token);
-                            console.log('FCM Token successfully registered on server.');
+                    function sendTokenToServer(token) {
+                        const storageKey = 'fcm_token_user_{{ auth('institute')->id() }}';
+                        if (localStorage.getItem(storageKey) === token) {
+                            return; // Already registered for this session
                         }
-                    })
-                    .catch(err => console.error('Error saving FCM token to server:', err));
+
+                        fetch('{{ route("institute.fcm-token.update") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ fcm_token: token })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    localStorage.setItem(storageKey, token);
+                                    console.log('FCM Token successfully registered on server.');
+                                }
+                            })
+                            .catch(err => console.error('Error saving FCM token to server:', err));
+                    }
                 }
-            }
-        @endif
+            @endif
     </script>
     @stack('scripts')
     @stack('modals')
 </body>
+
 </html>

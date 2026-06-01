@@ -36,6 +36,14 @@
                     </svg>
                     New Update
                 </button>
+                @else
+                <button onclick="handleExpiredSubscription(event)"
+                    class="w-full md:w-auto px-4 md:px-6 py-2.5 md:py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-900/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 md:w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Update
+                </button>
                 @endif
             </div>
 

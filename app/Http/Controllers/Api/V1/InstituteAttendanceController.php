@@ -111,34 +111,39 @@ class InstituteAttendanceController extends Controller
                 $statusUpper = ucfirst(strtolower($record['status']));
                 $formattedDate = \Illuminate\Support\Carbon::parse($date)->format('d M Y');
                 
-                $notifTitle = "Attendance: {$statusUpper} 📝";
-                $notifBody = "You have been marked {$statusUpper} for class on {$formattedDate}.";
+                if ($record['status'] === 'present' || $record['status'] === 'late') {
+                    $notifTitle   = "Marked Present";
+                    $studentBody  = "You've been marked present for today.";
+                    $parentBody   = "{$student->name} has been marked present for today.";
+                } else {
+                    $notifTitle   = "Marked Absent";
+                    $studentBody  = "You've been marked absent today. If this is a mistake, contact your institute.";
+                    $parentBody   = "{$student->name} has been marked absent today. Please contact the institute if unexpected.";
+                }
                 $notifData = [
-                    'type' => 'attendance',
-                    'date' => $date,
+                    'type'   => 'attendance',
+                    'date'   => $date,
                     'status' => strtolower($record['status']),
                 ];
 
-                // Student DB Notification
                 \App\Models\Notification::create([
-                    'user_type' => 'student',
-                    'user_id' => $student->id,
-                    'title' => $notifTitle,
-                    'message' => $notifBody,
-                    'type' => 'attendance',
+                    'user_type'    => 'student',
+                    'user_id'      => $student->id,
+                    'title'        => $notifTitle,
+                    'message'      => $studentBody,
+                    'type'         => 'attendance',
                     'reference_id' => $attendance->id,
-                    'is_read' => false,
+                    'is_read'      => false,
                 ]);
 
                 // Student FCM push
                 if (!empty($student->fcm_token)) {
-                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                    $fcm->send($student->fcm_token, $notifTitle, $studentBody, $notifData);
                 }
 
                 // Parent Notification
                 if ($student->parent) {
-                    $parentTitle = "Attendance: {$student->name} - {$statusUpper} 📝";
-                    $parentBody = "{$student->name} has been marked {$statusUpper} for class on {$formattedDate}.";
+                    $parentTitle = $notifTitle;
 
                     \App\Models\Notification::create([
                         'user_type' => 'parent',

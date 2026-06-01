@@ -124,13 +124,14 @@ class InstituteHomeworkController extends Controller
             $fcm = app(\App\Services\FCMService::class);
             $batch->load('students.parent');
 
-            $notifTitle = "New Homework: {$batch->name} 📝";
-            $notifBody  = $homework->description ?? $homework->title;
+            $notifTitle = "New Homework Assigned";
+            $dueFormatted = \Carbon\Carbon::parse($homework->due_date)->format('d M, Y');
+            $studentBody  = "\"" . $homework->title . "\" has been assigned to your batch. Due {$dueFormatted}.";
 
             $notifData = [
-                'type' => 'homework',
+                'type'        => 'homework',
                 'homework_id' => (string) $homework->id,
-                'batch_id' => (string) $batch->id,
+                'batch_id'    => (string) $batch->id,
             ];
 
             // Check if homework has an attachment (image or document/PDF)
@@ -145,32 +146,33 @@ class InstituteHomeworkController extends Controller
                     'user_type'    => 'student',
                     'user_id'      => $student->id,
                     'title'        => $notifTitle,
-                    'message'      => $notifBody,
+                    'message'      => $studentBody,
                     'image'        => $homeworkImageUrl,
                     'type'         => 'homework',
                     'reference_id' => $homework->id,
                     'is_read'      => false,
                 ]);
-                
+
                 if (!empty($student->fcm_token)) {
-                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                    $fcm->send($student->fcm_token, $notifTitle, $studentBody, $notifData);
                 }
 
                 // Notify Parent
                 if ($student->parent) {
+                    $parentBody = "\"" . $homework->title . "\" has been assigned to {$student->name}'s batch. Due {$dueFormatted}.";
                     \App\Models\Notification::create([
                         'user_type'    => 'parent',
                         'user_id'      => $student->parent->id,
-                        'title'        => "New Homework: {$student->name} 📝",
-                        'message'      => "{$student->name} has new homework: {$homework->title}",
+                        'title'        => $notifTitle,
+                        'message'      => $parentBody,
                         'image'        => $homeworkImageUrl,
                         'type'         => 'homework',
                         'reference_id' => $homework->id,
                         'is_read'      => false,
                     ]);
-                    
+
                     if (!empty($student->parent->fcm_token)) {
-                        $fcm->send($student->parent->fcm_token, "New Homework: {$student->name} 📝", "{$student->name} has new homework: {$homework->title}", $notifData);
+                        $fcm->send($student->parent->fcm_token, $notifTitle, $parentBody, $notifData);
                     }
                 }
             }
@@ -364,8 +366,8 @@ class InstituteHomeworkController extends Controller
             // Only notify if status is 'Submitted' or 'Reviewed' (meaning graded/published successfully)
             if ($status === 'Submitted' || $status === 'Reviewed') {
                 $scoreText = $gradeData['score'] !== null ? "Score: {$gradeData['score']}" : "Graded successfully";
-                $notifTitle = "Homework Graded! 🌟";
-                $notifBody = "Your homework \"{$homework->title}\" has been graded. {$scoreText}!";
+                $notifTitle = "Homework Graded";
+                $notifBody  = "Your work on \"{$homework->title}\" is graded. Score: {$gradeData['score']}.";
                 $notifData = [
                     'type' => 'homework_graded',
                     'homework_id' => (string) $homework->id,
@@ -391,7 +393,7 @@ class InstituteHomeworkController extends Controller
                 // Parent Notification
                 if ($student->parent) {
                     $parentTitle = "Homework Graded: {$student->name}";
-                    $parentBody = "{$student->name}'s homework \"{$homework->title}\" has been graded. {$scoreText}!";
+                    $parentBody = "{$student->name}'s work on \"{$homework->title}\" is graded. Score: {$gradeData['score']}.";
 
                     \App\Models\Notification::create([
                         'user_type' => 'parent',
@@ -453,7 +455,7 @@ class InstituteHomeworkController extends Controller
         $remindedCount = 0;
         $fcm = app(\App\Services\FCMService::class);
 
-        $notifTitle = "Homework Pending! 📝";
+        $notifTitle = "Homework Pending";
         $notifBody  = "Reminder: \"{$homework->title}\" is still pending. Please submit it soon! (If already submitted, please ignore.)";
         $notifData  = [
             'type'        => 'homework_reminder',

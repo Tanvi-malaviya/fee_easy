@@ -33,7 +33,8 @@
                     <div class="col-span-1">
                         <label
                             class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Phone</label>
-                        <input type="text" name="phone" required placeholder="+1 (555) 000-0000"
+                        <input type="text" name="phone" required placeholder="Enter Phone Number" maxlength="10"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                     </div>
 

@@ -143,9 +143,13 @@
                 Send Push Notification
             </button>
             @else
-            <div class="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl text-sm font-bold text-center border border-slate-200">
-                Subscription Expired - Sending Disabled
-            </div>
+            <button type="button" onclick="handleExpiredSubscription(event)" id="send-btn"
+                class="w-full py-3.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:translate-y-[-1px] hover:shadow-xl hover:shadow-orange-500/30 active:scale-95 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                Send Push Notification
+            </button>
             @endif
         </div>
 

@@ -24,35 +24,12 @@
     </div>
 
     <!-- Plans Grid Loader (Skeleton Cards) -->
-    <div id="plans-loader" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        @for($i = 0; $i < 3; $i++)
-        <div class="bg-white rounded-2xl p-5 border border-slate-100/50 shadow-xl flex flex-col justify-between relative overflow-hidden animate-pulse">
-            <div>
-                <!-- Plan Name Placeholder -->
-                <div class="h-4 bg-slate-100 rounded-md w-1/3 mb-4"></div>
-                <!-- Price Placeholder -->
-                <div class="flex items-baseline gap-1 mb-6">
-                    <div class="h-8 bg-slate-100 rounded-md w-1/2"></div>
-                    <div class="h-3 bg-slate-100 rounded-md w-1/4"></div>
-                </div>
-                <!-- Divider & List -->
-                <div class="border-t border-slate-50 pt-4 space-y-3">
-                    <div class="flex items-center gap-2">
-                        <div class="h-3.5 w-3.5 rounded-full bg-slate-100 shrink-0"></div>
-                        <div class="h-2.5 bg-slate-100 rounded-md w-3/4"></div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="h-3.5 w-3.5 rounded-full bg-slate-100 shrink-0"></div>
-                        <div class="h-2.5 bg-slate-100 rounded-md w-2/3"></div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="h-3.5 w-3.5 rounded-full bg-slate-100 shrink-0"></div>
-                        <div class="h-2.5 bg-slate-100 rounded-md w-1/2"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Button Placeholder -->
-            <div class="h-9 bg-slate-100 rounded-xl w-full mt-8"></div>
+    <div id="plans-loader" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        @for($i = 0; $i < 4; $i++)
+        <div class="bg-white rounded-3xl p-6 border border-slate-100/50 shadow-lg flex flex-col items-center justify-center relative overflow-hidden animate-pulse h-48">
+            <div class="h-4 bg-slate-100 rounded-md w-1/2 mb-4"></div>
+            <div class="h-10 bg-slate-100 rounded-md w-3/4 mb-2"></div>
+            <div class="h-3 bg-slate-100 rounded-md w-1/3"></div>
         </div>
         @endfor
     </div>
@@ -153,7 +130,7 @@
                 }
 
                 // 2. Plans Grid
-                renderPlans(data.plans, data.subscription);
+                renderPlans(data.plans, data.subscription, data.history);
 
                 // 3. Billing History
                 renderHistory(data.history);
@@ -161,51 +138,52 @@
         } catch (e) { console.error('Fetch all error:', e); }
     }
 
-    function renderPlans(plans, subscription) {
+    function renderPlans(plans, subscription, history) {
         const container = document.getElementById('plans-container');
         const loader = document.getElementById('plans-loader');
         
+        const hasUsedFreePlan = history ? history.some(h => h.plan_name.toLowerCase().includes('free')) : false;
+
         container.innerHTML = '';
         plans.forEach(plan => {
             const card = document.createElement('div');
             const nameLower = plan.name.toLowerCase();
             const isActive = subscription && subscription.plan_name && subscription.plan_name.toLowerCase() === nameLower;
+            const isFreePlan = nameLower.includes('free');
             
-            card.className = `bg-white rounded-2xl p-5 border shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-1 ${isActive ? 'border-[#ff6c00] ring-1 ring-[#ff6c00]/20' : 'border-slate-100/50'}`;
-            
-            const badgeHtml = isActive ? `<span class="absolute right-3 top-3 bg-[#ff6c00] text-white text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Current Plan</span>` : '';
-
-            let features = [];
-            if (nameLower.includes('basic')) {
-                features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
-            } else if (nameLower.includes('pro')) {
-                features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
+            if (isActive) {
+                card.className = `bg-gradient-to-br from-[#ff6c00] to-[#e05f00] rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center justify-between relative overflow-hidden transition-all duration-300 transform md:scale-105 z-10`;
             } else {
-                features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
+                card.className = `bg-white rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-orange-200`;
+            }
+            
+            const badgeHtml = isActive ? `<span class="absolute top-0 inset-x-0 bg-white/20 text-white text-[9px] font-black uppercase tracking-widest py-1.5 backdrop-blur-md shadow-sm">Current Active Plan</span>` : '';
+
+            let buttonHtml = '';
+            if (isActive) {
+                buttonHtml = `<button disabled class="w-full mt-6 py-3.5 bg-white text-[#ff6c00] rounded-xl font-black text-[11px] uppercase tracking-widest shadow-md">Active Plan</button>`;
+            } else if (isFreePlan && hasUsedFreePlan) {
+                buttonHtml = `<button disabled class="w-full mt-6 py-3 bg-slate-50 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-not-allowed border border-slate-100">Already Used</button>`;
+            } else {
+                const hasActiveSubscription = subscription && subscription.status && subscription.status.toLowerCase() === 'active';
+                if (!hasActiveSubscription) {
+                    buttonHtml = `<button id="plan-btn-${plan.id}" onclick="window.location.href='{{ route('institute.subscription.renew.show') }}'" class="w-full mt-6 py-3.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all">Select Plan</button>`;
+                }
             }
 
-            const featuresHtml = features.map(f => `
-                <li class="flex items-center gap-2">
-                    <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
-                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    ${f}
-                </li>
-            `).join('');
+            const textColor = isActive ? 'text-white' : 'text-slate-800';
+            const mutedColor = isActive ? 'text-white/90' : 'text-slate-500';
 
             card.innerHTML = `
                 ${badgeHtml}
-                <div>
-                    <h4 class="text-base font-bold text-slate-800">${plan.name}</h4>
-                    <div class="flex items-baseline gap-1 mt-2 mb-4">
-                        <span class="text-2xl font-bold text-slate-800">₹${parseFloat(plan.price).toLocaleString()}</span>
-                        <span class="text-[9px] font-bold text-slate-400 tracking-wide">/${plan.duration_days} DAYS</span>
+                <div class="w-full ${isActive ? 'mt-4' : ''}">
+                    <h4 class="text-[11px] font-black uppercase tracking-widest ${mutedColor} mb-3">${plan.name}</h4>
+                    <div class="flex flex-col items-center justify-center">
+                        <span class="text-4xl font-black ${textColor} tracking-tight">₹${parseFloat(plan.price).toLocaleString()}</span>
+                        <span class="text-[9px] font-bold ${mutedColor} tracking-widest mt-2 bg-slate-100/10 px-3 py-1 rounded-full border ${isActive ? 'border-white/20' : 'border-slate-100'}">/${plan.duration_days} DAYS</span>
                     </div>
-                    
-                    <ul class="space-y-2 text-[11px] text-slate-600 font-medium mb-2 pt-3 border-t border-slate-50">
-                        ${featuresHtml}
-                    </ul>
                 </div>
+                ${buttonHtml}
             `;
             container.appendChild(card);
         });
@@ -224,7 +202,13 @@
         }
         
         history.forEach(item => {
-            const statusColors = { 'active': 'bg-emerald-50 text-emerald-600', 'success': 'bg-emerald-50 text-emerald-600', 'pending': 'bg-amber-50 text-amber-600' };
+            const statusColors = { 
+                'active': 'bg-emerald-50 text-emerald-600', 
+                'success': 'bg-emerald-50 text-emerald-600', 
+                'pending': 'bg-amber-50 text-amber-600',
+                'expired': 'bg-rose-50 text-rose-600',
+                'inactive': 'bg-rose-50 text-rose-600'
+            };
             const date = new Date(item.created_at).toLocaleDateString('en-GB');
 
             container.innerHTML += `

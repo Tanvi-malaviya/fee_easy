@@ -511,6 +511,11 @@
                     const planTitle = document.getElementById('plan-title');
                     if (sub) {
                         badgeSub.innerText = sub.status.toUpperCase();
+                        if (sub.status.toLowerCase() === 'expired' || sub.status.toLowerCase() === 'inactive') {
+                            badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
+                        } else {
+                            badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                        }
                         planTitle.innerText = sub.plan_name;
                         const ren = document.getElementById('sub-renewal');
                         if (ren) ren.innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';

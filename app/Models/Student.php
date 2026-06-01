@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $appends = ['profile_image_url', 'is_birthday_today'];
 
@@ -94,8 +95,8 @@ class Student extends Authenticatable
     }
 
     public function getIsBirthdayTodayAttribute()
-    {
-       
+    {   
+
 
         if ($this->dob) {
             $dob = \Carbon\Carbon::parse($this->dob);
@@ -119,13 +120,15 @@ class Student extends Authenticatable
                 $lastEnrollmentId = \DB::table('students')
                     ->where('institute_id', $student->institute_id)
                     ->where('enrollment_id', 'like', $prefix . '%')
+                    ->orderByRaw('LENGTH(enrollment_id) DESC')
                     ->orderBy('enrollment_id', 'desc')
                     ->value('enrollment_id');
 
                 $nextNumber = 1;
                 if ($lastEnrollmentId) {
-                    if (preg_match('/(\d+)$/', $lastEnrollmentId, $matches)) {
-                        $nextNumber = intval($matches[1]) + 1;
+                    $sequenceStr = substr($lastEnrollmentId, strlen($prefix));
+                    if (is_numeric($sequenceStr)) {
+                        $nextNumber = intval($sequenceStr) + 1;
                     }
                 }
 

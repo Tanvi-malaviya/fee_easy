@@ -17,9 +17,9 @@
                     </svg>
                     Back to Batches
                 </a>
-                <div class="flex items-center gap-4">
-                    <h1 id="batch-name-heading" class="text-xl font-semibold text-slate-800 tracking-tight">Loading Batch...
-                    </h1>
+                <div class="flex items-center gap-3">
+                    <h1 id="batch-name-heading" class="text-xl font-semibold text-slate-800 tracking-tight leading-none">Loading Batch...</h1>
+                    <span id="batch-status-badge" class="px-2.5 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hidden">Active</span>
                 </div>
                 <p class="text-xs text-slate-400 mt-0.5 font-medium flex items-center gap-2">
                     Batch ID: <span id="batch-id-text" class="text-slate-600">---</span>
@@ -28,24 +28,16 @@
                 </p>
             </div>
 
-            <!-- <div class="flex items-center gap-2">
-                    <button onclick="window.location.href='/institute/batches/' + BATCH_ID + '/edit'"
-                        class="flex items-center gap-2 px-4 py-2 bg-white border-2 border-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        Edit Batch
-                    </button>
-                    <button onclick="deleteBatch()"
-                        class="flex items-center gap-2 px-4 py-2 bg-white border-2 border-rose-50 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Delete
-                    </button>
-                </div> -->
+            <div class="flex items-center gap-2">
+                <button onclick="openCloseBatchModal()"
+                    class="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-rose-200 hover:bg-rose-50 hover:border-rose-300 rounded-xl text-xs font-bold text-rose-500 transition-all shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-rose-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Close Batch
+                </button>
+            </div>
         </div>
 
         <!-- Top Info Cards -->
@@ -61,9 +53,6 @@
                             <img id="instructor-avatar"
                                 src="https://ui-avatars.com/api/?name=Instructor&background=EEF2FF&color=4F46E5&bold=true"
                                 class="w-full h-full object-cover rounded-full">
-                        </div>
-                        <div
-                            class="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-emerald-500 border-2 border-white rounded-full">
                         </div>
                     </div>
                     <div>
@@ -385,6 +374,28 @@
             </div>
         </div>
     </div>
+ 
+    <!-- Close Batch Confirmation Modal -->
+    <div id="close-batch-modal" class="fixed inset-0 z-[130] flex items-center justify-center hidden">
+        <div onclick="closeCloseBatchModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
+        <div
+            class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl relative z-10 overflow-hidden p-6 text-center animate-in fade-in zoom-in duration-200">
+            <div class="h-14 w-14 bg-orange-50 text-[#FF6B00] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-orange-100">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 leading-tight">Close this Batch?</h3>
+            <p class="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed font-medium">Are you sure you want to close this batch? This will archive the batch and tag it as 'Closed'.</p>
+ 
+            <div class="flex items-center gap-3 mt-6">
+                <button onclick="closeCloseBatchModal()"
+                    class="flex-1 py-3 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+                <button id="confirm-close-batch-btn" onclick="executeCloseBatch()"
+                    class="flex-1 py-3 bg-primary hover:opacity-90 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-orange-950/10 active:scale-95 transition-all">Close</button>
+            </div>
+        </div>
     </div>
 
 
@@ -414,6 +425,18 @@
                     const batch = result.data;
                     document.getElementById('batch-name-heading').innerText = batch.name;
                     document.getElementById('batch-id-text').innerText = `BATCH-${batch.id}`;
+
+                    const statusBadge = document.getElementById('batch-status-badge');
+                    if (statusBadge) {
+                        statusBadge.classList.remove('hidden');
+                        if (batch.status === 'closed') {
+                            statusBadge.innerText = 'Closed';
+                            statusBadge.className = 'px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
+                        } else {
+                            statusBadge.innerText = 'Active';
+                            statusBadge.className = 'px-2.5 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
+                        }
+                    }
 
                     // Populate Schedule
                     if (batch.days && Array.isArray(batch.days)) {
@@ -520,7 +543,7 @@
 
                 if (result.status === 'success') {
                     // Filter out students who already have a batch assigned
-                    enrollableStudents = result.data.items.filter(student => !student.batch_id);
+                    enrollableStudents = result.data.items.filter(student => !student.batch_id || !student.batch);
 
                     // Initialize studentFees Map with default batch fee
                     enrollableStudents.forEach(s => {
@@ -837,28 +860,44 @@
             container.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3000);
         }
-        async function deleteBatch() {
-            if (!confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
+        function openCloseBatchModal() {
+            document.getElementById('close-batch-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeCloseBatchModal() {
+            document.getElementById('close-batch-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        async function executeCloseBatch() {
+            const btn = document.getElementById('confirm-close-batch-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>`;
 
             try {
-                const response = await fetch(API_BATCH_URL, {
+                const response = await fetch(`${API_BATCH_URL}/close`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': CSRF_TOKEN
-                    },
-                    body: JSON.stringify({ _method: 'DELETE' })
+                    }
                 });
 
                 const result = await response.json();
                 if (result.status === 'success') {
-                    window.location.href = "{{ route('institute.batches.index') }}";
+                    showToast('Batch closed successfully', 'success');
+                    setTimeout(() => {
+                        window.location.href = "{{ route('institute.batches.index') }}";
+                    }, 1000);
                 } else {
-                    showToast(result.message || 'Failed to delete batch', 'error');
+                    showToast(result.message || 'Failed to close batch', 'error');
+                    btn.disabled = false;
+                    btn.innerText = 'Close';
                 }
             } catch (error) {
-                showToast('An error occurred while deleting the batch', 'error');
+                showToast('An error occurred while closing the batch', 'error');
+                btn.disabled = false;
+                btn.innerText = 'Close';
             }
         }
     </script>

@@ -105,14 +105,15 @@ class InstituteDailyUpdateController extends Controller
         $students = $studentsQuery->with('parent')->get();
         $fcm = app(\App\Services\FCMService::class);
 
-        $categoryLabel = ucfirst($request->category);
-        $topicLabel = $request->topic ?: 'Announcement';
-        $notifTitle = "New {$categoryLabel} Update: {$topicLabel} 📢";
-        $notifBody = \Illuminate\Support\Str::limit($request->description, 150);
-        $notifData = [
-            'type' => 'daily_update',
-            'update_id' => (string) $update->id,
-            'category' => $request->category,
+        $subjectLabel = $request->category ? ucfirst($request->category) : 'General';
+        $topicLabel   = $request->topic ?: 'Announcement';
+        $notifTitle   = "Daily Update · {$subjectLabel}";
+        $shortDesc    = \Illuminate\Support\Str::limit($request->description, 80);
+        $notifBody    = "Today's topic: \"{$topicLabel}\". {$shortDesc}";
+        $notifData    = [
+            'type'      => 'daily_update',
+            'subject'   => $subjectLabel,
+            'batch_id'  => (string) ($request->batch_id ?? ''),
         ];
 
         $notifyStudents = in_array($request->recipient, ['students', 'both']);

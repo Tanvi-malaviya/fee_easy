@@ -135,6 +135,28 @@
                         <span class="text-[8px] font-bold text-slate-400">/
                             ₹{{ number_format($student->monthly_fee) }} Total</span>
                     </div>
+
+                    @if($balance > 0)
+                    @if(Auth::guard('institute')->user()->hasActiveSubscription())
+                    <button onclick="sendFeeReminder({{ $student->id }})" id="btn-fee-reminder"
+                        class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                        <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        Send Fee Reminder
+                    </button>
+                    @else
+                    <button onclick="handleExpiredSubscription(event)" id="btn-fee-reminder"
+                        class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                        <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        Send Fee Reminder
+                    </button>
+                    @endif
+                    @endif
                 </div>
 
                 <div class="space-y-1.5 mb-3 flex-1">
@@ -198,6 +220,80 @@
                 </div>
             </div>
         </div>
+
+        <!-- Fee Payment History Section -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 mb-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-4 bg-emerald-600 rounded-full"></div>
+                    <h2 class="text-base font-semibold text-slate-700 tracking-tight">Fee Payment History</h2>
+                </div>
+            </div>
+
+            @if($student->fees && $student->fees->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th class="pb-3 pl-2">Date / Month</th>
+                                <th class="pb-3">Total Fee</th>
+                                <th class="pb-3">Paid Amount</th>
+                                <th class="pb-3">Remaining</th>
+                                <th class="pb-3">Status</th>
+                                <th class="pb-3 text-right pr-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            @foreach($student->fees->sortByDesc('date') as $fee)
+                                @php
+                                    $remaining = max(0, $fee->total_amount - $fee->paid_amount);
+                                    $statusBg = 'bg-rose-50 text-rose-600 border-rose-100';
+                                    if ($fee->status === 'Paid' || $remaining == 0) {
+                                        $statusBg = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                                    } elseif ($fee->paid_amount > 0) {
+                                        $statusBg = 'bg-amber-50 text-amber-600 border-amber-100';
+                                    }
+                                @endphp
+                                <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 pl-2 font-bold text-slate-700">
+                                        {{ \Carbon\Carbon::parse($fee->date)->format('M Y') }}
+                                    </td>
+                                    <td class="py-3 font-bold">₹{{ number_format($fee->total_amount) }}</td>
+                                    <td class="py-3 font-bold text-emerald-600">₹{{ number_format($fee->paid_amount) }}</td>
+                                    <td class="py-3 font-bold text-rose-500">₹{{ number_format($remaining) }}</td>
+                                    <td class="py-3">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $statusBg }}">
+                                            {{ $fee->status ?: ($remaining == 0 ? 'Paid' : 'Unpaid') }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-right pr-2">
+                                        <a href="{{ route('institute.fees.receipts.show', $fee->id) }}"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border border-slate-100 hover:border-slate-200 rounded-lg text-[10px] font-bold transition-all shadow-sm">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            View Receipt
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="flex flex-col items-center justify-center py-6 text-center">
+                    <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 mb-2 border border-slate-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Fee Records Found</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">This student doesn't have any registered monthly fee cycles yet.</p>
+                </div>
+            @endif
+        </div>
     </div>
     </div>
 
@@ -255,6 +351,30 @@
         function closeDeleteModal() {
             document.getElementById('delete-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
+        }
+        async function sendFeeReminder(studentId) {
+            if (typeof toggleLoader === 'function') toggleLoader(true);
+            try {
+                const response = await fetch(`/institute/students/${studentId}/fee-reminder`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') showToast(data.message, 'success');
+                } else {
+                    if (typeof showToast === 'function') showToast(data.message || 'Failed to send reminder.', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                if (typeof toggleLoader === 'function') toggleLoader(false);
+            }
         }
     </script>
 

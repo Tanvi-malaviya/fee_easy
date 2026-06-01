@@ -24,6 +24,19 @@
                     Add Lead    
                 </button>
             </div>
+            @else
+            <div class="flex items-center gap-4">
+                <button onclick="handleExpiredSubscription(event)"
+                    class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-[#ea580c] transition-all flex items-center gap-2">
+
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+
+                    Add Lead    
+                </button>
+            </div>
             @endif
         </div>
 
@@ -203,18 +216,18 @@
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Reference & Acquisition</h3>
+                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Reference & Inquiry</h3>
                                 </div>
                                 <div class="space-y-4 text-left">
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label
-                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Lead Source</label>
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Reference Name</label>
                                             <p id="detail-source" class="text-xs font-bold text-slate-700">Alumni Referral</p>
                                         </div>
                                         <div>
                                             <label
-                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Acquisition Date</label>
+                                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Inquiry Date</label>
                                             <p id="detail-date" class="text-xs font-bold text-slate-700">Oct 24, 2023</p>
                                         </div>
                                     </div>
@@ -236,6 +249,15 @@
                                 </div>
                                 @if(Auth::guard('institute')->user()->hasActiveSubscription())
                                 <button onclick="openNoteModal()"
+                                    class="text-xs font-extrabold text-primary hover:text-primary/95 transition-all flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Add Note
+                                </button>
+                                @else
+                                <button onclick="handleExpiredSubscription(event)"
                                     class="text-xs font-extrabold text-primary hover:text-primary/95 transition-all flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"

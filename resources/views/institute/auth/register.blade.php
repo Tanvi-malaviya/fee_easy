@@ -419,7 +419,8 @@
                         <div class="setup-grid">
                             <div class="col-span-3">
                                 <label class="form-label">Phone Number</label>
-                                <input type="text" name="phone" class="input-field" placeholder="10 digit number" required>
+                                <input type="text" name="phone" class="input-field" placeholder="10 digit number" required maxlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <span class="error-message" id="error-phone"></span>
                             </div>
                             <div class="col-span-3">

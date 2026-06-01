@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChatMessage extends Model
 {
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'sender_id', 'sender_type', 'receiver_id', 'receiver_type',
         'message', 'type', 'attachment', 'read_at', 'received_at',

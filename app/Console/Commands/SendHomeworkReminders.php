@@ -60,16 +60,15 @@ class SendHomeworkReminders extends Command
             $students = $homework->batch->students ?? collect();
 
             if ($daysLeft == 1) {
-                $dayText = "tomorrow";
+                $notifTitle    = "Homework Due Tomorrow";
+                $notifBody     = "\"" . $homework->title . "\" is due tomorrow. Don't forget to submit.";
                 $parentDayText = "tomorrow";
-                $notifTitle = "Homework Due Tomorrow 📚";
             } else {
-                $dayText = "in {$daysLeft} days";
+                $notifTitle    = "Homework Due in {$daysLeft} Days";
+                $notifBody     = "\"" . $homework->title . "\" is due in {$daysLeft} days. Plan ahead!";
                 $parentDayText = "in {$daysLeft} days";
-                $notifTitle = "Homework Due in {$daysLeft} Days 📚";
             }
 
-            $notifBody  = "Reminder: \"{$homework->title}\" is due {$dayText}. Submit on time!";
             $notifData  = [
                 'type'        => 'homework_reminder',
                 'homework_id' => (string) $homework->id,
@@ -101,7 +100,7 @@ class SendHomeworkReminders extends Command
                 // DB notification → parent
                 if ($student->parent) {
                     $parentTitle = "Homework Reminder: {$student->name}";
-                    $parentBody  = "{$student->name}'s homework \"{$homework->title}\" is due {$parentDayText}!";
+                    $parentBody  = "{$student->name}'s homework \"" . $homework->title . "\" is due {$parentDayText}.";
 
                     Notification::create([
                         'user_type'    => 'parent',

@@ -100,13 +100,13 @@ class ChatController extends Controller
             $body = $message->message;
             if ($message->type !== 'text') {
                 $body = match ($message->type) {
-                    'image' => '📷 Sent an image',
-                    'video' => '🎥 Sent a video',
-                    'document' => '📄 Sent a document',
-                    'audio' => '🎵 Sent an audio message',
+                    'image'    => '📷 Sent a photo',
+                    'video'    => '📎 Sent an attachment',
+                    'document' => '📎 Sent an attachment',
+                    'audio'    => '📎 Sent an attachment',
                     'location' => '📍 Shared a location',
-                    'contact' => '👤 Shared a contact',
-                    default => 'New message',
+                    'contact'  => '👤 Shared a contact',
+                    default    => 'New message',
                 };
             }
 
@@ -115,9 +115,8 @@ class ChatController extends Controller
                 $senderName,
                 $body,
                 [
-                    'type' => 'chat',
-                    'chat_id' => (string) $message->id,
-                    'sender_id' => (string) $user->id,
+                    'type'        => 'chat',
+                    'sender_id'   => (string) $user->id,
                     'sender_type' => class_basename($user),
                 ]
             );
@@ -190,15 +189,21 @@ class ChatController extends Controller
                 $key = $msg->receiver_type . '_' . $msg->receiver_id;
                 $other_id = $msg->receiver_id;
                 $other_type = class_basename($msg->receiver_type);
-                $other_name = $msg->receiver ? ($msg->receiver->name ?? $msg->receiver->full_name ?? $msg->receiver->institute_name ?? 'Unknown') : 'Unknown';
-                $other_logo = $msg->receiver ? ($msg->receiver->logo ?? $msg->receiver->profile_image ?? null) : null;
+                $otherUser = $msg->receiver;
             } else {
                 $key = $msg->sender_type . '_' . $msg->sender_id;
                 $other_id = $msg->sender_id;
                 $other_type = class_basename($msg->sender_type);
-                $other_name = $msg->sender ? ($msg->sender->name ?? $msg->sender->full_name ?? $msg->sender->institute_name ?? 'Unknown') : 'Unknown';
-                $other_logo = $msg->sender ? ($msg->sender->logo ?? $msg->sender->profile_image ?? null) : null;
+                $otherUser = $msg->sender;
             }
+
+            // Skip conversations where the other user is soft-deleted or hard-deleted
+            if (!$otherUser) {
+                continue;
+            }
+
+            $other_name = $otherUser->name ?? $otherUser->full_name ?? $otherUser->institute_name ?? 'Unknown';
+            $other_logo = $otherUser->logo ?? $otherUser->profile_image ?? null;
 
             if (!isset($conversations[$key])) {
                 $conversations[$key] = [
@@ -444,9 +449,12 @@ class ChatController extends Controller
 
         if ($user instanceof \App\Models\Institute) {
             $students = $user->students()->select('id', 'name', 'profile_image')->get()->map(function ($s) {
-                $s->type = 'Student';
-                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
-                return $s;
+                return [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'type' => 'Student',
+                    'profile_image' => $s->profile_image ? url('storage/' . $s->profile_image) : null,
+                ];
             });
 
             return response()->json($students);
@@ -466,15 +474,21 @@ class ChatController extends Controller
             $institute = \App\Models\Institute::where('id', $instituteId)
                 ->select('id', 'institute_name as name', 'logo as profile_image')
                 ->get()->map(function ($i) {
-                    $i->type = 'Institute';
-                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
-                    return $i;
+                    return [
+                        'id' => $i->id,
+                        'name' => $i->name,
+                        'type' => 'Institute',
+                        'profile_image' => $i->profile_image ? url('storage/' . $i->profile_image) : null,
+                    ];
                 });
 
             $staff = \App\Models\Staff::where('institute_id', $instituteId)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
-                $s->type = 'Staff';
-                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
-                return $s;
+                return [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'type' => 'Staff',
+                    'profile_image' => $s->profile_image ? url('storage/' . $s->profile_image) : null,
+                ];
             });
 
             return response()->json($institute->concat($staff));
@@ -486,29 +500,41 @@ class ChatController extends Controller
             $institute = \App\Models\Institute::where('id', $instituteId)
                 ->select('id', 'institute_name as name', 'logo as profile_image')
                 ->get()->map(function ($i) {
-                    $i->type = 'Institute';
-                    $i->profile_image = $i->profile_image ? url('storage/' . $i->profile_image) : null;
-                    return $i;
+                    return [
+                        'id' => $i->id,
+                        'name' => $i->name,
+                        'type' => 'Institute',
+                        'profile_image' => $i->profile_image ? url('storage/' . $i->profile_image) : null,
+                    ];
                 });
 
             $students = \App\Models\Student::where('institute_id', $instituteId)->select('id', 'name', 'profile_image')->get()->map(function ($s) {
-                $s->type = 'Student';
-                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
-                return $s;
+                return [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'type' => 'Student',
+                    'profile_image' => $s->profile_image ? url('storage/' . $s->profile_image) : null,
+                ];
             });
 
             $parents = \App\Models\StudentParent::whereHas('students', function ($q) use ($instituteId) {
                 $q->where('institute_id', $instituteId);
             })->select('id', 'father_name as name', 'profile_image')->get()->map(function ($p) {
-                $p->type = 'StudentParent';
-                $p->profile_image = $p->profile_image ? url('storage/' . $p->profile_image) : null;
-                return $p;
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'type' => 'StudentParent',
+                    'profile_image' => $p->profile_image ? url('storage/' . $p->profile_image) : null,
+                ];
             });
 
             $otherStaff = \App\Models\Staff::where('institute_id', $instituteId)->where('id', '!=', $user->id)->select('id', 'full_name as name', 'profile_image')->get()->map(function ($s) {
-                $s->type = 'Staff';
-                $s->profile_image = $s->profile_image ? url('storage/' . $s->profile_image) : null;
-                return $s;
+                return [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'type' => 'Staff',
+                    'profile_image' => $s->profile_image ? url('storage/' . $s->profile_image) : null,
+                ];
             });
 
             return response()->json($institute->concat($students)->concat($parents)->concat($otherStaff));

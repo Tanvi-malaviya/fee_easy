@@ -12,10 +12,17 @@
                 <p class="text-xs text-slate-400 mt-0.5 font-medium">Manage your teaching staff and their assignments.</p>
             </div>
             <div class="flex items-center gap-4">
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <button onclick="openTeacherModal()"
                     class="px-6 py-3 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform">
                     + Register Teacher
                 </button>
+                @else
+                <button onclick="handleExpiredSubscription(event)"
+                    class="px-6 py-3 bg-[#1e3a8a] text-white rounded-2xl font-bold text-[13px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform">
+                    + Register Teacher
+                </button>
+                @endif
             </div>
         </div>
 
@@ -110,7 +117,8 @@
                         <div class="space-y-2">
                             <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Contact
                                 No.</label>
-                            <input type="text" name="phone" id="field-phone"
+                            <input type="text" name="phone" id="field-phone" maxlength="10"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none ring-blue-500/10 focus:ring-4 transition-all">
                         </div>
                         <div class="space-y-2">

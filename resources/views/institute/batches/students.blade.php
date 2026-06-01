@@ -6,13 +6,17 @@
     <div class="max-w-7xl mx-auto ">
         <!-- Breadcrumb & Header -->
         <div class="mb-3">
-            <nav class="flex flex-wrap items-center pt-1 gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-1">
+            <nav
+                class="flex flex-wrap items-center pt-1 gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-1">
                 <a href="{{ route('institute.batches.index') }}" class="hover:text-blue-600 transition-colors">Batches</a>
-                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                 </svg>
-                <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch Details</a>
-                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('institute.batches.show', $id) }}" class="hover:text-[#ff6600] transition-colors">Batch
+                    Details</a>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                 </svg>
                 <a href="{{ route('institute.batches.show', $id) }}" id="breadcrumb-batch-name"
@@ -74,25 +78,30 @@
         </div>
 
         <!-- Control Bar -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center gap-3 mb-2">
+        <div
+            class="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center gap-3 mb-2">
             <div class="relative flex-1 group w-full">
-                <div class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-xl focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
+                <div
+                    class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-xl focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
                     <div class="pl-3.5 pr-2 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input type="text" id="student-search" onkeypress="if(event.key === 'Enter') filterStudents()"
                         placeholder="Search students by name, email or ID..."
                         class="flex-1 bg-transparent border-none py-2.5 text-xs sm:text-sm font-semibold outline-none min-w-0">
-                    <button onclick="filterStudents()" class="px-4 sm:px-5 py-2 sm:py-2.5 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary transition-all shadow-sm shrink-0">
+                    <button onclick="filterStudents()"
+                        class="px-4 sm:px-5 py-2 sm:py-2.5 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary transition-all shadow-sm shrink-0">
                         Search
                     </button>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-                <button onclick="window.location.href='{{ route('institute.students.export') }}?batch_id={{ $id }}&format=pdf'"
+                <button
+                    onclick="window.location.href='{{ route('institute.students.export') }}?batch_id={{ $id }}&format=pdf'"
                     class="px-4 sm:px-5 py-2.5 bg-white border border-slate-100 rounded-lg text-xs sm:text-sm font-bold text-slate-600 flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all shadow-sm flex-1 sm:flex-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,14 +110,23 @@
                     Export
                 </button>
                 @if(Auth::guard('institute')->user()->hasActiveSubscription())
-                <button onclick="openEnrollModal()"
-                    class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                    Assign Student
-                </button>
+                    <button onclick="openEnrollModal()"
+                        class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Assign Student
+                    </button>
+                @else
+                    <button onclick="handleExpiredSubscription(event)"
+                        class="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-orange-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-orange-600 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Assign Student
+                    </button>
                 @endif
             </div>
         </div>
@@ -129,13 +147,15 @@
         <!-- HEADER -->
         <div class="bg-[#f9fafb] pt-4 px-4 pb-6 flex items-start justify-between shrink-0 relative z-20">
             <div class="flex items-start gap-4">
-                <button onclick="closeEnrollModal()" class="mt-2 p-2 hover:bg-slate-100 rounded-full transition-all text-slate-600">
+                <button onclick="closeEnrollModal()"
+                    class="mt-2 p-2 hover:bg-slate-100 rounded-full transition-all text-slate-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
                 <div class="max-w-2xl">
-                    <h2 class="text-[32px] leading-tight font-bold text-slate-900 tracking-tight mb-1">Assign Custom Fees</h2>
+                    <h2 class="text-[32px] leading-tight font-bold text-slate-900 tracking-tight mb-1">Assign Custom Fees
+                    </h2>
                     <p class="text-sm font-medium text-slate-500 leading-relaxed">Customize tuition and resource fees for
                         specific students within the <span id="target-batch-name-display"
                             class="text-slate-700 font-semibold">Advanced Mathematics Batch 2024</span>.</p>
@@ -251,7 +271,8 @@
 
     <!-- Empty State Template -->
     <template id="students-empty-state">
-        <x-empty-state title="No scholars found" subtitle="Assign scholars to this batch to see them here." icon="students" />
+        <x-empty-state title="No scholars found" subtitle="Assign scholars to this batch to see them here."
+            icon="students" />
     </template>
 
     <script>
@@ -294,8 +315,8 @@
                     const curBatchRev = document.getElementById('current-batch-revenue-display');
                     if (curBatchRev) curBatchRev.innerText = ((batch.students_count || 0) * BATCH_FEES).toLocaleString();
 
-                    const attAvg = batch.attendance_avg !== null && batch.attendance_avg !== undefined 
-                        ? `${batch.attendance_avg}%` 
+                    const attAvg = batch.attendance_avg !== null && batch.attendance_avg !== undefined
+                        ? `${batch.attendance_avg}%`
                         : 'N/A';
                     document.getElementById('stat-attendance-avg').innerText = attAvg;
                 }
@@ -317,13 +338,13 @@
             } catch (error) {
                 showToast('Failed to load students', 'error');
                 container.innerHTML = `
-                            <div class="col-span-full py-10 text-center flex flex-col items-center">
-                                <div class="h-20 w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-6">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                </div>
-                                <p class="text-rose-500 font-bold uppercase tracking-[0.2em] text-[10px]">Failed to Load Student Records</p>
-                                <button onclick="fetchStudents()" class="mt-4 text-blue-600 font-bold text-xs hover:underline uppercase tracking-widest">Try Again</button>
-                            </div>`;
+                                    <div class="col-span-full py-10 text-center flex flex-col items-center">
+                                        <div class="h-20 w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-6">
+                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                        </div>
+                                        <p class="text-rose-500 font-bold uppercase tracking-[0.2em] text-[10px]">Failed to Load Student Records</p>
+                                        <button onclick="fetchStudents()" class="mt-4 text-blue-600 font-bold text-xs hover:underline uppercase tracking-widest">Try Again</button>
+                                    </div>`;
             }
         }
 
@@ -352,7 +373,7 @@
                 const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
                 const result = await response.json();
                 if (result.status === 'success') {
-                    enrollableStudents = result.data.items.filter(student => !student.batch_id);
+                    enrollableStudents = result.data.items.filter(student => !student.batch_id || !student.batch);
                     renderEnrollableList(enrollableStudents);
                 }
             } catch (error) {
@@ -369,20 +390,20 @@
             container.innerHTML = students.map(student => {
                 const isSelected = selectedStudentIds.has(parseInt(student.id, 10));
                 return `
-                            <div onclick="toggleStudentSelection(${student.id})" 
-                                class="flex items-center p-2 rounded-xl cursor-pointer transition-all duration-300 group ${isSelected ? 'bg-orange-50 border border-orange-200' : 'hover:bg-slate-50 border border-transparent'}">
-                                <div class="h-9 w-9 rounded-lg ${isSelected ? 'bg-[#ff6600] text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm mr-3 transition-colors shrink-0">
-                                    ${student.name.substring(0, 1).toUpperCase()}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
-                                    <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: ${student.enrollment_id || '#TUA-' + String(student.id).padStart(4, '0')}</p>
-                                </div>
-                                <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
-                                    <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
-                                </div>
-                            </div>
-                        `;
+                                    <div onclick="toggleStudentSelection(${student.id})" 
+                                        class="flex items-center p-2 rounded-xl cursor-pointer transition-all duration-300 group ${isSelected ? 'bg-orange-50 border border-orange-200' : 'hover:bg-slate-50 border border-transparent'}">
+                                        <div class="h-9 w-9 rounded-lg ${isSelected ? 'bg-[#ff6600] text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm mr-3 transition-colors shrink-0">
+                                            ${student.name.substring(0, 1).toUpperCase()}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[13px] font-bold truncate ${isSelected ? 'text-orange-900' : 'text-slate-800'}">${student.name}</p>
+                                            <p class="text-[10px] font-medium text-slate-400 mt-0.5">ID: ${student.enrollment_id || '#TUA-' + String(student.id).padStart(4, '0')}</p>
+                                        </div>
+                                        <div class="ml-3 h-5 w-5 rounded-full flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-[#ff6600] text-white' : 'border-2 border-slate-200'}">
+                                            <svg class="w-3 h-3 ${isSelected ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                        </div>
+                                    </div>
+                                `;
             }).join('');
         }
 
@@ -403,7 +424,7 @@
             const count = selectedStudentIds.size;
             document.getElementById('selected-count-badge').innerText = count;
             const footerCount = document.getElementById('selected-count-footer');
-            if(footerCount) footerCount.innerText = String(count).padStart(2, '0');
+            if (footerCount) footerCount.innerText = String(count).padStart(2, '0');
             document.getElementById('confirm-enroll-btn').disabled = count === 0;
 
             const emptyState = document.getElementById('enrollment-overview-section');
@@ -422,7 +443,7 @@
                 total += (parseFloat(fee.tuition) || 0) + (parseFloat(fee.other) || 0);
             });
             const projColl = document.getElementById('projected-collection');
-            if(projColl) projColl.innerText = total.toLocaleString();
+            if (projColl) projColl.innerText = total.toLocaleString();
         }
 
         function renderSelectedStudents() {
@@ -437,38 +458,38 @@
                 if (student) {
                     const fees = studentFees.get(id);
                     html += `
-                                <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-6 group border-l-4 border-l-[#ff6600] animate-in slide-in-from-right-4 duration-300">
-                                    <div class="flex items-center gap-4 flex-1">
-                                        <div class="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-lg overflow-hidden shrink-0">
-                                            <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
-                                        </div>
-                                        <div>
-                                            <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
-                                            <p class="text-[10px] font-medium text-slate-400 truncate max-w-[220px]" title="${student.email || ''}">${student.email || 'STUDENT'}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-6">
-                                        <div>
-                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
-                                            <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
-                                                <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
-                                                <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
-                                                    class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-6 group border-l-4 border-l-[#ff6600] animate-in slide-in-from-right-4 duration-300">
+                                            <div class="flex items-center gap-4 flex-1">
+                                                <div class="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-lg overflow-hidden shrink-0">
+                                                    <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-[15px] font-bold text-slate-900 leading-tight mb-0.5">${student.name}</h4>
+                                                    <p class="text-[10px] font-medium text-slate-400 truncate max-w-[220px]" title="${student.email || ''}">${student.email || 'STUDENT'}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Other Fees</p>
-                                            <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
-                                                <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
-                                                <input type="number" value="${fees.other}" onchange="updateStudentFee(${id}, 'other', this.value)"
-                                                    class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                            <div class="flex items-center gap-6">
+                                                <div>
+                                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
+                                                    <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
+                                                        <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
+                                                        <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
+                                                            class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Other Fees</p>
+                                                    <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
+                                                        <span class="text-[13px] font-bold text-slate-400 mr-2">$</span>
+                                                        <input type="number" value="${fees.other}" onchange="updateStudentFee(${id}, 'other', this.value)"
+                                                            class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
+                                                    </div>
+                                                </div>
+                                                <button onclick="toggleStudentSelection(${id})" class="text-rose-500 hover:text-rose-600 transition-colors p-2 mt-4">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                                </button>
                                             </div>
-                                        </div>
-                                        <button onclick="toggleStudentSelection(${id})" class="text-rose-500 hover:text-rose-600 transition-colors p-2 mt-4">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                        </button>
-                                    </div>
-                                </div>`;
+                                        </div>`;
                 }
             });
             container.innerHTML = html;
@@ -568,63 +589,63 @@
                 }
 
                 return `
-                                    <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col relative">
+                                            <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col relative">
 
-                                        <!-- Top Content Section with Padding -->
-                                        <div class="p-4 flex-1 flex flex-col">
-                                            <!-- ID Badge -->
-                                            <div class="absolute top-4 right-4">
-                                                <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                    ID: ${student.enrollment_id || '#ST-' + String(student.id).padStart(4, '0')}
-                                                </span>
-                                            </div>
-
-                                            <!-- Profile Section -->
-                                            <div class="flex flex-col items-left mb-3">
-                                                <div class="h-14 w-14 rounded-full border-2 border-slate-50 overflow-hidden mb-2">
-                                                    <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
-                                                </div>
-                                                <h4 class="text-sm font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
-                                                <p class="text-[9px] font-bold text-slate-400 mt-0.5">${student.email || 'no-email@academy.edu'}</p>
-                                            </div>
-
-                                            <!-- Metrics Section -->
-                                            <div class="space-y-4 mb-2 flex-1">
-                                                <div>
-                                                    <div class="flex items-left justify-between mb-1.5">
-                                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
-                                                        <span class="text-[9px] font-black text-${perfColor}-500 uppercase tracking-wider">${performance > 0 ? performance + '%' : 'N/A'}</span>
+                                                <!-- Top Content Section with Padding -->
+                                                <div class="p-4 flex-1 flex flex-col">
+                                                    <!-- ID Badge -->
+                                                    <div class="absolute top-4 right-4">
+                                                        <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
+                                                            ID: ${student.enrollment_id || '#ST-' + String(student.id).padStart(4, '0')}
+                                                        </span>
                                                     </div>
-                                                    <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-${perfColor}-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+
+                                                    <!-- Profile Section -->
+                                                    <div class="flex flex-col items-left mb-3">
+                                                        <div class="h-14 w-14 rounded-full border-2 border-slate-50 overflow-hidden mb-2">
+                                                            <img src="${student.profile_image_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=F1F5F9&color=64748B&bold=true'}" class="w-full h-full object-cover">
+                                                        </div>
+                                                        <h4 class="text-sm font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
+                                                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">${student.email || 'no-email@academy.edu'}</p>
+                                                    </div>
+
+                                                    <!-- Metrics Section -->
+                                                    <div class="space-y-4 mb-2 flex-1">
+                                                        <div>
+                                                            <div class="flex items-left justify-between mb-1.5">
+                                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
+                                                                <span class="text-[9px] font-black text-${perfColor}-500 uppercase tracking-wider">${performance > 0 ? performance + '%' : 'N/A'}</span>
+                                                            </div>
+                                                            <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+                                                                <div class="h-full bg-${perfColor}-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="flex items-center justify-between border-slate-50">
+                                                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
+                                                            <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
+                                                                ${feeStatusText}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="flex items-center justify-between border-slate-50">
-                                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
-                                                    <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
-                                                        ${feeStatusText}
-                                                    </span>
+                                                <!-- Footer Actions -->
+                                                <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                                                    <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                        View
+                                                    </a>
+                                                    <div class="flex items-center gap-3">
+                                                        <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                        </a>
+                                                        <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Remove from batch">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Footer Actions -->
-                                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                            <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                View
-                                            </a>
-                                            <div class="flex items-center gap-3">
-                                                <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                                </a>
-                                                <button onclick="event.stopPropagation(); removeFromBatch(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Remove from batch">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>`;
+                                            </div>`;
             }).join('');
         }
 
@@ -643,7 +664,7 @@
         async function executeUnenroll() {
             if (!pendingStudentToRemove) return;
             const { id, name } = pendingStudentToRemove;
-            
+
             showConfirmModal(
                 'Remove Student',
                 `Are you sure you want to remove ${name} from this batch? This action cannot be undone.`,
@@ -675,10 +696,10 @@
             const toast = document.createElement('div');
             toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-right-10 duration-500 ${type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white'}`;
             toast.innerHTML = `
-                        <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-blue-500' : 'bg-rose-400'}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
-                        </div>
-                        <p class="text-sm font-bold">${message}</p>`;
+                                <div class="h-6 w-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-blue-500' : 'bg-rose-400'}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/></svg>
+                                </div>
+                                <p class="text-sm font-bold">${message}</p>`;
             container.appendChild(toast);
             setTimeout(() => { toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-10'); setTimeout(() => toast.remove(), 500); }, 3000);
         }

@@ -25,7 +25,8 @@
             <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto lg:ml-auto pr-1">
                 <!-- Search Bar -->
                 <div class="relative w-full sm:w-64 md:w-80">
-                    <div class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-lg focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
+                    <div
+                        class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-lg focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
                         <div class="pl-2.5 pr-2 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -43,18 +44,25 @@
 
                 <!-- Secondary Buttons -->
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-                    <button onclick="openExportModal()" class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
-                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="openExportModal()"
+                        class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
+                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Export
                     </button>
                     @if($institute->hasActiveSubscription())
-                    <a href="{{ route('institute.students.create') }}" class="btn-brand btn-md bg-primary hover:bg-primary flex-1 sm:flex-none flex justify-center items-center text-center">
-                        + New Student
-                    </a>
+                        <a href="{{ route('institute.students.create') }}"
+                            class="btn-brand btn-md bg-primary hover:bg-primary flex-1 sm:flex-none flex justify-center items-center text-center">
+                            + New Student
+                        </a>
+                    @else
+                        <button onclick="handleExpiredSubscription(event)"
+                            class="btn-brand btn-md bg-primary hover:bg-primary flex-1 sm:flex-none flex justify-center items-center text-center cursor-pointer">
+                            + New Student
+                        </button>
                     @endif
                 </div>
             </div>
@@ -128,10 +136,11 @@
         </div>
 
         @push('modals')
-            <!-- Empty State Template -->
-            <template id="students-empty-state">
-                <x-empty-state title="No students found" subtitle="Try adjusting your filters or add a new student." icon="students" />
-            </template>
+                <!-- Empty State Template -->
+                <template id="students-empty-state">
+                    <x-empty-state title="No students found" subtitle="Try adjusting your filters or add a new student."
+                        icon="students" />
+                </template>
                 <!-- Export Selection Modal -->
                 <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
                     <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -411,66 +420,66 @@
                 }
 
                 return `
-                                    <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
-                                         onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
+                                        <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
+                                             onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
 
-                                        <!-- Top Content Section with Padding -->
-                                        <div class="pt-5 pl-5 pr-5 flex-1 flex flex-col">
-                                            <!-- Batch Badge -->
-                                            <div class="absolute top-4 right-4">
-                                                <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                    ${student.batch ? student.batch.name.substring(0, 15) : 'Unassigned'}
-                                                </span>
-                                            </div>
-
-                                            <!-- Profile Section -->
-                                            <div class="flex flex-col items-left mb-4">
-                                                <div class="h-16 w-16 rounded-full border-2 border-slate-50 overflow-hidden mb-3 shadow-inner">
-                                                    <img src="${student.profile_image_url}" class="w-full h-full object-cover">
-                                                </div>
-                                                <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
-                                                ${student.enrollment_id ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight">${student.enrollment_id}</span></div>` : ''}
-                                                <p class="text-[10px] font-bold text-slate-400 mt-1">${student.email || 'no-email@tuoora.edu'}</p>
-                                            </div>
-
-                                            <!-- Metrics Section -->
-                                            <div class="space-y-4 mb-2 flex-1">
-                                                <div>
-                                                    <div class="flex items-left justify-between mb-1.5">
-                                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
-                                                        <span class="text-[9px] font-black text-emerald-500 uppercase tracking-wider">${performance}%</span>
-                                                    </div>
-                                                    <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="flex items-center justify-between border-slate-50">
-                                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
-                                                    <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
-                                                        ${feeStatusText}
+                                            <!-- Top Content Section with Padding -->
+                                            <div class="pt-5 pl-5 pr-5 flex-1 flex flex-col">
+                                                <!-- Batch Badge -->
+                                                <div class="absolute top-4 right-4">
+                                                    <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
+                                                        ${student.batch ? student.batch.name.substring(0, 15) : 'Unassigned'}
                                                     </span>
                                                 </div>
-                                            </div>
-                                        </div>
 
-                                        <!-- Footer Actions -->
-                                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                            <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                View
-                                            </a>
-                                            <div class="flex items-center gap-3">
-                                                <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                <!-- Profile Section -->
+                                                <div class="flex flex-col items-left mb-4">
+                                                    <div class="h-16 w-16 rounded-full border-2 border-slate-50 overflow-hidden mb-3 shadow-inner">
+                                                        <img src="${student.profile_image_url}" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
+                                                    ${student.enrollment_id ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight">${student.enrollment_id}</span></div>` : ''}
+                                                    <p class="text-[10px] font-bold text-slate-400 mt-1">${student.email || 'no-email@tuoora.edu'}</p>
+                                                </div>
+
+                                                <!-- Metrics Section -->
+                                                <div class="space-y-4 mb-2 flex-1">
+                                                    <div>
+                                                        <div class="flex items-left justify-between mb-1.5">
+                                                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
+                                                            <span class="text-[9px] font-black text-emerald-500 uppercase tracking-wider">${performance}%</span>
+                                                        </div>
+                                                        <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+                                                            <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex items-center justify-between border-slate-50">
+                                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
+                                                        <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
+                                                            ${feeStatusText}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Footer Actions -->
+                                            <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                                                <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] hover:opacity-70 transition-all">
+                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    View
                                                 </a>
-                                                <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Delete">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                </button>
+                                                <div class="flex items-center gap-3">
+                                                    <a href="/institute/students/${student.id}/edit" class="action-btn text-slate-400 hover:text-blue-500 transition-all" title="Edit">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                    </a>
+                                                    <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-slate-400 hover:text-rose-500 transition-all" title="Delete">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                `;
+                                    `;
             }).join('');
         }
 
@@ -490,9 +499,9 @@
             // Prev Button
             const prevLink = data.links[0];
             html += `<button onclick="${prevLink.url ? `fetchStudents(${new URL(prevLink.url).searchParams.get('page')})` : ''}" 
-                                        class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!prevLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                                    </button>`;
+                                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!prevLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                                        </button>`;
 
             // Pages
             data.links.slice(1, -1).forEach(link => {
@@ -508,15 +517,15 @@
             // Next Button
             const nextLink = data.links[data.links.length - 1];
             html += `<button onclick="${nextLink.url ? `fetchStudents(${new URL(nextLink.url).searchParams.get('page')})` : ''}" 
-                                        class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!nextLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                                    </button>`;
+                                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!nextLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                                        </button>`;
 
             html += `</div>`;
             container.innerHTML = `
-                                <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:block">Showing ${data.from}-${data.to} of ${data.total} entries</span>
-                                ${html}
-                            `;
+                                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:block">Showing ${data.from}-${data.to} of ${data.total} entries</span>
+                                    ${html}
+                                `;
         }
 
         function toggleLoader(show) {
@@ -537,9 +546,9 @@
 
             toast.className = `bg-white border border-slate-100 text-${color}-600 px-6 py-4 rounded-2xl shadow-xl flex items-center animate-in slide-in-from-right-10 duration-300 border-l-4 border-l-${color}-500`;
             toast.innerHTML = `
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="text-sm font-black uppercase tracking-tight">${message}</span>
-                            `;
+                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="text-sm font-black uppercase tracking-tight">${message}</span>
+                                `;
 
             container.appendChild(toast);
             setTimeout(() => {

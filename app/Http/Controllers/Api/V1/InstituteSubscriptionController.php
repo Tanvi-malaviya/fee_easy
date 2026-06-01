@@ -229,6 +229,16 @@ class InstituteSubscriptionController extends Controller
             ->latest()
             ->take(10)
             ->get();
+            
+        // 4. Payment Settings for Offline Renewal
+        $paymentSettings = [
+            'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
+            'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+            'qr_url'           => url('images/' . \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png')),
+        ];
 
         return response()->json([
             'status' => 'success',
@@ -245,7 +255,8 @@ class InstituteSubscriptionController extends Controller
                     'students_enrolled' => $enrolledCount,
                 ],
                 'plans' => $plans,
-                'history' => $history
+                'history' => $history,
+                'payment_settings' => $paymentSettings
             ]
         ]);
     }

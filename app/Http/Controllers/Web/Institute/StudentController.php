@@ -94,7 +94,7 @@ class StudentController extends Controller
             session(['student_back_url' => $referer]);
         }
 
-        $student->load(['batch', 'fees', 'attendance', 'homeworkSubmissions']);
+        $student->load(['batch', 'fees.payments', 'attendance', 'homeworkSubmissions']);
 
         // Calculate balance (Monthly Fee - Total Payments)
         $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
@@ -328,5 +328,68 @@ class StudentController extends Controller
 
             return response()->stream($callback, 200, $headers);
         }
+    }
+
+    /**
+     * Send a fee reminder notification to the student and parent.
+     */
+    public function sendFeeReminder(Student $student, \App\Services\FCMService $fcm)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        // Calculate balance
+        $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+        $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
+
+        if ($balance <= 0) {
+            return response()->json(['status' => 'error', 'message' => 'This student has no pending fee balance.'], 400);
+        }
+
+        $title = 'Fee Payment Reminder';
+        $message = "Dear {$student->name}, this is a friendly reminder that you have a pending fee balance of ₹" . number_format($balance) . ". Please clear it at your earliest convenience.";
+
+        // 1. Save Notification to DB for Student
+        \App\Models\Notification::create([
+            'user_type' => 'student',
+            'user_id' => $student->id,
+            'title' => $title,
+            'message' => $message,
+            'type' => 'fee_reminder',
+            'is_read' => false,
+        ]);
+
+        // 2. Save Notification to DB for Parent
+        if ($student->parent_id) {
+            \App\Models\Notification::create([
+                'user_type' => 'parent',
+                'user_id' => $student->parent_id,
+                'title' => $title,
+                'message' => $message,
+                'type' => 'fee_reminder',
+                'is_read' => false,
+            ]);
+        }
+
+        // 3. Send Firebase Push Notification to student
+        if ($student->fcm_token) {
+            $fcm->send($student->fcm_token, $title, $message, [
+                'type' => 'fee_reminder',
+            ]);
+        }
+
+        // 4. Send Firebase Push Notification to parent
+        if ($student->parent && $student->parent->fcm_token) {
+            $fcm->send($student->parent->fcm_token, $title, $message, [
+                'type' => 'fee_reminder',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Fee reminder sent successfully!'
+        ]);
     }
 }
