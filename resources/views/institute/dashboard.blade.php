@@ -44,10 +44,10 @@
             
             <!-- Students -->
             <a href="{{ route('institute.students.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-blue-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
@@ -65,10 +65,10 @@
 
             <!-- Batches -->
             <a href="{{ route('institute.batches.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-indigo-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-emerald-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -85,12 +85,12 @@
                 </div>
             </a>
 
-               <!-- Fees -->
+            <!-- Fees -->
             <a href="{{ route('institute.fees.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-emerald-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-rose-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -107,14 +107,12 @@
                 </div>
             </a>
 
-         
-
-         <!-- Staff Management -->
+            <!-- Staff Management -->
             <a href="{{ route('institute.staff.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-amber-600">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-sky-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -131,7 +129,7 @@
                 </div>
             </a>
 
-              <!-- Chats -->
+            <!-- Chats -->
             <a href="{{ route('institute.chats.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-700">
                 <div class="relative z-10">
@@ -153,15 +151,15 @@
                 </div>
             </a>
 
-               <!-- Reports -->
+            <!-- Reports -->
             <a href="{{ route('institute.reports.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-violet-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-teal-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-violet-50 text-violet-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-teal-50 text-teal-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9-1V3a2 2 0 012-2h2a2 2 0 012 2v15a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9-1V3a2 2 0 012-2h2a2 2 0 012 2v15a2 2 0 01-2-2h-2a2 2 0 01-2-2z" />
                             </svg>
                         </div>
                         <svg class="w-4 h-4 text-slate-200 group-hover:translate-x-1 transition-transform" fill="none"
@@ -175,12 +173,12 @@
                 </div>
             </a>
 
-               <!-- Lead Management -->
+            <!-- Lead Management -->
             <a href="{{ route('institute.leads.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-600">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -197,13 +195,12 @@
                 </div>
             </a>
 
-
-               <!-- Notes -->
+            <!-- Notes -->
             <a href="{{ route('institute.notes.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-cyan-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-emerald-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-cyan-50 text-cyan-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -220,14 +217,12 @@
                 </div>
             </a>
 
-
-            
             <!-- Institute Expense -->
             <a href="{{ route('institute.expenses.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-primary">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-rose-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -244,13 +239,12 @@
                 </div>
             </a>
 
-
             <!-- Updates -->
             <a href="{{ route('institute.updates.index') }}"
-                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-teal-500">
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-sky-500">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-9 w-9 bg-teal-50 text-teal-500 rounded-xl flex items-center justify-center">
+                        <div class="h-9 w-9 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
@@ -266,7 +260,7 @@
                     <p class="text-xs text-slate-400 font-medium">News & notifications</p>
                 </div>
             </a>
-
+        </div>
           
        
 

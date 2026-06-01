@@ -143,33 +143,6 @@
                     </div>
 
                     <div class="flex items-center gap-2 overflow-visible flex-wrap sm:flex-nowrap w-full lg:w-auto">
-                        <!-- Custom Role Dropdown -->
-                        <div class="relative w-full sm:w-auto" id="role-dropdown-container">
-                            <button type="button" onclick="toggleCustomDropdown('role')" id="role-dropdown-btn"
-                                class="flex items-center justify-between gap-3 px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black text-slate-600 hover:border-[#FF6B00] transition-all w-full sm:min-w-[130px]">
-                                <span id="selected-role-label">All Roles</span>
-                                <svg class="w-3 h-3 text-slate-400 transition-transform duration-200" id="role-chevron"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div id="role-dropdown-menu"
-                                class="absolute left-0 right-0 sm:right-0 sm:left-auto z-[100] mt-2 w-full sm:w-48 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                <div class="py-1 max-h-60 overflow-y-auto no-scrollbar">
-                                    <button type="button" onclick="selectCustomOption('role', '', 'All Roles')"
-                                        class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">All
-                                        Roles</button>
-                                    @foreach($roles as $role)
-                                        <button type="button"
-                                            onclick="selectCustomOption('role', '{{ $role->id }}', '{{ $role->name }}')"
-                                            class="w-full text-left px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-[#FF6B00] transition-colors border-b border-slate-50 last:border-0">{{ $role->name }}</button>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <input type="hidden" id="role-filter" value="">
-                        </div>
-
                         <!-- Custom Department Dropdown -->
                         <div class="relative w-full sm:w-auto" id="dept-dropdown-container">
                             <button type="button" onclick="toggleCustomDropdown('dept')" id="dept-dropdown-btn"
@@ -1154,7 +1127,6 @@
                                     <div class="h-14 w-14 rounded-full border-2 border-slate-50 overflow-hidden shadow-inner">
                                         <img src="${profileImg}" alt="${staff.full_name}" class="h-full w-full object-cover rounded-full">
                                     </div>
-                                    <div class="absolute bottom-0 right-0 h-3 w-3 bg-${statusColor}-500 border-2 border-white rounded-full"></div>
                                 </div>
                                 <h4 class="text-sm font-black text-slate-800 text-left tracking-tight leading-tight">${staff.full_name}</h4>
                                 ${staff.phone ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-tight">+91 ${staff.phone}</span></div>` : ''}
@@ -1167,12 +1139,6 @@
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Department</span>
                                     <span class="px-1.5 py-0.5 bg-orange-50 text-[#ff6600] text-[8px] font-black rounded-md uppercase tracking-tight">
                                         ${staff.department ? staff.department.name.substring(0, 15) : 'No Dept'}
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between border-slate-50">
-                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Status</span>
-                                    <span class="px-1.5 py-0.5 bg-${statusColor}-50 text-${statusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
-                                        ${statusText}
                                     </span>
                                 </div>
                             </div>

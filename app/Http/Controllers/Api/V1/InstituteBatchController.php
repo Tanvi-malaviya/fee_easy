@@ -112,7 +112,7 @@ class InstituteBatchController extends Controller
             'end_time' => 'required|string',
             'days' => 'required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
         ]);
 
         if ($request->has('days') && is_array($request->days)) {
@@ -171,7 +171,7 @@ class InstituteBatchController extends Controller
             'end_time' => 'sometimes|required|string',
             'days' => 'sometimes|required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
         ]);
 
         $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
@@ -323,7 +323,10 @@ class InstituteBatchController extends Controller
             ->with('staff')
             ->get();
 
-        $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches'));
+        $institute = $request->user();
+        $date = date('d M, Y h:i A');
+
+        $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches', 'institute', 'date'));
         return $pdf->download('batches_report_' . date('Y-m-d') . '.pdf');
     }
 

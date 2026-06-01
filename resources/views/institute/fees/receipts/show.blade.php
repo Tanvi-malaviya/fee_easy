@@ -8,16 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1f7a6e;
-            --primary-glow: rgba(31, 122, 110, 0.15);
-            --accent: #155e63;
-            --bg-dark: #0a0f12;
-            --card-bg: rgba(20, 28, 33, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
+            --primary: #FF6B00;
+            --primary-light: #fff3e6;
+            --primary-glow: rgba(255, 107, 0, 0.12);
+            --accent: #ea580c;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --text-main: #1e293b;
+            --text-secondary: #475569;
             --text-muted: #94a3b8;
             --success: #10b981;
-            --warning: #f5a623;
+            --warning: #f59e0b;
             --danger: #ef4444;
         }
 
@@ -29,10 +32,10 @@
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(31, 122, 110, 0.12) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(21, 94, 99, 0.1) 0px, transparent 50%);
+            background-color: var(--bg-page);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(255, 107, 0, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(234, 88, 12, 0.04) 0px, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -44,7 +47,6 @@
         .container {
             width: 100%;
             max-width: 800px;
-            perspective: 1000px;
         }
 
         .receipt-card {
@@ -52,13 +54,12 @@
             border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 3rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             position: relative;
             overflow: hidden;
         }
 
-        /* Ambient Glow Bar */
+        /* Accent Top Bar */
         .receipt-card::before {
             content: '';
             position: absolute;
@@ -73,7 +74,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-light);
             padding-bottom: 2rem;
             margin-bottom: 2rem;
         }
@@ -82,9 +83,7 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-main);
         }
 
         .brand p {
@@ -109,21 +108,21 @@
         }
 
         .badge-paid {
-            background: rgba(16, 185, 129, 0.15);
+            background: #ecfdf5;
             color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid #a7f3d0;
         }
 
         .badge-partial {
-            background: rgba(245, 166, 35, 0.15);
+            background: #fffbeb;
             color: var(--warning);
-            border: 1px solid rgba(245, 166, 35, 0.2);
+            border: 1px solid #fde68a;
         }
 
         .badge-unpaid {
-            background: rgba(239, 68, 68, 0.15);
+            background: #fef2f2;
             color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid #fecaca;
         }
 
         .receipt-no {
@@ -147,17 +146,22 @@
 
         .info-block h3 {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 0.75rem;
+            font-weight: 700;
         }
 
         .info-block p {
             font-size: 1rem;
-            color: var(--text-main);
+            color: var(--text-secondary);
             font-weight: 500;
             line-height: 1.5;
+        }
+
+        .info-block p strong {
+            color: var(--text-main);
         }
 
         .items-table {
@@ -170,20 +174,28 @@
             text-align: left;
             padding: 1rem;
             border-bottom: 2px solid var(--border-color);
-            color: var(--text-muted);
+            color: var(--primary);
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 700;
         }
 
         .items-table td {
             padding: 1.25rem 1rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-light);
             font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .items-table td strong {
+            color: var(--text-main);
         }
 
         .items-table .text-right {
             text-align: right;
+            font-weight: 600;
+            color: var(--text-main);
         }
 
         .summary-block {
@@ -191,7 +203,7 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-light);
             padding-bottom: 1.5rem;
             margin-bottom: 1.5rem;
         }
@@ -211,7 +223,7 @@
             margin-top: 0.5rem;
         }
 
-        .summary-row.total span {
+        .summary-row.total span:last-child {
             color: var(--primary);
         }
 
@@ -245,7 +257,7 @@
         .btn-print:hover {
             background: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(31, 122, 110, 0.3);
+            box-shadow: 0 6px 16px rgba(255, 107, 0, 0.25);
         }
 
         .btn-secondary {
@@ -256,8 +268,8 @@
 
         .btn-secondary:hover {
             color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.15);
+            background: var(--border-light);
+            border-color: var(--border-color);
         }
 
         .footer-note {
@@ -282,7 +294,6 @@
                 border: none !important;
                 box-shadow: none !important;
                 padding: 0 !important;
-                backdrop-filter: none !important;
             }
 
             .receipt-card::before, .actions, .btn {
@@ -290,8 +301,6 @@
             }
 
             .brand h1 {
-                background: none !important;
-                -webkit-text-fill-color: #000 !important;
                 color: #000 !important;
             }
 
@@ -301,7 +310,7 @@
                 background: none !important;
             }
 
-            .summary-row.total span {
+            .summary-row.total span:last-child {
                 color: #000 !important;
             }
 

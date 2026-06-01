@@ -1,76 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <title>Fee Collection Report - {{ $month }} {{ $year }}</title>
     <style>
-        body { font-family: 'DejaVu Sans', sans-serif; color: #334155; margin: 0; padding: 0; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
-        .header h1 { color: #1e3a8a; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
-        .header p { color: #64748b; margin: 5px 0 0; font-size: 14px; font-weight: bold; }
-        
-        .summary { margin-bottom: 30px; background: #f8fafc; padding: 15px; border-radius: 10px; }
-        .summary table { width: 100%; border: none !important; }
-        .summary td { font-size: 12px; font-weight: bold; color: #475569; border: none !important; }
-        .summary .value { color: #1e3a8a; font-size: 16px; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #1e3a8a; color: white; text-align: left; padding: 12px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
-        tr:nth-child(even) { background: #f1f5f9; }
-        
-        .total-row { background: #1e3a8a !important; color: white; font-weight: bold; }
-        .total-row td { border: none !important; font-size: 13px; color: white !important; }
-
-        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #94a3b8; padding: 10px 0; border-top: 1px solid #e2e8f0; }
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            color: #334155;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        .logo-container {
+            text-align: left;
+        }
+        .logo-img {
+            height: 50px;
+            max-width: 180px;
+            object-fit: contain;
+        }
+        .logo-placeholder {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ff6600;
+            letter-spacing: -0.5px;
+        }
+        .report-title {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .contact-info {
+            text-align: right;
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .contact-info strong {
+            color: #334155;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+        }
+        .meta-table td {
+            border: none;
+            padding: 10px 15px;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .meta-label {
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table.data-table th {
+            background-color: #ff6600;
+            color: white;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            padding: 10px 12px;
+            border: none;
+        }
+        table.data-table td {
+            padding: 10px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        table.data-table tr:nth-child(even) td {
+            background-color: #fafaf9;
+        }
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+        .footer-line {
+            font-weight: 600;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>{{ $institute->name }}</h1>
-        <p>Fee Collection Report: {{ $month }} {{ $year }}</p>
-    </div>
+    <!-- Header Block -->
+    <table class="header-table">
+        <tr>
+            <td style="width: 55%;">
+                <div class="logo-container">
+                    @if($institute->logo && file_exists(public_path('storage/' . $institute->logo)))
+                        <img class="logo-img" src="{{ public_path('storage/' . $institute->logo) }}" alt="Logo">
+                    @else
+                        <div class="logo-placeholder">{{ $institute->institute_name }}</div>
+                    @endif
+                    <div class="report-title">Fee Collection Report</div>
+                </div>
+            </td>
+            <td style="width: 45%;">
+                <div class="contact-info">
+                    <strong>{{ $institute->institute_name }}</strong><br>
+                    Email: {{ $institute->email }}<br>
+                    Phone: +91 {{ $institute->phone }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
-    <div class="summary">
-        <table>
-            <tr>
-                <td style="width: 50%;">Total Records: <br><span class="value">{{ count($fees) }}</span></td>
-                <td style="text-align: right; width: 50%;">Total Collection: <br><span class="value">₹{{ number_format($fees->sum('paid_amount'), 2) }}</span></td>
-            </tr>
-        </table>
-    </div>
+    <!-- Meta Details Block -->
+    <table class="meta-table">
+        <tr>
+            <td>
+                <span class="meta-label">Report Period:</span> {{ $month }} {{ $year }}
+            </td>
+            <td>
+                <span class="meta-label">Total Records:</span> {{ count($fees) }}
+            </td>
+            <td style="text-align: right;">
+                <span class="meta-label">Total Collection:</span> ₹{{ number_format($fees->sum('paid_amount'), 2) }}
+            </td>
+        </tr>
+    </table>
 
-    <table>
+    <!-- Fees Data Table -->
+    <table class="data-table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Student ID</th>
-                <th>Student Name</th>
-                <th>Total Fee</th>
-                <th>Paid Amount</th>
+                <th style="width: 6%; text-align: center;">Sr.</th>
+                <th style="width: 20%;">Date</th>
+                <th style="width: 20%;">Student ID</th>
+                <th style="width: 24%;">Student Name</th>
+                <th style="width: 15%;">Total Fee</th>
+                <th style="width: 15%;">Paid Amount</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($fees as $fee)
-            <tr>
-                <td>{{ $fee->created_at->format('d M, Y') }}</td>
-                <td>STU-{{ str_pad($fee->student_id, 4, '0', STR_PAD_LEFT) }}</td>
-                <td>{{ $fee->student->name ?? 'N/A' }}</td>
-                <td>₹{{ number_format($fee->total_amount, 2) }}</td>
-                <td style="color: #059669; font-weight: bold;">₹{{ number_format($fee->paid_amount, 2) }}</td>
-            </tr>
+            @foreach($fees as $index => $fee)
+                <tr>
+                    <td style="text-align: center; color: #64748b;">{{ $index + 1 }}</td>
+                    <td>{{ \Carbon\Carbon::parse($fee->date)->format('d M, Y') }}</td>
+                    <td>STU-{{ str_pad($fee->student_id, 4, '0', STR_PAD_LEFT) }}</td>
+                    <td><strong style="color: #0f172a;">{{ $fee->student->name ?? 'N/A' }}</strong></td>
+                    <td>₹{{ number_format($fee->total_amount, 2) }}</td>
+                    <td style="color: #16a34a; font-weight: bold;">₹{{ number_format($fee->paid_amount, 2) }}</td>
+                </tr>
             @endforeach
         </tbody>
         <tfoot>
-            <tr class="total-row">
-                <td colspan="4" style="text-align: right;">GRAND TOTAL:</td>
-                <td>₹{{ number_format($fees->sum('paid_amount'), 2) }}</td>
+            <tr style="background-color: #ff6600 !important; color: white !important;">
+                <td colspan="5" style="text-align: right; font-weight: 700; font-size: 11px; color: white !important; border: none !important; padding: 10px 12px;">GRAND TOTAL:</td>
+                <td style="font-weight: 700; font-size: 11px; color: white !important; border: none !important; padding: 10px 12px;">₹{{ number_format($fees->sum('paid_amount'), 2) }}</td>
             </tr>
         </tfoot>
     </table>
 
+    <!-- Footer Block -->
     <div class="footer">
-        Generated on {{ now()->format('d M, Y h:i A') }} | Powered by FeeEasy
+        <div class="footer-line">&copy; {{ date('Y') }} {{ $institute->institute_name }} | All Rights Reserved</div>
+        <div style="margin-top: 4px; font-size: 9px; color: #cbd5e1;">Powered by Tuoora Education System</div>
     </div>
 </body>
 </html>

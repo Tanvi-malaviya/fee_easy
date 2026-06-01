@@ -150,13 +150,15 @@
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
                                         Time</label>
                                     <input type="time" name="start_time" id="field-start" required
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                        onclick="this.showPicker()"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
                                         Time</label>
                                     <input type="time" name="end_time" id="field-end" required
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                        onclick="this.showPicker()"
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-3">
@@ -203,10 +205,6 @@
                                     <div id="modal-staff-menu"
                                         class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
                                         <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            <button type="button" onclick="selectBatchModalOption('staff', '', 'None')"
-                                                class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                None
-                                            </button>
                                             @foreach($staffList as $staff)
                                                 <button type="button"
                                                     onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
@@ -359,7 +357,7 @@
 
                 let staffHtml = '';
                 if (batch.staff) {
-                    staffHtml = `<div class="flex items-center gap-2 text-primary/80"><svg class="w-3 h-3 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${batch.staff.full_name}</span></div>`;
+                    staffHtml = `<div class="flex items-center gap-2 text-slate-500"><svg class="w-3 h-3 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Staff: ${batch.staff.full_name}</span></div>`;
                 }
 
                 return `
@@ -551,6 +549,12 @@
 
             if (days.length === 0) {
                 showToast('Please select at least one day.', 'error');
+                return;
+            }
+
+            const staffId = document.getElementById('field-staff').value;
+            if (!staffId) {
+                showToast('Please select an assigned staff member.', 'error');
                 return;
             }
 

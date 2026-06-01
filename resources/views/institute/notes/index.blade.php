@@ -319,6 +319,16 @@
             let showBookmarkedOnly = false;
 
             async function init() {
+                // Move modals to body to prevent stacking context or overflow/clipping issues
+                const viewModal = document.getElementById('view-modal');
+                if (viewModal) document.body.appendChild(viewModal);
+                
+                const deleteModal = document.getElementById('delete-modal');
+                if (deleteModal) document.body.appendChild(deleteModal);
+                
+                const noteModal = document.getElementById('note-modal');
+                if (noteModal) document.body.appendChild(noteModal);
+
                 await fetchNotes();
             }
 
@@ -881,26 +891,73 @@
                 }
             }
 
-            let noteIdToDelete = null;
+             let noteIdToDelete = null;
 
-            function showDeleteModal(id) {
-                noteIdToDelete = id;
-                const modal = document.getElementById('delete-modal');
-                const content = document.getElementById('delete-modal-content');
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    content.classList.remove('scale-95', 'opacity-0');
-                    content.classList.add('scale-100', 'opacity-100');
-                }, 10);
-            }
+             function showDeleteModal(id) {
+                 console.log('showDeleteModal called with ID:', id);
+                 noteIdToDelete = id;
+                 const modal = document.getElementById('delete-modal');
+                 const content = document.getElementById('delete-modal-content');
+                 console.log('Modal element:', modal, 'Content element:', content);
+                 if (modal) {
+                     modal.classList.remove('hidden');
+                     modal.style.display = 'block';
+                     console.log('delete-modal display style set to block');
+
+                     // Inspection of positions and sizes
+                     const rect = modal.getBoundingClientRect();
+                     console.log('delete-modal rect:', {
+                         top: rect.top,
+                         left: rect.left,
+                         width: rect.width,
+                         height: rect.height
+                     });
+                     
+                     const comp = window.getComputedStyle(modal);
+                     console.log('delete-modal computed styles:', {
+                         zIndex: comp.zIndex,
+                         opacity: comp.opacity,
+                         visibility: comp.visibility,
+                         display: comp.display,
+                         position: comp.position
+                     });
+
+                     if (content) {
+                         const contentRect = content.getBoundingClientRect();
+                         console.log('delete-modal-content rect:', {
+                             top: contentRect.top,
+                             left: contentRect.left,
+                             width: contentRect.width,
+                             height: contentRect.height
+                         });
+                         const contentComp = window.getComputedStyle(content);
+                         console.log('delete-modal-content computed styles:', {
+                             opacity: contentComp.opacity,
+                             transform: contentComp.transform,
+                             display: contentComp.display
+                         });
+                     }
+                 }
+                 setTimeout(() => {
+                     if (content) {
+                         content.classList.remove('scale-95', 'opacity-0');
+                         content.classList.add('scale-100', 'opacity-100');
+                     }
+                 }, 10);
+             }
 
             function closeDeleteModal() {
                 const modal = document.getElementById('delete-modal');
                 const content = document.getElementById('delete-modal-content');
-                content.classList.replace('scale-100', 'scale-95');
-                content.classList.replace('opacity-100', 'opacity-0');
+                if (content) {
+                    content.classList.replace('scale-100', 'scale-95');
+                    content.classList.replace('opacity-100', 'opacity-0');
+                }
                 setTimeout(() => {
-                    modal.classList.add('hidden');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                    }
                     noteIdToDelete = null;
                 }, 300);
             }
@@ -967,12 +1024,22 @@
             let currentlyViewingId = null;
 
             function viewNote(id) {
-                const note = currentNotes.find(n => n.id === id);
-                if (!note) return;
+                console.log('viewNote called with ID:', id, 'type:', typeof id);
+                const note = currentNotes.find(n => n.id == id);
+                console.log('Found note:', note);
+                if (!note) {
+                    console.log('Note not found in currentNotes!');
+                    return;
+                }
 
                 currentlyViewingId = id;
                 const modal = document.getElementById('view-modal');
                 const content = document.getElementById('view-modal-content');
+                console.log('view-modal element:', modal);
+                console.log('view-modal-content element:', content);
+                
+                if (modal) console.log('view-modal classes before:', modal.className);
+                if (content) console.log('view-modal-content classes before:', content.className);
                 
                 document.getElementById('view-title').textContent = note.title;
                 document.getElementById('view-content').innerHTML = note.content || 'No content provided.';
@@ -992,20 +1059,48 @@
                     imgContainer.classList.add('hidden');
                 }
 
-                modal.classList.remove('hidden');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    console.log('view-modal classes after remove hidden:', modal.className);
+                    // Force display block if tailwind hidden is stubborn
+                    modal.style.display = 'block';
+                    console.log('view-modal display style set to block');
+
+                    // Computed styles logging
+                    const comp = window.getComputedStyle(modal);
+                    console.log('--- COMPUTED STYLES FOR VIEW-MODAL ---');
+                    console.log('display:', comp.display);
+                    console.log('position:', comp.position);
+                    console.log('z-index:', comp.zIndex);
+                    console.log('opacity:', comp.opacity);
+                    console.log('visibility:', comp.visibility);
+                    console.log('top:', comp.top, 'left:', comp.left, 'right:', comp.right, 'bottom:', comp.bottom);
+                    console.log('width:', comp.width, 'height:', comp.height);
+                    console.log('pointer-events:', comp.pointerEvents);
+                    console.log('--------------------------------------');
+                }
+                
                 setTimeout(() => {
-                    content.classList.remove('scale-95', 'opacity-0');
-                    content.classList.add('scale-100', 'opacity-100');
+                    if (content) {
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                        console.log('view-modal-content classes after transition:', content.className);
+                    }
                 }, 10);
             }
 
             function closeViewModal() {
                 const modal = document.getElementById('view-modal');
                 const content = document.getElementById('view-modal-content');
-                content.classList.replace('scale-100', 'scale-95');
-                content.classList.replace('opacity-100', 'opacity-0');
+                if (content) {
+                    content.classList.replace('scale-100', 'scale-95');
+                    content.classList.replace('opacity-100', 'opacity-0');
+                }
                 setTimeout(() => {
-                    modal.classList.add('hidden');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                    }
                     currentlyViewingId = null;
                 }, 300);
             }
