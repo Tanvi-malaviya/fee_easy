@@ -28,6 +28,11 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
                 Add Transaction
             </button>
+            @else
+            <button onclick="handleExpiredSubscription(event)" class="px-3 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+                Add Transaction
+            </button>
             @endif
         </div>
     </div>

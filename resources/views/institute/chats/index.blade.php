@@ -736,9 +736,10 @@
 
                         const avatarHtml = logoUrl
                             ? `<div class="relative h-12 w-12 flex-shrink-0">
-                                    <img src="${logoUrl}" class="h-12 w-12 rounded-full object-cover border border-slate-200 shadow-sm" alt="${initial}"
+                                    <img src="${logoUrl}" class="h-12 w-12 rounded-full object-cover border border-slate-200 shadow-sm absolute inset-0" alt="${initial}" style="display:none"
+                                        onload="this.style.display='block';this.nextElementSibling.style.display='none'"
                                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                                    <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 items-center justify-center font-bold text-slate-500 border border-slate-200 absolute inset-0" style="display:none">${initial}</div>
+                                    <div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">${initial}</div>
                                </div>`
                             : `<div class="h-12 w-12 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-bold text-slate-500 border border-slate-200">${initial}</div>`;
 
@@ -761,6 +762,17 @@
 
             async function selectConversation(userId, userType, userName, logoUrl = '') {
                 console.log('🔄 Selecting conversation with:', { userId, userType, userName });
+
+                // Always resolve logo from currentConversations array (more reliable than onclick attribute string)
+                const convData = currentConversations.find(c => String(c.user_id) === String(userId) && c.user_type === userType);
+                if (convData && convData.user_logo) {
+                    let resolved = convData.user_logo;
+                    if (!resolved.startsWith('http')) {
+                        resolved = `${window.location.origin}/storage/${resolved.replace(/^\//, '')}`;
+                    }
+                    logoUrl = resolved;
+                }
+
                 activeConversation = { user_id: parseInt(userId), user_type: userType, user_name: userName, user_logo: logoUrl || null };
                 console.log('✅ Active conversation now set to:', activeConversation);
                 
@@ -778,12 +790,29 @@
                 // Update header avatar
                 const avatarEl = document.getElementById('active-user-avatar');
                 const initial = userName.substring(0, 1).toUpperCase();
+                // Reset to letter fallback first
+                avatarEl.innerHTML = initial;
+                avatarEl.classList.add('text-primary');
+                avatarEl.style.position = 'relative';
+
                 if (logoUrl) {
-                    avatarEl.innerHTML = `<img src="${logoUrl}" class="h-full w-full object-cover" alt="${initial}" onerror="this.style.display='none';this.parentElement.innerText='${initial}'">`;
-                    avatarEl.classList.remove('text-primary');
-                } else {
-                    avatarEl.innerHTML = initial;
-                    avatarEl.classList.add('text-primary');
+                    const imgEl = document.createElement('img');
+                    imgEl.alt = initial;
+                    imgEl.className = 'h-full w-full object-cover';
+                    imgEl.style.cssText = 'display:none; position:absolute; inset:0; border-radius:inherit;';
+
+                    // Set handlers BEFORE src so cached image onload is not missed
+                    imgEl.onload = function () {
+                        imgEl.style.display = 'block';
+                        avatarEl.classList.remove('text-primary');
+                    };
+                    imgEl.onerror = function () {
+                        imgEl.remove();
+                        avatarEl.classList.add('text-primary');
+                    };
+
+                    avatarEl.appendChild(imgEl); // attach to DOM first
+                    imgEl.src = logoUrl;         // set src last
                 }
 
                 const searchTerm = document.getElementById('chat-search').value.toLowerCase().trim();
@@ -1167,12 +1196,16 @@
                     list.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs font-medium">No contacts found</div>';
                     return;
                 }
-                list.innerHTML = contacts.map(c => `
-                            <div onclick="startChat('${c.id}', '${c.type}', '${c.name}')" class="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
+                list.innerHTML = contacts.map(c => {
+                    const avatarHtml = c.profile_image
+                        ? `<img src="${c.profile_image}" class="h-8 w-8 rounded-full object-cover border border-slate-100 flex-shrink-0" alt="${c.name.substring(0, 1)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                           <div class="h-8 w-8 rounded-full bg-slate-100 items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs" style="display:none">${c.name.substring(0, 1)}</div>`
+                        : `<div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs">${c.name.substring(0, 1)}</div>`;
+
+                    return `
+                            <div onclick="startChat('${c.id}', '${c.type}', '${c.name.replace(/'/g, "\\'")}', '${c.profile_image ? c.profile_image : ''}')" class="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all">
                                 <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 border border-slate-100 text-xs">
-                                        ${c.name.substring(0, 1)}
-                                    </div>
+                                    ${avatarHtml}
                                     <div>
                                         <h4 class="text-xs font-bold text-slate-800 leading-tight">${c.name}</h4>
                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.type}</span>
@@ -1182,12 +1215,13 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                 </div>
                             </div>
-                        `).join('');
+                        `;
+                }).join('');
             }
 
-            function startChat(userId, type, name) {
+            function startChat(userId, type, name, logo = '') {
                 closeNewChatModal();
-                selectConversation(userId, type, name);
+                selectConversation(userId, type, name, logo);
             }
 
             // Attachment Dropdown & Modals toggle

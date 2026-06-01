@@ -23,6 +23,14 @@
                     </svg>
                     New Note
                 </button>
+                @else
+                <button onclick="handleExpiredSubscription(event)"
+                    class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/20 hover:translate-y-[-1px] active:scale-95 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Note
+                </button>
                 @endif
             </div>
         </div>

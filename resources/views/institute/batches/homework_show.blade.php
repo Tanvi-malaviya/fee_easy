@@ -159,7 +159,8 @@
 
         function updateScore(studentId, change) {
             const sub = submissionsMap[studentId];
-            if (sub.status === 'Missing') return;
+            const currentStatus = (sub.status || '').toLowerCase();
+            if (currentStatus === 'missing' || currentStatus === 'pending') return;
             if (homeworkData.is_closed) return;
 
             let score = parseInt(sub.score) || 0;
@@ -208,11 +209,16 @@
             btn.disabled = true;
             btn.innerText = 'Publishing...';
 
-            const grades = Object.values(submissionsMap).map(sub => ({
-                student_id: sub.student_id,
-                score: sub.score,
-                status: sub.status
-            }));
+            const grades = Object.values(submissionsMap)
+                .filter(sub => {
+                    const st = (sub.status || '').toLowerCase();
+                    return st !== 'pending' && st !== 'missing';
+                })
+                .map(sub => ({
+                    student_id: sub.student_id,
+                    score: sub.score,
+                    status: sub.status
+                }));
 
             try {
                 const response = await fetch(API_GRADES_URL, {
@@ -370,8 +376,9 @@
                 else if (status === 'late') statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-[9px] font-bold uppercase tracking-widest">Late</span>`;
                 else statusBadge = `<span id="badge-${student.id}" class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[9px] font-bold uppercase tracking-widest">Pending</span>`;
 
-                const scoreControls = isClosed
-                    ? `<div class="flex items-center justify-between px-1">
+                const isPending = status === 'pending';
+                const scoreControls = (isClosed || isPending)
+                    ? `<div class="flex items-center justify-between px-1 opacity-50 cursor-not-allowed">
                                 <span class="text-slate-300 font-medium text-xs">-</span>
                                 <span class="text-slate-400 font-bold text-[14px] w-10 text-center">${sub.score}</span>
                                 <span class="text-slate-300 font-medium text-xs">+</span>

@@ -27,10 +27,22 @@ class SettingController extends Controller
             'settings' => 'required|array',
         ]);
 
-        foreach ($request->input('settings') as $key => $value) {
+        foreach ($request->input('settings', []) as $key => $value) {
             SystemSetting::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value, 'group' => 'general']
+            );
+        }
+
+        // Handle QR Code Image Upload
+        if ($request->hasFile('payment_qr_image')) {
+            $file = $request->file('payment_qr_image');
+            $filename = 'qr_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+
+            SystemSetting::updateOrCreate(
+                ['key' => 'payment_qr_path'],
+                ['value' => $filename, 'group' => 'general']
             );
         }
 

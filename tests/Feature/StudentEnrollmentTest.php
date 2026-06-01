@@ -61,7 +61,7 @@ class StudentEnrollmentTest extends TestCase
         ]);
 
         $this->assertNotEmpty($institute->institute_code);
-        $this->assertStringStartsWith('BET', $institute->institute_code);
-        $this->assertEquals(6, strlen($institute->institute_code)); // BET + 3 digits = 6 chars
+        $this->assertMatchesRegularExpression('/^[1-9]\d{5}$/', $institute->institute_code);
+        $this->assertEquals(6, strlen($institute->institute_code));
     }
 }

@@ -127,6 +127,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
             })->name('profile.edit');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+            Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
             Route::middleware(['profile_complete', 'check_subscription'])->group(function () {
@@ -141,6 +142,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::post('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'store'])->name('students.store');
                 Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
                 Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
+                Route::post('/students/{student}/fee-reminder', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendFeeReminder'])->name('students.fee_reminder');
 
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');

@@ -27,6 +27,7 @@
                     </div>
                 </div>
 
+                @if(Auth::guard('institute')->user()->hasActiveSubscription())
                 <a href="{{ route('institute.attendance.create') }}"
                     class="px-5 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-[12px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform flex items-center">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,6 +35,15 @@
                     </svg>
                     Mark Attendance
                 </a>
+                @else
+                <button onclick="handleExpiredSubscription(event)"
+                    class="px-5 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold text-[12px] shadow-lg shadow-blue-900/10 hover:scale-[1.02] transition-transform flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Mark Attendance
+                </button>
+                @endif
             </div>
         </div>
 

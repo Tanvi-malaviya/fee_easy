@@ -203,10 +203,32 @@ class InstituteStudentController extends Controller
             \Log::error("Failed to send welcome email to student via API: " . $e->getMessage());
         }
 
+        // Send welcome push notification to student
+        try {
+            if (!empty($student->fcm_token)) {
+                $fcm = app(\App\Services\FCMService::class);
+                $fcm->send($student->fcm_token, 'Welcome to Tuoora!', 'Your account is ready. Tap to log in and get started.', [
+                    'type'   => 'others',
+                    'action' => 'account_created',
+                ]);
+            }
+            // DB notification
+            \App\Models\Notification::create([
+                'user_type' => 'student',
+                'user_id'   => $student->id,
+                'title'     => 'Welcome to Tuoora!',
+                'message'   => 'Your account is ready. Tap to log in and get started.',
+                'type'      => 'others',
+                'is_read'   => false,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Welcome notification failed: ' . $e->getMessage());
+        }
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Student created successfully',
-            'data' => $student
+            'data'    => $student
         ], 201);
     }
 
@@ -286,22 +308,22 @@ class InstituteStudentController extends Controller
             if ($data['batch_id'] !== null) {
                 $batch = \App\Models\Batch::find($data['batch_id']);
                 if ($batch) {
-                    $notifTitle = "Batch Assigned 📚";
-                    $notifBody = "You have been assigned to the batch: {$batch->name}";
-                    $notifData = [
-                        'type' => 'batch_assignment',
+                    $notifTitle = "Batch Updated";
+                    $notifBody  = "You've been moved to {$batch->name}.";
+                    $notifData  = [
+                        'type'     => 'batch_assignment',
                         'batch_id' => (string) $batch->id,
                     ];
 
                     // Notify Student
                     \App\Models\Notification::create([
-                        'user_type' => 'student',
-                        'user_id' => $student->id,
-                        'title' => $notifTitle,
-                        'message' => $notifBody,
-                        'type' => 'batch_assignment',
+                        'user_type'    => 'student',
+                        'user_id'      => $student->id,
+                        'title'        => $notifTitle,
+                        'message'      => $notifBody,
+                        'type'         => 'batch_assignment',
                         'reference_id' => $batch->id,
-                        'is_read' => false,
+                        'is_read'      => false,
                     ]);
                     if (!empty($student->fcm_token)) {
                         $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
@@ -310,17 +332,18 @@ class InstituteStudentController extends Controller
                     // Notify Parent
                     $student->load('parent');
                     if ($student->parent) {
+                        $parentBody = "{$student->name} has been moved to {$batch->name}.";
                         \App\Models\Notification::create([
-                            'user_type' => 'parent',
-                            'user_id' => $student->parent->id,
-                            'title' => "Batch Assigned: {$student->name}",
-                            'message' => "{$student->name} has been assigned to the batch: {$batch->name}",
-                            'type' => 'batch_assignment',
+                            'user_type'    => 'parent',
+                            'user_id'      => $student->parent->id,
+                            'title'        => $notifTitle,
+                            'message'      => $parentBody,
+                            'type'         => 'batch_assignment',
                             'reference_id' => $batch->id,
-                            'is_read' => false,
+                            'is_read'      => false,
                         ]);
                         if (!empty($student->parent->fcm_token)) {
-                            $fcm->send($student->parent->fcm_token, "Batch Assigned: {$student->name}", "{$student->name} has been assigned to the batch: {$batch->name}", $notifData);
+                            $fcm->send($student->parent->fcm_token, $notifTitle, $parentBody, $notifData);
                         }
                     }
                 }
@@ -329,22 +352,22 @@ class InstituteStudentController extends Controller
             else if ($oldBatchId !== null && $data['batch_id'] === null) {
                 $oldBatch = \App\Models\Batch::find($oldBatchId);
                 if ($oldBatch) {
-                    $notifTitle = "Batch Removed 🚫";
-                    $notifBody = "You have been removed from the batch: {$oldBatch->name}";
-                    $notifData = [
-                        'type' => 'batch_removal',
+                    $notifTitle = "Batch Updated";
+                    $notifBody  = "You've been removed from {$oldBatch->name}.";
+                    $notifData  = [
+                        'type'     => 'batch_removal',
                         'batch_id' => (string) $oldBatch->id,
                     ];
 
                     // Notify Student
                     \App\Models\Notification::create([
-                        'user_type' => 'student',
-                        'user_id' => $student->id,
-                        'title' => $notifTitle,
-                        'message' => $notifBody,
-                        'type' => 'batch_removal',
+                        'user_type'    => 'student',
+                        'user_id'      => $student->id,
+                        'title'        => $notifTitle,
+                        'message'      => $notifBody,
+                        'type'         => 'batch_removal',
                         'reference_id' => $oldBatch->id,
-                        'is_read' => false,
+                        'is_read'      => false,
                     ]);
                     if (!empty($student->fcm_token)) {
                         $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
@@ -353,17 +376,18 @@ class InstituteStudentController extends Controller
                     // Notify Parent
                     $student->load('parent');
                     if ($student->parent) {
+                        $parentBody = "{$student->name} has been removed from {$oldBatch->name}.";
                         \App\Models\Notification::create([
-                            'user_type' => 'parent',
-                            'user_id' => $student->parent->id,
-                            'title' => "Batch Removed: {$student->name}",
-                            'message' => "{$student->name} has been removed from the batch: {$oldBatch->name}",
-                            'type' => 'batch_removal',
+                            'user_type'    => 'parent',
+                            'user_id'      => $student->parent->id,
+                            'title'        => $notifTitle,
+                            'message'      => $parentBody,
+                            'type'         => 'batch_removal',
                             'reference_id' => $oldBatch->id,
-                            'is_read' => false,
+                            'is_read'      => false,
                         ]);
                         if (!empty($student->parent->fcm_token)) {
-                            $fcm->send($student->parent->fcm_token, "Batch Removed: {$student->name}", "{$student->name} has been removed from the batch: {$oldBatch->name}", $notifData);
+                            $fcm->send($student->parent->fcm_token, $notifTitle, $parentBody, $notifData);
                         }
                     }
                 }
@@ -477,6 +501,84 @@ class InstituteStudentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Student deleted successfully'
+        ]);
+    }
+
+    /**
+     * Send a fee reminder notification to the student and parent via API.
+     */
+    public function sendFeeReminder(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student = Student::where('institute_id', $request->user()->id)->with('parent')->find($id);
+
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Student not found or unauthorized'
+            ], 404);
+        }
+
+        // Calculate balance
+        $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+        $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
+
+        if ($balance <= 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This student has no pending fee balance.'
+            ], 400);
+        }
+
+        $title         = 'Fee Payment Reminder';
+        $formattedBal  = '\u20b9' . number_format($balance);
+        $studentMsg    = "{$formattedBal} is due soon. Tap to pay.";
+        $parentMsg     = "{$student->name}'s fee of {$formattedBal} is due soon.";
+        $fcmData       = [
+            'type'   => 'fee_reminder',
+            'amount' => (string) $balance,
+        ];
+
+        // 1. Save Notification to DB for Student
+        \App\Models\Notification::create([
+            'user_type' => 'student',
+            'user_id'   => $student->id,
+            'title'     => $title,
+            'message'   => $studentMsg,
+            'type'      => 'fee_reminder',
+            'is_read'   => false,
+        ]);
+
+        // 2. Save Notification to DB for Parent
+        if ($student->parent_id) {
+            \App\Models\Notification::create([
+                'user_type' => 'parent',
+                'user_id'   => $student->parent_id,
+                'title'     => $title,
+                'message'   => $parentMsg,
+                'type'      => 'fee_reminder',
+                'is_read'   => false,
+            ]);
+        }
+
+        $fcm = app(\App\Services\FCMService::class);
+
+        // 3. Send Firebase Push Notification to student
+        if ($student->fcm_token) {
+            $fcm->send($student->fcm_token, $title, $studentMsg, $fcmData);
+        }
+
+        // 4. Send Firebase Push Notification to parent
+        if ($student->parent && $student->parent->fcm_token) {
+            $fcm->send($student->parent->fcm_token, $title, $parentMsg, $fcmData);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Fee reminder sent successfully!'
         ]);
     }
 }

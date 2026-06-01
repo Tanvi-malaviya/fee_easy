@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $students = \App\Models\Student::whereNull('id_hash')->get();
+        $students = \DB::table('students')->whereNull('id_hash')->get();
         foreach ($students as $student) {
-            $student->update([
+            \DB::table('students')->where('id', $student->id)->update([
                 'id_hash' => \Illuminate\Support\Str::random(32)
             ]);
         }

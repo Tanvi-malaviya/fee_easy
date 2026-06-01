@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Institute - FeeEasy</title>
-       <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
+       <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -419,7 +419,8 @@
                         <div class="setup-grid">
                             <div class="col-span-3">
                                 <label class="form-label">Phone Number</label>
-                                <input type="text" name="phone" class="input-field" placeholder="10 digit number" required>
+                                <input type="text" name="phone" class="input-field" placeholder="10 digit number" required maxlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <span class="error-message" id="error-phone"></span>
                             </div>
                             <div class="col-span-3">

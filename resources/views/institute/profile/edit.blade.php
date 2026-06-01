@@ -112,7 +112,8 @@
                     <div class="space-y-1">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone
                             Number</label>
-                        <input type="text" name="phone" id="field-phone" placeholder="Phone Number" class="input">
+                        <input type="text" name="phone" id="field-phone" placeholder="Phone Number" maxlength="10"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="input">
                     </div>
                 </div>
             </div>

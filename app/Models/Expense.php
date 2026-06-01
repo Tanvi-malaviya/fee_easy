@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Expense extends Model
 {
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'institute_id', 'expense_category_id', 'amount', 'date', 'description', 'receipt_image', 'payment_method'
     ];

@@ -201,6 +201,7 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', [InstituteStudentController::class, 'update']);
                 Route::delete('/{id}', [InstituteStudentController::class, 'destroy']);
                 Route::get('/{id}/id-card', [InstituteStudentController::class, 'idCard']);
+                Route::post('/{id}/fee-reminder', [InstituteStudentController::class, 'sendFeeReminder']);
             });
 
             // Batch Management
@@ -212,6 +213,7 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', [InstituteBatchController::class, 'update']);
                 Route::post('/{id}/remove-student', [InstituteBatchController::class, 'removeStudent']);
                 Route::post('/{id}/assign-students', [InstituteBatchController::class, 'assignStudents']);
+                Route::post('/{id}/close', [InstituteBatchController::class, 'close']);
                 Route::delete('/{id}', [InstituteBatchController::class, 'destroy']);
             });
 

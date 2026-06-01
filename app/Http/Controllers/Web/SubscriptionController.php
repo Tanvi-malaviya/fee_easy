@@ -122,8 +122,8 @@ class SubscriptionController extends Controller
         }
 
         // Send DB Notification
-        $notifTitle = "🎉 New Subscription Assigned";
-        $notifBody = "A new subscription for the plan '{$plan->name}' has been assigned to your institute by the administrator.";
+        $notifTitle = "Subscription Assigned";
+        $notifBody = "The {$plan->name} subscription plan has been assigned to your institute.";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',
@@ -197,8 +197,8 @@ class SubscriptionController extends Controller
         }
 
         // Send DB Notification
-        $notifTitle = "📅 Subscription Validity Extended";
-        $notifBody = "Your subscription validity has been extended by {$request->days} days by the administrator. New expiry date: " . $newEndDate->format('d M, Y') . ".";
+        $notifTitle = "Plan Extended";
+        $notifBody = "Your {$subscription->plan_name} plan has been extended by {$request->days} days. New expiry: " . $newEndDate->format('d M, Y') . ".";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',
@@ -294,8 +294,8 @@ class SubscriptionController extends Controller
         }
 
         // Send DB Notification
-        $notifTitle = "✨ Trial Account Converted to Paid!";
-        $notifBody = "Your trial account has been successfully converted to a paid subscription for the plan '{$plan->name}'. Thank you for your support!";
+        $notifTitle = "Plan Activated";
+        $notifBody = "Your {$plan->name} plan is now active. Welcome aboard!";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',
@@ -372,8 +372,8 @@ class SubscriptionController extends Controller
         }
 
         // Send DB Notification
-        $notifTitle = "🔄 Subscription Plan Changed";
-        $notifBody = "Your subscription plan has been changed/upgraded to '{$plan->name}' by the administrator. New expiry date: " . $endDate->format('d M, Y') . ".";
+        $notifTitle = "Plan Activated";
+        $notifBody = "Your {$plan->name} plan is now active. New expiry: " . $endDate->format('d M, Y') . ".";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',
@@ -474,8 +474,8 @@ class SubscriptionController extends Controller
         }
 
         // 4. Send notifications (DB + FCM Push)
-        $notifTitle = "✅ Subscription Renewal Approved!";
-        $notifBody = "Your subscription renewal request for the '{$plan->name}' plan has been approved. Thank you for your payment!";
+        $notifTitle = "Renewal Approved";
+        $notifBody = "Your {$plan->name} plan has been renewed and is now active. Thank you!";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',
@@ -516,8 +516,8 @@ class SubscriptionController extends Controller
         $institute = $renewal->institute;
 
         // Send notifications (DB + FCM Push)
-        $notifTitle = "❌ Subscription Renewal Rejected";
-        $notifBody = "Your subscription renewal request has been rejected. Please verify your payment screenshot/transaction ID and submit again, or contact support.";
+        $notifTitle = "Renewal Needs Attention";
+        $notifBody = "We couldn't verify your payment. Please recheck the details and resubmit, or contact support.";
         
         \App\Models\Notification::create([
             'user_type' => 'institute',

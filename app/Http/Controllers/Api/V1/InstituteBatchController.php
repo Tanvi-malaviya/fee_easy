@@ -207,8 +207,8 @@ class InstituteBatchController extends Controller
             $timeRange = trim(($newStartTime ?? '') . ($newStartTime && $newEndTime ? ' – ' . $newEndTime : ($newEndTime ?? '')));
             $scheduleStr = implode(' · ', array_filter([$daysList, $timeRange]));
 
-            $notifTitle = "Schedule Updated 🗓️";
-            $notifBody  = "Your {$batch->name} schedule has been updated" . ($scheduleStr ? ": {$scheduleStr}" : '.');
+            $notifTitle = "Batch Timings Updated";
+            $notifBody  = "{$batch->name} class timings are now {$scheduleStr}.";
             $notifData  = [
                 'type'     => 'schedule_update',
                 'batch_id' => (string) $batch->id,
@@ -286,6 +286,32 @@ class InstituteBatchController extends Controller
         ]);
     }
 
+    /**
+     * Close/Archive the specified batch.
+     */
+    public function close(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+
+        if (!$batch) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Batch not found or unauthorized'
+            ], 404);
+        }
+
+        $batch->update(['status' => 'closed']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Batch closed successfully'
+        ]);
+    }
+
     public function export(Request $request)
     {
         if (!$request->user() || !($request->user() instanceof Institute)) {
@@ -337,10 +363,10 @@ class InstituteBatchController extends Controller
 
         // ── Send Push Notification for Removal ──
         $fcm = app(\App\Services\FCMService::class);
-        $notifTitle = "Batch Removed 🚫";
-        $notifBody = "You have been removed from the batch: {$batch->name}";
-        $notifData = [
-            'type' => 'batch_removal',
+        $notifTitle = "Batch Updated";
+        $notifBody  = "You have been removed from the batch: {$batch->name}";
+        $notifData  = [
+            'type'     => 'batch_removal',
             'batch_id' => (string) $batch->id,
         ];
 
@@ -350,7 +376,7 @@ class InstituteBatchController extends Controller
             'user_id' => $student->id,
             'title' => $notifTitle,
             'message' => $notifBody,
-            'type' => 'batch_removal',
+            'type'         => 'batch_removal',
             'reference_id' => $batch->id,
             'is_read' => false,
         ]);
@@ -366,7 +392,7 @@ class InstituteBatchController extends Controller
                 'user_id' => $student->parent->id,
                 'title' => "Batch Removed: {$student->name}",
                 'message' => "{$student->name} has been removed from the batch: {$batch->name}",
-                'type' => 'batch_removal',
+                'type'         => 'batch_removal',
                 'reference_id' => $batch->id,
                 'is_read' => false,
             ]);
@@ -432,10 +458,10 @@ class InstituteBatchController extends Controller
 
                 // ── Send Push Notification if Batch Changed ──
                 if ($oldBatchId != $id) {
-                    $notifTitle = "Batch Assigned 📚";
-                    $notifBody = "You have been assigned to the batch: {$batch->name}";
-                    $notifData = [
-                        'type' => 'batch_assignment',
+                    $notifTitle = "Batch Updated";
+                    $notifBody  = "You have been assigned to the batch: {$batch->name}";
+                    $notifData  = [
+                        'type'     => 'batch_assignment',
                         'batch_id' => (string) $batch->id,
                     ];
 
@@ -445,7 +471,7 @@ class InstituteBatchController extends Controller
                         'user_id' => $student->id,
                         'title' => $notifTitle,
                         'message' => $notifBody,
-                        'type' => 'batch_assignment',
+                        'type'         => 'batch_assignment',
                         'reference_id' => $batch->id,
                         'is_read' => false,
                     ]);

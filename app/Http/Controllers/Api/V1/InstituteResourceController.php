@@ -108,22 +108,20 @@ class InstituteResourceController extends Controller
 
             if (!$batch) return;
 
-            $typeEmoji = match ($resource->file_type) {
-                'document' => '📄',
-                'video'    => '🎥',
-                'image'    => '🖼️',
-                default    => '📄',
+            $categoryLabel = match ($resource->file_type) {
+                'document' => 'Document',
+                'video'    => 'Video',
+                'image'    => 'Image',
+                default    => 'Material',
             };
 
-            $notifTitle = "New Resource: {$batch->name}";
-            $notifBody  = "{$typeEmoji} {$resource->title}" .
-                          ($resource->description ? " — {$resource->description}" : '');
+            $notifTitle = "New Study Material";
+            $notifBody  = "New {$categoryLabel}: \"{$resource->title}\" is now available.";
 
             $notifData = [
                 'type'        => 'resource',
                 'resource_id' => (string) $resource->id,
                 'batch_id'    => (string) $resource->batch_id,
-                'file_type'   => $resource->file_type,
             ];
 
             foreach ($batch->students as $student) {

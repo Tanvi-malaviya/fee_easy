@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $institute = Auth::guard('institute')->user();
         $today = \Carbon\Carbon::today();
         $startOfMonth = \Carbon\Carbon::now()->startOfMonth();
-        
+
         // Use the exact same logic as the Mobile API (InstituteReportController@dashboard)
         $totalRevenue = \App\Models\SubscriptionPayment::whereHas('subscription', function ($query) use ($institute) {
             $query->where('institute_id', $institute->id);
@@ -24,14 +24,14 @@ class DashboardController extends Controller
 
         $totalFees = \App\Models\Fee::where('institute_id', $institute->id)->sum('total_amount');
         $dueFees = \App\Models\Fee::where('institute_id', $institute->id)->sum(\DB::raw('total_amount - paid_amount'));
-        
+
         $stats = [
             'total_students' => $institute->students()->count(),
             'monthly_revenue' => $totalRevenue,
             'pending_fees' => $dueFees,
             'total_fees' => $totalFees,
             'today_attendance' => \App\Models\Student::where('institute_id', $institute->id)
-                ->whereHas('attendance', function($q) use ($today) {
+                ->whereHas('attendance', function ($q) use ($today) {
                     $q->where('date', $today)->where('status', 'Present');
                 })->count(),
             'total_batches' => $institute->batches()->count(),
@@ -46,8 +46,37 @@ class DashboardController extends Controller
         $recent_batches = $institute->batches()->latest()->limit(5)->get();
         $recent_students = $institute->students()->latest()->limit(5)->get();
 
-        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students'));
+        // Payment/Bank settings from admin panel (SystemSetting)
+        $paymentSettings = [
+            'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
+            'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+        ];
+
+        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings'));
     }
+
+    /**
+     * Show the subscription renewal form page.
+     */
+    public function showRenewalForm()
+    {
+        $institute = Auth::guard('institute')->user();
+
+        // Payment/Bank settings from admin panel (SystemSetting)
+        $paymentSettings = [
+            'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
+            'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+        ];
+
+        return view('institute.subscription.renew', compact('institute', 'paymentSettings'));
+    }
+
 
     /**
      * Submit an offline subscription renewal request.

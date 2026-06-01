@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Institute extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -168,15 +169,8 @@ class Institute extends Authenticatable
 
         static::creating(function ($institute) {
             if (empty($institute->institute_code)) {
-                $name = $institute->institute_name ?? $institute->name ?? 'INST';
-                $cleanName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
-                $prefix = substr($cleanName, 0, 3);
-                if (strlen($prefix) < 2) {
-                    $prefix = 'INST';
-                }
-
                 do {
-                    $code = $prefix . mt_rand(100, 999);
+                    $code = (string) mt_rand(100000, 999999);
                 } while (\DB::table('institutes')->where('institute_code', $code)->exists());
 
                 $institute->institute_code = $code;

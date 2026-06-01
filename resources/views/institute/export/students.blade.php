@@ -7,117 +7,205 @@
             font-family: 'Helvetica', 'Arial', sans-serif;
             color: #334155;
             line-height: 1.5;
+            margin: 0;
+            padding: 0;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e2e8f0;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 15px;
         }
-        .institute-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1e3a8a;
-            margin-bottom: 5px;
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        .logo-container {
+            text-align: left;
+        }
+        .logo-img {
+            height: 50px;
+            max-width: 180px;
+            object-fit: contain;
+        }
+        .logo-placeholder {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ff6600;
+            letter-spacing: -0.5px;
         }
         .report-title {
-            font-size: 16px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .meta {
-            margin-bottom: 20px;
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-top: 4px;
         }
-        table {
+        .contact-info {
+            text-align: right;
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .contact-info strong {
+            color: #334155;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+        }
+        .meta-table td {
+            border: none;
+            padding: 10px 15px;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .meta-label {
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-        th {
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: bold;
-            font-size: 11px;
+        table.data-table th {
+            background-color: #ff6600;
+            color: white;
+            font-weight: 700;
+            font-size: 10px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             text-align: left;
-            padding: 10px 8px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border: none;
         }
-        td {
-            padding: 10px 8px;
-            font-size: 12px;
+        table.data-table td {
+            padding: 10px 12px;
+            font-size: 11px;
             border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        table.data-table tr:nth-child(even) td {
+            background-color: #fafaf9;
         }
         .status {
-            font-weight: bold;
-            font-size: 10px;
+            font-weight: 700;
+            font-size: 9px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
         }
-        .active { color: #10b981; }
-        .inactive { color: #ef4444; }
+        .active { 
+            color: #16a34a; 
+        }
+        .inactive { 
+            color: #dc2626; 
+        }
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
             text-align: center;
             font-size: 10px;
-            color: #cbd5e1;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+        .footer-line {
+            font-weight: 600;
+            color: #64748b;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="institute-name">{{ $institute->institute_name }}</div>
-        <div class="report-title">Student Registry Report</div>
-    </div>
-
-    <div class="meta">
-        <table style="border: none;">
-            <tr style="border: none;">
-                <td style="border: none; padding: 0;"><strong>Date:</strong> {{ $date }}</td>
-                <td style="border: none; padding: 0; text-align: right;">
-                    @if($batch)
-                        <strong>Batch:</strong> {{ $batch->name }}
+    <!-- Header Block -->
+    <table class="header-table">
+        <tr>
+            <td style="width: 55%;">
+                <div class="logo-container">
+                    @if($institute->logo && file_exists(public_path('storage/' . $institute->logo)))
+                        <img class="logo-img" src="{{ public_path('storage/' . $institute->logo) }}" alt="Logo">
                     @else
-                        <strong>Cohort:</strong> All Students
+                        <div class="logo-placeholder">{{ $institute->institute_name }}</div>
                     @endif
-                </td>
-            </tr>
-        </table>
-    </div>
+                    <div class="report-title">Student Registry Report</div>
+                </div>
+            </td>
+            <td style="width: 45%;">
+                <div class="contact-info">
+                    <strong>{{ $institute->institute_name }}</strong><br>
+                    Email: {{ $institute->email }}<br>
+                    Phone: +91 {{ $institute->phone }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
-    <table>
+    <!-- Meta Details Block -->
+    <table class="meta-table">
+        <tr>
+            <td>
+                <span class="meta-label">Date:</span> {{ $date }}
+            </td>
+            <!-- <td style="text-align: right;">
+                <span class="meta-label">Cohort:</span> 
+                @if($batch)
+                    {{ $batch->name }} (Std. {{ $batch->standard ?? 'N/A' }})
+                @else
+                    All Enrolled Students
+                @endif
+            </td> -->
+        </tr>
+    </table>
+
+    <!-- Students Grid -->
+    <table class="data-table">
         <thead>
             <tr>
-                <th>Sr.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Batch</th>
-                <th>Std.</th>
-                <th>Status</th>
+                <th style="width: 6%; text-align: center;">Sr.</th>
+                <th style="width: 25%;">Name</th>
+                <th style="width: 25%;">Email</th>
+                <th style="width: 15%;">Phone</th>
+                <th style="width: 12%;">Batch</th>
+                <th style="width: 8%;">Std.</th>
+                <th style="width: 9%; text-align: center;">Status</th>
             </tr>
         </thead>
         <tbody>
             @foreach($students as $index => $student)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td><strong>{{ $student->name }}</strong></td>
+                    <td style="text-align: center; color: #64748b;">{{ $index + 1 }}</td>
+                    <td><strong style="color: #0f172a;">{{ $student->name }}</strong></td>
                     <td>{{ $student->email }}</td>
                     <td>{{ $student->phone ?? 'N/A' }}</td>
                     <td>{{ $student->batch ? $student->batch->name : 'N/A' }}</td>
                     <td>{{ $student->standard ?? '--' }}</td>
-                    <td class="status {{ $student->status == 1 ? 'active' : 'inactive' }}">
-                        {{ $student->status == 1 ? 'Active' : 'Inactive' }}
+                    <td style="text-align: center;">
+                        <span class="status {{ $student->status == 1 ? 'active' : 'inactive' }}">
+                            {{ $student->status == 1 ? 'Active' : 'Inactive' }}
+                        </span>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
+    <!-- Footer Block -->
     <div class="footer">
-        Generated via FeeEasy Management System &copy; {{ date('Y') }}
+        <div class="footer-line">&copy; {{ date('Y') }} {{ $institute->institute_name }} | All Rights Reserved</div>
+        <div style="margin-top: 4px; font-size: 9px; color: #cbd5e1;">Powered by Tuoora Education System</div>
     </div>
 </body>
 </html>

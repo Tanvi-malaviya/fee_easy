@@ -47,11 +47,12 @@ class CheckSubscriptionExpiry extends Command
             $planName = $subscription->plan_name;
             $formattedDate = $subscription->end_date->format('d-m-Y');
 
-            $title = '⚠️ Plan Expiring Soon!';
             if ($days === 0) {
-                $message = "Your '{$planName}' subscription plan expires today ({$formattedDate})! Please renew now to prevent service interruption.";
+                $title = 'Plan Expiring Today';
+                $message = "Your {$planName} plan expires today. Renew now to keep your services active.";
             } else {
-                $message = "Your '{$planName}' subscription plan will expire in {$days} day(s) on {$formattedDate}. Please renew your plan.";
+                $title = 'Plan Expiring Soon';
+                $message = "Your {$planName} plan expires in {$days} days on {$formattedDate}. Tap to renew.";
             }
 
             // Save to Notification database for Institute

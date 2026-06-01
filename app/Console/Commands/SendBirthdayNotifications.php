@@ -46,10 +46,10 @@ class SendBirthdayNotifications extends Command
         $count = 0;
 
         foreach ($students as $student) {
-            $notifTitle = "Happy Birthday! 🎂✨";
-            $notifBody = "Wishing you a fantastic year filled with happiness and success, {$student->name}! Open the app for your birthday surprise! 🎁";
-            $notifData = [
-                'type' => 'birthday_celebration',
+            $notifTitle = "Happy Birthday! 🎂";
+            $notifBody  = "Happy Birthday, {$student->name}! Wishing you a wonderful day ahead. 🎉";
+            $notifData  = [
+                'type'       => 'birthday_celebration',
                 'student_id' => (string) $student->id,
             ];
 
@@ -71,10 +71,10 @@ class SendBirthdayNotifications extends Command
 
             // 3. Notify parent (if exists)
             if ($student->parent) {
-                $parentTitle = "Happy Birthday to {$student->name}! 🎉";
-                $parentBody = "Wishing {$student->name} a very happy birthday and a beautiful year of growth and learning! 🎂";
-                $parentData = [
-                    'type' => 'birthday_celebration_parent',
+                $parentTitle = "Happy Birthday! 🎂";
+                $parentBody  = "Wishing {$student->name} a very Happy Birthday! 🎂🎉";
+                $parentData  = [
+                    'type'       => 'birthday_celebration_parent',
                     'student_id' => (string) $student->id,
                 ];
 
@@ -84,7 +84,7 @@ class SendBirthdayNotifications extends Command
                     'user_id' => $student->parent->id,
                     'title' => $parentTitle,
                     'message' => $parentBody,
-                    'type' => 'birthday_celebration',
+                    'type'         => 'birthday_celebration',
                     'reference_id' => $student->id,
                     'is_read' => false,
                 ]);

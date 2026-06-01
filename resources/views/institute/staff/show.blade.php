@@ -229,7 +229,8 @@
                             </div>
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Phone Number</label>
-                                <input type="text" name="phone" id="field-phone" required placeholder="+1 (555) 000-0000"
+                                <input type="text" name="phone" id="field-phone" required placeholder="Enter Phone Number" maxlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
                                 <span id="error-phone" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>

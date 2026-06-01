@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tuoora Secure Gateway</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/turooa.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>

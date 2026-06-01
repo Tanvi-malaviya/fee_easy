@@ -94,10 +94,16 @@
                       
 
                         <div class="pt-4">
+                            @if(Auth::guard('institute')->user()->hasActiveSubscription())
                             <button type="submit" id="save-btn" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 hover:shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-3">
                                 <span>Save Integration</span>
                                 <div id="save-loader" class="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin hidden"></div>
                             </button>
+                            @else
+                            <button type="button" onclick="handleExpiredSubscription(event)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 hover:shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-3">
+                                <span>Save Integration</span>
+                            </button>
+                            @endif
                         </div>
                     </div>
                 </div>

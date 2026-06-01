@@ -114,9 +114,6 @@ class StaffSalaryController extends Controller
         ]);
     }
 
-    /**
-     * Preview salary for a staff (Summary).
-     */
     public function preview(Request $request, $staff_id)
     {
         $instituteId = $request->user()->id;
@@ -126,6 +123,15 @@ class StaffSalaryController extends Controller
             return response()->json(['message' => 'Staff not found'], 404);
         }
 
+        $month = $request->get('month', date('m'));
+        $year = $request->get('year', date('Y'));
+
+        $absentCount = \App\Models\StaffAttendance::where('staff_id', $staff_id)
+            ->where('status', 'absent')
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->count();
+
         // Simple preview logic
         return response()->json([
             'status' => 'success',
@@ -134,7 +140,8 @@ class StaffSalaryController extends Controller
                 'employee_id' => $staff->employee_id,
                 'base_salary' => $staff->base_salary,
                 'suggested_deductions' => 0, // Could be calculated from attendance
-                'suggested_bonus' => 0
+                'suggested_bonus' => 0,
+                'leaves' => $absentCount
             ]
         ]);
     }

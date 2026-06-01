@@ -15,7 +15,7 @@
                             <div
                                 class="h-32 w-32 rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 overflow-hidden flex items-center justify-center group-hover:border-orange-500/30 transition-all">
                                 <img id="image-preview"
-                                    src="https://ui-avatars.com/api/?name=New+Student&color=7F9CF5&background=EBF4FF"
+                                    src="https://ui-avatars.com/api/?name=T&color=7F9CF5&background=EBF4FF"
                                     class="w-full h-full object-cover">
                                 <div
                                     class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -58,7 +58,7 @@
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
                                     Name</label>
                                 <input type="text" name="name" required value="{{ old('name') }}"
-                                    placeholder="Arjun Malhotra"
+                                    placeholder="Enter Name"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('name') border-rose-500 @enderror">
                                 @error('name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
                                 @enderror
@@ -72,7 +72,9 @@
                                         <span class="text-sm font-bold text-slate-400">+91</span>
                                     </div>
                                     <input type="text" name="phone" required value="{{ old('phone') }}"
-                                        placeholder="98765 43210" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number"
+                                        placeholder="Enter Phone Number" pattern="[0-9]{10}" maxlength="10"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                        title="Please enter a valid 10-digit phone number"
                                         class="w-full pl-14 pr-5 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('phone') border-rose-500 @enderror">
                                 </div>
                                 @error('phone') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
@@ -83,7 +85,7 @@
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Email
                                     Address</label>
                                 <input type="email" name="email" required value="{{ old('email') }}"
-                                    placeholder="arjun@tuoora.edu" title="Please enter a valid email address (e.g., name@domain.com)"
+                                    placeholder="Enter Email Address" title="Please enter a valid email address (e.g., name@domain.com)"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('email') border-rose-500 @enderror">
                                 @error('email') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
                                 @enderror
@@ -92,8 +94,8 @@
                             <div class="space-y-1">
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Date of
                                     Birth</label>
-                                <input type="date" name="dob" required value="{{ old('dob') }}"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('dob') border-rose-500 @enderror">
+                                <input type="date" name="dob" required value="{{ old('dob') }}" onclick="this.showPicker()"
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all cursor-pointer @error('dob') border-rose-500 @enderror">
                                 @error('dob') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -101,7 +103,7 @@
                             <div class="space-y-1">
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Graduation</label>
                                 <input type="text" name="standard" value="{{ old('standard') }}"
-                                    placeholder="e.g. 10th Grade"
+                                    placeholder="Enter Graduation"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('standard') border-rose-500 @enderror">
                                 @error('standard') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}
                                 </p> @enderror
@@ -111,7 +113,7 @@
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Parent
                                     Name</label>
                                 <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
-                                    placeholder="Mr. Rajesh Malhotra"
+                                    placeholder="Enter Parent Name"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all @error('guardian_name') border-rose-500 @enderror">
                                 @error('guardian_name') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">
                                 {{ $message }}</p> @enderror
@@ -140,7 +142,7 @@
                                 Line
                                 1</label>
                             <input type="text" name="address_line_1" value="{{ old('address_line_1') }}"
-                                placeholder="Street address, P.O. box"
+                                placeholder="Enter Address Line 1"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
@@ -149,7 +151,7 @@
                                 Line
                                 2 (Optional)</label>
                             <input type="text" name="address_line_2" value="{{ old('address_line_2') }}"
-                                placeholder="Apartment, suite, unit, etc."
+                                placeholder="Enter Address Line 2 (Optional)"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
                     </div>
@@ -158,28 +160,28 @@
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">City</label>
-                            <input type="text" name="city" value="{{ old('city') }}" placeholder="Ahmedabad"
+                            <input type="text" name="city" value="{{ old('city') }}" placeholder="Enter City"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">State</label>
-                            <input type="text" name="state" value="{{ old('state') }}" placeholder="Gujarat"
+                            <input type="text" name="state" value="{{ old('state') }}" placeholder="Enter State"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">Country</label>
-                            <input type="text" name="country" value="{{ old('country') }}" placeholder="India"
+                            <input type="text" name="country" value="{{ old('country') }}" placeholder="Enter Country"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
 
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">Pincode</label>
-                            <input type="text" name="pincode" value="{{ old('pincode') }}" placeholder="122001"
+                            <input type="text" name="pincode" value="{{ old('pincode') }}" placeholder="Enter Pincode"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
                     </div>
@@ -214,7 +216,7 @@
                     errorEl.classList.remove('hidden');
                 }
                 event.target.value = ""; // Clear input
-                document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=New+Student&color=7F9CF5&background=EBF4FF";
+                document.getElementById('image-preview').src = "https://ui-avatars.com/api/?name=T&color=7F9CF5&background=EBF4FF";
                 return;
             } else {
                 if (errorEl) {

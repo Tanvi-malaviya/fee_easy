@@ -24,12 +24,12 @@
                 <div class="bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
                     <div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Present</span>
-                        <span class="text-base font-black text-primary"><span id="summary-present">0</span></span>
+                        <span class="text-base font-black text-emerald-500"><span id="summary-present">0</span></span>
                     </div>
                     <div class="h-6 w-px bg-slate-100"></div>
                     <div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Absent</span>
-                        <span class="text-base font-black text-emerald-600"><span id="summary-absent">0</span></span>
+                        <span class="text-base font-black text-primary"><span id="summary-absent">0</span></span>
                     </div>
                 </div>
 
@@ -63,11 +63,11 @@
             @if(Auth::guard('institute')->user()->hasActiveSubscription())
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
                 <button onclick="markAllPresent()" class="px-4 py-2.5 sm:py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto">
-                    <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                     <span class="whitespace-nowrap">Mark All Present</span>
                 </button>
                 <button onclick="markAllAbsent()" class="px-4 py-2.5 sm:py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto">
-                    <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     <span class="whitespace-nowrap">Mark All Absent</span>
                 </button>
                 <button onclick="submitAttendance()" id="submit-btn" class="px-5 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto shrink-0">
@@ -75,8 +75,18 @@
                 </button>
             </div>
             @else
-            <div class="text-xs font-bold text-slate-400 bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-xl uppercase tracking-widest">
-                Subscription Expired - Attendance Logging Disabled
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+                <button onclick="handleExpiredSubscription(event)" class="px-4 py-2.5 sm:py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto">
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <span class="whitespace-nowrap">Mark All Present</span>
+                </button>
+                <button onclick="handleExpiredSubscription(event)" class="px-4 py-2.5 sm:py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <span class="whitespace-nowrap">Mark All Absent</span>
+                </button>
+                <button onclick="handleExpiredSubscription(event)" class="px-5 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto shrink-0">
+                    Submit Attendance
+                </button>
             </div>
             @endif
         </div>
@@ -212,11 +222,11 @@
                 const btnAbsent = card.querySelector('.btn-absent');
                 
                 if (status === 'present') {
-                    btnPresent.className = 'btn-present bg-emerald-600 flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-white';
+                    btnPresent.className = 'btn-present bg-emerald-500 flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-white';
                     btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-slate-50 hover:bg-slate-100 text-slate-500';
                 } else {
                     btnPresent.className = 'btn-present flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-slate-50 hover:bg-slate-100 text-slate-500';
-                    btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-emerald-600 text-white';
+                    btnAbsent.className = 'btn-absent flex-1 py-1.5 text-xs font-bold rounded-lg transition-all bg-primary text-white';
                 }
             }
 
@@ -296,8 +306,8 @@
                 const status = attendanceMap[student.id] || 'present';
                 const isPresent = status === 'present';
                 
-                const btnPresentClass = isPresent ? 'bg-primary text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
-                const btnAbsentClass = !isPresent ? 'bg-emerald-600 text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
+                const btnPresentClass = isPresent ? 'bg-emerald-500 text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
+                const btnAbsentClass = !isPresent ? 'bg-primary text-white' : 'bg-slate-50 hover:bg-slate-100 text-slate-500';
 
                 return `
                     <div id="card-${student.id}" class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex flex-col justify-between relative max-w-[220px] w-full min-h-[140px]">
