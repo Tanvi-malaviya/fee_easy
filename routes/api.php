@@ -220,6 +220,7 @@ Route::prefix('v1')->group(function () {
             // Fees Management
             Route::prefix('fees')->group(function () {
                 Route::get('/export', [InstituteFeeController::class, 'export']);
+                Route::get('/receipts/{id}', [InstituteFeeController::class, 'showReceipt']);
                 Route::get('/', [InstituteFeeController::class, 'index']);
                 Route::post('/', [InstituteFeeController::class, 'store']);
                 Route::get('/{student_id}', [InstituteFeeController::class, 'getStudentFees']);

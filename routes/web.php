@@ -168,6 +168,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::delete('/attendance/{attendance}', [App\Http\Controllers\Web\Institute\AttendanceController::class, 'destroy'])->name('attendance.destroy');
 
                 // Fee Management
+                Route::get('/fees/receipts/{receipt}/download', [App\Http\Controllers\Web\Institute\FeeController::class, 'downloadReceipt'])->name('fees.receipts.download');
                 Route::get('/fees/receipts/{receipt}', [App\Http\Controllers\Web\Institute\FeeController::class, 'showReceipt'])->name('fees.receipts.show');
                 Route::get('/fees/collect', [App\Http\Controllers\Web\Institute\FeeController::class, 'collect'])->name('fees.collect');
                 Route::get('/fees', [App\Http\Controllers\Web\Institute\FeeController::class, 'index'])->name('fees.index');

@@ -184,118 +184,103 @@ class StudentReceiptsController extends Controller
             $payment = \App\Models\Payment::with('fee.institute')->find($paymentId);
             
             if ($payment) {
-                $amount = number_format($payment->amount, 2);
-                $method = $payment->payment_method ?? 'Cash';
-                $date = \Carbon\Carbon::parse($payment->paid_at ?? $payment->created_at)->format('d M Y, h:i A');
-                $receiptNo = 'RE-DEMO-' . str_pad($payment->id, 4, '0', STR_PAD_LEFT);
-                $instituteName = $payment->fee->institute->name ?? 'Institute';
+                $receipt = new Receipt([
+                    'payment_id' => $payment->id,
+                    'receipt_number' => 'RE-DEMO-' . str_pad($payment->id, 4, '0', STR_PAD_LEFT),
+                ]);
+                $data = [
+                    'receipt' => $receipt,
+                    'payment' => $payment,
+                    'fee' => $payment->fee,
+                    'student' => $student,
+                    'institute' => $payment->fee->institute ?? $student->institute,
+                ];
                 
-                $html = '
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #333; margin: 0 0 10px 0;">Payment Receipt</h1>
-                        <h3 style="color: #666; margin: 0;">' . $instituteName . '</h3>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Receipt No:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $receiptNo . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Student:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $student->name . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Date:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $date . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Payment Method:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $method . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; font-size: 18px;"><strong>Amount Paid:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-size: 18px;"><strong>₹' . $amount . '</strong></td>
-                        </tr>
-                    </table>
-                    <div style="text-align: center; margin-top: 40px; color: #888; font-size: 12px;">
-                        <p>Thank you for your payment.</p>
-                        <p>This is a computer-generated document. No signature is required.</p>
-                    </div>
-                </div>';
-                
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
-                return $pdf->download('Receipt-' . $receiptNo . '.pdf');
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.receipt', $data);
+                return $pdf->download('Receipt-' . $receipt->receipt_number . '.pdf');
             }
         }
 
         // For demo fallback from fees
         if (str_starts_with($id, 'fee-')) {
             $feeId = str_replace('fee-', '', $id);
-            $fee = \App\Models\Fee::find($feeId);
+            $fee = \App\Models\Fee::with('institute')->find($feeId);
             
             if ($fee) {
-                $amount = number_format($fee->paid_amount, 2);
-                $method = 'Cash';
-                $date = \Carbon\Carbon::parse($fee->updated_at ?? $fee->date)->format('d M Y, h:i A');
-                $receiptNo = 'RE-FEE-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT);
-                $instituteName = $fee->institute->name ?? 'Institute';
+                $payment = $fee->payments()->latest()->first();
+                if (!$payment) {
+                    $payment = new \App\Models\Payment([
+                        'fee_id' => $fee->id,
+                        'student_id' => $student->id,
+                        'amount' => $fee->paid_amount,
+                        'payment_method' => 'Cash',
+                        'paid_at' => $fee->updated_at ?? $fee->date,
+                    ]);
+                }
+                $receipt = new Receipt([
+                    'payment_id' => $payment->id ?: 0,
+                    'receipt_number' => 'RE-FEE-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT),
+                ]);
+                $data = [
+                    'receipt' => $receipt,
+                    'payment' => $payment,
+                    'fee' => $fee,
+                    'student' => $student,
+                    'institute' => $fee->institute ?? $student->institute,
+                ];
                 
-                $html = '
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #333; margin: 0 0 10px 0;">Payment Receipt</h1>
-                        <h3 style="color: #666; margin: 0;">' . $instituteName . '</h3>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Receipt No:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $receiptNo . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Student:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $student->name . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Date:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $date . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Payment Method:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">' . $method . '</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; font-size: 18px;"><strong>Amount Paid:</strong></td>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-size: 18px;"><strong>₹' . $amount . '</strong></td>
-                        </tr>
-                    </table>
-                    <div style="text-align: center; margin-top: 40px; color: #888; font-size: 12px;">
-                        <p>Thank you for your payment.</p>
-                        <p>This is a computer-generated document. No signature is required.</p>
-                    </div>
-                </div>';
-                
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
-                return $pdf->download('Receipt-' . $receiptNo . '.pdf');
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.receipt', $data);
+                return $pdf->download('Receipt-' . $receipt->receipt_number . '.pdf');
             }
         }
 
+        // Standard lookup: Try to find by Receipt ID first
         $receipt = Receipt::with(['payment.fee.institute', 'payment.student'])
             ->whereHas('payment', function ($query) use ($student) {
                 $query->where('student_id', $student->id);
             })
             ->find($id);
 
-        if (!$receipt) {
-            return response()->json(['status' => 'error', 'message' => 'Receipt not found'], 404);
+        if ($receipt) {
+            $payment = $receipt->payment;
+            $fee = $payment->fee;
+            $institute = $fee->institute ?? $student->institute;
+        } else {
+            // Try to resolve by Fee ID for this student
+            $fee = \App\Models\Fee::where('student_id', $student->id)
+                ->with(['student.batch', 'institute', 'payments.receipt'])
+                ->find($id);
+
+            if (!$fee) {
+                return response()->json(['status' => 'error', 'message' => 'Receipt/Fee not found'], 404);
+            }
+
+            $payment = $fee->payments()->latest()->first();
+            if (!$payment) {
+                $payment = new \App\Models\Payment([
+                    'fee_id' => $fee->id,
+                    'student_id' => $student->id,
+                    'amount' => $fee->paid_amount,
+                    'payment_method' => 'Cash',
+                    'paid_at' => $fee->updated_at ?? $fee->date,
+                ]);
+            }
+            $receipt = $payment->id ? Receipt::where('payment_id', $payment->id)->first() : null;
+            if (!$receipt) {
+                $receipt = new Receipt([
+                    'payment_id' => $payment->id ?: 0,
+                    'receipt_number' => 'REC-' . date('Ymd', strtotime($fee->date)) . '-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT),
+                ]);
+            }
+            $institute = $fee->institute ?? $student->institute;
         }
 
         $data = [
             'receipt' => $receipt,
-            'payment' => $receipt->payment,
-            'fee' => $receipt->payment->fee,
-            'student' => $receipt->payment->student,
-            'institute' => $receipt->payment->fee->institute ?? $student->institute,
+            'payment' => $payment,
+            'fee' => $fee,
+            'student' => $student,
+            'institute' => $institute,
         ];
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.receipt', $data);

@@ -247,4 +247,91 @@ class InstituteFeeController extends Controller
         $filename = "Fee_Report_" . now()->format('Y-m-d_His') . ".pdf";
         return $pdf->download($filename);
     }
+
+    /**
+     * Display a single fee receipt details for the API.
+     */
+    public function showReceipt(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $fee = Fee::where('institute_id', $request->user()->id)
+            ->with(['student.batch', 'institute', 'payments.receipt'])
+            ->find($id);
+
+        if (!$fee) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Fee record not found.'
+            ], 404);
+        }
+
+        $student = $fee->student;
+        $institute = $fee->institute;
+        
+        $payment = $fee->payments()->latest()->first();
+        if (!$payment) {
+            $payment = new \App\Models\Payment([
+                'fee_id' => $fee->id,
+                'student_id' => $student ? $student->id : 0,
+                'amount' => 0,
+                'payment_method' => 'Pending',
+                'paid_at' => null,
+            ]);
+        }
+
+        $receipt = $payment->id ? \App\Models\Receipt::where('payment_id', $payment->id)->first() : null;
+        if (!$receipt) {
+            $receipt = new \App\Models\Receipt([
+                'payment_id' => $payment->id ?: 0,
+                'receipt_number' => 'REC-' . date('Ymd', strtotime($fee->date)) . '-' . str_pad($fee->id, 4, '0', STR_PAD_LEFT),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'fee' => [
+                    'id' => $fee->id,
+                    'total_amount' => (float) $fee->total_amount,
+                    'paid_amount' => (float) $fee->paid_amount,
+                    'due_amount' => (float) ($fee->total_amount - $fee->paid_amount),
+                    'status' => $fee->status,
+                    'date' => $fee->date,
+                    'month' => $fee->month,
+                    'year' => $fee->year,
+                ],
+                'student' => $student ? [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'enrollment_id' => $student->enrollment_id ?? 'N/A',
+                    'standard' => $student->standard ?? 'N/A',
+                    'batch_name' => $student->batch ? $student->batch->batch_name : 'N/A',
+                    'email' => $student->email,
+                ] : null,
+                'institute' => $institute ? [
+                    'id' => $institute->id,
+                    'institute_name' => $institute->institute_name,
+                    'logo_url' => $institute->logo_url,
+                    'logo' => $institute->logo,
+                    'address' => $institute->address ?? 'Main Campus, India',
+                    'email' => $institute->email,
+                    'phone' => $institute->phone ?? 'Support Contact',
+                ] : null,
+                'payment' => [
+                    'id' => $payment->id,
+                    'amount' => (float) $payment->amount,
+                    'payment_method' => $payment->payment_method,
+                    'transaction_id' => $payment->transaction_id ?? 'N/A',
+                    'paid_at' => $payment->paid_at,
+                ],
+                'receipt' => [
+                    'id' => $receipt->id,
+                    'receipt_number' => $receipt->receipt_number,
+                ]
+            ]
+        ]);
+    }
 }
