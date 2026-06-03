@@ -28,6 +28,7 @@ class FeeInvoiceMail extends Mailable
     public $paymentUrl;
     public $instituteName;
     public $instituteLogoUrl;
+    public $instituteLogoPath;
 
     /**
      * Create a new message instance.
@@ -63,6 +64,7 @@ class FeeInvoiceMail extends Mailable
         $this->total = $total ?: ($amount1 + $amount2 + $tax);
         $this->paymentUrl = $paymentUrl ?: '#';
         $this->instituteName = $instituteName;
+        $this->instituteLogoPath = $instituteLogoUrl; // Raw path
         $this->instituteLogoUrl = $instituteLogoUrl ? asset('storage/' . $instituteLogoUrl) : null;
     }
 
@@ -99,6 +101,7 @@ class FeeInvoiceMail extends Mailable
                 'paymentUrl' => $this->paymentUrl,
                 'instituteName' => $this->instituteName,
                 'instituteLogoUrl' => $this->instituteLogoUrl,
+                'instituteLogoPath' => $this->instituteLogoPath,
             ],
         );
     }

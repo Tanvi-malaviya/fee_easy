@@ -250,6 +250,9 @@ class InstituteStudentController extends Controller
             ], 404);
         }
 
+        $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+        $student->total_due = ($student->monthly_fee ?? 0) - $totalPaid;
+
         return response()->json([
             'status' => 'success',
             'data' => $student

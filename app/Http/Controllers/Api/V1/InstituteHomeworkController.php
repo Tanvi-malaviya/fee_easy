@@ -18,8 +18,7 @@ class InstituteHomeworkController extends Controller
         }
 
         $query = $request->user()
-            ->homeworks()
-            ->whereDate('due_date', '>=', \Carbon\Carbon::yesterday()->toDateString());
+            ->homeworks();
 
         if ($request->has('batch_id')) {
             $query->where('batch_id', $request->batch_id);

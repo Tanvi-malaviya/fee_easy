@@ -248,6 +248,13 @@ class InstituteAuthController extends Controller
             ], 401);
         }
 
+        if (in_array($institute->status, ['suspended', 'blocked'])) {
+            return response()->json([
+                'status' => $institute->status,
+                'message' => "Your account has been {$institute->status}. Please contact support."
+            ], 403);
+        }
+
         $token = $institute->createToken('institute_token')->plainTextToken;
         $subscription = $institute->subscriptions()->latest()->first();
 

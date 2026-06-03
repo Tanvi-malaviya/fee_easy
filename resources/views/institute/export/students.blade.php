@@ -135,7 +135,7 @@
         <tr>
             <td style="width: 55%;">
                 <div class="logo-container">
-                    @if($institute->logo && file_exists(public_path('storage/' . $institute->logo)))
+                    @if(extension_loaded('gd') && $institute->logo && file_exists(public_path('storage/' . $institute->logo)))
                         <img class="logo-img" src="{{ public_path('storage/' . $institute->logo) }}" alt="Logo">
                     @else
                         <div class="logo-placeholder">{{ $institute->institute_name }}</div>

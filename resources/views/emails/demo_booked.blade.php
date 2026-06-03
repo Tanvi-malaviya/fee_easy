@@ -44,7 +44,7 @@
             letter-spacing: -0.025em;
         }
         .highlight {
-            color: #6366f1;
+            color: #FF6B00;
             font-weight: 700;
         }
         .details-box {
@@ -73,7 +73,7 @@
         }
         .button {
             display: inline-block;
-            background-color: #6366f1;
+            background-color: #FF6B00;
             color: #ffffff !important;
             padding: 14px 32px;
             border-radius: 12px;
@@ -89,7 +89,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>TUOORA <span style="color: #6366f1;">ERP</span></h1>
+            <img src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo" style="height: 28px; width: auto; display: inline-block;">
             <p style="color: #94a3b8; font-size: 14px; margin-top: 8px; font-weight: 500;">Institutional Walkthrough Confirmed</p>
         </div>
         <div class="content">

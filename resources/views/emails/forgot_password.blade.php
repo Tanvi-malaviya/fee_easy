@@ -6,13 +6,13 @@
   <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
     <!-- HEADER -->
     <tr><td class="em-header">
-      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <img class="em-logo-img" src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo">
       <p class="em-tagline">Learn · Grow · Achieve</p>
     </td></tr>
     <tr><td class="em-banner"></td></tr>
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#fdeeee;color:#d9534f;">&#128273;</div>
+      <div class="em-icon" style="background:#fff2eb;color:#ff6600;">&#128273;</div>
       <h1 class="em-title">Reset Your Password</h1>
       <p class="em-sub">Use the verification code below to reset your password.</p>
       <p>Hi <strong>{{ $userName }}</strong>,</p>

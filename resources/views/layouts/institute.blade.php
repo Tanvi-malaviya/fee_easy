@@ -151,7 +151,7 @@
                 <span class="text-slate-500 text-[15px] font-medium">
                     Hello, <span
                         class="font-black text-slate-800 tracking-tight">{{ auth('institute')->user()->institute_name ?? auth('institute')->user()->name }}</span>
-                    👋
+                    
                 </span>
             </div>
 

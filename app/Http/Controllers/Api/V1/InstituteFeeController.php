@@ -20,7 +20,7 @@ class InstituteFeeController extends Controller
 
         $query = Fee::where('institute_id', $request->user()->id)
             ->with(['student' => function($q) {
-                $q->select('id', 'name', 'email', 'batch_id', 'monthly_fee', 'profile_image');
+                $q->select('id', 'name', 'email', 'batch_id', 'monthly_fee', 'profile_image', 'enrollment_id');
             }, 'student.batch', 'payments']);
 
         if ($request->filled('status')) {

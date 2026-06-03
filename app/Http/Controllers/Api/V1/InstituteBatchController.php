@@ -41,7 +41,7 @@ class InstituteBatchController extends Controller
         foreach ($batches as $batch) {
             $studentIds = \App\Models\Student::where('batch_id', $batch->id)->pluck('id');
             $batch->total_paid = (float) \App\Models\Fee::whereIn('student_id', $studentIds)->sum('paid_amount');
-            $batch->total_expected = (float) ($batch->students_count * ($batch->fees ?? 0));
+            $batch->total_expected = (float) $batch->students()->sum('monthly_fee');
         }
 
         return response()->json([
@@ -79,7 +79,7 @@ class InstituteBatchController extends Controller
         // Calculate total fees paid and expected for this batch
         $studentIds = $batch->students()->pluck('id');
         $batch->total_paid = (float) \App\Models\Fee::whereIn('student_id', $studentIds)->sum('paid_amount');
-        $batch->total_expected = (float) ($batch->students_count * ($batch->fees ?? 0));
+        $batch->total_expected = (float) $batch->students()->sum('monthly_fee');
 
         // Calculate attendance average
         $totalAttendance = \App\Models\Attendance::where('batch_id', $batch->id)->count();

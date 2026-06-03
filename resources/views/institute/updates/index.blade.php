@@ -88,14 +88,15 @@
                             <label
                                 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Recipient</label>
                             <button type="button" onclick="toggleUpdatesDropdown('recipient')" id="recipient-btn"
-                                class="w-full px-3 py-3 sm:py-2.5 bg-orange-50/50 border border-orange-100 rounded-xl text-xs font-bold text-orange-600 outline-none flex items-center justify-between transition-all">
+                                class="w-full px-3 py-3 sm:py-2.5 bg-white border border-slate-100 rounded-xl text-xs font-bold outline-none flex items-center justify-between transition-all">
                                 <span id="recipient-label">Students</span>
-                                <svg class="w-4 h-4 text-orange-500 transition-transform duration-200" id="recipient-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 transition-transform duration-200" id="recipient-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                             <div id="recipient-menu"
-                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
+                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 bg-slate-50 
+                                rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
                                 <div class="py-1">
                                     <button type="button" onclick="selectUpdatesOption('recipient', 'students', 'Students')"
                                         class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Students</button>
@@ -112,7 +113,7 @@
                             <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Target
                                 Audience</label>
                             <button type="button" onclick="toggleUpdatesDropdown('target_type')" id="target_type-btn"
-                                class="w-full px-3 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
+                                class="w-full px-3 py-3 sm:py-2.5  border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none flex items-center justify-between transition-all">
                                 <span id="target_type-label">All Students</span>
                                 <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" id="target_type-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />

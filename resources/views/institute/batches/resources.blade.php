@@ -34,26 +34,10 @@
 
         <!-- Resources Grid -->
         <div id="resources-grid" class="flex flex-wrap gap-3 mb-8">
-            <!-- Quick Add Card -->
-            @if(Auth::guard('institute')->user()->hasActiveSubscription())
-            <div onclick="openUploadModal()" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-primary/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
-                <div class="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
-                </div>
-                <p class="text-xs font-bold text-slate-800">Quick Add</p>
-                <p class="text-[10px] text-slate-400 mt-1">Drag & drop files here</p>
+            <!-- Loading -->
+            <div class="w-full py-20 text-center">
+                <div class="inline-block h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
             </div>
-            @else
-            <div onclick="handleExpiredSubscription(event)" class="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center group hover:bg-slate-50 hover:border-primary/30 transition-all cursor-pointer max-w-[210px] w-full min-h-[180px]">
-                <div class="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
-                </div>
-                <p class="text-xs font-bold text-slate-800">Quick Add</p>
-                <p class="text-[10px] text-slate-400 mt-1">Drag & drop files here</p>
-            </div>
-            @endif
-
-            <!-- Grid Items rendered dynamically -->
         </div>
 
         <!-- Pagination Controls -->
@@ -242,6 +226,11 @@
         </div>
     </div>
 
+    <!-- Empty State Template -->
+    <template id="resources-empty-state">
+        <x-empty-state title="No resources uploaded" subtitle="Upload educational materials to share with your students." icon="documents" />
+    </template>
+
     <script>
         const BATCH_ID = "{{ $id }}";
         const API_RESOURCES_URL = `/api/v1/institute/resources`;
@@ -280,6 +269,12 @@
 
         function renderResources() {
             const container = document.getElementById('resources-grid');
+            if (resources.length === 0) {
+                container.innerHTML = document.getElementById('resources-empty-state').innerHTML;
+                document.getElementById('pagination-controls').innerHTML = '';
+                return;
+            }
+
             const totalPages = Math.ceil(resources.length / itemsPerPage) || 1;
 
             if (currentPage > totalPages) {

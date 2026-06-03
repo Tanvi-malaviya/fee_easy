@@ -6,13 +6,13 @@
   <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
     <!-- HEADER -->
     <tr><td class="em-header">
-      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <img class="em-logo-img" src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo">
       <p class="em-tagline">Learn · Grow · Achieve</p>
     </td></tr>
     <tr><td class="em-banner"></td></tr>
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#128274;</div>
+      <div class="em-icon" style="background:#fff2eb;color:#ff6600;">&#128274;</div>
       <h1 class="em-title">Verify Your Account</h1>
       <p class="em-sub">Welcome to Tuoora! Use the code below to complete your registration.</p>
       <p>Hi <strong>{{ $userName }}</strong>,</p>

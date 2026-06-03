@@ -6,13 +6,13 @@
   <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
     <!-- HEADER -->
     <tr><td class="em-header">
-      <p class="em-logo-fallback">TU<span>OO</span>RA</p>
+      <img class="em-logo-img" src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo">
       <p class="em-tagline">Learn · Grow · Achieve</p>
     </td></tr>
     <tr><td class="em-banner"></td></tr>
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#fff3df;color:#f5a623;">&#127881;</div>
+      <div class="em-icon" style="background:#fff2eb;color:#ff6600;">&#127881;</div>
       
       @if($type == 'assigned')
         <h1 class="em-title">Your Plan is Active</h1>

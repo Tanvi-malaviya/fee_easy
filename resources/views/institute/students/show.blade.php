@@ -254,7 +254,7 @@
                                         $statusBg = 'bg-amber-50 text-amber-600 border-amber-100';
                                     }
                                 @endphp
-                                <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 transition-colors">
+                                <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 cursor-pointer transition-colors" onclick="window.location.href='{{ route('institute.fees.receipts.show', $fee->id) }}'">
                                     <td class="py-3 pl-2 font-bold text-slate-700">
                                         {{ \Carbon\Carbon::parse($fee->date)->format('M Y') }}
                                     </td>

@@ -18,6 +18,7 @@ class StudentAddedMail extends Mailable
     public $tempPassword;
     public $instituteName;
     public $instituteLogoUrl;
+    public $instituteLogoPath;
     public $studentAppUrl;
     public $playstoreUrl;
     public $appstoreUrl;
@@ -39,6 +40,7 @@ class StudentAddedMail extends Mailable
         $this->studentEmail = $studentEmail;
         $this->tempPassword = $tempPassword;
         $this->instituteName = $instituteName;
+        $this->instituteLogoPath = $instituteLogoUrl; // Raw path
         $this->instituteLogoUrl = $instituteLogoUrl ? asset('storage/' . $instituteLogoUrl) : null;
         $this->studentAppUrl = $studentAppUrl ?: '#';
         $this->playstoreUrl = $playstoreUrl ?: '#';
@@ -68,6 +70,7 @@ class StudentAddedMail extends Mailable
                 'tempPassword' => $this->tempPassword,
                 'instituteName' => $this->instituteName,
                 'instituteLogoUrl' => $this->instituteLogoUrl,
+                'instituteLogoPath' => $this->instituteLogoPath,
                 'studentAppUrl' => $this->studentAppUrl,
                 'playstoreUrl' => $this->playstoreUrl,
                 'appstoreUrl' => $this->appstoreUrl,
