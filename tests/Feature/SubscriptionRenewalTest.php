@@ -167,7 +167,7 @@ class SubscriptionRenewalTest extends TestCase
             ]);
 
         $approveResponse->assertRedirect();
-        
+
         // 6. Verify database updates
         $this->assertDatabaseHas('subscription_renewals', [
             'id' => $renewal->id,
@@ -226,7 +226,7 @@ class SubscriptionRenewalTest extends TestCase
             ->patch(route('subscriptions.renewals.reject', $renewal));
 
         $rejectResponse->assertRedirect();
-        
+
         // 5. Verify database updates
         $this->assertDatabaseHas('subscription_renewals', [
             'id' => $renewal->id,

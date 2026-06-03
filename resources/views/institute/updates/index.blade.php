@@ -152,6 +152,8 @@
                                         class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Emergency</button>
                                     <button type="button" onclick="selectUpdatesOption('category', 'Event', 'Event')"
                                         class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Event</button>
+                                    <button type="button" onclick="selectUpdatesOption('category', 'Holiday', 'Holiday')"
+                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Holiday</button>
                                     <button type="button" onclick="selectUpdatesOption('category', 'Other', 'Other')"
                                         class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">Other</button>
                                 </div>
@@ -238,6 +240,13 @@
                         </div>
                     </div>
 
+                    <!-- Holiday Date Picker Container -->
+                    <div id="holiday-date-container" class="space-y-1 hidden animate-in slide-in-from-top-1">
+                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Holiday Date</label>
+                        <input type="date" name="date" id="holiday-date-input"
+                            class="w-full px-4 py-3 sm:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-orange-500 focus:bg-white transition-all">
+                    </div>
+
                     <div class="space-y-1">
                         <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Message
                             Content</label>
@@ -275,6 +284,10 @@
                             <span class="text-[8px] font-bold text-slate-300">•</span>
                             <span id="view-date"
                                 class="text-[8px] font-bold text-slate-400 uppercase tracking-widest"></span>
+                            <span id="view-holiday-date-section" class="hidden">
+                                <span class="text-[8px] font-bold text-slate-300">•</span>
+                                <span class="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">Holiday: <span id="view-holiday-date"></span></span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -375,6 +388,8 @@
             // Trigger change callback if any
             if (type === 'recipient' || type === 'target_type') {
                 handleTargetChange();
+            } else if (type === 'category') {
+                handleCategoryChange();
             }
         }
 
@@ -401,6 +416,7 @@
                 if (chevron) chevron.classList.remove('rotate-180');
                 if (menu) menu.classList.add('hidden');
             });
+            handleCategoryChange();
         }
 
         // Close dropdowns when clicking outside
@@ -479,6 +495,21 @@
                 standardCont.classList.toggle('hidden', type !== 'standard');
                 allPlaceholder.classList.toggle('hidden', type !== 'all');
                 placeholderText.innerText = "Broadcasting to all Students";
+            }
+        }
+
+        function handleCategoryChange() {
+            const category = document.getElementById('category-select').value;
+            const holidayDateCont = document.getElementById('holiday-date-container');
+            const holidayDateInput = document.getElementById('holiday-date-input');
+
+            if (category === 'Holiday') {
+                holidayDateCont.classList.remove('hidden');
+                holidayDateInput.required = true;
+            } else {
+                holidayDateCont.classList.add('hidden');
+                holidayDateInput.required = false;
+                holidayDateInput.value = '';
             }
         }
 
@@ -631,6 +662,12 @@
                                     <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     ${timeAgo}
                                 </div>
+                                ${update.category === 'Holiday' && update.date ? `
+                                <div class="flex items-center gap-1 sm:gap-2 text-indigo-500">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    Holiday: ${new Date(update.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
+                                ` : ''}
                             </div>
 
                             ${update.attachment ? `
@@ -675,6 +712,18 @@
             const dateObj = new Date(update.created_at);
             document.getElementById('view-date').innerText = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
+            // Holiday date display
+            const holidayDateSection = document.getElementById('view-holiday-date-section');
+            const holidayDateSpan = document.getElementById('view-holiday-date');
+            if (update.category === 'Holiday' && update.date) {
+                const hDate = new Date(update.date);
+                holidayDateSpan.innerText = hDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                holidayDateSection.classList.remove('hidden');
+            } else {
+                holidayDateSection.classList.add('hidden');
+                holidayDateSpan.innerText = '';
+            }
+
             // Target audience display
             let targetValue = 'Everyone';
             if (update.recipient === 'parents') {
@@ -716,6 +765,15 @@
             // Client-side Validation
             const recipient = document.getElementById('recipient-select').value;
             const targetType = document.getElementById('target-type-select').value;
+            const category = document.getElementById('category-select').value;
+            
+            if (category === 'Holiday') {
+                const holidayDateVal = document.getElementById('holiday-date-input').value;
+                if (!holidayDateVal) {
+                    showToast('Please select a holiday date.', 'error');
+                    return;
+                }
+            }
             
             if ((recipient === 'students' || recipient === 'both') && targetType === 'batch') {
                 const batchVal = document.getElementById('modal-batch-select').value;

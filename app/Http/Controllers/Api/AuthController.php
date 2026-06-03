@@ -23,20 +23,23 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'The provided credentials are incorrect.',
             ], 401);
         }
 
-        $token = $user->createToken('mobile_app')->plainTextToken;
+        $accessToken = $user->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
+        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => [
-                'token' => $token,
+                'token' => $accessToken,
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
                 'user' => $user->only(['id', 'name', 'email']),
             ],
         ]);

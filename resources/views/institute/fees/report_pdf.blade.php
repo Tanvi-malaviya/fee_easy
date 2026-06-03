@@ -170,7 +170,7 @@
                     <tr>
                         <td style="text-align: center; color: #64748b;">{{ $index + 1 }}</td>
                         <td>{{ \Carbon\Carbon::parse($fee->date)->format('d M, Y') }}</td>
-                        <td>STU-{{ str_pad($fee->student_id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td>{{ $fee->student->enrollment_id ?? ('STU-' . str_pad($fee->student_id, 4, '0', STR_PAD_LEFT)) }}</td>
                         <td><strong style="color: #0f172a;">{{ $fee->student->name ?? 'N/A' }}</strong></td>
                         <td>₹{{ number_format($fee->total_amount, 2) }}</td>
                         <td style="color: #16a34a; font-weight: bold;">₹{{ number_format($fee->paid_amount, 2) }}</td>

@@ -169,4 +169,47 @@ class InstituteProfileController extends Controller
             'message' => 'Password changed successfully.'
         ]);
     }
+
+    /**
+     * Update the authenticated institute's UPI payment settings.
+     */
+    public function updatePaymentSettings(Request $request)
+    {
+        $institute = $request->user();
+
+        $data = $request->validate([
+            'upi_id' => 'nullable|string|regex:/^[\w\.\-]+@[\w\-]+$/',
+            'upi_qr_code' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $updateData = [];
+
+        if ($request->has('upi_id')) {
+            $updateData['upi_id'] = $data['upi_id'];
+        }
+
+        if ($request->hasFile('upi_qr_code')) {
+            $file = $request->file('upi_qr_code');
+
+            // Delete old QR code if exists
+            if ($institute->upi_qr_code && Storage::disk('public')->exists($institute->upi_qr_code)) {
+                Storage::disk('public')->delete($institute->upi_qr_code);
+            }
+
+            // Store new QR code
+            $path = $file->store('upi_qrs', 'public');
+            $updateData['upi_qr_code'] = $path;
+        }
+
+        $institute->update($updateData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Payment settings updated successfully.',
+            'data' => [
+                'upi_id' => $institute->upi_id,
+                'upi_qr_code_url' => $institute->upi_qr_code_url,
+            ]
+        ]);
+    }
 }

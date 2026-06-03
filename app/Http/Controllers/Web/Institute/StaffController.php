@@ -52,6 +52,26 @@ class StaffController extends Controller
 
         $staff = Staff::create($validated);
 
+        // Send welcome email to staff member
+        try {
+            $roleName = $staff->role ? $staff->role->name : 'Staff';
+            $departmentName = $staff->department ? $staff->department->name : 'N/A';
+
+            \Illuminate\Support\Facades\Mail::to($staff->email)->send(
+                new \App\Mail\StaffAddedMail(
+                    $staff->full_name,
+                    $staff->email,
+                    $staff->employee_id,
+                    $roleName,
+                    $departmentName,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send staff welcome email: ' . $e->getMessage());
+        }
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',

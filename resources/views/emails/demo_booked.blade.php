@@ -89,7 +89,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo" style="height: 28px; width: auto; display: inline-block;">
+            <img src="{{ url('images/2-remove.png') }}" alt="Tuoora Logo" style="height: 28px; width: auto; display: inline-block;">
             <p style="color: #94a3b8; font-size: 14px; margin-top: 8px; font-weight: 500;">Institutional Walkthrough Confirmed</p>
         </div>
         <div class="content">

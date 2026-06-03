@@ -8,6 +8,7 @@ enum UpdateCategory: string
     case ADMINISTRATIVE = 'Administrative';
     case EMERGENCY = 'Emergency';
     case EVENT = 'Event';
+    case HOLIDAY = 'Holiday';
     case OTHER = 'Other';
 
     public static function values(): array

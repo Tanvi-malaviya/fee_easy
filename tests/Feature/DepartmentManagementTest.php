@@ -25,7 +25,7 @@ class DepartmentManagementTest extends TestCase
 
         // 2. Access index page
         $response = $this->actingAs($admin)
-                         ->get(route('departments.index'));
+            ->get(route('departments.index'));
 
         $response->assertStatus(200);
         $response->assertViewIs('departments.index');
@@ -45,9 +45,9 @@ class DepartmentManagementTest extends TestCase
 
         // 2. Post to store route
         $response = $this->actingAs($admin)
-                         ->post(route('departments.store'), [
-                             'name' => 'Artificial Intelligence',
-                         ]);
+            ->post(route('departments.store'), [
+                'name' => 'Artificial Intelligence',
+            ]);
 
         // 3. Verify database and redirection
         $response->assertRedirect(route('departments.index'));
@@ -75,9 +75,9 @@ class DepartmentManagementTest extends TestCase
 
         // 3. Put/Patch update route
         $response = $this->actingAs($admin)
-                         ->put(route('departments.update', $dept->id), [
-                             'name' => 'Advanced Physics',
-                         ]);
+            ->put(route('departments.update', $dept->id), [
+                'name' => 'Advanced Physics',
+            ]);
 
         // 4. Verify database update and redirection
         $response->assertRedirect(route('departments.index'));
@@ -106,7 +106,7 @@ class DepartmentManagementTest extends TestCase
 
         // 3. Delete route
         $response = $this->actingAs($admin)
-                         ->delete(route('departments.destroy', $dept->id));
+            ->delete(route('departments.destroy', $dept->id));
 
         // 4. Verify database missing and redirection
         $response->assertRedirect(route('departments.index'));

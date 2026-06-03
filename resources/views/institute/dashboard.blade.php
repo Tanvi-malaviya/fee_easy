@@ -3,18 +3,18 @@
 @section('content')
     <div class="bg-pattern"></div>
     <div class="min-h-[calc(100vh-6.5rem)] flex flex-col justify-between max-w-7xl mx-auto mt-2 relative z-10">
-        @if($institute->status === 'inactive')
+        @if($institute->status !== 'active')
             <div class="w-full flex-grow flex items-center justify-center py-12">
                 <div class="w-full max-w-md p-8 bg-white rounded-3xl border border-slate-100 shadow-xl animate-scaleUp text-center mx-4">
-                    <div class="h-16 w-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-amber-200/50">
+                    <div class="h-16 w-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-200/50">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                     
-                    <h3 class="text-2xl font-medium text-slate-800 tracking-tight mb-3">Institute Account Inactive</h3>
+                    <h3 class="text-2xl font-medium text-slate-800 tracking-tight mb-3">Institute Account Blocked</h3>
                     <p class="text-sm font-semibold text-slate-500 leading-relaxed px-2">
-                        Your institute account is currently marked as <span class="text-amber-600 font-medium uppercase">Inactive</span>. 
+                        Your institute account is currently marked as <span class="text-red-600 font-medium uppercase">{{ $institute->status }}</span>. 
                         Please contact the administrator or support to activate your account.
                     </p>
                 </div>

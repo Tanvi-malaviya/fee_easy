@@ -25,13 +25,18 @@ class StudentAuthController extends Controller
             ], 401);
         }
 
-        $token = $student->createToken('student_token')->plainTextToken;
+        $accessToken = $student->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $student->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => array_merge(
-                ['token' => $token],
+                [
+                    'token' => $accessToken,
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
+                ],
                 $student->toArray()
             )
         ]);

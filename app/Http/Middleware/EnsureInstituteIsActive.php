@@ -29,24 +29,7 @@ class EnsureInstituteIsActive
         }
 
         if ($institute) {
-            if (in_array($institute->status, ['suspended', 'blocked'])) {
-                if ($request->expectsJson() || $request->is('api/*')) {
-                    return response()->json([
-                        'status' => $institute->status,
-                        'message' => "Your account is currently {$institute->status}. Please contact support."
-                    ], 403);
-                }
-
-                Auth::guard('institute')->logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return redirect()->route('institute.login')->withErrors([
-                    'email' => "Your account is currently {$institute->status}. Please contact support.",
-                ]);
-            }
-
-            if ($institute->status === 'inactive') {
+            if ($institute->status !== 'active') {
                 if ($request->expectsJson() || $request->is('api/*')) {
                     // Exclude essential endpoints (logout, profile check, fcm, app-versions) from block
                     $isExcludedPath = $request->is('*/logout') || 
@@ -56,8 +39,8 @@ class EnsureInstituteIsActive
 
                     if (!$isExcludedPath) {
                         return response()->json([
-                            'status' => 'inactive',
-                            'message' => 'Your institute account is inactive. Please contact support.'
+                            'status' => $institute->status,
+                            'message' => "Your institute account is currently marked as {$institute->status}. Please contact the administrator or support to activate your account."
                         ], 403);
                     }
                 } else {

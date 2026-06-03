@@ -207,7 +207,7 @@ class InstituteFeeController extends Controller
         $institute = $request->user();
         
         $query = Fee::where('institute_id', $institute->id)
-            ->with('student:id,name');
+            ->with('student:id,name,enrollment_id');
 
         // Apply Filters
         if ($request->filled('date')) {

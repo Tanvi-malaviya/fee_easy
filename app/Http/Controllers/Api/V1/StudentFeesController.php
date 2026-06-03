@@ -16,48 +16,48 @@ class StudentFeesController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $student   = $request->user();
-        $fees      = Fee::where('student_id', $student->id)
+        $student = $request->user();
+        $fees = Fee::where('student_id', $student->id)
             ->orderByDesc('date')
             ->get();
 
         // total_fees = student's monthly_fee (fixed), not sum of fee records
         $totalFees = (float) ($student->monthly_fee > 0 ? $student->monthly_fee : $fees->sum('total_amount'));
-        $paidFees  = (float) $fees->sum('paid_amount');
-        $dueFees   = max(0.0, $totalFees - $paidFees);
+        $paidFees = (float) $fees->sum('paid_amount');
+        $dueFees = max(0.0, $totalFees - $paidFees);
 
         $summary = [
             'total_fees' => $totalFees,
-            'paid_fees'  => $paidFees,
-            'due_fees'   => $dueFees,
+            'paid_fees' => $paidFees,
+            'due_fees' => $dueFees,
         ];
 
         $feeList = $fees->map(function ($fee) {
-            $dueDate   = Carbon::parse($fee->date);
-            $dueAmount = max(0.0, (float)$fee->total_amount - (float)$fee->paid_amount);
-            $diffDays  = Carbon::today()->diffInDays($dueDate, false);
+            $dueDate = Carbon::parse($fee->date);
+            $dueAmount = max(0.0, (float) $fee->total_amount - (float) $fee->paid_amount);
+            $diffDays = Carbon::today()->diffInDays($dueDate, false);
 
-            $daysLabel = match(true) {
-                $diffDays > 0  => "{$diffDays} days left",
+            $daysLabel = match (true) {
+                $diffDays > 0 => "{$diffDays} days left",
                 $diffDays == 0 => 'Due today',
-                default        => 'Overdue by ' . abs($diffDays) . ' days',
+                default => 'Overdue by ' . abs($diffDays) . ' days',
             };
 
             return [
-                'id'           => $fee->id,
-                'month_year'   => $dueDate->format('F Y'),
-                'due_date'     => $fee->date,
-                'paid_amount'  => (float) $fee->paid_amount,
-                'status'       => ucfirst($fee->status),
-                'is_overdue'   => $diffDays < 0,
+                'id' => $fee->id,
+                'month_year' => $dueDate->format('F Y'),
+                'due_date' => $fee->date,
+                'paid_amount' => (float) $fee->paid_amount,
+                'status' => ucfirst($fee->status),
+                'is_overdue' => $diffDays < 0,
             ];
         });
 
         return response()->json([
             'status' => 'success',
-            'data'   => [
+            'data' => [
                 'summary' => $summary,
-                'fees'    => $feeList,
+                'fees' => $feeList,
             ],
         ]);
     }
@@ -76,23 +76,23 @@ class StudentFeesController extends Controller
             // based on the student's monthly fee.
             $currentMonthStart = Carbon::now()->startOfMonth();
             $dueDate = $currentMonthStart->copy()->addDays(24); // 25th of the month
-            
-            $dueAmount = $student->monthly_fee > 0 ? (float)$student->monthly_fee : 4500.00;
+
+            $dueAmount = $student->monthly_fee > 0 ? (float) $student->monthly_fee : 4500.00;
             $paidAmount = 0.0;
-            
+
             // Check if there is any payment recorded in the database
-            $totalPaid = (float)\App\Models\Payment::where('student_id', $student->id)->sum('amount');
+            $totalPaid = (float) \App\Models\Payment::where('student_id', $student->id)->sum('amount');
             if ($totalPaid > 0) {
                 $paidAmount = $totalPaid;
                 $dueAmount = max(0.0, $dueAmount - $paidAmount);
             }
-            
+
             // Create a temporary mock fee object to use below
             $fee = new Fee([
                 'id' => 0,
                 'student_id' => $student->id,
                 'institute_id' => $student->institute_id,
-                'total_amount' => $student->monthly_fee > 0 ? (float)$student->monthly_fee : 4500.00,
+                'total_amount' => $student->monthly_fee > 0 ? (float) $student->monthly_fee : 4500.00,
                 'paid_amount' => $paidAmount,
                 'due_amount' => $dueAmount,
                 'status' => $paidAmount > 0 ? 'Partial' : 'Pending',
@@ -103,7 +103,7 @@ class StudentFeesController extends Controller
 
         $dueDate = Carbon::parse($fee->date);
         $dueAmount = $fee->total_amount - $fee->paid_amount;
-        
+
         // Calculate days left or overdue
         $diffInDays = Carbon::today()->diffInDays($dueDate, false);
         if ($diffInDays > 0) {
