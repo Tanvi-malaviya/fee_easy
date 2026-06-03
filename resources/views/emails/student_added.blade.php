@@ -6,7 +6,9 @@
   <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
     <!-- INSTITUTE HEADER -->
     <tr><td class="em-header-inst">
-      @if(!empty($instituteLogoUrl))
+      @if(!empty($instituteLogoPath) && file_exists(public_path('storage/' . $instituteLogoPath)))
+        <img class="em-inst-logo" src="{{ $message->embed(public_path('storage/' . $instituteLogoPath)) }}" alt="{{ $instituteName }}" style="max-height: 56px;">
+      @elseif(!empty($instituteLogoUrl))
         <img class="em-inst-logo" src="{{ $instituteLogoUrl }}" alt="{{ $instituteName }}" style="max-height: 56px;">
       @else
         <div class="em-inst-logo-fallback">{{ strtoupper(substr($instituteName, 0, 1)) }}</div>
@@ -18,7 +20,7 @@
     
     <!-- BODY -->
     <tr><td class="em-body">
-      <div class="em-icon" style="background:#e6f3f1;color:#1f7a6e;">&#127891;</div>
+      <div class="em-icon" style="background:#fff2eb;color:#ff6600;">&#127891;</div>
       <h1 class="em-title">Welcome to Tuoora!</h1>
       <p class="em-sub">Your student account has been created by {{ $instituteName }}.</p>
       
@@ -34,7 +36,7 @@
       <div class="em-note">For your security, please change your password after your first login.</div>
       <div class="em-center"><a href="{{ $studentAppUrl }}" class="em-btn">Download Student App</a></div>
       <p style="text-align:center;font-size:13px;color:#64748b;">
-        Available on <a href="{{ $playstoreUrl }}" style="color:#1f7a6e;">Google Play</a> &nbsp;·&nbsp; <a href="{{ $appstoreUrl }}" style="color:#1f7a6e;">App Store</a>
+        Available on <a href="{{ $playstoreUrl }}" style="color:#00A7B5;">Google Play</a> &nbsp;·&nbsp; <a href="{{ $appstoreUrl }}" style="color:#00A7B5;">App Store</a>
       </p>
     </td></tr>
     

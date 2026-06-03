@@ -188,7 +188,8 @@
                             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Due
                                 Date</label>
                             <input type="date" name="due_date" required
-                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                onclick="try { this.showPicker(); } catch(e) {}"
+                                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer">
                         </div>
 
                         <!-- Priority Level -->
@@ -381,27 +382,25 @@
             container.innerHTML = homeworks.map(hw => {
                 const dueDate = new Date(hw.due_date);
                 const today = new Date();
+                dueDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
                 const diffTime = dueDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
                 const isActive = diffDays >= 0;
+
+                const daysLeftText = diffDays === 0 ? 'TODAY' : (diffDays === 1 ? '1 DAY LEFT' : diffDays + ' DAYS LEFT');
 
                 const submissions = hw.submissions_count || 0;
                 const total = (hw.batch && hw.batch.students_count) ? hw.batch.students_count : 0;
                 const progress = total > 0 ? (submissions / total) * 100 : 0;
 
-                const icons = [
-                    '<path d="M9 7h6m0 10H9m3-10v10M9 7h6" />', // Sum
-                    '<path d="M4 12h16M4 12l8-8m-8 8l8 8" />', // Arrow
-                    '<path d="M12 3v19M3 12h19" />', // Plus
-                    '<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />' // Briefcase
-                ];
-                const randomIcon = icons[hw.id % icons.length];
+                const homeworkIcon = `<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />`;
 
                 return `
                                     <div class="group bg-white rounded-2xl border border-slate-100 p-3 hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-300 relative cursor-pointer flex flex-col" onclick="window.location.href='/institute/batches/${BATCH_ID}/homework/${hw.id}'">
                                         <div class="flex items-start justify-between mb-2">
                                             <div class="h-8 w-8 rounded-xl ${isActive ? 'bg-orange-50 text-primary' : 'bg-slate-100 text-slate-500'} flex items-center justify-center shrink-0">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${randomIcon}</svg>
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">${homeworkIcon}</svg>
                                             </div>
                                             <span class="px-2 py-0.5 ${isActive ? 'bg-orange-50 text-primary' : 'bg-slate-100 text-slate-500'} rounded text-[7px] font-black uppercase tracking-wider">
                                                 ${isActive ? 'Active' : 'Closed'}
@@ -428,7 +427,7 @@
                                             </div>
 
                                             <div class=" flex items-center justify-between">
-                                                 <p class="text-[8px] font-black ${isActive ? 'text-primary' : 'text-slate-400'} uppercase tracking-widest">${isActive ? diffDays + ' DAYS LEFT' : 'COMPLETED'}</p>
+                                                 <p class="text-[8px] font-black ${isActive ? 'text-primary' : 'text-slate-400'} uppercase tracking-widest">${isActive ? daysLeftText : 'COMPLETED'}</p>
                                                  <div class="h-5 w-5 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                                                  </div>

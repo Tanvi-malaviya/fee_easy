@@ -81,8 +81,11 @@ class StudentAttendanceController extends Controller
                 
                 if (!empty($batchDays) && (in_array($dayName, $batchDays) || in_array(substr($dayName, 0, 3), $batchDays))) {
                     if ($currentDate->isPast() && !$currentDate->isToday()) {
-                        $status = 'absent'; // Marked absent if it was a class day in the past and no record exists
-                        $absentCount++;
+                        $assignDate = $student->created_at ? $student->created_at->startOfDay() : null;
+                        if (!$assignDate || $currentDate->greaterThanOrEqualTo($assignDate)) {
+                            $status = 'absent'; // Marked absent if it was a class day in the past and no record exists
+                            $absentCount++;
+                        }
                     }
                 }
             }
@@ -97,6 +100,7 @@ class StudentAttendanceController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
+                'batch_assigned_date' => $student->created_at ? $student->created_at->toDateString() : null,
                 'today' => $todayData,
                 'calendar' => [
                     'month'       => (int)$month,

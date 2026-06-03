@@ -499,7 +499,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Email Address</label>
-                                <input type="email" name="email" id="field-email" required placeholder="j.smith@company.com"
+                                <input type="email" name="email" id="field-email" required placeholder="Enter Emaill..."
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all placeholder:text-slate-300">
                                 <span id="error-email" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                             </div>
@@ -542,7 +542,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="field-salary" required placeholder="25,000"
+                                    <input type="number" name="base_salary" id="field-salary" required placeholder="Enter Salary"
                                         class="w-full pl-8 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all">
                                 </div>
                             </div>

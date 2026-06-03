@@ -125,6 +125,14 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Selected Student Pending Fee Alert -->
+                    <div id="selected-student-pending-fee" class="hidden mt-2 p-2 bg-amber-50 border border-amber-100 rounded-lg flex items-center justify-between text-[11px] font-bold text-amber-700 animate-in fade-in duration-200">
+                        <div class="flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <span>Pending Fees:</span>
+                        </div>
+                        <span id="pending-fee-amount" class="text-xs font-black">₹0</span>
+                    </div>
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
@@ -154,6 +162,16 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div id="receipt-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+    <div onclick="closeReceiptModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+    <div class="bg-[#f8fafc] w-[92%] sm:w-full max-w-3xl rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div id="receipt-modal-content" class="max-h-[85vh] overflow-y-auto">
+            <!-- Populated via AJAX -->
         </div>
     </div>
 </div>
@@ -279,6 +297,20 @@
         document.getElementById('student-search-input').readOnly = true;
         document.getElementById('student-dropdown').classList.add('hidden');
         document.getElementById('clear-student-btn').classList.remove('hidden');
+
+        // Show pending fee
+        const student = allStudents.find(s => s.id == id);
+        if (student) {
+            const pendingFeeDiv = document.getElementById('selected-student-pending-fee');
+            const pendingAmountSpan = document.getElementById('pending-fee-amount');
+            const pending = student.total_due !== undefined ? student.total_due : 0;
+            pendingAmountSpan.innerText = `₹${Number(pending).toLocaleString()}`;
+            if (pending > 0) {
+                pendingFeeDiv.classList.remove('hidden');
+            } else {
+                pendingFeeDiv.classList.add('hidden');
+            }
+        }
     }
 
     function clearStudentSelection() {
@@ -286,6 +318,7 @@
         document.getElementById('student-search-input').value = '';
         document.getElementById('student-search-input').readOnly = false;
         document.getElementById('clear-student-btn').classList.add('hidden');
+        document.getElementById('selected-student-pending-fee').classList.add('hidden');
         document.getElementById('student-search-input').focus();
     }
 
@@ -304,10 +337,7 @@
         document.getElementById('fee-form').reset();
         clearStudentSelection();
         
-        // Optimized: Lazy load students only if list is empty
-        if (allStudents.length === 0) {
-            fetchStudents();
-        }
+        fetchStudents();
     }
 
     function closeFeeModal() { document.getElementById('fee-modal').classList.add('hidden'); }
@@ -387,42 +417,20 @@
             return;
         }
 
-        const studentLastSeenFee = {};
-        
-        fees.forEach(fee => {
-            const studentId = fee.student_id;
-            const liveDue = parseFloat(fee.student?.total_due || 0);
-            
-            if (!studentLastSeenFee[studentId]) {
-                fee.calculated_pending = liveDue;
-                studentLastSeenFee[studentId] = fee;
-            } else {
-                const lastFee = studentLastSeenFee[studentId];
-                fee.calculated_pending = lastFee.calculated_pending + parseFloat(lastFee.paid_amount || 0);
-                studentLastSeenFee[studentId] = fee;
-            }
-        });
-
         container.innerHTML = fees.map(fee => {
             const student = fee.student || {};
             const name = student.name || 'Unknown';
             const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            const batchName = student.batch?.name || 'No Batch';
-            const totalFees = '₹' + parseFloat(student.monthly_fee || 0).toLocaleString('en-IN');
-            const pendingFees = '₹' + parseFloat(fee.calculated_pending || 0).toLocaleString('en-IN');
             
-            const totalDue = parseFloat(fee.calculated_pending || 0);
-            const totalPaid = parseFloat(student.monthly_fee || 0) - totalDue;
-            
-            let statusClass = 'bg-emerald-50 text-emerald-600';
-            let statusText = 'PAID';
-            if (totalDue > 0 && totalPaid > 0) {
-                statusClass = 'bg-orange-50 text-orange-600';
-                statusText = 'PARTIAL';
-            } else if (totalDue > 0 && totalPaid === 0) {
-                statusClass = 'bg-rose-50 text-rose-600';
-                statusText = 'DUE';
+            // Format payment date
+            const rawDate = fee.date;
+            let formattedDate = 'N/A';
+            if (rawDate) {
+                const dateObj = new Date(rawDate);
+                formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
             }
+
+            const paidAmount = '₹' + parseFloat(fee.paid_amount || fee.total_amount || 0).toLocaleString('en-IN');
 
             const hasRealImage = student.profile_image_url && !student.profile_image_url.includes('ui-avatars.com');
             const avatarHtml = hasRealImage
@@ -430,34 +438,28 @@
                 : `<div class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">${initials}</div>`;
 
             return `
-            <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-3 flex flex-col justify-between hover:shadow-md transition-all">
-                <div>
-                    <!-- Top Row -->
-                    <div class="flex items-center justify-between mb-2">
+            <div onclick="openReceiptModal(${fee.id})" class="bg-white rounded-xl border border-slate-100 hover:border-orange-200/60 shadow-sm p-2.5 flex flex-col justify-between hover:shadow-md cursor-pointer transition-all duration-300">
+                <div class="space-y-2">
+                    <!-- Top Row: Avatar & Student Details Inline -->
+                    <div class="flex items-center gap-2">
                         ${avatarHtml}
-                        <span class="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold tracking-wider ${statusClass}">
-                            ${statusText}
-                        </span>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-[11.5px] font-black text-slate-800 truncate">${name}</h3>
+                            <p class="text-[9px] text-slate-400 font-bold tracking-wider truncate">${student.enrollment_id || 'N/A'}</p>
+                        </div>
                     </div>
 
-                    <!-- Student Info -->
-                    <h3 class="text-[12px] font-bold text-slate-800 truncate">${name}</h3>
-                    <p class="text-[9px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        ${batchName}
-                    </p>
+                    <div class="border-t border-slate-50"></div>
 
-                    <div class="border-t border-slate-50 my-1.5"></div>
-
-                    <!-- Fee Details -->
-                    <div class="space-y-0.5">
-                        <div class="flex items-center justify-between text-[10px]">
-                            <span class="text-slate-400 font-medium">TOTAL FEES</span>
-                            <span class="font-bold text-slate-700">${totalFees}</span>
+                    <!-- Compact Details Row -->
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-[9.5px]">
+                            <span class="text-slate-400 font-medium">PAID AMOUNT</span>
+                            <span class="font-black text-emerald-600 bg-emerald-50 px-1 py-0.5 rounded">${paidAmount}</span>
                         </div>
-                        <div class="flex items-center justify-between text-[10px]">
-                            <span class="text-slate-400 font-medium">PENDING</span>
-                            <span class="font-bold ${totalDue > 0 ? (totalPaid > 0 ? 'text-orange-600' : 'text-rose-600') : 'text-slate-700'}">${pendingFees}</span>
+                        <div class="flex items-center justify-between text-[9.5px]">
+                            <span class="text-slate-400 font-medium">PAID DATE</span>
+                            <span class="font-bold text-slate-700">${formattedDate}</span>
                         </div>
                     </div>
                 </div>
@@ -474,24 +476,46 @@
 
     document.getElementById('fee-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const f = new FormData(e.target);
-        const data = Object.fromEntries(f.entries());
         
-        // Amount entered is both total and paid
-        data.paid_amount = data.total_amount;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+        `;
 
-        const resp = await fetch("/api/v1/institute/fees", {
-            method: 'POST',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-            body: JSON.stringify(data)
-        });
-        const res = await resp.json();
-        if (res.status === 'success') { 
-            showToast(res.message); 
-            closeFeeModal(); 
-            loadAllFees(); 
+        try {
+            const f = new FormData(e.target);
+            const data = Object.fromEntries(f.entries());
+            
+            // Amount entered is both total and paid
+            data.paid_amount = data.total_amount;
+
+            const resp = await fetch("/api/v1/institute/fees", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                body: JSON.stringify(data)
+            });
+            const res = await resp.json();
+            if (res.status === 'success') { 
+                showToast(res.message); 
+                closeFeeModal(); 
+                loadAllFees(); 
+                fetchStudents(); // Refresh students data
+            }
+            else showToast(res.message, 'error');
+        } catch (error) {
+            console.error(error);
+            showToast('Something went wrong', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
         }
-        else showToast(res.message, 'error');
     });
 
     async function downloadFeeHistory() {
@@ -515,8 +539,98 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
+    async function openReceiptModal(feeId) {
+        const modal = document.getElementById('receipt-modal');
+        const content = document.getElementById('receipt-modal-content');
+        
+        content.innerHTML = `
+            <div class="flex items-center justify-center p-12">
+                <div class="h-6 w-6 border-2 border-slate-200 border-t-[#f97316] rounded-full animate-spin"></div>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+        
+        try {
+            const resp = await fetch(`/institute/fees/receipts/${feeId}`);
+            const htmlText = await resp.text();
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const card = doc.querySelector('.receipt-card');
+            const style = doc.querySelector('style');
+            
+            if (card) {
+                const actions = card.querySelector('.actions');
+                if (actions) {
+                    actions.remove();
+                }
+                
+                card.style.boxShadow = 'none';
+                card.style.border = 'none';
+                
+                content.innerHTML = `
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-20">
+                        <span class="text-sm font-black text-slate-800 tracking-tight">Receipt Details</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="closeReceiptModal()" class="px-3.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg font-bold text-[11px] shadow-sm hover:bg-slate-50 transition-all">Close</button>
+                            <button onclick="printReceiptFromModal(${feeId})" class="px-3.5 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-[11px] shadow-sm transition-all flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                Print Receipt
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="receipt-card-wrapper" class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                        </div>
+                    </div>
+                `;
+                
+                const wrapper = content.querySelector('#receipt-card-wrapper');
+                
+                // Add Outfit Google Font dynamically
+                if (!document.getElementById('outfit-font-link')) {
+                    const link = document.createElement('link');
+                    link.id = 'outfit-font-link';
+                    link.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap';
+                    link.rel = 'stylesheet';
+                    document.head.appendChild(link);
+                }
+
+                if (style) {
+                    let cssText = style.innerHTML;
+                    // Delete body styles to prevent flexbox alignment from cutting off top content
+                    cssText = cssText.replace(/body\s*{[^}]+}/g, '');
+                    // Remove asterisk resets to prevent affecting parent DOM
+                    cssText = cssText.replace(/\*\s*{[^}]+}/g, '');
+                    
+                    const newStyle = document.createElement('style');
+                    newStyle.innerHTML = cssText;
+                    wrapper.appendChild(newStyle);
+                }
+                
+                wrapper.appendChild(card);
+            } else {
+                content.innerHTML = `<div class="p-5 text-center text-rose-500 font-bold">Failed to load receipt details.</div>`;
+            }
+        } catch (e) {
+            console.error(e);
+            content.innerHTML = `<div class="p-5 text-center text-rose-500 font-bold">Error loading receipt.</div>`;
+        }
+    }
+
+    function closeReceiptModal() {
+        document.getElementById('receipt-modal').classList.add('hidden');
+    }
+
+    function printReceiptFromModal(feeId) {
+        const w = window.open(`/institute/fees/receipts/${feeId}`, '_blank');
+        w.onload = function() {
+            w.print();
+        };
+    }
+
     function viewFee(id) {
-        showToast('Viewing record ' + id, 'success');
+        openReceiptModal(id);
     }
 
     function editFee(id) {

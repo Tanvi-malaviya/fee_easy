@@ -53,7 +53,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            padding: 3rem;
+            padding: 1.75rem;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             position: relative;
             overflow: hidden;
@@ -75,12 +75,12 @@
             justify-content: space-between;
             align-items: flex-start;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.25rem;
         }
 
         .brand h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             color: var(--text-main);
@@ -88,8 +88,8 @@
 
         .brand p {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.3rem;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
         }
 
         .receipt-meta {
@@ -98,13 +98,13 @@
 
         .receipt-badge {
             display: inline-block;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.85rem;
             border-radius: 99px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .badge-paid {
@@ -126,38 +126,38 @@
         }
 
         .receipt-no {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-main);
         }
 
         .receipt-date {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 0.3rem;
+            margin-top: 0.25rem;
         }
 
         .details-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin-bottom: 2.5rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .info-block h3 {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             font-weight: 700;
         }
 
         .info-block p {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
             font-weight: 500;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .info-block p strong {
@@ -167,24 +167,24 @@
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .items-table th {
             text-align: left;
-            padding: 1rem;
+            padding: 0.75rem;
             border-bottom: 2px solid var(--border-color);
             color: var(--primary);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
         }
 
         .items-table td {
-            padding: 1.25rem 1rem;
+            padding: 0.85rem 0.75rem;
             border-bottom: 1px solid var(--border-light);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
         }
 
@@ -202,17 +202,17 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 0.75rem;
+            gap: 0.5rem;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            width: 300px;
-            font-size: 0.95rem;
+            width: 280px;
+            font-size: 0.9rem;
             color: var(--text-muted);
         }
 
@@ -369,7 +369,7 @@
                     @else
                         <p>Status: Pending</p>
                     @endif
-                    <p>Transaction ID: {{ $payment->transaction_id ?? 'N/A' }}</p>
+                   
                 </div>
             </div>
 
@@ -396,14 +396,8 @@
 
             <!-- Summary Block -->
             <div class="summary-block">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span>₹{{ number_format($fee->total_amount, 2) }}</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tax & Service Charge</span>
-                    <span>₹0.00</span>
-                </div>
+             
+                
                 <div class="summary-row total">
                     <span>Amount Paid</span>
                     <span>₹{{ number_format($fee->paid_amount, 2) }}</span>
@@ -416,11 +410,8 @@
                 <button onclick="window.print();" class="btn btn-print">🖨️ Print Receipt</button>
             </div>
 
-            <!-- Footer Note -->
-            <div class="footer-note">
-                <p>Thank you for your payment to {{ $institute->institute_name }}.</p>
-                <p>This is a computer-generated receipt, safe to save or print for your records.</p>
-            </div>
+       
+         
         </div>
     </div>
 </body>

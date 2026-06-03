@@ -4,18 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: #eef2f6;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f8fafc;
+      font-family: 'Outfit', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
     .em-wrap {
       width: 100%;
-      background: #eef2f6;
+      background: #f8fafc;
       padding: 28px 0 48px;
     }
 
@@ -26,38 +30,47 @@
       background: #ffffff;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(15, 42, 57, 0.08);
+      box-shadow: 0 10px 30px rgba(255, 107, 0, 0.05);
     }
 
     .em-header {
-      background: linear-gradient(135deg, #1f7a6e 0%, #155e63 55%, #0f3d4f 100%);
+      background: linear-gradient(135deg, #FF8533 0%, #FF6B00 55%, #E05A00 100%);
       padding: 30px 40px;
       text-align: center;
     }
 
+    .em-logo-img {
+      height: 32px;
+      width: auto;
+      max-width: 180px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     .em-logo-fallback {
       font-size: 26px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 2px;
       color: #ffffff;
       margin: 0;
     }
 
     .em-logo-fallback span {
-      color: #ffd66b;
+      color: #00A7B5;
     }
 
     .em-tagline {
-      margin: 6px 0 0;
-      font-size: 11px;
+      margin: 8px 0 0;
+      font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
     }
 
     .em-banner {
       height: 6px;
-      background: linear-gradient(90deg, #ffd66b 0%, #f5a623 100%);
+      background: linear-gradient(90deg, #00A7B5 0%, #00BCCF 100%);
     }
 
     .em-body {
@@ -82,7 +95,7 @@
       text-align: center;
       font-size: 23px;
       font-weight: 700;
-      color: #0f3d4f;
+      color: #0f172a;
       margin: 0 0 6px;
     }
 
@@ -100,25 +113,26 @@
 
     .em-otp .code {
       display: inline-block;
-      background: #f1f7f6;
-      border: 1px dashed #1f7a6e;
+      background: #fff8f5;
+      border: 1px dashed #ff6600;
       border-radius: 12px;
       padding: 16px 30px;
       font-size: 34px;
       font-weight: 700;
       letter-spacing: 12px;
-      color: #155e63;
+      color: #ff6600;
     }
 
     .em-btn {
       display: inline-block;
-      background: linear-gradient(135deg, #1f7a6e, #155e63);
+      background: linear-gradient(135deg, #FF8533, #FF6B00);
       color: #ffffff !important;
       text-decoration: none;
       padding: 14px 34px;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
+      box-shadow: 0 4px 12px rgba(255, 107, 0, 0.15);
     }
 
     .em-center {
@@ -128,11 +142,11 @@
 
     .em-note {
       background: #fff8e6;
-      border-left: 4px solid #f5a623;
+      border-left: 4px solid #00A7B5;
       border-radius: 8px;
       padding: 12px 16px;
       font-size: 13px;
-      color: #7a5c10;
+      color: #0f3d4f;
       margin: 4px 0 24px;
     }
 
@@ -149,9 +163,9 @@
     }
 
     .em-cred td.k {
-      background: #f1f7f6;
+      background: #fff8f5;
       font-weight: 600;
-      color: #0f3d4f;
+      color: #ff6600;
       width: 38%;
     }
 
@@ -163,7 +177,7 @@
     }
 
     .em-inv th {
-      background: #0f3d4f;
+      background: #ff6600;
       color: #fff;
       text-align: left;
       padding: 11px 14px;
@@ -178,10 +192,10 @@
 
     .em-inv tr.total td {
       font-weight: 700;
-      color: #0f3d4f;
+      color: #ff6600;
       font-size: 16px;
       border-bottom: none;
-      border-top: 2px solid #0f3d4f;
+      border-top: 2px solid #ff6600;
     }
 
     .em-meta {
@@ -201,7 +215,7 @@
     }
 
     .em-footer {
-      background: #0f3d4f;
+      background: #0f172a;
       padding: 28px 40px;
       text-align: center;
     }
@@ -219,25 +233,25 @@
     }
 
     .em-sign .accent {
-      color: #ffd66b;
+      color: #00A7B5;
     }
 
     .em-footer .links a {
-      color: #9fc4c0;
+      color: #94a3b8;
       text-decoration: none;
       font-size: 12px;
       margin: 0 8px;
     }
 
     .em-footer .copy {
-      color: #64829a;
+      color: #64748b;
       font-size: 11px;
       margin: 14px 0 0;
     }
 
     .em-divider {
       height: 1px;
-      background: #1c5366;
+      background: #334155;
       margin: 0 0 18px;
     }
 
@@ -255,7 +269,7 @@
       line-height: 56px;
       margin: 0 auto 8px;
       border-radius: 50%;
-      background: #0f3d4f;
+      background: #ff6600;
       color: #ffffff;
       font-size: 24px;
       font-weight: 700;
@@ -266,7 +280,7 @@
       margin: 6px 0 0;
       font-size: 20px;
       font-weight: 700;
-      color: #0f3d4f;
+      color: #ff6600;
     }
 
     .em-inst-sub {
@@ -290,7 +304,7 @@
     }
 
     .em-footer-min .gen strong {
-      color: #1f7a6e;
+      color: #FF6B00;
     }
 
     @media (max-width:620px) {
