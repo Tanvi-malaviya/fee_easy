@@ -45,6 +45,7 @@ use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
+use App\Http\Controllers\Api\V1\ParentInstituteController;
 use App\Http\Controllers\Api\V1\NoteController;
 use App\Http\Controllers\Api\V1\NoteCategoryController;
 use App\Http\Controllers\Api\V1\NoteChecklistController;
@@ -78,6 +79,7 @@ Route::prefix('v1')->group(function () {
     // Admin Auth Routes (Original)
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/refresh', [\App\Http\Controllers\Api\V1\TokenRefreshController::class, 'refresh']);
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/profile', [AuthController::class, 'profile']);
@@ -98,6 +100,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteProfileController::class, 'show']);
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
+            Route::post('/profile/payment/update', [InstituteProfileController::class, 'updatePaymentSettings']);
             Route::post('/profile/change-password', [InstituteProfileController::class, 'changePassword']);
             Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo
 
@@ -349,6 +352,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/notifications', [ParentNotificationController::class, 'index']);
             Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
+            Route::get('/institute', [ParentInstituteController::class, 'show']);
         });
     });
 

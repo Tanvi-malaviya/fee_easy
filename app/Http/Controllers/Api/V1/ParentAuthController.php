@@ -25,13 +25,18 @@ class ParentAuthController extends Controller
             ], 401);
         }
 
-        $token = $parent->createToken('parent_token')->plainTextToken;
+        $accessToken = $parent->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $parent->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',
             'message' => 'Logged in successfully',
             'data' => array_merge(
-                ['token' => $token],
+                [
+                    'token' => $accessToken,
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
+                ],
                 $parent->toArray()
             )
         ]);

@@ -35,6 +35,8 @@ class Institute extends Authenticatable
         'otp_expires_at',
         'email_verified_at',
         'fcm_token',
+        'upi_id',
+        'upi_qr_code',
     ];
 
     protected $hidden = [
@@ -48,7 +50,7 @@ class Institute extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['logo_url'];
+    protected $appends = ['logo_url', 'upi_qr_code_url'];
 
     public function isProfileComplete()
     {
@@ -63,6 +65,11 @@ class Institute extends Authenticatable
     public function getLogoUrlAttribute()
     {
         return $this->logo ? url(Storage::url($this->logo)) : null;
+    }
+
+    public function getUpiQrCodeUrlAttribute()
+    {
+        return $this->upi_qr_code ? url(Storage::url($this->upi_qr_code)) : null;
     }
 
     public function subscriptions()

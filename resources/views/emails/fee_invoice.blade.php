@@ -7,7 +7,7 @@
     <!-- INSTITUTE HEADER -->
     <tr><td class="em-header-inst">
       @if(!empty($instituteLogoPath) && file_exists(public_path('storage/' . $instituteLogoPath)))
-        <img class="em-inst-logo" src="{{ $message->embed(public_path('storage/' . $instituteLogoPath)) }}" alt="{{ $instituteName }}" style="max-height: 56px;">
+        <img class="em-inst-logo" src="{{ url('storage/' . $instituteLogoPath) }}" alt="{{ $instituteName }}" style="max-height: 56px;">
       @elseif(!empty($instituteLogoUrl))
         <img class="em-inst-logo" src="{{ $instituteLogoUrl }}" alt="{{ $instituteName }}" style="max-height: 56px;">
       @else

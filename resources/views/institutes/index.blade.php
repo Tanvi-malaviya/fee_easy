@@ -37,8 +37,6 @@
                     class="block w-full pl-3 pr-10 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-white transition font-medium text-gray-700 cursor-pointer">
                     <option value="all">All Status</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
                     <option value="blocked" {{ request('status') == 'blocked' ? 'selected' : '' }}>Blocked</option>
                 </select>
             </div>
@@ -131,7 +129,6 @@
                                     onclick="togglePortalMenu(event, {{ $institute->id }}, '{{ $institute->status }}')"
                                     class="status-btn-{{ $institute->id }} no-loader px-2 py-0.5 inline-flex items-center justify-between text-[8.5px] font-bold uppercase tracking-widest leading-none rounded border transition cursor-pointer
                                         @if($institute->status === 'active') bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
-                                        @elseif($institute->status === 'suspended') bg-amber-50 text-amber-700 border-amber-100/50 hover:bg-amber-100
                                         @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100
                                         @else bg-gray-50 text-gray-700 border-gray-100/50 hover:bg-gray-100 @endif">
                                     {{ $institute->status }}
@@ -265,8 +262,6 @@
             // Build menu content
             const statuses = [
                 { value: 'active', label: 'Activate', color: 'hover:bg-green-50 hover:text-green-700' },
-                { value: 'inactive', label: 'Deactivate', color: 'hover:bg-gray-50' },
-                { value: 'suspended', label: 'Suspend', color: 'hover:bg-amber-50 hover:text-amber-700' },
                 { value: 'blocked', label: 'Block', color: 'hover:bg-red-50 hover:text-red-700' }
             ];
 

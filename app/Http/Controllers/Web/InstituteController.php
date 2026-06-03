@@ -63,7 +63,7 @@ class InstituteController extends Controller
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
-            'status' => 'required|string|in:active,inactive,suspended',
+            'status' => 'required|string|in:active,blocked',
             'website' => 'nullable|url|max:255',
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
@@ -172,7 +172,7 @@ class InstituteController extends Controller
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
-            'status' => 'required|string|in:active,inactive,suspended,blocked',
+            'status' => 'required|string|in:active,blocked',
             'website' => 'nullable|url|max:255',
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
@@ -212,7 +212,7 @@ class InstituteController extends Controller
     public function updateStatus(Request $request, Institute $institute)
     {
         $request->validate([
-            'status' => 'required|string|in:active,inactive,suspended,blocked',
+            'status' => 'required|string|in:active,blocked',
         ]);
 
         $institute->update([

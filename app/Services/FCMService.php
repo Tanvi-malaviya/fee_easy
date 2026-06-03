@@ -179,7 +179,12 @@ class FCMService
         } elseif ($type === 'attendance') {
             $categoryKey = 'attendance';
         } elseif ($type === 'daily_update') {
-            $categoryKey = 'daily_updates';
+            $subject = $data['subject'] ?? '';
+            if (in_array(strtolower($subject), ['holiday', 'event'])) {
+                $categoryKey = 'events_holidays';
+            } else {
+                $categoryKey = 'daily_updates';
+            }
         }
 
         // If explicitly set, return the preference, else default to enabled (true)

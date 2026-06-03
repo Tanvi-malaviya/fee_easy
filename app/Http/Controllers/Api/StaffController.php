@@ -81,7 +81,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|unique:staff,email,NULL,id,institute_id,' . $instituteId,
+            'email' => 'required|email|unique:staff,email,NULL,id,institute_id,' . $instituteId,
             'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
@@ -104,6 +104,29 @@ class StaffController extends Controller
         }
 
         $staff = Staff::create($data);
+
+        // Send welcome email to staff member
+        try {
+            $institute = auth('institute')->user() ?: \App\Models\Institute::find($instituteId);
+            if ($institute) {
+                $roleName = $staff->role ? $staff->role->name : 'Staff';
+                $departmentName = $staff->department ? $staff->department->name : 'N/A';
+
+                \Illuminate\Support\Facades\Mail::to($staff->email)->send(
+                    new \App\Mail\StaffAddedMail(
+                        $staff->full_name,
+                        $staff->email,
+                        $staff->employee_id,
+                        $roleName,
+                        $departmentName,
+                        $institute->institute_name,
+                        $institute->logo
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send staff welcome email via API: ' . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',
@@ -147,7 +170,7 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email:rfc,dns|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
+            'email' => 'sometimes|required|email|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
             'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'sometimes|required|exists:staff_departments,id',
             'employment_type' => 'sometimes|required|in:Salary,Hourly',

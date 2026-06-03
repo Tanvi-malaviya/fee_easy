@@ -306,13 +306,7 @@ class InstituteAuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        // Check institute status
-        $institute = Institute::where('email', $request->email)->first();
-        if ($institute && in_array($institute->status, ['suspended', 'blocked'])) {
-            return back()->withErrors([
-                'email' => 'Your account is currently ' . $institute->status . '. Please contact support.',
-            ])->onlyInput('email');
-        }
+        // Check institute status is handled by middleware after login
 
         if (Auth::guard('institute')->attempt($credentials, $remember)) {
             $request->session()->regenerate();

@@ -24,5 +24,13 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\View::share('currency', \App\Models\SystemSetting::get('currency_symbol', '₹'));
             \Illuminate\Support\Facades\View::share('default_trial', \App\Models\SystemSetting::get('default_trial_days', 14));
         }
+
+        // Restrict refresh tokens from accessing regular routes
+        \Laravel\Sanctum\Sanctum::authenticateAccessTokensUsing(function ($accessToken, $isValid) {
+            if (!$isValid) {
+                return false;
+            }
+            return !in_array('refresh-token', $accessToken->abilities);
+        });
     }
 }

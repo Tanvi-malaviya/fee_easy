@@ -45,8 +45,9 @@
                             <img id="profile-logo-preview"
                                 src="{{ auth()->guard('institute')->user()->logo ? asset('storage/' . auth()->guard('institute')->user()->logo) : '' }}"
                                 class="w-full h-full object-cover rounded-xl {{ auth()->guard('institute')->user()->logo ? '' : 'hidden' }}">
-                            
-                            <div id="profile-logo-placeholder" class="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-white text-3xl font-black shadow-inner uppercase {{ auth()->guard('institute')->user()->logo ? 'hidden' : '' }}">
+
+                            <div id="profile-logo-placeholder"
+                                class="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-white text-3xl font-black shadow-inner uppercase {{ auth()->guard('institute')->user()->logo ? 'hidden' : '' }}">
                                 {{ substr(auth()->guard('institute')->user()->institute_name ?? auth()->guard('institute')->user()->name ?? 'I', 0, 1) }}
                             </div>
                         </div>
@@ -75,9 +76,9 @@
                                 Upload Image
                             </button>
                             <!-- <button type="button" onclick="removeLogo()" class="text-slate-400 hover:text-slate-600 flex items-center gap-1 transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                Remove Logo
-                            </button> -->
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        Remove Logo
+                                    </button> -->
                         </div>
                     </div>
                     <input type="file" id="logo-input" name="logo" class="hidden" accept="image/*"
@@ -165,134 +166,134 @@
             </div>
 
             <!-- Hidden save loader overlay -->
-            <div id="save-loader"
-                class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center">
-                <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
-                    <div class="h-5 w-5 border-2 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
-                    <span class="text-xs font-bold text-slate-700">Saving changes...</span>
+                <div id="save-loader"
+                    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center">
+                    <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
+                        <div class="h-5 w-5 border-2 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
+                        <span class="text-xs font-bold text-slate-700">Saving changes...</span>
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
 
-    <style>
-        .input {
-            width: 100%;
-            height: 40px;
-            padding: 0 12px;
-            border-radius: 10px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            font-weight: 550;
-            font-size: 12px;
-            color: #334155;
-            transition: all 0.2s;
-        }
+        <style>
+            .input {
+                width: 100%;
+                height: 40px;
+                padding: 0 12px;
+                border-radius: 10px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                font-weight: 550;
+                font-size: 12px;
+                color: #334155;
+                transition: all 0.2s;
+            }
 
-        .input:focus {
-            outline: none;
-            background: #fff;
-            border-color: #ff6c00;
-            box-shadow: 0 4px 12px rgba(255, 108, 0, 0.05);
-        }
+            .input:focus {
+                outline: none;
+                background: #fff;
+                border-color: #ff6c00;
+                box-shadow: 0 4px 12px rgba(255, 108, 0, 0.05);
+            }
 
-        .input::placeholder {
-            color: #cbd5e1;
-            font-weight: 500;
-        }
-    </style>
+            .input::placeholder {
+                color: #cbd5e1;
+                font-weight: 500;
+            }
+        </style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', fetchProfile);
+        <script>
+            document.addEventListener('DOMContentLoaded', fetchProfile);
 
-        async function fetchProfile() {
-            try {
-                const headers = { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}' };
-                const token = localStorage.getItem('token');
-                if (token) headers['Authorization'] = `Bearer ${token}`;
+            async function fetchProfile() {
+                try {
+                    const headers = { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}' };
+                    const token = localStorage.getItem('token');
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-                const response = await fetch('/api/v1/institute/profile', { headers });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    const data = result.data;
-                    const logoPreview = document.getElementById('profile-logo-preview');
-                    const logoPlaceholder = document.getElementById('profile-logo-placeholder');
-                    
-                    if (data.logo_url) {
-                        if (logoPreview) {
-                            logoPreview.src = data.logo_url;
-                            logoPreview.classList.remove('hidden');
+                    const response = await fetch('/api/v1/institute/profile', { headers });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        const data = result.data;
+                        const logoPreview = document.getElementById('profile-logo-preview');
+                        const logoPlaceholder = document.getElementById('profile-logo-placeholder');
+
+                        if (data.logo_url) {
+                            if (logoPreview) {
+                                logoPreview.src = data.logo_url;
+                                logoPreview.classList.remove('hidden');
+                            }
+                            if (logoPlaceholder) {
+                                logoPlaceholder.classList.add('hidden');
+                            }
+                        } else {
+                            if (logoPreview) {
+                                logoPreview.classList.add('hidden');
+                            }
+                            if (logoPlaceholder) {
+                                logoPlaceholder.innerText = (data.institute_name || data.name || 'I').substring(0, 1).toUpperCase();
+                                logoPlaceholder.classList.remove('hidden');
+                            }
                         }
-                        if (logoPlaceholder) {
-                            logoPlaceholder.classList.add('hidden');
-                        }
-                    } else {
-                        if (logoPreview) {
-                            logoPreview.classList.add('hidden');
-                        }
-                        if (logoPlaceholder) {
-                            logoPlaceholder.innerText = (data.institute_name || data.name || 'I').substring(0, 1).toUpperCase();
-                            logoPlaceholder.classList.remove('hidden');
-                        }
+
+                        // Populate form fields
+                        document.getElementById('field-institute_name').value = data.institute_name || '';
+                        document.getElementById('field-institute_code').value = data.institute_code || '';
+                        document.getElementById('field-name').value = data.name || '';
+                        document.getElementById('field-email').value = data.email || '';
+                        document.getElementById('field-phone').value = data.phone || '';
+                        document.getElementById('field-address').value = data.address || '';
+                        document.getElementById('field-address_line_2').value = data.address_line_2 || '';
+                        document.getElementById('field-city').value = data.city || '';
+                        document.getElementById('field-state').value = data.state || '';
+                        document.getElementById('field-country').value = data.country || 'India';
+                        document.getElementById('field-pincode').value = data.pincode || '';
                     }
-
-                    // Populate form fields
-                    document.getElementById('field-institute_name').value = data.institute_name || '';
-                    document.getElementById('field-institute_code').value = data.institute_code || '';
-                    document.getElementById('field-name').value = data.name || '';
-                    document.getElementById('field-email').value = data.email || '';
-                    document.getElementById('field-phone').value = data.phone || '';
-                    document.getElementById('field-address').value = data.address || '';
-                    document.getElementById('field-address_line_2').value = data.address_line_2 || '';
-                    document.getElementById('field-city').value = data.city || '';
-                    document.getElementById('field-state').value = data.state || '';
-                    document.getElementById('field-country').value = data.country || 'India';
-                    document.getElementById('field-pincode').value = data.pincode || '';
-                }
-            } catch (error) { console.error('Error fetching profile:', error); }
-        }
-
-        document.getElementById('profile-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const loader = document.getElementById('save-loader');
-            loader.classList.replace('hidden', 'flex');
-
-            try {
-                const formData = new FormData(e.target);
-                const response = await fetch('/api/v1/institute/profile/update', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                if (response.ok) {
-                    showToast('Profile updated successfully!');
-                    setTimeout(() => {
-                        window.location.href = "{{ route('institute.profile.index') }}";
-                    }, 1000);
-                } else {
-                    showToast('Error updating profile', 'error');
-                }
-            } catch (error) { showToast('Something went wrong.', 'error'); }
-            finally { loader.classList.replace('flex', 'hidden'); }
-        });
-
-        function previewLogo(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('profile-logo-preview').src = e.target.result;
-                    document.getElementById('profile-logo-preview').classList.remove('hidden');
-                    document.getElementById('profile-logo-placeholder').classList.add('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
+                } catch (error) { console.error('Error fetching profile:', error); }
             }
-        }
 
-        function removeLogo() {
-            if (confirm('Are you sure you want to remove the logo?')) {
-                document.getElementById('profile-logo-preview').src = 'https://ui-avatars.com/?name=' + encodeURIComponent(document.getElementById('field-institute_name').value || 'Institute') + '&background=ff6c00&color=fff';
-                // Optional: Handle logo removal on backend if needed, or let user upload a new one
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const loader = document.getElementById('save-loader');
+                loader.classList.replace('hidden', 'flex');
+
+                try {
+                    const formData = new FormData(e.target);
+                    const response = await fetch('/api/v1/institute/profile/update', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    if (response.ok) {
+                        showToast('Profile updated successfully!');
+                        setTimeout(() => {
+                            window.location.href = "{{ route('institute.profile.index') }}";
+                        }, 1000);
+                    } else {
+                        showToast('Error updating profile', 'error');
+                    }
+                } catch (error) { showToast('Something went wrong.', 'error'); }
+                finally { loader.classList.replace('flex', 'hidden'); }
+            });
+
+            function previewLogo(input) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('profile-logo-preview').src = e.target.result;
+                        document.getElementById('profile-logo-preview').classList.remove('hidden');
+                        document.getElementById('profile-logo-placeholder').classList.add('hidden');
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
             }
-        }
-    </script>
+
+            function removeLogo() {
+                if (confirm('Are you sure you want to remove the logo?')) {
+                    document.getElementById('profile-logo-preview').src = 'https://ui-avatars.com/?name=' + encodeURIComponent(document.getElementById('field-institute_name').value || 'Institute') + '&background=ff6c00&color=fff';
+                    // Optional: Handle logo removal on backend if needed, or let user upload a new one
+                }
+            }
+        </script>
 @endsection

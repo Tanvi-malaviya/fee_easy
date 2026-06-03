@@ -121,8 +121,7 @@
                             onchange="clearError(this)"
                             class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('status') border-red-500 @enderror">
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                            <option value="suspended" {{ old('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
+                            <option value="blocked" {{ old('status') == 'blocked' ? 'selected' : '' }}>Blocked</option>
                         </select>
                         @error('status')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>

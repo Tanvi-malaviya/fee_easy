@@ -62,6 +62,7 @@ class InstituteDailyUpdateController extends Controller
             'topic' => 'nullable|string|max:255',
             'description' => 'required|string',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // Max 5MB
+            'date' => 'nullable|date',
         ]);
 
         $attachmentPath = null;
@@ -88,7 +89,9 @@ class InstituteDailyUpdateController extends Controller
             'topic' => $request->topic,
             'description' => $request->description,
             'attachment' => $attachmentPath,
-            'date' => now()->toDateString(),
+            'date' => ($request->category === UpdateCategory::HOLIDAY->value && $request->filled('date'))
+                ? $request->date
+                : now()->toDateString(),
         ]);
 
         // Send notifications based on Recipient (Students/Parents/Both) and Target Audience
@@ -109,7 +112,14 @@ class InstituteDailyUpdateController extends Controller
         $topicLabel   = $request->topic ?: 'Announcement';
         $notifTitle   = "Daily Update · {$subjectLabel}";
         $shortDesc    = \Illuminate\Support\Str::limit($request->description, 80);
-        $notifBody    = "Today's topic: \"{$topicLabel}\". {$shortDesc}";
+        
+        if ($request->category === UpdateCategory::HOLIDAY->value && $request->filled('date')) {
+            $formattedDate = date('d-M-Y', strtotime($request->date));
+            $notifBody    = "Holiday Announcement on {$formattedDate}: \"{$topicLabel}\". {$shortDesc}";
+        } else {
+            $notifBody    = "Today's topic: \"{$topicLabel}\". {$shortDesc}";
+        }
+
         $notifData    = [
             'type'      => 'daily_update',
             'subject'   => $subjectLabel,

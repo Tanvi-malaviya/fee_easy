@@ -6,7 +6,7 @@
   <table role="presentation" class="em-card" width="600" cellpadding="0" cellspacing="0">
     <!-- HEADER -->
     <tr><td class="em-header">
-      <img class="em-logo-img" src="{{ $message->embed(public_path('images/2-remove.png')) }}" alt="Tuoora Logo">
+      <img class="em-logo-img" src="{{ url('images/2-remove.png') }}" alt="Tuoora Logo">
       <p class="em-tagline">Learn · Grow · Achieve</p>
     </td></tr>
     <tr><td class="em-banner"></td></tr>

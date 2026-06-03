@@ -27,6 +27,7 @@ class InstituteApiTest extends TestCase
             'password' => 'password',
             'institute_name' => 'Test Institute Academy',
             'email_verified_at' => now(),
+            'status' => 'active',
         ]);
 
         Subscription::create([
@@ -223,5 +224,28 @@ class InstituteApiTest extends TestCase
             'transaction_id' => 'txn_renew_1',
             'status' => 'pending',
         ]);
+    }
+
+    public function test_institute_can_update_payment_settings(): void
+    {
+        Storage::fake('public');
+
+        $institute = $this->createInstitute();
+
+        $file = UploadedFile::fake()->create('qr_code.png', 100);
+
+        $response = $this->postJson('/api/v1/institute/profile/payment/update', [
+            'upi_id' => 'testmerchant@okaxis',
+            'upi_qr_code' => $file,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.upi_id', 'testmerchant@okaxis')
+            ->assertJsonStructure(['status', 'message', 'data' => ['upi_id', 'upi_qr_code_url']]);
+
+        $institute->refresh();
+        $this->assertEquals('testmerchant@okaxis', $institute->upi_id);
+        Storage::disk('public')->assertExists($institute->upi_qr_code);
     }
 }

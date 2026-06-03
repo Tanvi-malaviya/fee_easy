@@ -42,7 +42,7 @@ class InstituteAuthController extends Controller
             'institute_name' => $request->institute_name,
             'otp' => $otp,
             'otp_expires_at' => Carbon::now()->addMinutes(10),
-            'status' => 'pending', 
+            'status' => 'pending',
         ]);
 
         try {
@@ -100,7 +100,8 @@ class InstituteAuthController extends Controller
             ]);
         }
 
-        $token = $institute->createToken('institute_token')->plainTextToken;
+        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
+        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         try {
             Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name));
@@ -112,7 +113,9 @@ class InstituteAuthController extends Controller
             'status' => 'success',
             'message' => 'OTP verified successfully.',
             'data' => [
-                'token' => $token
+                'token' => $accessToken,
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
             ]
         ]);
     }
@@ -140,7 +143,7 @@ class InstituteAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'A new OTP has been successfully sent to your email address.',
-           
+
         ]);
     }
     public function sendResetPasswordEmail(Request $request)
@@ -248,14 +251,15 @@ class InstituteAuthController extends Controller
             ], 401);
         }
 
-        if (in_array($institute->status, ['suspended', 'blocked'])) {
+        if ($institute->status === 'blocked') {
             return response()->json([
-                'status' => $institute->status,
-                'message' => "Your account has been {$institute->status}. Please contact support."
+                'status' => 'blocked',
+                'message' => "Your institute account is currently marked as blocked. Please contact the administrator or support to activate your account."
             ], 403);
         }
 
-        $token = $institute->createToken('institute_token')->plainTextToken;
+        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
+        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
         $subscription = $institute->subscriptions()->latest()->first();
 
         return response()->json([
@@ -263,7 +267,9 @@ class InstituteAuthController extends Controller
             'message' => 'Logged in successfully',
             'data' => array_merge(
                 [
-                    'token' => $token,
+                    'token' => $accessToken,
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
                     'is_profile_setup' => !empty($institute->institute_name) &&
                         !empty($institute->name) &&
                         !empty($institute->phone) &&
