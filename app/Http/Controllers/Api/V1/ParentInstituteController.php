@@ -72,10 +72,39 @@ class ParentInstituteController extends Controller
                 'payment'        => [
                     'upi_id'           => $institute->upi_id ?? null,
                     'upi_qr_code_url'  => $institute->upi_qr_code_url ?? null,
-                    // Deep link: open GPay/PhonePe/BHIM directly with pre-filled UPI ID
                     'upi_payment_link' => $institute->upi_id
                         ? 'upi://pay?pa=' . urlencode($institute->upi_id) . '&pn=' . urlencode($institute->institute_name ?? $institute->name) . '&cu=INR'
                         : null,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/v1/parent/payment-info
+     *
+     * Lightweight endpoint — returns only UPI payment details.
+     * Used by the fee payment screen in the parent mobile app.
+     */
+    public function paymentInfo(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof StudentParent)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student   = $request->user()->students()->first();
+        $institute = $student?->institute;
+
+        if (!$institute) {
+            return response()->json(['status' => 'error', 'message' => 'Institute not found'], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => [
+                'payment' => [
+                    'upi_id'          => $institute->upi_id ?? null,
+                    'upi_qr_code_url' => $institute->upi_qr_code_url ?? null,
                 ],
             ],
         ]);

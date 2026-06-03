@@ -172,42 +172,54 @@ class InstituteProfileController extends Controller
 
     /**
      * Update the authenticated institute's UPI payment settings.
+     * Accepts field name as either 'upi_qr_code' or 'upi_qr_code_url' (both work).
      */
     public function updatePaymentSettings(Request $request)
     {
         $institute = $request->user();
 
+        // upi_qr_code is required only when institute has no existing QR code saved
+        $qrCodeRule = $institute->upi_qr_code ? 'nullable' : 'required';
+
         $data = $request->validate([
-            'upi_id' => 'nullable|string|regex:/^[\w\.\-]+@[\w\-]+$/',
-            'upi_qr_code' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'upi_id'          => 'required|string|regex:/^[\w\.\-]+@[\w\-]+$/',
+            'upi_qr_code'     => "{$qrCodeRule}|image|mimes:jpeg,png,jpg|max:2048",
+            'upi_qr_code_url' => "nullable|image|mimes:jpeg,png,jpg|max:2048", // alias field name
+        ], [
+            'upi_id.required'      => 'UPI ID is required.',
+            'upi_id.regex'         => 'Invalid UPI ID format. Use format: name@bank (e.g. merchant@okaxis).',
+            'upi_qr_code.required' => 'QR code image is required.',
+            'upi_qr_code.image'    => 'QR code must be an image file.',
+            'upi_qr_code.mimes'    => 'QR code must be a JPEG or PNG image.',
+            'upi_qr_code.max'      => 'QR code image must not exceed 2MB.',
         ]);
 
-        $updateData = [];
+        $updateData = ['upi_id' => $data['upi_id']];
 
-        if ($request->has('upi_id')) {
-            $updateData['upi_id'] = $data['upi_id'];
-        }
+        // Accept either field name: 'upi_qr_code' or 'upi_qr_code_url'
+        $qrFile = $request->file('upi_qr_code') ?? $request->file('upi_qr_code_url');
 
-        if ($request->hasFile('upi_qr_code')) {
-            $file = $request->file('upi_qr_code');
-
-            // Delete old QR code if exists
+        if ($qrFile) {
+            // Delete old QR code image if exists
             if ($institute->upi_qr_code && Storage::disk('public')->exists($institute->upi_qr_code)) {
                 Storage::disk('public')->delete($institute->upi_qr_code);
             }
 
             // Store new QR code
-            $path = $file->store('upi_qrs', 'public');
+            $path = $qrFile->store('upi_qrs', 'public');
             $updateData['upi_qr_code'] = $path;
         }
 
         $institute->update($updateData);
 
+        // Refresh model from DB to get latest upi_qr_code_url accessor value
+        $institute->refresh();
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Payment settings updated successfully.',
-            'data' => [
-                'upi_id' => $institute->upi_id,
+            'data'    => [
+                'upi_id'          => $institute->upi_id,
                 'upi_qr_code_url' => $institute->upi_qr_code_url,
             ]
         ]);
