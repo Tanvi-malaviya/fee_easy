@@ -53,7 +53,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            padding: 1.75rem;
+            padding: 1.25rem;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             position: relative;
             overflow: hidden;
@@ -75,8 +75,8 @@
             justify-content: space-between;
             align-items: flex-start;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 1.25rem;
-            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
 
         .brand h1 {
@@ -140,8 +140,8 @@
         .details-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .info-block h3 {
@@ -149,15 +149,15 @@
             color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             font-weight: 700;
         }
 
         .info-block p {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             font-weight: 500;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         .info-block p strong {
@@ -167,12 +167,12 @@
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .items-table th {
             text-align: left;
-            padding: 0.75rem;
+            padding: 0.5rem 0.75rem;
             border-bottom: 2px solid var(--border-color);
             color: var(--primary);
             font-size: 0.8rem;
@@ -182,9 +182,9 @@
         }
 
         .items-table td {
-            padding: 0.85rem 0.75rem;
+            padding: 0.5rem 0.75rem;
             border-bottom: 1px solid var(--border-light);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
         }
 
@@ -204,8 +204,7 @@
             align-items: flex-end;
             gap: 0.5rem;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+           
         }
 
         .summary-row {
@@ -335,10 +334,19 @@
         <div class="receipt-card">
             <!-- Header -->
             <div class="header">
-                <div class="brand">
-                    <h1>{{ $institute->institute_name }}</h1>
-                    <p>{{ $institute->address ?? 'Main Campus, India' }}</p>
-                    <p>Phone: {{ $institute->phone ?? 'Support Contact' }}</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    @if($institute->logo)
+                        <img src="{{ asset('storage/' . $institute->logo) }}" alt="Logo" style="width: 54px; height: 54px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border-color);">
+                    @else
+                        <div style="width: 54px; height: 54px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700; text-transform: uppercase;">
+                            {{ substr($institute->institute_name ?? 'I', 0, 1) }}
+                        </div>
+                    @endif
+                    <div class="brand">
+                        <h1>{{ $institute->institute_name }}</h1>
+                        <p>{{ $institute->address ?? 'Main Campus, India' }}</p>
+                        <p>Phone: {{ $institute->phone ?? 'Support Contact' }}</p>
+                    </div>
                 </div>
                 <div class="receipt-meta">
                     @if($fee->status == 'Paid')
@@ -358,7 +366,7 @@
                 <div class="info-block">
                     <h3>Billed To</h3>
                     <p><strong>{{ $student->name }}</strong></p>
-                    <p>ID: #{{ $student->id }}</p>
+                    <p>Enrollment ID: <strong>{{ $student->enrollment_id ?? 'N/A' }}</strong></p>
                     <p>{{ $student->email }}</p>
                 </div>
                 <div class="info-block">

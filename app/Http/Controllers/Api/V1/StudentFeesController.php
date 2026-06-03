@@ -178,7 +178,7 @@ class StudentFeesController extends Controller
         if (!$fee) {
             // For demo fallback (ID 1 or any missing fee)
             $html = '
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
+            <div style="font-family: DejaVu Sans, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h1 style="color: #333; margin: 0 0 10px 0;">Fee Invoice</h1>
                 </div>
@@ -210,7 +210,7 @@ class StudentFeesController extends Controller
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.fee_invoice', $data);
         } else {
             $html = '
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
+            <div style="font-family: DejaVu Sans, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px;">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h1 style="color: #333; margin: 0 0 10px 0;">Fee Invoice</h1>
                     <h3 style="color: #666; margin: 0;">' . ($data['institute']->name ?? 'Institute') . '</h3>

@@ -170,7 +170,16 @@
 <div id="receipt-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
     <div onclick="closeReceiptModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
     <div class="bg-[#f8fafc] w-[92%] sm:w-full max-w-3xl rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div id="receipt-modal-content" class="max-h-[85vh] overflow-y-auto">
+        <style>
+            #receipt-modal-content::-webkit-scrollbar {
+                display: none;
+            }
+            #receipt-modal-content {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+        <div id="receipt-modal-content" class="max-h-[90vh] overflow-y-auto">
             <!-- Populated via AJAX -->
         </div>
     </div>
@@ -573,13 +582,13 @@
                         <span class="text-sm font-black text-slate-800 tracking-tight">Receipt Details</span>
                         <div class="flex items-center gap-2">
                             <button onclick="closeReceiptModal()" class="px-3.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg font-bold text-[11px] shadow-sm hover:bg-slate-50 transition-all">Close</button>
-                            <button onclick="printReceiptFromModal(${feeId})" class="px-3.5 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-[11px] shadow-sm transition-all flex items-center gap-1">
+                            <button onclick="downloadReceiptFromModal(${feeId})" class="px-3.5 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-[11px] shadow-sm transition-all flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                                Print Receipt
+                                Download Receipt
                             </button>
                         </div>
                     </div>
-                    <div class="p-6">
+                    <div class="p-3">
                         <div id="receipt-card-wrapper" class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
                         </div>
                     </div>
@@ -622,11 +631,8 @@
         document.getElementById('receipt-modal').classList.add('hidden');
     }
 
-    function printReceiptFromModal(feeId) {
-        const w = window.open(`/institute/fees/receipts/${feeId}`, '_blank');
-        w.onload = function() {
-            w.print();
-        };
+    function downloadReceiptFromModal(feeId) {
+        window.location.href = `/institute/fees/receipts/${feeId}/download`;
     }
 
     function viewFee(id) {

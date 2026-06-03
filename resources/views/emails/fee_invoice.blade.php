@@ -31,7 +31,7 @@
           <td class="r">Date: {{ $invoiceDate }}</td>
         </tr>
         <tr>
-          <td>Due Date: <strong>{{ $dueDate }}</strong></td>
+         
           <td class="r">Status: 
             @if($status == 'Paid')
               <span style="color:#1f9d55;font-weight:600;">{{ $status }}</span>
