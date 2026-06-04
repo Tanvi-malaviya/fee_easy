@@ -327,6 +327,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/notifications/{id}/read', [StudentNotificationController::class, 'markAsRead']);
             Route::post('/notifications/mark-all-read', [StudentNotificationController::class, 'markAllRead']);
             Route::get('/institute', [StudentInstituteController::class, 'show']);
+            Route::get('/payment-info', [StudentInstituteController::class, 'paymentInfo']);
             Route::post('/feedback', [StudentFeedbackController::class, 'store']);
             Route::get('/resources', [StudentResourceController::class, 'index']);
             Route::get('/resources/{id}/download', [StudentResourceController::class, 'download']);
@@ -353,6 +354,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
             Route::get('/institute', [ParentInstituteController::class, 'show']);
+            Route::get('/payment-info', [ParentInstituteController::class, 'paymentInfo']);
         });
     });
 

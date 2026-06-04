@@ -47,18 +47,18 @@ class StudentInstituteController extends Controller
                 'id'             => $institute->id,
                 'name'           => $institute->institute_name ?? $institute->name,
                 'initials'       => $initials,
-                'logo_url'       => $institute->logo_url,          // null if no logo → show initials
-                'contact_person' => $institute->name,              // owner/admin name
+                'logo_url'       => $institute->logo_url,
+                'contact_person' => $institute->name,
                 'phone'          => $institute->phone,
                 'email'          => $institute->email,
                 'website'        => $institute->website ?? null,
                 'location'       => [
-                    'address'     => $institute->address,
-                    'address_2'   => $institute->address_line_2 ?? null,
-                    'city'        => $institute->city,
-                    'state'       => $institute->state,
-                    'country'     => $institute->country ?? 'India',
-                    'pincode'     => $institute->pincode,
+                    'address'      => $institute->address,
+                    'address_2'    => $institute->address_line_2 ?? null,
+                    'city'         => $institute->city,
+                    'state'        => $institute->state,
+                    'country'      => $institute->country ?? 'India',
+                    'pincode'      => $institute->pincode,
                     'full_address' => $fullAddress,
                 ],
                 'social'         => [
@@ -68,10 +68,38 @@ class StudentInstituteController extends Controller
                 'payment'        => [
                     'upi_id'          => $institute->upi_id ?? null,
                     'upi_qr_code_url' => $institute->upi_qr_code_url ?? null,
-                    // Deep link: open GPay/PhonePe/BHIM directly with pre-filled UPI ID
                     'upi_payment_link' => $institute->upi_id
                         ? 'upi://pay?pa=' . urlencode($institute->upi_id) . '&pn=' . urlencode($institute->institute_name ?? $institute->name) . '&cu=INR'
                         : null,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/v1/student/payment-info
+     *
+     * Lightweight endpoint — returns only UPI payment details.
+     * Used by the fee payment screen in the mobile app.
+     */
+    public function paymentInfo(Request $request)
+    {
+        if (!$request->user() || !($request->user() instanceof Student)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $institute = $request->user()->institute;
+
+        if (!$institute) {
+            return response()->json(['status' => 'error', 'message' => 'Institute not found'], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => [
+                'payment' => [
+                    'upi_id'          => $institute->upi_id ?? null,
+                    'upi_qr_code_url' => $institute->upi_qr_code_url ?? null,
                 ],
             ],
         ]);
