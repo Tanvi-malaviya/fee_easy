@@ -25,8 +25,8 @@ class StudentAuthController extends Controller
             ], 401);
         }
 
-        $accessToken = $student->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
-        $refreshToken = $student->createToken('refresh_token', ['refresh-token'], now()->addMinutes(2))->plainTextToken;
+        $accessToken = $student->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $student->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',

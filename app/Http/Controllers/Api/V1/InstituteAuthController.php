@@ -100,8 +100,8 @@ class InstituteAuthController extends Controller
             ]);
         }
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
-        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addMinutes(2))->plainTextToken;
+        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         try {
             Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name));
@@ -258,8 +258,8 @@ class InstituteAuthController extends Controller
             ], 403);
         }
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
-        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addMinutes(2))->plainTextToken;
+        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
         $subscription = $institute->subscriptions()->latest()->first();
 
         return response()->json([
