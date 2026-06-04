@@ -25,8 +25,8 @@ class ParentAuthController extends Controller
             ], 401);
         }
 
-        $accessToken = $parent->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
-        $refreshToken = $parent->createToken('refresh_token', ['refresh-token'], now()->addMinutes(2))->plainTextToken;
+        $accessToken = $parent->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $refreshToken = $parent->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',
