@@ -55,7 +55,7 @@ class TokenRefreshController extends Controller
 
         // Generate new access token (1 hour) and refresh token (24 hours)
         $accessToken = $user->createToken('access_token', ['access-api'], now()->addMinute())->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addMinutes(2))->plainTextToken;
 
         return response()->json([
             'status' => 'success',

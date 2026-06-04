@@ -97,10 +97,8 @@ class StudentInstituteController extends Controller
         return response()->json([
             'status' => 'success',
             'data'   => [
-                'payment' => [
-                    'upi_id'          => $institute->upi_id ?? null,
-                    'upi_qr_code_url' => $institute->upi_qr_code_url ?? null,
-                ],
+                'upi_id'          => $institute->upi_id ?? null,
+                'upi_qr_code_url' => $institute->upi_qr_code_url ?? null,
             ],
         ]);
     }
