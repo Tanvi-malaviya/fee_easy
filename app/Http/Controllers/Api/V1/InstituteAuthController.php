@@ -270,15 +270,7 @@ class InstituteAuthController extends Controller
                     'token' => $accessToken,
                     'access_token' => $accessToken,
                     'refresh_token' => $refreshToken,
-                    'is_profile_setup' => !empty($institute->institute_name) &&
-                        !empty($institute->name) &&
-                        !empty($institute->phone) &&
-                        !empty($institute->address) &&
-                        !empty($institute->city) &&
-                        !empty($institute->state) &&
-                        !empty($institute->country) &&
-                        !empty($institute->pincode) &&
-                        !empty($institute->logo),
+                    'is_profile_setup' => $institute->isProfileComplete(),
                 ],
                 $institute->toArray()
             ),
