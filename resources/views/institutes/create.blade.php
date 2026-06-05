@@ -85,8 +85,19 @@
                         <label for="phone" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Phone Number <span class="text-red-500">*</span></label>
                         <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required 
                             oninput="clearError(this)"
-                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="+1 (555) 000-0000">
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror" placeholder="e.g. 9876543210">
                         @error('phone')
+                            <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Login Password <span class="text-red-500">*</span></label>
+                        <input type="password" name="password" id="password" required 
+                            oninput="clearError(this)"
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('password') border-red-500 @enderror" placeholder="••••••••">
+                        @error('password')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
                         @enderror
                     </div>

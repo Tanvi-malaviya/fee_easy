@@ -116,6 +116,19 @@
                         @enderror
                     </div>
 
+                    <!-- Password -->
+                    <div>
+                        <label for="password"
+                            class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">New Password (leave blank to keep current)</label>
+                        <input type="password" name="password" id="password"
+                            oninput="clearError(this)"
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('password') border-red-500 @enderror"
+                            placeholder="••••••••">
+                        @error('password')
+                            <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Logo Upload -->
                     <div class="flex items-start space-x-3">
                         <div class="flex-1">

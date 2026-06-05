@@ -64,6 +64,7 @@ class InstituteController extends Controller
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
             'status' => 'required|string|in:active,blocked',
+            'password' => 'required|string|min:8',
             'website' => 'nullable|url|max:255',
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
@@ -74,6 +75,7 @@ class InstituteController extends Controller
         ]);
 
         $validated['logo'] = $this->handleLogo($request);
+        $validated['password'] = bcrypt($request->password);
 
         $institute = Institute::create($validated);
         // Create Default Free Plan Subscription (1 month = 30 days)
@@ -173,6 +175,7 @@ class InstituteController extends Controller
             'state' => 'required|string|max:100',
             'pincode' => 'required|string|regex:/^[0-9]{6}$/',
             'status' => 'required|string|in:active,blocked',
+            'password' => 'nullable|string|min:8',
             'website' => 'nullable|url|max:255',
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
@@ -185,6 +188,12 @@ class InstituteController extends Controller
         $newLogo = $this->handleLogo($request, $institute->logo);
         if ($newLogo) {
             $validated['logo'] = $newLogo;
+        }
+
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $institute->update($validated);
