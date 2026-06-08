@@ -92,20 +92,20 @@
                     class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                     <!-- Header -->
                     <div
-                        class="px-6 py-3 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
+                        class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
                         <div>
-                            <h1 id="form-title" class="text-lg font-bold text-slate-800 tracking-tight">Manage Batch</h1>
+                            <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
                         </div>
                         <button type="button" onclick="toggleFormView(false)"
-                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 transition-all">
+                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                     d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
 
-                    <form id="batch-form" class="px-6 py-2 space-y-2">
+                    <form id="batch-form" class="px-6 py-4 space-y-2">
                         <input type="hidden" id="batch-id" name="id">
 
                         <!-- General Information -->
@@ -166,7 +166,7 @@
                                     <label
                                         class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
                                     <div class="flex flex-wrap gap-1.5">
-                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
                                             <label class="relative cursor-pointer group">
                                                 <input type="checkbox" name="days[]" value="{{ $day }}"
                                                     class="peer sr-only day-checkbox">
@@ -600,49 +600,33 @@
             finally { toggleSubmitLoading(false); }
         });
 
-        let batchToDelete = null;
-        function toggleDeleteModal(show, id = null, name = '') {
-            const modal = document.getElementById('delete-modal');
-            if (show) {
-                batchToDelete = id;
-                document.getElementById('delete-batch-name').innerText = name;
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            } else {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-                batchToDelete = null;
-            }
-        }
-
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            if (!batchToDelete) return;
-            const btn = document.getElementById('confirm-delete-btn');
-            const originalText = btn.innerText;
-            btn.innerText = 'Deleting...';
-            btn.disabled = true;
-
-            try {
-                const resp = await fetch(`${API_URL}/${batchToDelete}`, {
-                    method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
-                });
-                const result = await resp.json();
-                if (result.status === 'success') {
-                    showToast('Batch deleted successfully');
-                    toggleDeleteModal(false);
-                    fetchBatches();
-                }
-            } catch (error) {
-                showToast('Delete failed', 'error');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        });
-
         function deleteBatch(id, name) {
-            toggleDeleteModal(true, id, name);
+            showConfirmModal(
+                'Delete Batch?',
+                `Are you sure you want to delete <span class="font-bold text-slate-800">${name}</span>? This will archive the batch and tag it as 'Closed'. It will not be permanently deleted.`,
+                async function () {
+                    toggleLoader(true);
+                    try {
+                        const resp = await fetch(`${API_URL}/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
+                        });
+                        const result = await resp.json();
+                        if (result.status === 'success') {
+                            showToast('Batch deleted successfully');
+                            fetchBatches();
+                        } else {
+                            showToast(result.message || 'Delete failed', 'error');
+                        }
+                    } catch (error) {
+                        showToast('Delete failed', 'error');
+                    } finally {
+                        toggleLoader(false);
+                    }
+                },
+                'Yes, Delete Batch',
+                'bg-primary shadow-orange-950/10'
+            );
         }
 
         function handleEditClick(btn) {
@@ -688,20 +672,20 @@
                     class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                     <!-- Header -->
                     <div
-                        class="px-6 py-3 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
+                        class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
                         <div>
-                            <h1 id="form-title" class="text-lg font-bold text-slate-800 tracking-tight">Manage Batch</h1>
+                            <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
                         </div>
                         <button type="button" onclick="toggleFormView(false)"
-                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 transition-all">
+                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                     d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
 
-                    <form id="batch-form" class="px-6 py-2 space-y-2">
+                    <form id="batch-form" class="px-6 py-4 space-y-2">
                         <input type="hidden" id="batch-id" name="id">
 
                         <!-- General Information -->
@@ -758,7 +742,7 @@
                                     <label
                                         class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
                                     <div class="flex flex-wrap gap-1.5">
-                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
                                             <label class="relative cursor-pointer group">
                                                 <input type="checkbox" name="days[]" value="{{ $day }}"
                                                     class="peer sr-only day-checkbox">
@@ -827,40 +811,6 @@
             </div>
         </div>
 
-        <!-- DELETE BATCH CONFIRMATION MODAL -->
-        <div id="delete-modal" class="fixed inset-0 z-[120] hidden">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                onclick="toggleDeleteModal(false)"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
-                <div
-                    class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-                    <div class="p-8">
-                        <div class="flex gap-4">
-                            <div
-                                class="h-12 w-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Batch?</h3>
-                                <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want
-                                    to delete <span id="delete-batch-name" class="font-bold text-slate-800"></span>? This will
-                                    archive the batch and tag it as 'Closed'. It will not be permanently deleted.</p>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="toggleDeleteModal(false)"
-                                        class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
-                                    <button type="button" id="confirm-delete-btn"
-                                        class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-900/10 hover:bg-primary transition-all">Yes,
-                                        Delete Batch</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                </div>
-            </div>
-        </div>
     @endpush
 @endsection

@@ -74,16 +74,16 @@
             <div id="note-modal-content"
                 class="relative w-full max-w-3xl scale-95 opacity-0 bg-white rounded-2xl shadow-2xl transition-all duration-300 overflow-visible border border-slate-100">
                 <div
-                    class="px-4 py-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/30 rounded-t-2xl">
+                    class="px-5 py-3.5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between rounded-t-2xl">
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        <h3 id="modal-title" class="text-base font-bold text-slate-800">Note Details</h3>
+                        <h3 id="modal-title" class="text-base font-bold text-white">Note Details</h3>
                     </div>
-                    <button onclick="closeNoteModal()"
-                        class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white text-slate-400 hover:text-slate-600 transition-all shadow-sm">
+                    <button type="button" onclick="closeNoteModal()"
+                        class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -91,7 +91,7 @@
                     </button>
                 </div>
 
-                <form id="note-form" onsubmit="saveNote(event)" class="pl-4 pr-4 pb-4 space-y-2.5">
+                <form id="note-form" onsubmit="saveNote(event)" class="pt-4 pl-4 pr-4 pb-4 space-y-2.5">
                     <input type="hidden" id="note-id" name="id">
                     <input type="hidden" id="remove-image-input" name="remove_image" value="0">
 
@@ -106,28 +106,19 @@
                         <div class="flex-1 min-w-[200px]">
                             <label
                                 class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Category</label>
-                            <div class="relative group" id="custom-category-dropdown">
-                                <input type="hidden" name="category_id" id="category-id-input">
-                                <div onclick="toggleDropdown()" id="dropdown-selected"
-                                    class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold focus-within:bg-white focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all outline-none cursor-pointer flex items-center justify-between">
-                                    <span id="selected-name" class="text-slate-400">Select Category</span>
-                                </div>
-                                <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                </svg>
-                                <svg class="w-4 h-4 absolute right-3.5 top-3 text-slate-400 pointer-events-none transition-transform"
-                                    id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-
-                                <!-- Custom Options List -->
-                                <div id="dropdown-options"
-                                    class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-2xl z-[150] max-h-40 overflow-y-auto py-2 scale-95 opacity-0 transition-all duration-200 origin-top">
-                                    <!-- Options will be rendered here -->
-                                </div>
+                            <input type="hidden" name="category_id" id="category-id-input">
+                            <input type="hidden" name="category" id="category-name-input">
+                            <div class="flex items-center gap-2" id="category-chips">
+                                <button type="button" onclick="selectCategoryChip(this, 'Personal')" data-category="Personal"
+                                    class="category-chip px-4 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-500 hover:border-primary/30 hover:text-primary transition-all">
+                                    <svg class="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    Personal
+                                </button>
+                                <button type="button" onclick="selectCategoryChip(this, 'Work')" data-category="Work"
+                                    class="category-chip px-4 py-2 rounded-xl text-xs font-bold border-2 border-slate-100 bg-slate-50 text-slate-500 hover:border-primary/30 hover:text-primary transition-all">
+                                    <svg class="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                    Work
+                                </button>
                             </div>
                         </div>
                         <div class="flex items-end gap-3 pt-5">
@@ -332,82 +323,27 @@
                 await fetchNotes();
             }
 
-            async function loadCategories() {
-                try {
-                    const response = await fetch(`${API_BASE}/note-categories`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    });
-                    const result = await response.json();
-                    categories = result.data || result;
-                    renderCategorySelect();
-                } catch (error) { console.error('Category Error:', error); }
-            }
-
-            function renderCategoryFilters() {
-                // Removed dynamic filter rendering to avoid unnecessary API calls on load
-            }
-
-            function toggleDropdown() {
-                const list = document.getElementById('dropdown-options');
-                const arrow = document.getElementById('dropdown-arrow');
-                const isHidden = list.classList.contains('hidden');
-
-                if (isHidden) {
-                    list.classList.remove('hidden');
-                    setTimeout(() => {
-                        list.classList.remove('scale-95', 'opacity-0');
-                        list.classList.add('scale-100', 'opacity-100');
-                    }, 10);
-                    arrow.classList.add('rotate-180');
-                } else {
-                    list.classList.add('scale-95', 'opacity-0');
-                    list.classList.remove('scale-100', 'opacity-100');
-                    setTimeout(() => list.classList.add('hidden'), 200);
-                    arrow.classList.remove('rotate-180');
-                }
-            }
-
-            function selectOption(id, name) {
-                document.getElementById('category-id-input').value = id;
-                const selectedSpan = document.getElementById('selected-name');
-                selectedSpan.textContent = name;
-                selectedSpan.classList.remove('text-slate-400');
-                selectedSpan.classList.add('text-slate-900');
-                toggleDropdown();
-            }
-
-            function renderCategorySelect() {
-                const list = document.getElementById('dropdown-options');
-                const uniqueCategories = [];
-                const seenNames = new Set();
-
-                categories.forEach(cat => {
-                    const name = cat.name ? cat.name.toString().trim() : '';
-                    if (!name || /^\d+$/.test(name)) return;
-                    if (!seenNames.has(name.toLowerCase())) {
-                        uniqueCategories.push(cat);
-                        seenNames.add(name.toLowerCase());
-                    }
+            function selectCategoryChip(el, name) {
+                const isActive = el.classList.contains('border-primary');
+                
+                // Reset all chips
+                document.querySelectorAll('.category-chip').forEach(c => {
+                    c.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+                    c.classList.add('border-slate-100', 'bg-slate-50', 'text-slate-500');
                 });
 
-                // Prepend a 'No Category' option to allow clearing selection
-                const noCat = `<div onclick="selectOption('', 'No Category')" 
-                    class="px-4 py-2 text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 cursor-pointer transition-colors border-b border-slate-50">
-                    No Category
-                </div>`;
-
-                list.innerHTML = noCat + uniqueCategories.map(cat => `
-                            <div onclick="selectOption('${cat.id}', '${cat.name}')" 
-                                class="px-4 py-2 text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-primary cursor-pointer transition-colors">
-                                ${cat.name}
-                            </div>
-                        `).join('');
-
-                if (uniqueCategories.length === 0) {
-                    list.innerHTML += `<div class="px-4 py-3 text-xs text-slate-400 text-center">No categories found</div>`;
+                if (isActive) {
+                    // Deselect — clear category
+                    document.getElementById('category-id-input').value = '';
+                    document.getElementById('category-name-input').value = '';
+                } else {
+                    // Select this chip
+                    el.classList.add('border-primary', 'bg-primary/5', 'text-primary');
+                    el.classList.remove('border-slate-100', 'bg-slate-50', 'text-slate-500');
+                    document.getElementById('category-name-input').value = name;
+                    // Try to find category_id from cached categories
+                    const cat = categories.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+                    document.getElementById('category-id-input').value = cat ? cat.id : '';
                 }
             }
 
@@ -503,6 +439,9 @@
                                                 <button onclick="viewNote(${note.id})" class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all" title="View Note">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 </button>
+                                                <button onclick="event.stopPropagation(); openNoteModal(${note.id})" class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all" title="Edit Note">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                </button>
                                                 <button onclick="showDeleteModal(${note.id})" class="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Delete Note">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
@@ -597,10 +536,13 @@
                 document.getElementById('note-image-input').value = '';
                 document.getElementById('image-preview-element').src = '';
 
-                const selectedSpan = document.getElementById('selected-name');
-                selectedSpan.textContent = 'Select Category';
-                selectedSpan.classList.add('text-slate-400');
-                selectedSpan.classList.remove('text-slate-900');
+                // Reset category chips
+                document.querySelectorAll('.category-chip').forEach(c => {
+                    c.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+                    c.classList.add('border-slate-100', 'bg-slate-50', 'text-slate-500');
+                });
+                document.getElementById('category-id-input').value = '';
+                document.getElementById('category-name-input').value = '';
 
                 // If Editing, Fetch Data
                 if (id) {
@@ -613,13 +555,21 @@
                         document.getElementById('note-id').value = note.id;
                         document.querySelector('[name="title"]').value = note.title;
                         
-                        // Prefill Category
+                        // Prefill Category chip
                         const catName = note.category_relation?.name || note.category;
-                        if (note.category_id || catName) {
+                        if (catName) {
                             if (note.category_id) document.getElementById('category-id-input').value = note.category_id;
-                            selectedSpan.textContent = catName || 'Category';
-                            selectedSpan.classList.remove('text-slate-400');
-                            selectedSpan.classList.add('text-slate-900');
+                            document.getElementById('category-name-input').value = catName;
+                            // Activate the matching chip
+                            document.querySelectorAll('.category-chip').forEach(c => {
+                                if (c.dataset.category === catName) {
+                                    c.classList.add('border-primary', 'bg-primary/5', 'text-primary');
+                                    c.classList.remove('border-slate-100', 'bg-slate-50', 'text-slate-500');
+                                } else {
+                                    c.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+                                    c.classList.add('border-slate-100', 'bg-slate-50', 'text-slate-500');
+                                }
+                            });
                         }
 
                         // Prefill Image if exists
@@ -648,8 +598,6 @@
                     content.classList.remove('scale-95', 'opacity-0');
                     content.classList.add('scale-100', 'opacity-100');
                 }, 10);
-
-                await loadCategories();
             }
 
             function closeNoteModal() {
@@ -891,100 +839,21 @@
                 }
             }
 
-             let noteIdToDelete = null;
-
              function showDeleteModal(id) {
-                 console.log('showDeleteModal called with ID:', id);
-                 noteIdToDelete = id;
-                 const modal = document.getElementById('delete-modal');
-                 const content = document.getElementById('delete-modal-content');
-                 console.log('Modal element:', modal, 'Content element:', content);
-                 if (modal) {
-                     modal.classList.remove('hidden');
-                     modal.style.display = 'block';
-                     console.log('delete-modal display style set to block');
-
-                     // Inspection of positions and sizes
-                     const rect = modal.getBoundingClientRect();
-                     console.log('delete-modal rect:', {
-                         top: rect.top,
-                         left: rect.left,
-                         width: rect.width,
-                         height: rect.height
-                     });
-                     
-                     const comp = window.getComputedStyle(modal);
-                     console.log('delete-modal computed styles:', {
-                         zIndex: comp.zIndex,
-                         opacity: comp.opacity,
-                         visibility: comp.visibility,
-                         display: comp.display,
-                         position: comp.position
-                     });
-
-                     if (content) {
-                         const contentRect = content.getBoundingClientRect();
-                         console.log('delete-modal-content rect:', {
-                             top: contentRect.top,
-                             left: contentRect.left,
-                             width: contentRect.width,
-                             height: contentRect.height
-                         });
-                         const contentComp = window.getComputedStyle(content);
-                         console.log('delete-modal-content computed styles:', {
-                             opacity: contentComp.opacity,
-                             transform: contentComp.transform,
-                             display: contentComp.display
-                         });
-                     }
-                 }
-                 setTimeout(() => {
-                     if (content) {
-                         content.classList.remove('scale-95', 'opacity-0');
-                         content.classList.add('scale-100', 'opacity-100');
-                     }
-                 }, 10);
+                 showConfirmModal(
+                     'Delete Note?',
+                     'Are you sure you want to permanently remove this note? This action cannot be undone and will erase all history.',
+                     async function() {
+                         await deleteNote(id);
+                         closeViewModal();
+                     },
+                     'Yes, Delete',
+                     'bg-rose-600 shadow-rose-900/20',
+                     null,
+                     'Irreversible Action',
+                     'rose'
+                 );
              }
-
-            function closeDeleteModal() {
-                const modal = document.getElementById('delete-modal');
-                const content = document.getElementById('delete-modal-content');
-                if (content) {
-                    content.classList.replace('scale-100', 'scale-95');
-                    content.classList.replace('opacity-100', 'opacity-0');
-                }
-                setTimeout(() => {
-                    if (modal) {
-                        modal.classList.add('hidden');
-                        modal.style.display = 'none';
-                    }
-                    noteIdToDelete = null;
-                }, 300);
-            }
-
-            async function confirmDelete() {
-                if (!noteIdToDelete) return;
-                const btn = document.getElementById('confirm-delete-btn');
-                const originalText = btn.textContent;
-                btn.disabled = true;
-                btn.innerHTML = '<div class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>';
-
-                await deleteNote(noteIdToDelete);
-                
-                btn.disabled = false;
-                btn.textContent = originalText;
-                closeDeleteModal();
-            }
-
-
-
-            document.addEventListener('click', (e) => {
-                const dropdown = document.getElementById('custom-category-dropdown');
-                const list = document.getElementById('dropdown-options');
-                if (dropdown && !dropdown.contains(e.target) && !list.classList.contains('hidden')) {
-                    toggleDropdown();
-                }
-            });
 
             init();
 
@@ -1109,6 +978,14 @@
                 if (!currentlyViewingId) return;
                 showDeleteModal(currentlyViewingId);
             }
+
+            // Switch from the read-only view modal into the edit modal
+            function editCurrentNote() {
+                if (!currentlyViewingId) return;
+                const id = currentlyViewingId;
+                closeViewModal();
+                setTimeout(() => openNoteModal(id), 320);
+            }
         </script>
     @endpush
 
@@ -1185,13 +1062,18 @@
         <div onclick="closeViewModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
         <div class="flex min-h-full items-center justify-center p-4">
             <div id="view-modal-content" class="relative w-full max-w-2xl scale-95 opacity-0 bg-white rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100">
-                <div class="px-5 py-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/30 rounded-t-2xl">
+                <div class="px-5 py-3.5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between rounded-t-2xl">
                     <div class="flex items-center gap-2">
-                        <span id="view-category" class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest"></span>
+                        <span id="view-category" class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest bg-white/20 text-white"></span>
                     </div>
-                    <button onclick="closeViewModal()" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button onclick="editCurrentNote()" class="p-1.5 text-white/80 hover:text-white transition-colors" title="Edit Note">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="closeViewModal()" class="p-1.5 text-white/80 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="p-4">
@@ -1208,38 +1090,4 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[200] hidden overflow-y-auto">
-        <div onclick="closeDeleteModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div id="delete-modal-content" class="relative w-full max-w-md scale-95 opacity-0 bg-white rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden border-t-4 border-primary">
-                <div class="p-8">
-                    <div class="flex items-start gap-5">
-                        <div class="h-12 w-12 bg-orange-50 rounded-full flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">Delete Note?</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed">
-                                Are you sure you want to permanently remove <span class="font-bold text-slate-700">this note</span>? This action cannot be undone and will erase all history.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 mt-8">
-                        <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 bg-white border-2 border-slate-200 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">
-                            Cancel
-                        </button>
-                        <button id="confirm-delete-btn" onclick="confirmDelete()" class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-orange-900/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center">
-                            Yes, Delete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
+    </div>@endsection

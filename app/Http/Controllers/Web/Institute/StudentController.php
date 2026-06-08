@@ -121,7 +121,7 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|unique:students,email',
+            'email' => 'required|email:rfc|unique:students,email',
             'phone' => 'required|numeric|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
@@ -181,6 +181,11 @@ class StudentController extends Controller
             \Log::error("Failed to send welcome email to student: " . $e->getMessage());
         }
 
+        // Notify student & parent if the student was created already assigned to a batch
+        if (!empty($student->batch_id)) {
+            $this->notifyBatchChange($student->fresh(), null, $student->batch_id);
+        }
+
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Student added successfully!', 'student' => $student]);
         }
@@ -199,7 +204,7 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|unique:students,email,' . $student->id,
+            'email' => 'required|email:rfc|unique:students,email,' . $student->id,
             'phone' => 'required|numeric|digits:10',
             'password' => 'nullable|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
@@ -230,7 +235,13 @@ class StudentController extends Controller
             $data['profile_image'] = $request->file('profile_image')->store('students', 'public');
         }
 
+        $oldBatchId = $student->batch_id;
         $student->update($data);
+
+        // Notify student & parent if the batch assignment changed
+        if (array_key_exists('batch_id', $data) && $oldBatchId != $data['batch_id']) {
+            $this->notifyBatchChange($student->fresh(), $oldBatchId, $data['batch_id']);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Student details updated successfully!', 'student' => $student]);
@@ -391,5 +402,100 @@ class StudentController extends Controller
             'status' => 'success',
             'message' => 'Fee reminder sent successfully!'
         ]);
+    }
+
+    /**
+     * Create DB + push notifications for the student (and their parent) when a
+     * batch is assigned, changed, or removed. Mirrors the API behaviour so the
+     * web institute panel keeps students informed too.
+     */
+    private function notifyBatchChange(Student $student, $oldBatchId, $newBatchId): void
+    {
+        $fcm = app(\App\Services\FCMService::class);
+        $student->loadMissing('parent');
+
+        // Assigned to / moved to a batch
+        if (!empty($newBatchId)) {
+            $batch = \App\Models\Batch::find($newBatchId);
+            if (!$batch) {
+                return;
+            }
+
+            $title = 'Batch Updated';
+            $studentBody = $oldBatchId
+                ? "You've been moved to {$batch->name}."
+                : "You have been assigned to the batch: {$batch->name}";
+            $pushData = ['type' => 'batch_assignment', 'batch_id' => (string) $batch->id];
+
+            \App\Models\Notification::create([
+                'user_type'    => 'student',
+                'user_id'      => $student->id,
+                'title'        => $title,
+                'message'      => $studentBody,
+                'type'         => 'batch_assignment',
+                'reference_id' => $batch->id,
+                'is_read'      => false,
+            ]);
+            if (!empty($student->fcm_token)) {
+                $fcm->send($student->fcm_token, $title, $studentBody, $pushData);
+            }
+
+            if ($student->parent) {
+                $parentBody = "{$student->name} has been assigned to the batch: {$batch->name}";
+                \App\Models\Notification::create([
+                    'user_type'    => 'parent',
+                    'user_id'      => $student->parent->id,
+                    'title'        => "Batch Assigned: {$student->name}",
+                    'message'      => $parentBody,
+                    'type'         => 'batch_assignment',
+                    'reference_id' => $batch->id,
+                    'is_read'      => false,
+                ]);
+                if (!empty($student->parent->fcm_token)) {
+                    $fcm->send($student->parent->fcm_token, "Batch Assigned: {$student->name}", $parentBody, $pushData);
+                }
+            }
+
+            return;
+        }
+
+        // Removed from a batch
+        $oldBatch = \App\Models\Batch::find($oldBatchId);
+        if (!$oldBatch) {
+            return;
+        }
+
+        $title = 'Batch Updated';
+        $studentBody = "You've been removed from {$oldBatch->name}.";
+        $pushData = ['type' => 'batch_removal', 'batch_id' => (string) $oldBatch->id];
+
+        \App\Models\Notification::create([
+            'user_type'    => 'student',
+            'user_id'      => $student->id,
+            'title'        => $title,
+            'message'      => $studentBody,
+            'type'         => 'batch_removal',
+            'reference_id' => $oldBatch->id,
+            'is_read'      => false,
+        ]);
+        if (!empty($student->fcm_token)) {
+            $fcm->send($student->fcm_token, $title, $studentBody, $pushData);
+        }
+
+        if ($student->parent) {
+            $parentBody = "{$student->name} has been removed from {$oldBatch->name}.";
+            \App\Models\Notification::create([
+                'user_type'    => 'parent',
+                'user_id'      => $student->parent->id,
+                'title'        => $title,
+                'message'      => $parentBody,
+                'type'         => 'batch_removal',
+                'reference_id' => $oldBatch->id,
+                'is_read'      => false,
+            ]);
+            if (!empty($student->parent->fcm_token)) {
+                $fcm->send($student->parent->fcm_token, $title, $parentBody, $pushData);
+            }
+        }
     }
 }

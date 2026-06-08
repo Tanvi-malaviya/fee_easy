@@ -28,8 +28,8 @@ class StaffController extends Controller
 
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email',
-            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email:rfc|unique:staff,email',
+            'phone' => 'nullable|digits:10',
             'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
@@ -131,8 +131,8 @@ class StaffController extends Controller
 
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,' . $id,
-            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email:rfc|unique:staff,email,' . $id,
+            'phone' => 'nullable|digits:10',
             'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',

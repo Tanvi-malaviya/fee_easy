@@ -295,62 +295,22 @@
             @endif
         </div>
     </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[110] flex items-center justify-center hidden px-4">
-        <div onclick="closeDeleteModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-        <div
-            class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-            <!-- Top Accent Border -->
-            <div class="h-1 bg-primary w-full"></div>
-
-            <div class="p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <div class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Student?</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed">
-                            Are you sure you want to permanently remove <span
-                                class="font-bold text-slate-800">{{ $student->name }}</span>? This action cannot be undone
-                            and will erase all academic and financial history.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button onclick="closeDeleteModal()"
-                        class="flex-1 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl font-semibold text-sm hover:bg-slate-50 hover:text-slate-700 transition-all text-center">
-                        Cancel
-                    </button>
-                    <form id="delete-form" action="{{ route('institute.students.destroy', $student->id) }}" method="POST"
-                        class="flex-1">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            class="w-full py-2.5 bg-primary text-white rounded-xl font-semibold text-sm shadow-lg shadow-orange-600/15 hover:bg-orange-600 active:scale-[0.98] transition-all">
-                            Yes, Delete Student
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <form id="delete-form" action="{{ route('institute.students.destroy', $student->id) }}" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <script>
         function openDeleteModal() {
-            document.getElementById('delete-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            showConfirmModal(
+                'Delete Student?',
+                'Are you sure you want to permanently remove <span class="font-bold text-slate-800">{{ $student->name }}</span>? This action cannot be undone and will erase all academic and financial history.',
+                function () {
+                    document.getElementById('delete-form').submit();
+                },
+                'Yes, Delete Student',
+                'bg-rose-600 hover:bg-rose-700 shadow-rose-950/15'
+            );
         }
         async function sendFeeReminder(studentId) {
             if (typeof toggleLoader === 'function') toggleLoader(true);

@@ -7,8 +7,9 @@
     <title>Institute Login - Tuoora</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @include('institute.auth.partials.brand-styles')
     <style>
         * {
             margin: 0;
@@ -18,90 +19,13 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #f8fafc;
+            background-color: #ffffff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-            position: relative;
-            padding: 20px 0;
-        }
-
-        .bg-pattern {
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: 1;
-        }
-
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            padding: 1rem 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f1f5f9;
-            text-align: center;
-        }
-
-        .logo-box {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 0.2rem;
-        }
-
-        .logo-box img {
-            height: 32px;
-            width: 100px;
-           object-fit: contain;
-        }
-
-        .logo-section h1 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: #1e293b;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.1rem;
-            text-transform: uppercase;
-        }
-
-        .logo-section p {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #FF6B00;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            margin-top: 0.25rem;
-            margin-bottom: 1.25rem;
-            opacity: 0.9;
         }
 
         .form-group {
             text-align: left;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .form-label {
@@ -121,11 +45,11 @@
 
         .input-field {
             width: 100%;
-            height: 3.2rem;
-            padding: 0 1.5rem 0 3.5rem;
+            height: 3.1rem;
+            padding: 0 1.5rem 0 3.25rem;
             background: #fcfdfe;
             border: 2px solid #f1f5f9;
-            border-radius: 1rem;
+            border-radius: 0.85rem;
             font-size: 0.9rem;
             font-weight: 600;
             color: #1e293b;
@@ -141,7 +65,7 @@
 
         .input-icon {
             position: absolute;
-            left: 1.25rem;
+            left: 1.15rem;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
@@ -153,12 +77,27 @@
             color: #FF6B00;
         }
 
+        .password-toggle {
+            position: absolute;
+            right: 1.15rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #FF6B00;
+        }
+
         .options-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 0.5rem;
-            margin-bottom: 0.75rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1.25rem;
             padding: 0 0.25rem;
         }
 
@@ -191,11 +130,11 @@
 
         .submit-btn {
             width: 100%;
-            height: 3.2rem;
+            height: 3.1rem;
             background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 1rem;
+            border-radius: 0.85rem;
             font-size: 0.85rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -212,12 +151,13 @@
         }
 
         .footer-text {
-            margin-top: 1rem;
-            padding-top: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
             border-top: 1px solid #f1f5f9;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #94a3b8;
+            text-align: center;
         }
 
         .footer-text a {
@@ -228,9 +168,9 @@
 
         .error-box {
             background: #fff1f2;
-            border-radius: 1rem;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
+            border-radius: 0.85rem;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.25rem;
             text-align: left;
         }
 
@@ -246,65 +186,76 @@
 </head>
 
 <body>
-    <div class="bg-pattern"></div>
+    <div class="auth-shell">
+        @include('institute.auth.partials.brand-panel')
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="logo-section">
-                <div class="logo-box">
-                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div class="form-head">
+                    <h1>Institute Login</h1>
+                    <p>Welcome back! Please sign in to continue to your dashboard.</p>
                 </div>
-                <!-- <h1>Tuoora</h1> -->
-                <p>Empowering Institutes</p>
-            </div>
 
-            @if ($errors->any())
-                <div class="error-box">
-                    @foreach ($errors->all() as $error)
-                        <p><i class="fas fa-circle-exclamation"></i> {{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('institute.login') }}">
-                @csrf
-
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <div class="input-wrapper">
-                        <input type="email" name="email" required value="{{ $email ?? old('email') }}"
-                            class="input-field" placeholder="admin@institute.com">
-                        <i class="fas fa-envelope input-icon"></i>
+                @if ($errors->any())
+                    <div class="error-box">
+                        @foreach ($errors->all() as $error)
+                            <p><i class="fas fa-circle-exclamation"></i> {{ $error }}</p>
+                        @endforeach
                     </div>
-                </div>
+                @endif
 
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="password" required value="{{ $password ?? '' }}"
-                            class="input-field" placeholder="••••••••">
-                        <i class="fas fa-lock input-icon"></i>
+                <form method="POST" action="{{ route('institute.login') }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" required value="{{ $email ?? old('email') }}"
+                                class="input-field" placeholder="admin@institute.com">
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="login-password" required value="{{ $password ?? '' }}"
+                                class="input-field" placeholder="••••••••" style="padding-right:3rem">
+                            <i class="fas fa-lock input-icon"></i>
+                            <i class="fas fa-eye password-toggle" onclick="togglePwd('login-password', this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="options-row">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember" {{ isset($remember) && $remember ? 'checked' : '' }}>
+                            <span>Remember Me</span>
+                        </label>
+                        <a href="{{ route('institute.password.request') }}" class="forgot-link">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Log In
+                    </button>
+                </form>
+
+                <div class="footer-text">
+                    <p>New Institute? <a href="{{ route('institute.register') }}">Create Account</a></p>
                 </div>
-
-                <div class="options-row">
-                    <label class="remember-me">
-                        <input type="checkbox" name="remember" {{ isset($remember) && $remember ? 'checked' : '' }}>
-                        <span>Remember Me</span>
-                    </label>
-                    <a href="{{ route('institute.password.request') }}" class="forgot-link">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    Log In
-                </button>
-            </form>
-
-            <div class="footer-text">
-                <p>New Institute? <a href="{{ route('institute.register') }}">Create Account</a></p>
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePwd(id, el) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            el.classList.toggle('fa-eye', showing);
+            el.classList.toggle('fa-eye-slash', !showing);
+        }
+    </script>
 </body>
 
 </html>

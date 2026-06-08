@@ -148,18 +148,18 @@
                 <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
                     <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
                     <div
-                        class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden p-6 animate-in fade-in zoom-in duration-300">
-                        <div class="text-center mb-4">
-                            <div
-                                class="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col">
+                        <!-- Modal Header -->
+                        <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                            <h3 class="text-base font-bold text-white tracking-tight">Export Student List</h3>
+                            <button type="button" onclick="closeExportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                            </div>
-                            <h3 class="text-lg font-extrabold text-slate-800">Export Student List</h3>
-                            <p class="text-[11px] text-slate-400">Select your preferred format.</p>
+                            </button>
                         </div>
+
+                        <div class="p-6">
 
                         <div class="space-y-2 mb-6">
                             <label

@@ -17,12 +17,9 @@ class NoteController extends Controller
 
     public function index(Request $request)
     {
-        // Determine the correct owner filter based on which guard is active
-        if (auth('institute')->check()) {
-            $query = Note::where('institute_id', auth('institute')->id())->with('category_relation');
-        } else {
-            $query = Note::where('user_id', auth()->id())->with('category_relation');
-        }
+        // Scope to the authenticated owner. Resolved by model type so it works
+        // identically for web (session cookie) and mobile (Sanctum token).
+        $query = $this->noteQuery()->with('category_relation');
 
         // Filter by Category
         if ($request->has('category_id')) {
@@ -69,12 +66,15 @@ class NoteController extends Controller
             'checklists' => 'nullable|array'
         ]);
 
-        // Assign owner correctly: institute guard users are NOT in the `users` table
-        if (auth('institute')->check()) {
-            $data['user_id'] = null; // FK references `users` table — institute users don't exist there
-            $data['institute_id'] = auth('institute')->id();
+        // Assign owner by authenticated model type so web (session) and mobile
+        // (token) always write to the same owner column for the same institute.
+        $user = $request->user();
+        if ($user instanceof \App\Models\Institute) {
+            $data['institute_id'] = $user->id;
+            $data['user_id'] = null; // FK references `users` table — institutes don't exist there
         } else {
-            $data['user_id'] = auth()->id();
+            $data['user_id'] = $user->id;
+            $data['institute_id'] = null;
         }
 
         // Handle Category Fix: If category name is provided but no category_id, find or create it
@@ -203,23 +203,24 @@ class NoteController extends Controller
     }
 
     /**
-     * Returns a base Note query scoped to the currently authenticated user/institute.
+     * Returns a base Note query scoped to the currently authenticated owner.
+     * Resolved by model type (Institute vs User) so the same scope applies
+     * across web (session cookie) and mobile (Sanctum token) requests.
      */
     private function noteQuery()
     {
-        if (auth('institute')->check()) {
-            return Note::where('institute_id', auth('institute')->id());
+        $user = request()->user();
+        if ($user instanceof \App\Models\Institute) {
+            return Note::where('institute_id', $user->id);
         }
-        return Note::where('user_id', auth()->id());
+        return Note::where('user_id', $user->id);
     }
 
     // Toggle Checklist Item Completion
     public function toggleChecklist($id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->findOrFail($id);
+        $noteIds = $this->noteQuery()->pluck('id');
+        $item = \App\Models\NoteChecklist::whereIn('note_id', $noteIds)->findOrFail($id);
 
         $item->update(['is_completed' => !$item->is_completed]);
 
@@ -233,10 +234,8 @@ class NoteController extends Controller
     // Remove Checklist Item
     public function destroyChecklist($id)
     {
-        $userId = auth()->id() ?? auth('institute')->id();
-        $item = \App\Models\NoteChecklist::whereHas('note', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->findOrFail($id);
+        $noteIds = $this->noteQuery()->pluck('id');
+        $item = \App\Models\NoteChecklist::whereIn('note_id', $noteIds)->findOrFail($id);
 
         $item->delete();
 

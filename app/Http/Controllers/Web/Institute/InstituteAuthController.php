@@ -89,7 +89,7 @@ class InstituteAuthController extends Controller
             $request->validate([
                 'institute_name' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:institutes'],
+                'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:institutes'],
                 'password' => ['required', 'string', 'min:8'],
             ]);
 
@@ -260,7 +260,7 @@ class InstituteAuthController extends Controller
     {
         try {
             $request->validate([
-                'phone' => 'required|string|max:15',
+                'phone' => 'required|digits:10',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|string|max:10',
@@ -332,6 +332,11 @@ class InstituteAuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::guard('institute')->user();
+        if ($user) {
+            $user->fcm_token = null;
+            $user->save();
+        }
         Auth::guard('institute')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

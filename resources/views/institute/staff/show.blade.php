@@ -71,70 +71,11 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
-        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
-        <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="relative w-full max-w-[380px] bg-white rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <!-- Close Button -->
-            <button onclick="closeDeleteModal()" class="absolute top-3 right-3 h-8 w-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all z-10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-
-            <div class="p-5">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="h-12 w-12 bg-orange-50 text-[#FF6B00] rounded-full flex items-center justify-center shrink-0 border border-orange-100">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-800 tracking-tight">Delete Staff</h3>
-                        <p class="text-[11px] font-semibold text-[#FF6B00]">Irreversible Action</p>
-                    </div>
-                </div>
-
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                    Are you sure you want to delete the staff member "<span class="font-bold text-slate-900">{{ $staff->full_name }}</span>"?
-                </p>
-
-                <!-- Data Loss Warning Box -->
-                <div class="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
-                    <p class="text-[10px] font-bold text-slate-500 mb-2">Data to be permanently lost:</p>
-                    <ul class="space-y-1.5">
-                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            Attendance records and history
-                        </li>
-                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            Salary and payment documentation
-                        </li>
-                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-                            <svg class="w-3 h-3 text-[#FF6B00]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            Profile data and portal access
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <form id="delete-form" action="{{ route('institute.staff.destroy', $staff->id) }}" method="POST" class="flex-1">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg text-xs font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98]">
-                            Delete Staff
-                        </button>
-                    </form>
-                    <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all active:scale-[0.98]">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
+    <!-- Delete Confirmation Form -->
+    <form id="delete-form" action="{{ route('institute.staff.destroy', $staff->id) }}" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <!-- Add/Edit Staff Modal (Same as index.blade.php) -->
     <div id="add-staff-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
@@ -143,16 +84,16 @@
             <div
                 class="relative w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-6 py-4 flex items-center justify-between shrink-0">
-                <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0">
+                <h1 id="modal-title" class="text-base font-bold text-white tracking-tight">Add Staff Member</h1>
+                <button type="button" onclick="closeAddModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-6 pb-6 custom-scrollbar">
+            <div class="overflow-y-auto px-6 pb-6 pt-4 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
@@ -386,13 +327,37 @@
         const currentStaff = @json($staff);
 
         function openDeleteModal() {
-            document.getElementById('delete-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            showConfirmModal(
+                'Delete Staff',
+                `<p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                    Are you sure you want to delete the staff member "<span class="font-bold text-slate-900">${currentStaff.full_name}</span>"?
+                </p>
+                <div class="bg-slate-50 rounded-xl p-4 mb-2 border border-slate-100 text-left">
+                    <p class="text-[10px] font-bold text-slate-500 mb-2">Data to be permanently lost:</p>
+                    <ul class="space-y-1.5">
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                            Attendance records and history
+                        </li>
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                            Salary and payment documentation
+                        </li>
+                        <li class="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                            <svg class="w-3 h-3 text-rose-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                            Profile data and portal access
+                        </li>
+                    </ul>
+                </div>`,
+                function() {
+                    document.getElementById('delete-form').submit();
+                },
+                'Delete Staff',
+                'bg-rose-600 shadow-rose-900/20',
+                null,
+                'Irreversible Action',
+                'rose'
+            );
         }
 
         function openEditModal() {

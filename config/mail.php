@@ -104,6 +104,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Role-based "From" Addresses
+    |--------------------------------------------------------------------------
+    |
+    | Specific sender addresses used by individual mailables depending on the
+    | nature of the message (transactional/no-reply, support, or general info).
+    |
+    */
+
+    'support_address' => env('SUPPORT_EMAIL', 'support@tuoora.com'),
+    'info_address' => env('INFO_EMAIL', 'info@tuoora.com'),
+    'noreply_address' => env('NOREPLY_EMAIL', 'noreply@tuoora.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |
@@ -120,5 +134,12 @@ return [
             resource_path('views/vendor/mail'),
         ],
     ],
-
+    
+    'stream' => [
+        'ssl' => [
+            'allow_self_signed' => true,
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+    ],
 ];

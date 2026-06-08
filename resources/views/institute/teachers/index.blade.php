@@ -80,22 +80,20 @@
         <div onclick="closeTeacherModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
         <div
             class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="p-10">
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 tracking-tight">Register Teacher
-                        </h2>
-                        <p class="text-sm text-slate-400 mt-1">Add a new faculty member to your institute.</p>
-                    </div>
-                    <button onclick="closeTeacherModal()"
-                        class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+            <!-- Modal Header -->
+            <div class="px-8 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between z-10 shrink-0">
+                <div>
+                    <h2 id="modal-title" class="text-lg font-bold text-white tracking-tight">Register Teacher</h2>
+                    <p class="text-white/80 text-xs mt-0.5">Add a new faculty member to your institute.</p>
                 </div>
+                <button type="button" onclick="closeTeacherModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
+            <div class="px-8 pb-8 pt-6">
                 <form id="teacher-form" class="space-y-5">
                     <input type="hidden" id="teacher-id" name="id">
                     <div class="grid grid-cols-2 gap-4">

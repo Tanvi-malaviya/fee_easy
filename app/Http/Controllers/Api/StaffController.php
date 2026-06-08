@@ -81,12 +81,12 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,NULL,id,institute_id,' . $instituteId,
+            'email' => 'required|email:rfc|unique:staff,email,NULL,id,institute_id,' . $instituteId,
             'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric',
-            'phone' => 'required|string|max:10',
+            'phone' => 'required|digits:10',
             'status' => 'nullable|in:active,away,offline',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -170,12 +170,12 @@ class StaffController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'nullable',
             'full_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
+            'email' => 'sometimes|required|email:rfc|unique:staff,email,' . $id . ',id,institute_id,' . $instituteId,
             'staff_role_id' => 'nullable|exists:staff_roles,id,institute_id,' . $instituteId,
             'staff_department_id' => 'sometimes|required|exists:staff_departments,id',
             'employment_type' => 'sometimes|required|in:Salary,Hourly',
             'base_salary' => 'sometimes|required|numeric',
-            'phone' => 'sometimes|required|string|max:10',
+            'phone' => 'sometimes|required|digits:10',
             'status' => 'sometimes|required|in:active,away,offline',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);

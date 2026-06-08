@@ -351,52 +351,7 @@
             </div>
         </div>
     </div>
-    <!-- Unenroll Confirmation Modal -->
-    <div id="unenroll-modal" class="fixed inset-0 z-[130] flex items-center justify-center hidden">
-        <div onclick="closeUnenrollModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
-        <div
-            class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl relative z-10 overflow-hidden p-6 text-center animate-in fade-in zoom-in duration-200">
-            <div class="h-14 w-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 leading-tight">Remove Scholar?</h3>
-            <p class="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed">Are you sure you want to remove <span
-                    id="unenroll-student-name" class="text-rose-500">this student</span> from the batch?</p>
 
-            <div class="flex items-center gap-3 mt-6">
-                <button onclick="closeUnenrollModal()"
-                    class="flex-1 py-3 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
-                <button id="confirm-unenroll-btn"
-                    class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-200 active:scale-95 transition-all">Remove</button>
-            </div>
-        </div>
-    </div>
- 
-    <!-- Close Batch Confirmation Modal -->
-    <div id="close-batch-modal" class="fixed inset-0 z-[130] flex items-center justify-center hidden">
-        <div onclick="closeCloseBatchModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
-        <div
-            class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl relative z-10 overflow-hidden p-6 text-center animate-in fade-in zoom-in duration-200">
-            <div class="h-14 w-14 bg-orange-50 text-[#FF6B00] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-orange-100">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 leading-tight">Close this Batch?</h3>
-            <p class="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed font-medium">Are you sure you want to close this batch? This will archive the batch and tag it as 'Closed'.</p>
- 
-            <div class="flex items-center gap-3 mt-6">
-                <button onclick="closeCloseBatchModal()"
-                    class="flex-1 py-3 text-[12px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
-                <button id="confirm-close-batch-btn" onclick="executeCloseBatch()"
-                    class="flex-1 py-3 bg-primary hover:opacity-90 text-white rounded-xl font-bold text-[12px] shadow-lg shadow-orange-950/10 active:scale-95 transition-all">Close</button>
-            </div>
-        </div>
-    </div>
 
 
 
@@ -797,58 +752,42 @@
             renderStudents(filtered);
         }
 
-        let pendingStudentToRemove = null;
-
         function removeFromBatch(studentId, name) {
-            pendingStudentToRemove = { id: studentId, name: name };
-            document.getElementById('unenroll-student-name').innerText = name;
-            document.getElementById('unenroll-modal').classList.remove('hidden');
+            showConfirmModal(
+                'Remove Scholar?',
+                `Are you sure you want to remove <span class="text-rose-500 font-bold">${name}</span> from the batch?`,
+                async function () {
+                    toggleLoader(true);
+                    try {
+                        const response = await fetch(`/api/v1/institute/batches/${BATCH_ID}/remove-student`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': CSRF_TOKEN
+                            },
+                            body: JSON.stringify({
+                                student_id: studentId
+                            })
+                        });
 
-            // Set up the confirm button action
-            document.getElementById('confirm-unenroll-btn').onclick = executeUnenroll;
-        }
-
-        function closeUnenrollModal() {
-            document.getElementById('unenroll-modal').classList.add('hidden');
-            pendingStudentToRemove = null;
-        }
-
-        async function executeUnenroll() {
-            if (!pendingStudentToRemove) return;
-
-            const { id, name } = pendingStudentToRemove;
-            const btn = document.getElementById('confirm-unenroll-btn');
-            const originalText = btn.innerText;
-
-            btn.disabled = true;
-            btn.innerHTML = `<div class="flex items-center justify-center"><span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span></div>`;
-
-            try {
-                const response = await fetch(`/api/v1/institute/batches/${BATCH_ID}/remove-student`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        student_id: id
-                    })
-                });
-
-                const result = await response.json();
-                if (result.status === 'success') {
-                    showToast(`${name} removed from batch`, 'success');
-                    closeUnenrollModal();
-                    fetchBatchData(); // Update stats
-                    fetchStudents();  // Update list
-                }
-            } catch (error) {
-                showToast('Failed to remove student', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = originalText;
-            }
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            showToast(`${name} removed from batch`, 'success');
+                            fetchBatchData(); // Update stats
+                            fetchStudents();  // Update list
+                        } else {
+                            showToast(result.message || 'Failed to remove student', 'error');
+                        }
+                    } catch (error) {
+                        showToast('Failed to remove student', 'error');
+                    } finally {
+                        toggleLoader(false);
+                    }
+                },
+                'Remove',
+                'bg-rose-500 hover:bg-rose-600 shadow-rose-950/15'
+            );
         }
 
         function showToast(message, type = 'success') {
@@ -860,19 +799,19 @@
             container.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3000);
         }
-        function openCloseBatchModal() {
-            document.getElementById('close-batch-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeCloseBatchModal() {
-            document.getElementById('close-batch-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-        async function executeCloseBatch() {
-            const btn = document.getElementById('confirm-close-batch-btn');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>`;
 
+        function openCloseBatchModal() {
+            showConfirmModal(
+                'Close this Batch?',
+                'Are you sure you want to close this batch? This will archive the batch and tag it as \'Closed\'.',
+                executeCloseBatch,
+                'Close',
+                'bg-primary hover:opacity-90 shadow-orange-950/15'
+            );
+        }
+
+        async function executeCloseBatch() {
+            toggleLoader(true);
             try {
                 const response = await fetch(`${API_BATCH_URL}/close`, {
                     method: 'POST',
@@ -891,13 +830,11 @@
                     }, 1000);
                 } else {
                     showToast(result.message || 'Failed to close batch', 'error');
-                    btn.disabled = false;
-                    btn.innerText = 'Close';
                 }
             } catch (error) {
                 showToast('An error occurred while closing the batch', 'error');
-                btn.disabled = false;
-                btn.innerText = 'Close';
+            } finally {
+                toggleLoader(false);
             }
         }
     </script>

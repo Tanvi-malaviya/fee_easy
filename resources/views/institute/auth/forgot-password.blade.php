@@ -1,95 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password - Tuoora</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @include('institute.auth.partials.brand-styles')
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: #f8fafc;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #ffffff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        .bg-pattern {
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: 1;
-        }
-
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 400px;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-card {
-            background: #ffffff;
-            border-radius: 1.25rem;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f1f5f9;
-            text-align: center;
-        }
-
-        .logo-box {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 0.2rem;
-        }
-
-        .logo-box img {
-            height: 32px;
-            width: 100px;
-            object-fit: contain;
-        }
-
-        .logo-section h1 {
-            display: none;
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: #1e293b;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.1rem;
-            text-transform: uppercase;
-        }
-
-        .logo-section p {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #FF6B00;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            margin-top: 0.25rem;
-            margin-bottom: 1.25rem;
-            opacity: 0.9;
-        }
-
-        .instruction-text {
-            font-size: 0.8rem;
-            color: #64748b;
-            line-height: 1.5;
-            margin-bottom: 1.25rem;
         }
 
         .form-group {
@@ -99,13 +30,13 @@
 
         .form-label {
             display: block;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.4rem;
-            padding-left: 0.2rem;
+            padding-left: 0.25rem;
         }
 
         .input-wrapper {
@@ -114,12 +45,12 @@
 
         .input-field {
             width: 100%;
-            height: 2.8rem;
-            padding: 0 1.25rem 0 3rem;
+            height: 3.1rem;
+            padding: 0 1.5rem 0 3.25rem;
             background: #fcfdfe;
             border: 2px solid #f1f5f9;
             border-radius: 0.85rem;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #1e293b;
             transition: all 0.3s ease;
@@ -134,32 +65,33 @@
 
         .input-icon {
             position: absolute;
-            left: 1.1rem;
+            left: 1.15rem;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .submit-btn {
             width: 100%;
-            height: 2.8rem;
+            height: 3.1rem;
             background: #FF6B00;
             color: white;
             border: none;
             border-radius: 0.85rem;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(255, 107, 0, 0.15);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.15);
+            margin-top: 0.25rem;
         }
 
         .submit-btn:hover {
             background: #e66000;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .submit-btn:disabled {
@@ -169,9 +101,9 @@
         }
 
         .back-to-login {
-            margin-top: 1.25rem;
+            margin-top: 1.5rem;
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: #94a3b8;
             text-decoration: none;
@@ -195,47 +127,50 @@
             z-index: 100;
             transform: translateX(150%);
             transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
-        #toast.show { transform: translateX(0); }
+        #toast.show {
+            transform: translateX(0);
+        }
     </style>
 </head>
+
 <body>
-    <div class="bg-pattern"></div>
     <div id="toast"></div>
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="logo-section">
-                <div class="logo-box">
-                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
+    <div class="auth-shell">
+        @include('institute.auth.partials.brand-panel', [
+            'brandSubtext' => 'No worries — it happens. Enter your registered email and we will send you a secure code to reset your password.',
+        ])
+
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div class="form-head">
+                    <h1>Reset Password</h1>
+                    <p>Enter your registered email address and we'll send you an OTP to reset your password.</p>
                 </div>
-                <h1>Tuoora</h1>
-               
-            </div>
 
-            <h2 style="font-size: 1.1rem; color: #000; margin-bottom: 0.4rem; font-weight: 700;">Reset Password</h2>
-            <p class="instruction-text">Enter your registered email address and we'll send you an OTP to reset your password.</p>
-
-            <form id="forgot-password-form">
-                @csrf
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <div class="input-wrapper">
-                        <input type="email" name="email" id="email" required class="input-field" placeholder="admin@tuoora.com">
-                        <i class="fas fa-envelope input-icon"></i>
+                <form id="forgot-password-form">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" id="email" required class="input-field"
+                                placeholder="admin@tuoora.com">
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" id="submit-btn" class="submit-btn">
-                    Send Reset Code
-                </button>
-            </form>
+                    <button type="submit" id="submit-btn" class="submit-btn">
+                        Send Reset Code
+                    </button>
+                </form>
 
-            <a href="{{ route('institute.login') }}" class="back-to-login">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Login
-            </a>
+                <a href="{{ route('institute.login') }}" class="back-to-login">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </a>
+            </div>
         </div>
     </div>
 
@@ -289,4 +224,5 @@
         });
     </script>
 </body>
+
 </html>

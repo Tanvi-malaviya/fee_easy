@@ -26,10 +26,10 @@ class InstituteAuthController extends Controller
 
         $request->validate([
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email',
+            'email' => 'required|email:rfc|unique:institutes,email',
             'password' => 'required|string|min:8|max:15',
             'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|digits:10',
         ]);
 
         $otp = rand(100000, 999999);
@@ -280,11 +280,14 @@ class InstituteAuthController extends Controller
 
     public function logout(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $user = $request->user();
+        if (!$user || !($user instanceof Institute)) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $request->user()->currentAccessToken()->delete();
+        $user->fcm_token = null;
+        $user->save();
+        $user->currentAccessToken()->delete();
 
         return response()->json([
             'status' => 'success',
