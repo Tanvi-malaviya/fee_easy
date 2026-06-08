@@ -416,16 +416,16 @@
             <div
                 class="relative w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-5 py-3.5 flex items-center justify-between shrink-0">
-                <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0">
+                <h1 id="modal-title" class="text-base font-bold text-white tracking-tight">Add Staff Member</h1>
+                <button type="button" onclick="closeAddModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-5 pb-5 custom-scrollbar">
+            <div class="overflow-y-auto px-6 pb-6 pt-4 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
@@ -570,16 +570,16 @@
             <div
                 class="relative w-full max-w-[380px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
             <!-- Modal Header -->
-            <div class="px-5 pt-3 pb-1 flex items-center justify-between border-b border-slate-50">
-                <h1 class="text-base font-bold text-slate-800 tracking-tight">Log Attendance</h1>
-                <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 transition-all">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0">
+                <h1 class="text-base font-bold text-white tracking-tight">Log Attendance</h1>
+                <button type="button" onclick="closeAttendanceModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="px-5 pb-5">
+            <div class="px-6 pb-6 pt-4">
                 <form id="log-attendance-form" class="space-y-4">
                     @csrf
                     <input type="hidden" name="id" id="attendance-id-input">
@@ -615,8 +615,7 @@
 
                     <!-- Select Date -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Select
-                            Date</label>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Date</label>
                         <div class="relative">
                             <input type="date" name="date" id="attendance-date" required value="{{ date('Y-m-d') }}"
                                 max="{{ date('Y-m-d') }}"
@@ -650,10 +649,10 @@
                         </div>
                     </div>
 
-                    <!-- Additional Notes -->
-                    <div>
-                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Additional
-                            Notes</label>
+                    <!-- Absent Reason -->
+                    <div id="attendance-note-container" class="hidden">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Absent
+                            Reason</label>
                         <textarea name="note" id="attendance-note" placeholder="Any comments or reasons for absence..."
                             class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:border-[#FF6B00] outline-none transition-all placeholder:text-slate-300 min-h-[80px] resize-none text-slate-700"></textarea>
                     </div>
@@ -683,24 +682,25 @@
     <div id="salary-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeSalaryModal()"></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row transition-all scale-95 opacity-0 duration-300"
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col transition-all scale-95 opacity-0 duration-300"
                 id="salary-modal-content">
-
-                <!-- Left Section: Form -->
-                <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-slate-100">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-800" id="salary-modal-title">Add Salary</h3>
-                            <p class="text-slate-400 text-xs mt-1">Record a new salary payment for your staff.</p>
-                        </div>
-                        <button onclick="closeSalaryModal()"
-                            class="text-slate-400 hover:text-slate-600 transition-all p-2 hover:bg-slate-50 rounded-lg md:hidden">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                <!-- Modal Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-white tracking-tight" id="salary-modal-title">Add Salary</h3>
+                        <p class="text-white/80 text-xs mt-0.5">Record a new salary payment for your staff.</p>
                     </div>
+                    <button type="button" onclick="closeSalaryModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex flex-col md:flex-row">
+                    <!-- Left Section: Form -->
+                    <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-slate-100">
+
 
                     <form id="salary-form" class="space-y-4">
                         @csrf
@@ -815,15 +815,8 @@
 
                 <!-- Right Section: Summary -->
                 <div class="w-full md:w-[320px] bg-slate-50 p-5 flex flex-col">
-                    <div class="flex items-center justify-between mb-5">
+                    <div class="mb-5">
                         <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Review Summary</h4>
-                        <button onclick="closeSalaryModal()"
-                            class="text-slate-400 hover:text-slate-600 transition-all hidden md:block">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
                     </div>
 
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
@@ -1458,17 +1451,22 @@
             document.getElementById('attendance-status-input').value = status;
             const presentBtn = document.getElementById('status-present-btn');
             const absentBtn = document.getElementById('status-absent-btn');
+            const noteContainer = document.getElementById('attendance-note-container');
 
             if (status === 'Present') {
                 presentBtn.classList.add('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 presentBtn.classList.remove('border-slate-100', 'text-slate-400');
                 absentBtn.classList.remove('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 absentBtn.classList.add('border-slate-100', 'text-slate-400');
+                if (noteContainer) noteContainer.classList.add('hidden');
+                const noteInput = document.getElementById('attendance-note');
+                if (noteInput) noteInput.value = '';
             } else {
                 absentBtn.classList.add('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 absentBtn.classList.remove('border-slate-100', 'text-slate-400');
                 presentBtn.classList.remove('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 presentBtn.classList.add('border-slate-100', 'text-slate-400');
+                if (noteContainer) noteContainer.classList.remove('hidden');
             }
         };
 

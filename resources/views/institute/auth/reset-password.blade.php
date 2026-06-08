@@ -146,6 +146,21 @@
             font-size: 0.9rem;
         }
 
+        .password-toggle {
+            position: absolute;
+            right: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #FF6B00;
+        }
+
         .submit-btn {
             width: 100%;
             height: 2.4rem;
@@ -237,8 +252,9 @@
                     <label class="form-label">New Password</label>
                     <div class="input-wrapper">
                         <input type="password" name="password" id="password" required class="input-field"
-                            placeholder="••••••••">
+                            placeholder="••••••••" style="padding-right: 3rem;">
                         <i class="fas fa-lock input-icon"></i>
+                        <i class="fas fa-eye password-toggle" onclick="togglePwd('password', this)"></i>
                     </div>
                 </div>
 
@@ -246,8 +262,9 @@
                     <label class="form-label">Confirm New Password</label>
                     <div class="input-wrapper">
                         <input type="password" name="password_confirmation" id="password_confirmation" required
-                            class="input-field" placeholder="••••••••">
+                            class="input-field" placeholder="••••••••" style="padding-right: 3rem;">
                         <i class="fas fa-check-double input-icon"></i>
+                        <i class="fas fa-eye password-toggle" onclick="togglePwd('password_confirmation', this)"></i>
                     </div>
                 </div>
 
@@ -270,6 +287,15 @@
     </div>
 
     <script>
+        function togglePwd(id, el) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            el.classList.toggle('fa-eye', showing);
+            el.classList.toggle('fa-eye-slash', !showing);
+        }
+
         const form = document.getElementById('reset-password-form');
         const submitBtn = document.getElementById('submit-btn');
         const toast = document.getElementById('toast');

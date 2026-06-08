@@ -126,7 +126,7 @@
                     if (subStatus) subStatus.innerText = sub.status;
                     
                     const subRenewal = document.getElementById('sub-renewal');
-                    if (subRenewal) subRenewal.innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
+                    if (subRenewal) subRenewal.innerText = (sub.expires_at || sub.end_date) ? new Date(sub.expires_at || sub.end_date).toLocaleDateString() : 'N/A';
                 }
 
                 // 2. Plans Grid
@@ -161,7 +161,7 @@
 
             let buttonHtml = '';
             if (isActive) {
-                buttonHtml = `<button disabled class="w-full mt-6 py-3.5 bg-white text-[#ff6c00] rounded-xl font-black text-[11px] uppercase tracking-widest shadow-md">Active Plan</button>`;
+                // No button needed — the "Current Active Plan" badge on top is sufficient
             } else if (isFreePlan && hasUsedFreePlan) {
                 buttonHtml = `<button disabled class="w-full mt-6 py-3 bg-slate-50 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-not-allowed border border-slate-100">Already Used</button>`;
             } else {

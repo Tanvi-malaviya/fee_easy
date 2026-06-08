@@ -39,8 +39,8 @@ class InstituteTeacherController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|digits:10',
+            'email' => 'nullable|email:rfc|max:255',
             'subject' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'salary' => 'nullable|numeric|min:0',
@@ -68,8 +68,8 @@ class InstituteTeacherController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|digits:10',
+            'email' => 'nullable|email:rfc|max:255',
             'subject' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'salary' => 'nullable|numeric|min:0',

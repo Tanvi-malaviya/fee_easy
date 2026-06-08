@@ -166,8 +166,7 @@
                     class="px-6 py-2.5 bg-white border border-slate-200 rounded-lg text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">Discard
                     Changes</button>
                 <button id="confirm-enroll-btn" onclick="confirmEnrollment()" disabled
-                    class="px-6 py-2.5 bg-[#ff6600] text-white rounded-lg text-[13px] font-bold shadow-sm hover:bg-[#e65c00] transition-all disabled:opacity-50 disabled:grayscale">Apply
-                    Fee Structure</button>
+                    class="px-6 py-2.5 bg-[#ff6600] text-white rounded-lg text-[13px] font-bold shadow-sm hover:bg-[#e65c00] transition-all disabled:opacity-50 disabled:grayscale">Assign Student</button>
             </div>
         </div>
 
@@ -516,7 +515,7 @@
             } catch (error) {
                 showToast('Enrollment partially failed', 'error');
             } finally {
-                btn.disabled = false; btn.innerText = 'Apply Fee Structure';
+                btn.disabled = false; btn.innerText = 'Assign Student';
             }
         }
 

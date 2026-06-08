@@ -16,8 +16,26 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'current_password' => ['required', 'current_password:institute'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'different:current_password',
+                'confirmed',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'current_password.current_password' => 'The current password is incorrect.',
+            'password.different' => 'New password cannot be the same as the current password.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.confirmed' => 'New password and confirmation do not match.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
         ]);
 
         $request->user('institute')->update([
@@ -37,7 +55,7 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'institute_name' => ['required', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'digits:10'],
             'address' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:100'],
             'state' => ['nullable', 'string', 'max:100'],

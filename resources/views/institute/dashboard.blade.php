@@ -365,9 +365,7 @@
 
     <!-- JavaScript & Styling -->
     <script>
-}
-}
-function copyInstituteDetails() {
+        function copyInstituteDetails() {
             const idText = document.getElementById('ref-inst-id').innerText;
             const codeText = document.getElementById('ref-inst-code').innerText;
             const textToCopy = `Institute ID: ${idText} | Code: ${codeText}`;
@@ -378,12 +376,6 @@ function copyInstituteDetails() {
                 console.error('Copy details failed: ', err);
             });
         }
-`;
-                label.classList.remove('text-slate-400');
-                label.classList.add('text-orange-600');
-            }
-        }
-
     </script>
 
     <style>
@@ -417,8 +409,7 @@ function copyInstituteDetails() {
         .bg-pattern {
             position: fixed;
             inset: 0;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(148,163,184,0.12)'/%3E%3C/svg%3E");
             z-index: 1;
             pointer-events: none;
         }

@@ -57,7 +57,7 @@ class InstituteController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email|max:255',
+            'email' => 'required|email:rfc|unique:institutes,email|max:255',
             'phone' => 'required|string|regex:/^[0-9]{10}$/',
             'address' => 'required|string',
             'city' => 'required|string|max:100',
@@ -168,7 +168,7 @@ class InstituteController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email,' . $institute->id . '|max:255',
+            'email' => 'required|email:rfc|unique:institutes,email,' . $institute->id . '|max:255',
             'phone' => 'required|string|regex:/^[0-9]{10}$/',
             'address' => 'required|string',
             'city' => 'required|string|max:100',

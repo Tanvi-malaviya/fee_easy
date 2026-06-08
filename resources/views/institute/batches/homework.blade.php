@@ -87,15 +87,14 @@
         <div
             class="bg-white w-full max-w-[900px] max-h-[95vh] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
             <!-- Header -->
-            <div class="px-6 py-3 border-b border-slate-100 flex items-start justify-between">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
                 <div>
-                    <h2 class="text-[22px] font-bold text-slate-900 tracking-tight">Create New Homework</h2>
-
+                    <h2 class="text-lg font-bold text-white tracking-tight">Create New Homework</h2>
                 </div>
                 <button type="button" onclick="closeAddHomeworkModal()"
-                    class="text-slate-400 hover:text-slate-600 transition-colors p-2">
+                    class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -243,7 +242,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
-                        Broadcast Homework
+                        Create Homework
                     </button>
                 </div>
             </form>

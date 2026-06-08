@@ -147,8 +147,8 @@ class InstituteStudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:students,email',
-            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email:rfc|unique:students,email',
+            'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',
@@ -279,8 +279,8 @@ class InstituteStudentController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:students,email,' . $id,
-            'phone' => 'nullable|string|max:20',
+            'email' => 'sometimes|required|email:rfc|unique:students,email,' . $id,
+            'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
             'dob' => 'nullable|date',

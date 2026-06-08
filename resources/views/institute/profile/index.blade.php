@@ -92,8 +92,6 @@
         <div id="profile-view-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in duration-300">
             <!-- Account Management -->
             <div class="space-y-3">
-                <h2 class="text-xl font-medium text-slate-800 tracking-tight">Account Management</h2>
-
                 <div
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 overflow-hidden divide-y divide-slate-50">
                     <!-- Password & Security -->
@@ -157,35 +155,24 @@
                                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Automate alerts via Meta API</p>
                             </div>
                         </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        <div class="flex items-center gap-2 shrink-0">
+                            @php
+                                $wa = auth()->guard('institute')->user()->whatsappSettings;
+                                $waConfigured = $wa && $wa->access_token && $wa->phone_number_id;
+                            @endphp
+                            @unless($waConfigured)
+                                <span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-100 whitespace-nowrap">Not Configured</span>
+                            @endunless
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
                     </button>
 
-                    <!-- UPI Payment Settings -->
-                    <a href="{{ route('institute.profile.payment-settings') }}"
-                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left flex">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800 leading-tight">UPI Payment Settings</h3>
-                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Manage UPI ID and QR code for fee collection</p>
-                            </div>
-                        </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
 
                     <!-- Terms & Conditions -->
-                    <button
+                    <a href="https://tuoora.com/terms-conditions" target="_blank"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
                         <div class="flex items-center gap-4">
                             <div
@@ -204,10 +191,10 @@
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                    </button>
+                    </a>
 
                     <!-- Privacy Policy -->
-                    <button
+                    <a href="https://tuoora.com/privacy-policy" target="_blank"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
                         <div class="flex items-center gap-4">
                             <div
@@ -226,7 +213,7 @@
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                    </button>
+                    </a>
 
                     <!-- Help & Support -->
                     <button
@@ -253,20 +240,18 @@
                 </div>
             </div>
 
-            <!-- Subscription Overview -->
+            <!-- Subscription -->
             <div class="space-y-3">
-                <h2 class="text-lg font-[550] text-slate-800 tracking-tight">Subscription Overview</h2>
-
                 <div
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-6 relative overflow-hidden h-fit">
                     <div class="flex items-start justify-between">
                         <div>
-                            <span id="badge-sub-status"
-                                class="text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100">
-                                Active Plan
-                            </span>
-                            <h3 id="plan-title" class="text-xl font-[550] text-slate-800 tracking-tight mt-2">Active
-                                Subscription</h3>
+                            <h3 class="text-base font-bold text-slate-800 tracking-tight">Current Active Plan</h3>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span id="plan-title" class="text-sm font-bold text-slate-800 uppercase tracking-wider">
+                                    Loading...
+                                </span>
+                            </div>
                         </div>
 
                         <div
@@ -278,27 +263,36 @@
                         </div>
                     </div>
 
-                    <!-- Plan Features -->
-                    <div id="plan-features-container" class=" pt-2 border-t border-slate-50 hidden">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">Included
-                            Features</span>
-                        <ul id="plan-features-list" class="space-y-2 text-[11px] text-slate-600 font-medium">
-                        </ul>
-                    </div>
-
-                    <!-- Dates -->
-                    <div class="mt-3">
-                        <div class="flex items-center gap-2.5 bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <!-- Remaining Days -->
+                    <div id="remaining-days-row" class="mt-3 hidden">
+                        <div class="flex items-center gap-2.5 bg-slate-50 rounded-xl p-3 border border-slate-100">
                             <div
                                 class="h-8 w-8 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Member Since</p>
-                                <p id="sub-created" class="text-[11px] font-bold text-slate-700 mt-0.5">N/A</p>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Remaining</p>
+                                <p id="remaining-days-text" class="text-[11px] font-bold text-slate-700 mt-0.5">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expiry Warning — shown only when subscription expires within 7 days -->
+                    <div id="expiry-warning" class="mt-2 hidden">
+                        <div class="flex items-center gap-2.5 bg-amber-50 rounded-xl p-3 border border-amber-200">
+                            <div
+                                class="h-8 w-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest">Expiring Soon</p>
+                                <p id="expiry-date-text" class="text-[11px] font-bold text-amber-800 mt-0.5">N/A</p>
                             </div>
                         </div>
                     </div>
@@ -312,9 +306,9 @@
                             <h2 class="text-sm font-[550] text-slate-800 tracking-tight">UPI Payment Details</h2>
                         </div>
                         @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                            <a href="{{ route('institute.profile.payment-settings') }}" class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
+                            <button type="button" onclick="openPaymentModal()" class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
                                 Edit Settings
-                            </a>
+                            </button>
                         @endif
                     </div>
 
@@ -355,9 +349,14 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-700">No Payment Details Configured</h3>
+                            <h3 class="text-sm font-bold text-slate-700">Add UPI Details</h3>
                             <p class="text-[10px] text-slate-400 font-medium mt-1 mb-4">Set up your UPI ID and QR code to enable fee payments.</p>
-                            <a href="{{ route('institute.profile.payment-settings') }}" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">Configure Now</a>
+                            <button type="button" onclick="openPaymentModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add
+                            </button>
                         </div>
                     @endif
                 </div>
@@ -373,13 +372,13 @@
         <div
             class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <!-- Header -->
-            <div class="py-1.5 px-4 border-b border-slate-100 flex items-start justify-between relative">
+            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 leading-tight">Update Password</h3>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Ensure your account stays secure with a strong password.
+                    <h3 class="text-base font-bold text-white leading-tight">Update Password</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Ensure your account stays secure with a strong password.
                     </p>
                 </div>
-                <button onclick="closePasswordModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="closePasswordModal()" class="text-white/80 hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -387,7 +386,7 @@
             </div>
 
             <!-- Form -->
-            <form id="password-form" class="pt-0 pb-4 px-4 space-y-2">
+            <form id="password-form" class="pt-4 pb-4 px-4 space-y-2">
                 @csrf
 
                 <!-- Current Password -->
@@ -401,8 +400,13 @@
                                     d="M15 7a2 2 0 012 2m-2 4a5 5 0 111.707-9.707l3.707 3.707A1 1 0 0121 4v3h-2v2h-2v2h-2.293A5 5 0 0115 13zm-5-4a1 1 0 100-2 1 1 0 000 2z" />
                             </svg>
                         </span>
-                        <input type="password" name="current_password" placeholder="Enter current password" required
-                            class="input-with-icon">
+                        <input type="password" name="current_password" id="pwd-current" placeholder="Enter current password" required
+                            class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -416,8 +420,13 @@
                                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </span>
-                        <input type="password" name="password" placeholder="Enter new password" required
-                            class="input-with-icon">
+                        <input type="password" name="password" id="pwd-new" placeholder="Enter new password" required
+                            class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                        </button>
                     </div>
                     <p class="text-[9px] text-slate-400 flex items-center gap-1 ml-1 mt-0.5">
                         <svg class="w-3 h-3 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,25 +448,23 @@
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </span>
-                        <input type="password" name="password_confirmation" placeholder="Re-enter new password" required
-                            class="input-with-icon">
+                        <input type="password" name="password_confirmation" id="pwd-confirm" placeholder="Re-enter new password" required
+                            class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Password Recommendation Alert -->
-                <div class="bg-orange-50/50 rounded-xl p-2.5 border border-orange-100 flex items-start gap-2 mt-1">
-                    <div
-                        class="h-4 w-4 bg-orange-100 text-[#ff6c00] rounded flex items-center justify-center shrink-0 mt-0.5">
-                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 5" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="text-[9px] font-black text-[#ff6c00] uppercase tracking-widest">Password Recommendation
-                        </h4>
-                        <p class="text-[9px] text-slate-500 font-medium leading-relaxed mt-0.5">Use a combination of
-                            uppercase, lowercase, numbers, and special characters for maximum security.</p>
-                    </div>
+
+                <!-- Inline Error Box -->
+                <div id="pwd-error" class="hidden bg-rose-50 border border-rose-100 rounded-xl p-2.5 flex items-start gap-2">
+                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p id="pwd-error-text" class="text-[10px] font-bold text-rose-600 leading-relaxed"></p>
                 </div>
 
                 <!-- Footer Buttons -->
@@ -477,18 +484,19 @@
         </div>
     </div>
 
-    <!-- WhatsApp Modal -->
-    <div id="whatsapp-modal"
+    <!-- UPI Payment Settings Modal -->
+    <div id="payment-modal"
         class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
         <div
-            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <!-- Header -->
-            <div class="py-2 px-4 border-b border-slate-100 flex items-start justify-between relative">
+            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 leading-tight">WhatsApp Integration</h3>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Connect your Meta WhatsApp Cloud API credentials.</p>
+                    <h3 class="text-base font-bold text-white leading-tight">UPI Payment Settings</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Configure UPI ID and QR code to enable direct online fee
+                        payments.</p>
                 </div>
-                <button onclick="closeWhatsAppModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="closePaymentModal()" class="text-white/80 hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -496,7 +504,111 @@
             </div>
 
             <!-- Form -->
-            <form id="whatsapp-modal-form" class="pb-4 px-4 space-y-3">
+            <form id="payment-form" class="pt-4 pb-4 px-4 space-y-4" enctype="multipart/form-data">
+                @csrf
+
+                <!-- UPI ID Input -->
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">UPI ID (VPA)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </span>
+                        <input type="text" name="upi_id" id="field-upi_id" placeholder="merchant@upi or mobile@ybl"
+                            class="input-with-icon">
+                    </div>
+                    <p class="text-[9px] text-slate-400 ml-1">Enter a valid merchant VPA or personal UPI ID (e.g.
+                        name@bank, phone@upi).</p>
+                </div>
+
+                <!-- QR Code Upload -->
+                <div class="border-t border-slate-100 pt-4">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-2">UPI QR
+                        Code Image</label>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                        <!-- QR Preview Box -->
+                        <div class="relative group cursor-pointer shrink-0"
+                            onclick="document.getElementById('qr-input').click()">
+                            <div
+                                class="h-32 w-32 bg-slate-50 border border-slate-200 rounded-2xl p-2 shadow-inner flex items-center justify-center overflow-hidden">
+                                <img id="qr-preview-img" src="" class="w-full h-full object-contain hidden">
+                                <div id="qr-placeholder" class="text-center p-2 text-slate-400">
+                                    <svg class="w-8 h-8 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider block">No QR Uploaded</span>
+                                </div>
+                            </div>
+                            <div
+                                class="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Upload Info -->
+                        <div class="flex-1">
+                            <p class="text-[9px] font-black text-[#ff6c00] uppercase tracking-widest">QR Code
+                                Specifications</p>
+                            <p class="text-[10px] text-slate-400 font-medium mt-0.5 leading-relaxed">
+                                Please upload the QR code generated from your business app (GPay, PhonePe, Paytm, BHIM,
+                                etc.). Max size 2MB. Format: PNG, JPG, JPEG.
+                            </p>
+                            <div class="mt-3 flex items-center gap-2">
+                                <button type="button" onclick="document.getElementById('qr-input').click()"
+                                    class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-[10px] transition-all">
+                                    Choose File
+                                </button>
+                            </div>
+                        </div>
+                        <input type="file" id="qr-input" name="upi_qr_code" class="hidden" accept="image/*"
+                            onchange="previewQR(this)">
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closePaymentModal()"
+                        class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                        Discard Changes
+                    </button>
+                    <button type="submit" id="payment-submit-btn"
+                        class="px-4 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5">
+                        <span>Save Settings</span>
+                        <div id="payment-loader"
+                            class="h-3 w-3 border-2 border-white/20 border-t-white rounded-full animate-spin hidden"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Modal -->
+    <div id="whatsapp-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <!-- Header -->
+            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
+                <div>
+                    <h3 class="text-base font-bold text-white leading-tight">WhatsApp Integration</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Connect your Meta WhatsApp Cloud API credentials.</p>
+                </div>
+                <button onclick="closeWhatsAppModal()" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="whatsapp-modal-form" class="pt-4 pb-4 px-4 space-y-3">
                 @csrf
                 <div id="wa-loader" class="py-4 flex flex-col items-center justify-center">
                     <div class="h-4 w-4 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin"></div>
@@ -664,40 +776,49 @@
                     const badgeSub = document.getElementById('badge-sub-status');
                     const planTitle = document.getElementById('plan-title');
                     if (sub) {
-                        badgeSub.innerText = sub.status.toUpperCase();
-                        if (sub.status.toLowerCase() === 'expired' || sub.status.toLowerCase() === 'inactive') {
-                            badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
-                        } else {
-                            badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                        if (badgeSub) {
+                            badgeSub.innerText = sub.status.toUpperCase();
+                            if (sub.status.toLowerCase() === 'expired' || sub.status.toLowerCase() === 'inactive') {
+                                badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
+                            } else {
+                                badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                            }
                         }
                         planTitle.innerText = sub.plan_name;
-                        const ren = document.getElementById('sub-renewal');
-                        if (ren) ren.innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
-                        document.getElementById('sub-created').innerText = sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A';
 
-                        // Populate plan features
-                        const nameLower = (sub.plan_name || '').toLowerCase();
-                        let features = [];
-                        if (nameLower.includes('basic')) {
-                            features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
-                        } else if (nameLower.includes('pro')) {
-                            features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
-                        } else {
-                            features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
-                        }
+                        // Show remaining days and expiry warning
+                        const expiry = sub.expires_at || sub.end_date;
+                        if (expiry) {
+                            const expiryDate = new Date(expiry);
+                            const now = new Date();
+                            const diffMs = expiryDate - now;
+                            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                            const formattedDate = expiryDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-                        const featuresCont = document.getElementById('plan-features-container');
-                        const featuresList = document.getElementById('plan-features-list');
-                        if (featuresList && featuresCont) {
-                            featuresList.innerHTML = features.map(f => `
-                                        <li class="flex items-center gap-2">
-                                            <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
-                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                            </div>
-                                            <span class="text-slate-600 font-bold">${f}</span>
-                                        </li>
-                                    `).join('');
-                            featuresCont.classList.remove('hidden');
+                            // Always show remaining days
+                            const remainingRow = document.getElementById('remaining-days-row');
+                            const remainingText = document.getElementById('remaining-days-text');
+                            if (remainingRow && remainingText) {
+                                if (diffDays > 0) {
+                                    remainingText.innerText = `${diffDays} day${diffDays !== 1 ? 's' : ''} remaining — expires ${formattedDate}`;
+                                } else if (diffDays === 0) {
+                                    remainingText.innerText = `Expires today — ${formattedDate}`;
+                                } else {
+                                    remainingText.innerText = `Expired on ${formattedDate}`;
+                                }
+                                remainingRow.classList.remove('hidden');
+                            }
+
+                            // Show expiry warning only when within 7 days
+                            if (diffDays >= 0 && diffDays <= 7) {
+                                const expiryWarning = document.getElementById('expiry-warning');
+                                const expiryText = document.getElementById('expiry-date-text');
+                                if (expiryWarning && expiryText) {
+                                    const daysLabel = diffDays === 0 ? 'Expires today' : (diffDays === 1 ? 'Expires tomorrow' : `Expires in ${diffDays} days`);
+                                    expiryText.innerText = `${daysLabel} — Renew now to avoid interruption`;
+                                    expiryWarning.classList.remove('hidden');
+                                }
+                            }
                         }
                     }
 
@@ -715,11 +836,58 @@
             }
         }
 
-        function openPasswordModal() { document.getElementById('password-modal').classList.replace('hidden', 'flex'); document.body.style.overflow = 'hidden'; }
-        function closePasswordModal() { document.getElementById('password-modal').classList.replace('flex', 'hidden'); document.body.style.overflow = 'auto'; }
+        function openPasswordModal() { hidePwdError(); document.getElementById('password-form').reset(); document.getElementById('password-modal').classList.replace('hidden', 'flex'); document.body.style.overflow = 'hidden'; }
+        function closePasswordModal() { hidePwdError(); document.getElementById('password-modal').classList.replace('flex', 'hidden'); document.body.style.overflow = 'auto'; }
+
+        // Toggle show/hide for any password input that has an eye button sibling
+        function togglePasswordVisibility(btn) {
+            const input = btn.parentElement.querySelector('input');
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.querySelector('.eye-open')?.classList.toggle('hidden', !showing);
+            btn.querySelector('.eye-closed')?.classList.toggle('hidden', showing);
+        }
+
+        function showPwdError(msg) {
+            const box = document.getElementById('pwd-error');
+            document.getElementById('pwd-error-text').textContent = msg;
+            box.classList.remove('hidden');
+        }
+        function hidePwdError() {
+            document.getElementById('pwd-error')?.classList.add('hidden');
+        }
+
+        // Client-side password policy (mirrors server rules)
+        function validatePasswordForm(fd) {
+            const current = (fd.get('current_password') || '').trim();
+            const pwd = fd.get('password') || '';
+            const confirm = fd.get('password_confirmation') || '';
+
+            if (!current) return 'Please enter your current password.';
+            if (pwd.length < 8 || pwd.length > 15) return 'New password must be between 8 and 15 characters.';
+            if (!/[a-z]/.test(pwd)) return 'New password must contain at least 1 lowercase letter.';
+            if (!/[A-Z]/.test(pwd)) return 'New password must contain at least 1 uppercase letter.';
+            if (!/\d/.test(pwd)) return 'New password must contain at least 1 number.';
+            if (!/[\W_]/.test(pwd)) return 'New password must contain at least 1 special character.';
+            if (current === pwd) return 'New password cannot be the same as the current password.';
+            if (pwd !== confirm) return 'New password and confirmation do not match.';
+            return null;
+        }
 
         document.getElementById('password-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            hidePwdError();
+
+            const formData = new FormData(e.target);
+
+            // 1) Run client-side validation BEFORE any API call
+            const validationError = validatePasswordForm(formData);
+            if (validationError) {
+                showPwdError(validationError);
+                return;
+            }
+
             const btn = document.getElementById('submit-btn');
             const loader = document.getElementById('pwd-loader');
             btn.disabled = true;
@@ -728,23 +896,131 @@
             try {
                 const response = await fetch('{{ route("institute.profile.password.update") }}', {
                     method: 'POST',
-                    body: new FormData(e.target),
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
                 });
+                const data = await response.json().catch(() => ({}));
+
                 if (response.ok) {
                     showToast('Password updated successfully!');
                     closePasswordModal();
                     e.target.reset();
                 } else {
-                    const data = await response.json();
-                    showToast(data.message || 'Error updating password', 'error');
+                    // 2) Surface the specific server error inline above the buttons
+                    //    (e.g. "current password is incorrect")
+                    let msg = data.message || 'Error updating password.';
+                    if (data.errors) {
+                        const first = Object.values(data.errors)[0];
+                        if (Array.isArray(first) && first.length) msg = first[0];
+                    }
+                    showPwdError(msg);
                 }
-            } catch (error) { showToast('Something went wrong.', 'error'); }
-            finally {
+            } catch (error) {
+                showPwdError('Something went wrong. Please try again.');
+            } finally {
                 btn.disabled = false;
                 if (loader) loader.classList.add('hidden');
             }
         });
+        // ── UPI Payment Settings Modal ──────────────────────────────────
+        function openPaymentModal() {
+            document.getElementById('payment-modal').classList.replace('hidden', 'flex');
+            document.body.style.overflow = 'hidden';
+            fetchPaymentSettings();
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.replace('flex', 'hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function fetchPaymentSettings() {
+            try {
+                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+                const token = localStorage.getItem('token');
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const response = await fetch('/api/v1/institute/profile', { headers });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const data = result.data;
+                    document.getElementById('field-upi_id').value = data.upi_id || '';
+
+                    const qrImg = document.getElementById('qr-preview-img');
+                    const qrPlaceholder = document.getElementById('qr-placeholder');
+
+                    if (data.upi_qr_code_url) {
+                        qrImg.src = data.upi_qr_code_url;
+                        qrImg.classList.remove('hidden');
+                        qrPlaceholder.classList.add('hidden');
+                    } else {
+                        qrImg.classList.add('hidden');
+                        qrPlaceholder.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching payment settings:', error);
+            }
+        }
+
+        function previewQR(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const qrImg = document.getElementById('qr-preview-img');
+                    const qrPlaceholder = document.getElementById('qr-placeholder');
+                    qrImg.src = e.target.result;
+                    qrImg.classList.remove('hidden');
+                    qrPlaceholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Front-end VPA verification (standard format check)
+            const upiId = document.getElementById('field-upi_id').value.trim();
+            if (upiId && !/^[\w\.\-]+@[\w\-]+$/.test(upiId)) {
+                showToast('Please enter a valid UPI ID (VPA format: name@bank).', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('payment-submit-btn');
+            const loader = document.getElementById('payment-loader');
+            btn.disabled = true;
+            if (loader) loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/v1/institute/profile/payment/update', {
+                    method: 'POST',
+                    body: new FormData(e.target),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast('Payment settings updated successfully!');
+                    setTimeout(() => window.location.reload(), 900);
+                } else {
+                    showToast(result.message || 'Error updating payment settings', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating settings:', error);
+                showToast('Something went wrong.', 'error');
+            } finally {
+                btn.disabled = false;
+                if (loader) loader.classList.add('hidden');
+            }
+        });
+
         function openWhatsAppModal() {
             document.getElementById('whatsapp-modal').classList.replace('hidden', 'flex');
             document.body.style.overflow = 'hidden';

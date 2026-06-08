@@ -15,9 +15,9 @@ class DemoRequestController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|digits:10',
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email:rfc|max:255',
             'designation' => 'required|string|max:255',
         ]);
 

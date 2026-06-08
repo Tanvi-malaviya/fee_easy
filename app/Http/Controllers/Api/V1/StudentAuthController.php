@@ -44,11 +44,14 @@ class StudentAuthController extends Controller
 
     public function logout(Request $request)
     {
-        if (!$request->user()) {
+        $user = $request->user();
+        if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $request->user()->currentAccessToken()->delete();
+        $user->fcm_token = null;
+        $user->save();
+        $user->currentAccessToken()->delete();
 
         return response()->json([
             'status' => 'success',

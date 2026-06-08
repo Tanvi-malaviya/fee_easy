@@ -66,48 +66,24 @@
         <div
             class="bg-white w-full max-w-4xl rounded-[1.5rem] shadow-2xl relative z-10 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300 max-h-[90vh]">
             <!-- Modal Header (Fixed) -->
-            <div class="p-4 sm:p-5 sm:pb-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/20 shrink-0">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
                 <div>
-                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 tracking-tight">Post New Update</h2>
-                    <p class="text-[10px] sm:text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                        Communication Hub</p>
+                    <h2 class="text-lg font-bold text-white tracking-tight">Post New Update</h2>
+                    <p class="text-white/80 text-[10px] sm:text-[11px] uppercase tracking-wider mt-0.5">Communication Hub</p>
                 </div>
-                <button onclick="closeUpdateModal()"
-                    class="h-8 w-8 bg-white border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 shadow-sm transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                <button type="button" onclick="closeUpdateModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="p-4 sm:p-6 sm:pt-2 overflow-y-auto no-scrollbar">
+            <div class="p-4 sm:p-6 sm:pt-4 overflow-y-auto no-scrollbar">
                 <form id="update-form" class="space-y-3" enctype="multipart/form-data">
                     <!-- Audience & Category Section -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div class="space-y-1 relative" id="recipient-dropdown-container">
-                            <label
-                                class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Recipient</label>
-                            <button type="button" onclick="toggleUpdatesDropdown('recipient')" id="recipient-btn"
-                                class="w-full px-3 py-3 sm:py-2.5 bg-white border border-slate-100 rounded-xl text-xs font-bold outline-none flex items-center justify-between transition-all">
-                                <span id="recipient-label">Students</span>
-                                <svg class="w-4 h-4 transition-transform duration-200" id="recipient-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div id="recipient-menu"
-                                class="absolute z-50 mt-1 w-full bg-white border border-slate-100 bg-slate-50 
-                                rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                <div class="py-1">
-                                    <button type="button" onclick="selectUpdatesOption('recipient', 'students', 'Students')"
-                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Students</button>
-                                    <button type="button" onclick="selectUpdatesOption('recipient', 'parents', 'Parents')"
-                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Parents</button>
-                                    <button type="button" onclick="selectUpdatesOption('recipient', 'both', 'Both (Students & Parents)')"
-                                        class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors">Both (Students & Parents)</button>
-                                </div>
-                            </div>
-                            <input type="hidden" name="recipient" id="recipient-select" value="students" required>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Recipient is always "students" (parent option removed) -->
+                        <input type="hidden" name="recipient" id="recipient-select" value="students">
 
                         <div id="student-audience-container" class="space-y-1 relative">
                             <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Target
@@ -273,28 +249,29 @@
         <div onclick="closeViewModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
         <div
             class="bg-white w-full max-w-xl rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
                 <div class="flex items-center gap-3">
-                    <div id="view-cat-icon" class="h-9 w-9 rounded-xl flex items-center justify-center"></div>
+                    <div id="view-cat-icon" class="h-9 w-9 rounded-xl flex items-center justify-center bg-white/20 text-white"></div>
                     <div>
-                        <h2 id="view-topic" class="text-[15px] font-black text-slate-800 leading-tight"></h2>
+                        <h2 id="view-topic" class="text-[15px] font-black text-white leading-tight"></h2>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span id="view-category"
-                                class="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded"></span>
-                            <span class="text-[8px] font-bold text-slate-300">•</span>
+                                class="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/20 text-white"></span>
+                            <span class="text-[8px] font-bold text-white/60">•</span>
                             <span id="view-date"
-                                class="text-[8px] font-bold text-slate-400 uppercase tracking-widest"></span>
+                                class="text-[8px] font-bold text-white/80 uppercase tracking-widest"></span>
                             <span id="view-holiday-date-section" class="hidden">
-                                <span class="text-[8px] font-bold text-slate-300">•</span>
-                                <span class="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">Holiday: <span id="view-holiday-date"></span></span>
+                                <span class="text-[8px] font-bold text-white/60">•</span>
+                                <span class="text-[8px] font-bold text-indigo-200 uppercase tracking-widest">Holiday: <span id="view-holiday-date"></span></span>
                             </span>
                         </div>
                     </div>
                 </div>
-                <button onclick="closeViewModal()"
-                    class="h-8 w-8 bg-white border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 shadow-sm transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                <button type="button" onclick="closeViewModal()"
+                    class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -344,7 +321,7 @@
         const CSRF_TOKEN = "{{ csrf_token() }}";
 
         function toggleUpdatesDropdown(type) {
-            const menus = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            const menus = ['target_type', 'category', 'batch', 'standard'];
             menus.forEach(m => {
                 const menu = document.getElementById(`${m}-menu`);
                 const chevron = document.getElementById(`${m}-chevron`);
@@ -402,14 +379,13 @@
             document.getElementById('standard-select').value = '';
 
             // Update labels in UI
-            document.getElementById('recipient-label').innerText = 'Students';
             document.getElementById('target_type-label').innerText = 'All Students';
             document.getElementById('category-label').innerText = 'Academic';
             document.getElementById('batch-label').innerText = 'Choose Batch...';
             document.getElementById('standard-label').innerText = 'Choose Standard...';
             
             // Reset chevrons
-            const chevrons = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            const chevrons = ['target_type', 'category', 'batch', 'standard'];
             chevrons.forEach(c => {
                 const chevron = document.getElementById(`${c}-chevron`);
                 const menu = document.getElementById(`${c}-menu`);
@@ -421,7 +397,7 @@
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
-            const menus = ['recipient', 'target_type', 'category', 'batch', 'standard'];
+            const menus = ['target_type', 'category', 'batch', 'standard'];
             menus.forEach(m => {
                 let container = document.getElementById(`${m}-dropdown-container`);
                 if (m === 'target_type') container = document.getElementById('student-audience-container');
@@ -699,13 +675,13 @@
             const color = config.color;
 
             const iconContainer = document.getElementById('view-cat-icon');
-            iconContainer.className = `h-9 w-9 rounded-xl flex items-center justify-center bg-${color}-500 text-white`;
+            iconContainer.className = `h-9 w-9 rounded-xl flex items-center justify-center bg-white/20 text-white`;
             iconContainer.innerHTML = config.icon;
 
             document.getElementById('view-topic').innerText = update.topic || update.category;
             
             const catBadge = document.getElementById('view-category');
-            catBadge.className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-${color}-100 text-${color}-600`;
+            catBadge.className = `text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/20 text-white`;
             catBadge.innerText = cat;
 
             // Format date
