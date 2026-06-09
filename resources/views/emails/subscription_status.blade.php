@@ -23,9 +23,6 @@
       @elseif($type == 'changed')
         <h1 class="em-title">Subscription Upgraded!</h1>
         <p class="em-sub">Your subscription plan has been successfully changed.</p>
-      @elseif($type == 'converted')
-        <h1 class="em-title">Trial Converted!</h1>
-        <p class="em-sub">Your trial plan has been converted to a paid subscription.</p>
       @elseif($type == 'approved')
         <h1 class="em-title">Renewal Approved!</h1>
         <p class="em-sub">Your offline plan renewal request has been approved by the administrator.</p>
@@ -54,8 +51,6 @@
         <p>Your subscription validity has been successfully extended. Thank you for continuing your journey with us!</p>
       @elseif($type == 'changed')
         <p>Your subscription has been successfully upgraded/changed to the new plan. Enjoy your new features!</p>
-      @elseif($type == 'converted')
-        <p>Your trial account has been successfully converted to a paid subscription! Get ready to explore all limits.</p>
       @elseif($type == 'approved')
         <p>Your offline renewal request has been reviewed and approved by the administrator.</p>
       @endif

@@ -9,7 +9,7 @@
                                 render as done, after it as pending. Default 1.
 --}}
 @php
-    $modules = [
+    $modules = $modules ?? [
         ['fa-user-graduate', 'Student Management'],
         ['fa-indian-rupee-sign', 'Fee Collection'],
         ['fa-receipt', 'Payments & Receipts'],
@@ -19,6 +19,7 @@
     ];
     $brandHeadline = $brandHeadline ?? 'A bridge of knowledge for all';
     $brandSubtext = $brandSubtext ?? 'Tuoora brings your entire institute together — students, fees, staff and communication — in one simple, powerful platform.';
+    $brandFooterTagline = $brandFooterTagline ?? 'A bridge of knowledge for all';
 @endphp
 
 <aside class="auth-brand">
@@ -59,5 +60,6 @@
         </div>
     @endisset
 
-    <div class="brand-footer">© {{ date('Y') }} Tuoora · Empowering Institutes</div>
+    <div class="brand-footer">© {{ date('Y') }} Tuoora · {{ $brandFooterTagline }}</div>
 </aside>
+

@@ -203,7 +203,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="field-salary" required placeholder="25,000"
+                                    <input type="number" name="base_salary" id="field-salary" required min="1" max="999999" placeholder="25,000"
                                         class="w-full pl-8 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all">
                                 </div>
                                 <span id="error-base_salary" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>

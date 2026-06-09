@@ -151,9 +151,9 @@ class InstituteStudentController extends Controller
             'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable|date|before_or_equal:today',
             'guardian_name' => 'nullable|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'profile_image_url' => 'nullable|image|max:2048',
         ]);
 
@@ -283,9 +283,9 @@ class InstituteStudentController extends Controller
             'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable|date|before_or_equal:today',
             'guardian_name' => 'nullable|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'status' => 'sometimes|integer',
             'profile_image_url' => 'nullable|image|max:2048',
         ]);

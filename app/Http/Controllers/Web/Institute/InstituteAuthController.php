@@ -189,7 +189,7 @@ class InstituteAuthController extends Controller
             }
 
             // Assign Free Plan subscription (1 month = 30 days)
-            $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active', 'trial'])->exists();
+            $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active'])->exists();
             if (!$hasActiveSub) {
                 \App\Models\Subscription::create([
                     'institute_id' => $institute->id,

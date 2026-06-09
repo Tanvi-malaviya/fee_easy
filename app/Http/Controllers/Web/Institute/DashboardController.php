@@ -46,6 +46,17 @@ class DashboardController extends Controller
         $recent_batches = $institute->batches()->latest()->limit(5)->get();
         $recent_students = $institute->students()->latest()->limit(5)->get();
 
+        // Active subscription & "expiring soon" countdown (shown when 7 days or less remain)
+        $activeSubscription = $institute->subscriptions()
+            ->where('status', 'active')
+            ->where('end_date', '>=', $today)
+            ->orderByDesc('end_date')
+            ->first();
+
+        $subscriptionDaysLeft = $activeSubscription
+            ? $today->diffInDays(\Carbon\Carbon::parse($activeSubscription->end_date)->startOfDay(), false)
+            : null;
+
         // Payment/Bank settings from admin panel (SystemSetting)
         $paymentSettings = [
             'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
@@ -55,7 +66,7 @@ class DashboardController extends Controller
             'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
         ];
 
-        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings'));
+        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings', 'activeSubscription', 'subscriptionDaysLeft'));
     }
 
     /**

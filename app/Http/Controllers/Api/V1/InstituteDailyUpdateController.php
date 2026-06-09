@@ -8,7 +8,6 @@ use App\Models\DailyUpdate;
 use App\Models\Institute;
 use Illuminate\Http\Request;
 use App\Enums\UpdateCategory;
-use App\Enums\UpdateRecipient;
 use App\Enums\UpdateTargetType;
 use Illuminate\Validation\Rules\Enum;
 
@@ -47,14 +46,8 @@ class InstituteDailyUpdateController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        if ($request->recipient === 'parents' && !$request->has('target_type')) {
-            $request->merge(['target_type' => 'all']);
-        }
-
-
         $request->validate([
             'category' => ['required', new Enum(UpdateCategory::class)],
-            'recipient' => ['required', new Enum(UpdateRecipient::class)],
             'target_type' => ['required', new Enum(UpdateTargetType::class)],
             'batch_id' => 'required_if:target_type,batch|nullable|exists:batches,id',
             'student_id' => 'nullable|exists:students,id',
@@ -80,7 +73,6 @@ class InstituteDailyUpdateController extends Controller
 
         $update = DailyUpdate::create([
             'institute_id' => $request->user()->id,
-            'recipient' => $request->recipient,
             'batch_id' => $request->target_type === UpdateTargetType::BATCH->value ? $request->batch_id : null,
             'target_type' => $request->target_type,
             'standard' => $request->target_type === UpdateTargetType::STANDARD->value ? $request->standard : null,
@@ -94,7 +86,7 @@ class InstituteDailyUpdateController extends Controller
                 : now()->toDateString(),
         ]);
 
-        // Send notifications based on Recipient (Students/Parents/Both) and Target Audience
+        // Send notifications to students based on the Target Audience
         $studentsQuery = \App\Models\Student::where('institute_id', $request->user()->id);
 
         if ($request->target_type === UpdateTargetType::BATCH->value) {
@@ -105,7 +97,7 @@ class InstituteDailyUpdateController extends Controller
             $studentsQuery->where('id', $request->student_id);
         }
 
-        $students = $studentsQuery->with('parent')->get();
+        $students = $studentsQuery->get();
         $fcm = app(\App\Services\FCMService::class);
 
         $subjectLabel = $request->category ? ucfirst($request->category) : 'General';
@@ -126,44 +118,21 @@ class InstituteDailyUpdateController extends Controller
             'batch_id'  => (string) ($request->batch_id ?? ''),
         ];
 
-        $notifyStudents = in_array($request->recipient, ['students', 'both']);
-        $notifyParents = in_array($request->recipient, ['parents', 'both']);
-
         foreach ($students as $student) {
             // Notify Student
-            if ($notifyStudents) {
-                \App\Models\Notification::create([
-                    'user_type' => 'student',
-                    'user_id' => $student->id,
-                    'title' => $notifTitle,
-                    'message' => $notifBody,
-                    'image' => $update->attachment,
-                    'type' => 'daily_update',
-                    'reference_id' => $update->id,
-                    'is_read' => false,
-                ]);
+            \App\Models\Notification::create([
+                'user_type' => 'student',
+                'user_id' => $student->id,
+                'title' => $notifTitle,
+                'message' => $notifBody,
+                'image' => $update->attachment,
+                'type' => 'daily_update',
+                'reference_id' => $update->id,
+                'is_read' => false,
+            ]);
 
-                if (!empty($student->fcm_token)) {
-                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
-                }
-            }
-
-            // Notify Parent
-            if ($notifyParents && $student->parent) {
-                \App\Models\Notification::create([
-                    'user_type' => 'parent',
-                    'user_id' => $student->parent->id,
-                    'title' => $notifTitle,
-                    'message' => $notifBody,
-                    'image' => $update->attachment,
-                    'type' => 'daily_update',
-                    'reference_id' => $update->id,
-                    'is_read' => false,
-                ]);
-
-                if (!empty($student->parent->fcm_token)) {
-                    $fcm->send($student->parent->fcm_token, $notifTitle, $notifBody, $notifData);
-                }
+            if (!empty($student->fcm_token)) {
+                $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
             }
         }
 

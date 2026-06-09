@@ -7,8 +7,9 @@
     <title>Reset Password - Tuoora</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @include('institute.auth.partials.brand-styles')
     <style>
         * {
             margin: 0;
@@ -18,99 +19,24 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #f8fafc;
+            background-color: #ffffff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        .bg-pattern {
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: 1;
-        }
-
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 360px;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-card {
-            background: #ffffff;
-            border-radius: 1.25rem;
-            padding: 1.25rem 1.5rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f1f5f9;
-            text-align: center;
-        }
-
-        .logo-box {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 0.2rem;
-        }
-
-        .logo-box img {
-            height: 32px;
-            width: 100px;
-            object-fit: contain;
-        }
-
-        .logo-section h1 {
-            display: none;
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: #1e293b;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.1rem;
-            text-transform: uppercase;
-        }
-
-        .logo-section p {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #FF6B00;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            margin-top: 0.25rem;
-            margin-bottom: 1.25rem;
-            opacity: 0.9;
         }
 
         .form-group {
             text-align: left;
-            margin-bottom: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         .form-label {
             display: block;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.35rem;
-            padding-left: 0.2rem;
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
         }
 
         .input-wrapper {
@@ -119,12 +45,12 @@
 
         .input-field {
             width: 100%;
-            height: 2.4rem;
-            padding: 0 1.25rem 0 3rem;
+            height: 3.1rem;
+            padding: 0 1.5rem 0 3.25rem;
             background: #fcfdfe;
             border: 2px solid #f1f5f9;
-            border-radius: 0.65rem;
-            font-size: 0.8rem;
+            border-radius: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #1e293b;
             transition: all 0.3s ease;
@@ -139,20 +65,25 @@
 
         .input-icon {
             position: absolute;
-            left: 1.1rem;
+            left: 1.15rem;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus+.input-icon {
+            color: #FF6B00;
         }
 
         .password-toggle {
             position: absolute;
-            right: 1.1rem;
+            right: 1.15rem;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: color 0.2s ease;
         }
@@ -163,30 +94,44 @@
 
         .submit-btn {
             width: 100%;
-            height: 2.4rem;
+            height: 3.1rem;
             background: #FF6B00;
             color: white;
             border: none;
-            border-radius: 0.65rem;
-            font-size: 0.75rem;
+            border-radius: 0.85rem;
+            font-size: 0.85rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(255, 107, 0, 0.12);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.15);
             margin-top: 0.5rem;
         }
 
         .submit-btn:hover {
             background: #e66000;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .submit-btn:disabled {
             background: #cbd5e1;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .resend-wrapper {
+            margin-top: 1.5rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .resend-wrapper a {
+            color: #FF6B00;
+            text-decoration: none;
+            font-weight: 800;
         }
 
         #toast {
@@ -219,70 +164,61 @@
 </head>
 
 <body>
-    <div class="bg-pattern"></div>
     <div id="toast"></div>
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="logo-section">
-                <div class="logo-box">
-                    <img src="{{ asset('images/2-remove.png') }}" alt="Logo">
-                </div>
-                <h1>Tuoora</h1>
+    <div class="auth-shell">
+        @include('institute.auth.partials.brand-panel', [
+            'brandSubtext' => 'Set a strong new password for your institute account to keep your dashboard secure.',
+        ])
 
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div class="form-head">
+                    <h1>Set New Password</h1>
+                    <p>Enter the code sent to your email and your new password.</p>
+                </div>
+
+                <form id="reset-password-form">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Verification Code</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="otp" id="otp" required maxlength="6" class="input-field otp-input"
+                                placeholder="000000">
+                            <i class="fas fa-shield-alt input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="password" required class="input-field"
+                                placeholder="••••••••" style="padding-right: 3rem;">
+                            <i class="fas fa-lock input-icon"></i>
+                            <i class="fas fa-eye password-toggle" onclick="togglePwd('password', this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password_confirmation" id="password_confirmation" required
+                                class="input-field" placeholder="••••••••" style="padding-right: 3rem;">
+                            <i class="fas fa-check-double input-icon"></i>
+                            <i class="fas fa-eye password-toggle" onclick="togglePwd('password_confirmation', this)"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="submit-btn">
+                        Reset Password
+                    </button>
+                </form>
+
+                <div class="resend-wrapper">
+                    <span>Didn't receive the code? </span>
+                    <a href="javascript:void(0)" id="resend-btn">Resend OTP</a>
+                </div>
             </div>
-
-            <h2 style="font-size: 1.1rem; color: #000; margin-bottom: 0.4rem; font-weight: 700;">Set New Password
-            </h2>
-            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">Enter the code sent to your email and
-                your new password.</p>
-
-            <form id="reset-password-form">
-                @csrf
-                <div class="form-group">
-                    <label class="form-label">Verification Code</label>
-                    <div class="input-wrapper">
-                        <input type="text" name="otp" id="otp" required maxlength="6" class="input-field otp-input"
-                            placeholder="000000">
-                        <i class="fas fa-shield-alt input-icon"></i>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">New Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="password" id="password" required class="input-field"
-                            placeholder="••••••••" style="padding-right: 3rem;">
-                        <i class="fas fa-lock input-icon"></i>
-                        <i class="fas fa-eye password-toggle" onclick="togglePwd('password', this)"></i>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Confirm New Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="password_confirmation" id="password_confirmation" required
-                            class="input-field" placeholder="••••••••" style="padding-right: 3rem;">
-                        <i class="fas fa-check-double input-icon"></i>
-                        <i class="fas fa-eye password-toggle" onclick="togglePwd('password_confirmation', this)"></i>
-                    </div>
-                </div>
-
-                <button type="submit" id="submit-btn" class="submit-btn">
-                    Reset Password
-                </button>
-            </form>
-
-            <div class="resend-wrapper" style="text-align: center; margin-top: 1.15rem;">
-                <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Didn't receive the code? </span>
-                <a href="javascript:void(0)" id="resend-btn" style="font-size: 0.75rem; color: #FF6B00; font-weight: 700; text-decoration: none; transition: color 0.2s;">Resend OTP</a>
-            </div>
-
-            <!-- <div style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 0.85rem;">
-                <a href="{{ route('institute.password.request') }}" style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" onmouseover="this.style.color='#FF6B00'" onmouseout="this.style.color='#64748b'">
-                    <i class="fas fa-arrow-left"></i> Request New Code
-                </a>
-            </div> -->
         </div>
     </div>
 

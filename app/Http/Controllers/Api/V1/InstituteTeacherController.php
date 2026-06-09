@@ -43,7 +43,7 @@ class InstituteTeacherController extends Controller
             'email' => 'nullable|email:rfc|max:255',
             'subject' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
-            'salary' => 'nullable|numeric|min:0',
+            'salary' => 'nullable|numeric|min:0|max:999999',
             'join_date' => 'nullable|date',
             'status' => 'nullable|in:active,inactive'
         ]);
@@ -72,7 +72,7 @@ class InstituteTeacherController extends Controller
             'email' => 'nullable|email:rfc|max:255',
             'subject' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
-            'salary' => 'nullable|numeric|min:0',
+            'salary' => 'nullable|numeric|min:0|max:999999',
             'join_date' => 'nullable|date',
             'status' => 'nullable|in:active,inactive'
         ]);

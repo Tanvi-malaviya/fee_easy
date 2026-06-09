@@ -73,9 +73,9 @@ class StaffSalaryController extends Controller
         $validator = Validator::make($request->all(), [
             'staff_id' => 'required|exists:staff,id,institute_id,' . $instituteId,
             'payment_date' => 'required|date|before_or_equal:today',
-            'base_salary' => 'required|numeric',
-            'bonus' => 'nullable|numeric',
-            'deductions' => 'nullable|numeric',
+            'base_salary' => 'required|numeric|min:1|max:999999',
+            'bonus' => 'nullable|numeric|max:999999',
+            'deductions' => 'nullable|numeric|min:0|max:999999',
             'payment_method' => 'nullable|in:Cash,Online',
             'status' => 'required|in:Paid,Pending',
             'notes' => 'nullable|string'

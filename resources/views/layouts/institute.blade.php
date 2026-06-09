@@ -129,6 +129,8 @@
             padding-right: 0 !important;
         }
     </style>
+    <!-- Alpine JS -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="bg-[#F8F9FA] text-slate-900 antialiased overflow-x-hidden">

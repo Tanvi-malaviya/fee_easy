@@ -38,8 +38,8 @@
                         <div class="lg:col-span-1">
                             <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Billing & Localization
                             </h3>
-                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Manage currency symbols
-                                and default trial periods for all new plans.</p>
+                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Manage the currency symbol
+                                used across all new plans.</p>
                         </div>
                         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -48,13 +48,6 @@
                                 <x-text-input id="currency_symbol" name="settings[currency_symbol]" type="text"
                                     class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
                                     value="{{ $settings['currency_symbol'] ?? '₹' }}" placeholder="₹" />
-                            </div>
-                            <div>
-                                <x-input-label for="default_trial_days" value="Global Default Trial (Days)"
-                                    class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                <x-text-input id="default_trial_days" name="settings[default_trial_days]" type="number"
-                                    class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
-                                    value="{{ $settings['default_trial_days'] ?? 14 }}" placeholder="14" />
                             </div>
                         </div>
 

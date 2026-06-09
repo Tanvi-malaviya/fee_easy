@@ -270,7 +270,7 @@
                     <div>
                         <x-input-label for="amount" value="Amount Paid ({{ $currency }})"
                             class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                        <x-text-input id="amount" name="amount" type="number" step="0.01" value="{{ old('amount') }}"
+                        <x-text-input id="amount" name="amount" type="number" step="0.01" min="1" max="999999" value="{{ old('amount') }}"
                             oninput="clearError(this)"
                             class="mt-1 block w-full bg-gray-50 border-gray-200 rounded-xl py-2 px-3 text-sm @error('amount') border-red-500 @enderror"
                             placeholder="e.g. 5000" required />

@@ -472,7 +472,7 @@
                                                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
                                                     <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
                                                         <span class="text-[13px] font-bold text-slate-400 mr-2">₹</span>
-                                                        <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
+                                                        <input type="number" min="0" max="999999" value="${fees.tuition}" oninput="if(this.value.length>6)this.value=this.value.slice(0,6)" onchange="updateStudentFee(${id}, 'tuition', this.value)"
                                                             class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
                                                     </div>
                                                 </div>

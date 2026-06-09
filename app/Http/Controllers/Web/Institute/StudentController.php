@@ -125,16 +125,16 @@ class StudentController extends Controller
             'phone' => 'required|numeric|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
-            'dob' => 'required|date',
+            'dob' => 'required|date|before_or_equal:today',
             'guardian_name' => 'required|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'profile_image' => 'nullable|image|max:2048',
             'address_line_1' => 'nullable|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
+            'pincode' => 'nullable|digits:6',
         ]);
 
         // Generate a random password since the field is removed from UI
@@ -209,9 +209,9 @@ class StudentController extends Controller
             'password' => 'nullable|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
-            'dob' => 'required|date',
+            'dob' => 'required|date|before_or_equal:today',
             'guardian_name' => 'required|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'status' => 'nullable|integer',
             'profile_image' => 'nullable|image|max:2048',
             'address_line_1' => 'nullable|string|max:255',
@@ -219,7 +219,7 @@ class StudentController extends Controller
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
+            'pincode' => 'nullable|digits:6',
         ]);
 
         $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob', 'guardian_name', 'monthly_fee', 'status', 'address_line_1', 'address_line_2', 'city', 'state', 'country', 'pincode']);

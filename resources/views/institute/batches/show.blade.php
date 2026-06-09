@@ -534,8 +534,9 @@
                                                                 <p class="text-[13px] font-bold truncate ${isSelected ? 'text-white' : 'text-slate-700'}">${student.name}</p>
                                                                 <div class="flex items-center gap-1.5 ml-2">
                                                                     <span class="text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-slate-400'}">₹</span>
-                                                                    <input type="number" 
-                                                                        value="${studentFees.get(student.id) || BATCH_FEES}" 
+                                                                    <input type="number" min="0" max="999999"
+                                                                        value="${studentFees.get(student.id) || BATCH_FEES}"
+                                                                        oninput="if(this.value.length>6)this.value=this.value.slice(0,6)"
                                                                         onchange="studentFees.set(${student.id}, this.value)"
                                                                         onclick="event.stopPropagation()"
                                                                         class="w-16 px-2 py-1 ${isSelected ? 'bg-blue-700/50 text-white border-blue-400/30' : 'bg-slate-50 text-blue-600 border-blue-100'} border rounded-lg text-[11px] font-bold outline-none focus:ring-2 focus:ring-white/20 transition-all">
@@ -605,8 +606,9 @@
                                                                 <span class="max-w-[80px] truncate">${student.name}</span>
                                                                 <div class="ml-2 flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100 group-hover/chip:border-blue-200 group-hover/chip:bg-blue-50 transition-colors mr-1">
                                                                     <span class="text-[9px] text-slate-400 font-bold">₹</span>
-                                                                    <input type="number" 
-                                                                        value="${studentFees.get(id) || BATCH_FEES}" 
+                                                                    <input type="number" min="0" max="999999"
+                                                                        value="${studentFees.get(id) || BATCH_FEES}"
+                                                                        oninput="if(this.value.length>6)this.value=this.value.slice(0,6)"
                                                                         onchange="studentFees.set(${id}, this.value)"
                                                                         class="w-12 bg-transparent text-[10px] text-blue-600 font-bold outline-none border-none p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                                                 </div>

@@ -92,7 +92,7 @@ class InstituteExpenseController extends Controller
 
         $request->validate([
             'expense_category_id' => 'required|exists:expense_categories,id,institute_id,' . $institute->id,
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1|max:999999',
             'date' => 'required|date',
             'description' => 'nullable|string',
             'payment_method' => 'nullable|string|in:Cash,Online',
@@ -133,7 +133,7 @@ class InstituteExpenseController extends Controller
 
         $request->validate([
             'expense_category_id' => 'sometimes|required|exists:expense_categories,id,institute_id,' . $institute->id,
-            'amount' => 'sometimes|required|numeric|min:0',
+            'amount' => 'sometimes|required|numeric|min:1|max:999999',
             'date' => 'sometimes|required|date',
             'description' => 'nullable|string',
             'payment_method' => 'nullable|string|in:Cash,Online',

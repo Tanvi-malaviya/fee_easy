@@ -146,7 +146,7 @@ class InstituteController extends Controller
             'total_expenses' => $institute->expenses()->sum('amount'),
             'leads_count' => $institute->leads()->count(),
             'notes_count' => $institute->notes()->count(),
-            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first() ?? $institute->subscriptions()->where('status', 'trial')->first(),
+            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first(),
         ];
 
         return view('institutes.show', compact('institute', 'stats'));

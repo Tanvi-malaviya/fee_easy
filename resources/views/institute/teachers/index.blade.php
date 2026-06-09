@@ -130,7 +130,7 @@
                         <div class="space-y-2">
                             <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Salary
                                 (Monthly)</label>
-                            <input type="number" name="salary" id="field-salary"
+                            <input type="number" name="salary" id="field-salary" min="0" max="999999" oninput="limitIntegerDigits(this, 6)"
                                 class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold outline-none ring-blue-500/10 focus:ring-4 transition-all">
                         </div>
                         <div class="space-y-2">
@@ -167,6 +167,17 @@
     <script>
         const API_URL = "/api/v1/institute/teachers";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+
+        // Restrict a numeric input's integer part to a maximum number of digits
+        function limitIntegerDigits(el, maxDigits) {
+            let val = el.value;
+            if (!val) return;
+            const parts = val.split('.');
+            if (parts[0].length > maxDigits) {
+                parts[0] = parts[0].slice(0, maxDigits);
+                el.value = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0, 2) : parts[0];
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => fetchTeachers());
 
