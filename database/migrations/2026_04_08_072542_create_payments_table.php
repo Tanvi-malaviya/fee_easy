@@ -10,7 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
+        if (!Schema::hasTable('payments')) {
+            Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('fee_id')->constrained()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
@@ -20,6 +21,7 @@ return new class extends Migration {
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

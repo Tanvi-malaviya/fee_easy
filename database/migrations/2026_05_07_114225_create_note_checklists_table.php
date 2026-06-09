@@ -10,13 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('note_checklists', function (Blueprint $table) {
+        if (!Schema::hasTable('note_checklists')) {
+            Schema::create('note_checklists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('note_id')->constrained('notes')->onDelete('cascade');
             $table->string('title');
             $table->boolean('is_completed')->default(false);
             $table->timestamps();
         });
+        }
     }
 
     /**

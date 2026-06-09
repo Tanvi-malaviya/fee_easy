@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('whatsapp_logs', function (Blueprint $table) {
+        if (!Schema::hasTable('whatsapp_logs')) {
+            Schema::create('whatsapp_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
             $table->foreignId('student_id')->nullable()->constrained()->onDelete('set null');
@@ -18,6 +19,7 @@ return new class extends Migration {
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('whatsapp_logs'); }
 };

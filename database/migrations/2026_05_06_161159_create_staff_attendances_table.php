@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff_attendances', function (Blueprint $table) {
+        if (!Schema::hasTable('staff_attendances')) {
+            Schema::create('staff_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('staff_id')->constrained('staff')->onDelete('cascade');
             $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
@@ -23,6 +24,7 @@ return new class extends Migration
             // Prevent duplicate attendance for same staff on same date
             $table->unique(['staff_id', 'date']);
         });
+        }
     }
 
     /**

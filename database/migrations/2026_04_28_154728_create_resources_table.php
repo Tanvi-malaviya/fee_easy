@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resources', function (Blueprint $table) {
+        if (!Schema::hasTable('resources')) {
+            Schema::create('resources', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('institute_id');
             $table->unsignedBigInteger('batch_id');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->string('file_size')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

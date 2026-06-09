@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff_roles', function (Blueprint $table) {
+        if (!Schema::hasTable('staff_roles')) {
+            Schema::create('staff_roles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
         });
+        }
     }
 
     /**

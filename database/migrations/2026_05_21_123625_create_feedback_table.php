@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('feedback', function (Blueprint $table) {
+        if (!Schema::hasTable('feedback')) {
+            Schema::create('feedback', function (Blueprint $table) {
             $table->id();
             $table->string('user_type');             // 'student' | 'parent'
             $table->unsignedBigInteger('user_id');
@@ -18,6 +19,7 @@ return new class extends Migration
 
             $table->index(['user_type', 'user_id']);
         });
+        }
     }
 
     public function down(): void
