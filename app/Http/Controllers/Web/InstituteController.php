@@ -116,7 +116,7 @@ class InstituteController extends Controller
                 $q->with('staff.role', 'staff.department')->latest('payment_date');
             },
             'batches' => function ($q) {
-                $q->latest();
+                $q->withCount('students')->latest();
             },
             'expenses' => function ($q) {
                 $q->latest();

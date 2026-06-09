@@ -9,7 +9,9 @@ class BatchController extends Controller
 {
     public function index()
     {
-        return view('institute.batches.index');
+        $institute = \Illuminate\Support\Facades\Auth::guard('institute')->user();
+        $staffList = \App\Models\Staff::where('institute_id', $institute->id)->orderBy('full_name')->get();
+        return view('institute.batches.index', compact('staffList'));
     }
 
     public function create()
@@ -19,7 +21,9 @@ class BatchController extends Controller
 
     public function show($id)
     {
-        return view('institute.batches.show', compact('id'));
+        $institute = \Illuminate\Support\Facades\Auth::guard('institute')->user();
+        $staffList = \App\Models\Staff::where('institute_id', $institute->id)->with('department')->orderBy('full_name')->get();
+        return view('institute.batches.show', compact('id', 'staffList'));
     }
 
     public function edit($id)

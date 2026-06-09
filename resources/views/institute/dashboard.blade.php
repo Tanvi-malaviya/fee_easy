@@ -22,10 +22,7 @@
         @else
             <div class="w-full">
             @if(!$institute->hasActiveSubscription())
-                @php
-                    $hasPending = $institute->subscriptionRenewals()->where('status', 'pending')->exists();
-                @endphp
-                @if($hasPending)
+                @if($hasPendingRenewal)
                     <div class="bg-gradient-to-r from-amber-50 to-orange-50/50 border border-amber-200/60 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm relative z-20">
                         <div class="flex items-center gap-3">
                             <div class="h-10 w-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50">
@@ -55,10 +52,7 @@
                     </div>
                 @endif
             @else
-                @php
-                    $hasPending = $institute->subscriptionRenewals()->where('status', 'pending')->exists();
-                @endphp
-                @if($hasPending)
+                @if($hasPendingRenewal)
                     <div class="bg-gradient-to-r from-amber-50 to-orange-50/50 border border-amber-200/60 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm relative z-20">
                         <div class="flex items-center gap-3">
                             <div class="h-10 w-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50">

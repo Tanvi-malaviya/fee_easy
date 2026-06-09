@@ -55,6 +55,17 @@ echo "🔐 Setting correct directory permissions..."
 sudo chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 sudo chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
+# Ensure the Laravel scheduler is registered in cron (runs every minute).
+# This is what fires the daily subscription:check-expiry job at 00:00.
+echo "⏰ Ensuring Laravel scheduler cron entry exists..."
+CRON_LINE="* * * * * cd /var/www/html/tuoora.com/admin && php artisan schedule:run >> /dev/null 2>&1"
+if ! sudo crontab -u www-data -l 2>/dev/null | grep -Fq "artisan schedule:run"; then
+    ( sudo crontab -u www-data -l 2>/dev/null; echo "$CRON_LINE" ) | sudo crontab -u www-data -
+    echo "✅ Scheduler cron entry added for www-data."
+else
+    echo "✅ Scheduler cron entry already present — skipping."
+fi
+
 # Disable maintenance mode
 echo "🟢 Disabling maintenance mode..."
 php artisan up

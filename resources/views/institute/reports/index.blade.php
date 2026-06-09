@@ -1,9 +1,5 @@
 @extends('layouts.institute')
 
-@php
-    $batches = \App\Models\Batch::where('institute_id', auth()->id())->get();
-@endphp
-
 @section('content')
     <div class="space-y-1 max-w-[1600px] mx-auto pb-5 px-4 animate-in fade-in duration-500">
         <!-- Page Header -->

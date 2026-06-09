@@ -57,6 +57,10 @@ class DashboardController extends Controller
             ? $today->diffInDays(\Carbon\Carbon::parse($activeSubscription->end_date)->startOfDay(), false)
             : null;
 
+        // Institute-level effective status: active / expire_soon / expired /
+        // cancelled / pending / rejected (with label + days left).
+        $subscriptionStatus = $institute->subscriptionStatus();
+
         // Payment/Bank settings from admin panel (SystemSetting)
         $paymentSettings = [
             'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
@@ -67,7 +71,9 @@ class DashboardController extends Controller
             'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
         ];
 
-        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings', 'activeSubscription', 'subscriptionDaysLeft'));
+        $hasPendingRenewal = $institute->subscriptionRenewals()->where('status', 'pending')->exists();
+
+        return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings', 'activeSubscription', 'subscriptionDaysLeft', 'subscriptionStatus', 'hasPendingRenewal'));
     }
 
     /**

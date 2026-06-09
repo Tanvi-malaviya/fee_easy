@@ -29,10 +29,11 @@ class CheckSubscriptionExpiry extends Command
     public function handle()
     {
         $today = Carbon::today();
+        $warningWindow = Subscription::EXPIRE_SOON_THRESHOLD_DAYS;
 
-        // 1. Send Expiry Warning Notifications (expiring in 7 days down to 0 days)
-        $warningSubscriptions = Subscription::whereBetween('end_date', [$today, $today->copy()->addDays(7)])
-            ->whereIn('status', ['active'])
+        // 1. Send Expiry Warning Notifications (expiring within the "expire soon" window down to 0 days)
+        $warningSubscriptions = Subscription::whereBetween('end_date', [$today, $today->copy()->addDays($warningWindow)])
+            ->whereIn('status', [Subscription::STATUS_ACTIVE])
             ->get();
 
         $fcmService = app(\App\Services\FCMService::class);
@@ -77,12 +78,12 @@ class CheckSubscriptionExpiry extends Command
 
         // 2. Find all active subscriptions that should have expired by now
         $expiredSubscriptions = Subscription::where('end_date', '<', $today)
-            ->whereIn('status', ['active'])
+            ->whereIn('status', [Subscription::STATUS_ACTIVE])
             ->get();
 
         foreach ($expiredSubscriptions as $subscription) {
             // Update the subscription itself
-            $subscription->update(['status' => 'expired']);
+            $subscription->update(['status' => Subscription::STATUS_EXPIRED]);
 
             // Deactivate the institute associated with this subscription
             $institute = $subscription->institute;
@@ -94,11 +95,11 @@ class CheckSubscriptionExpiry extends Command
 
         // 3. Find any subscriptions that are currently marked 'expired' but their end_date is in the future
         $reactivatedSubscriptions = Subscription::where('end_date', '>=', $today)
-            ->where('status', 'expired')
+            ->where('status', Subscription::STATUS_EXPIRED)
             ->get();
 
         foreach ($reactivatedSubscriptions as $subscription) {
-            $subscription->update(['status' => 'active']);
+            $subscription->update(['status' => Subscription::STATUS_ACTIVE]);
             $institute = $subscription->institute;
             if ($institute && $institute->status === 'inactive') {
                 $institute->update(['status' => 'active']);
