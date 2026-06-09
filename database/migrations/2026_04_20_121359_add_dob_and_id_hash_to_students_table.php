@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->date('dob')->nullable()->after('standard');
-            $table->string('id_hash')->nullable()->unique()->after('status');
+            if (!Schema::hasColumn('students', 'dob')) {
+                $table->date('dob')->nullable()->after('standard');
+            }
+            if (!Schema::hasColumn('students', 'id_hash')) {
+                $table->string('id_hash')->nullable()->unique()->after('status');
+            }
         });
     }
 

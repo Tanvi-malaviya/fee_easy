@@ -12,10 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff_salaries', function (Blueprint $table) {
-            // First add a regular index to staff_id so the foreign key stays happy
-            $table->index('staff_id');
-            // Then drop the unique constraint
-            $table->dropUnique(['staff_id', 'month', 'year']);
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexes = $sm->listTableIndexes('staff_salaries');
+            if (!isset($indexes['staff_salaries_staff_id_index'])) {
+                $table->index('staff_id');
+            }
+            if (isset($indexes['staff_salaries_staff_id_month_year_unique'])) {
+                $table->dropUnique(['staff_id', 'month', 'year']);
+            }
         });
     }
 

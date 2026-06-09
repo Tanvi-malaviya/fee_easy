@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('homework_submissions', function (Blueprint $table) {
-            $table->integer('score')->nullable()->after('status');
+            if (!Schema::hasColumn('homework_submissions', 'score')) {
+                $table->integer('score')->nullable()->after('status');
+            }
         });
     }
 

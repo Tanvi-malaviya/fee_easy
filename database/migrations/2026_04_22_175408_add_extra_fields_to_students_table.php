@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->string('guardian_name')->nullable()->after('dob');
-            $table->decimal('fees', 10, 2)->nullable()->after('guardian_name');
+            if (!Schema::hasColumn('students', 'guardian_name')) {
+                $table->string('guardian_name')->nullable()->after('dob');
+            }
+            if (!Schema::hasColumn('students', 'fees') && !Schema::hasColumn('students', 'monthly_fee')) {
+                $table->decimal('fees', 10, 2)->nullable()->after('guardian_name');
+            }
         });
     }
 

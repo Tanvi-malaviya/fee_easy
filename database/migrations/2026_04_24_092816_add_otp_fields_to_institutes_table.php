@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('institutes', function (Blueprint $table) {
-            $table->string('otp')->nullable()->after('password');
-            $table->timestamp('otp_expires_at')->nullable()->after('otp');
-            $table->timestamp('email_verified_at')->nullable()->after('otp_expires_at');
+            if (!Schema::hasColumn('institutes', 'otp')) {
+                $table->string('otp')->nullable()->after('password');
+            }
+            if (!Schema::hasColumn('institutes', 'otp_expires_at')) {
+                $table->timestamp('otp_expires_at')->nullable()->after('otp');
+            }
+            if (!Schema::hasColumn('institutes', 'email_verified_at')) {
+                $table->timestamp('email_verified_at')->nullable()->after('otp_expires_at');
+            }
         });
     }
 

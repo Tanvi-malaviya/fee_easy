@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void {
         Schema::table('institute_whatsapp_settings', function (Blueprint $table) {
-            $table->string('phone_number')->nullable()->after('institute_id');
+            if (!Schema::hasColumn('institute_whatsapp_settings', 'phone_number')) {
+                $table->string('phone_number')->nullable()->after('institute_id');
+            }
         });
     }
     public function down(): void {

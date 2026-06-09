@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('daily_updates', function (Blueprint $table) {
-            $table->string('recipient')->default('students')->after('institute_id');
+            if (!Schema::hasColumn('daily_updates', 'recipient')) {
+                $table->string('recipient')->default('students')->after('institute_id');
+            }
         });
     }
 
