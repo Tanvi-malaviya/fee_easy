@@ -18,7 +18,7 @@ class ParentAttendanceController extends Controller
         $studentIds = $request->user()->students()->pluck('id');
 
         $attendance = Attendance::whereIn('student_id', $studentIds)
-            ->with(['batch', 'student:id,name'])
+            ->with(['batch', 'student:id,name,enrollment_id'])
             ->orderByDesc('date')
             ->get();
 

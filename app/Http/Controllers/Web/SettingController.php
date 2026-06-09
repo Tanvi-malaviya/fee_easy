@@ -41,11 +41,24 @@ class SettingController extends Controller
             if ($file->isValid()) {
                 try {
                     $filename = 'qr_' . time() . '.' . $file->getClientOriginalExtension();
-                    $file->move(public_path('images'), $filename);
+                    $targetDir = public_path('images');
+                    
+                    if (!file_exists($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+
+                    if (is_writable($targetDir)) {
+                        $file->move($targetDir, $filename);
+                        $savedPath = $filename;
+                    } else {
+                        // Fallback: Save to public storage disk (storage/app/public/images)
+                        $path = \Illuminate\Support\Facades\Storage::disk('public')->putFileAs('images', $file, $filename);
+                        $savedPath = 'storage/' . $path;
+                    }
 
                     SystemSetting::updateOrCreate(
                         ['key' => 'payment_qr_path'],
-                        ['value' => $filename, 'group' => 'general']
+                        ['value' => $savedPath, 'group' => 'general']
                     );
                 } catch (\Exception $e) {
                     \Log::error('Settings QR Upload Error: ' . $e->getMessage());

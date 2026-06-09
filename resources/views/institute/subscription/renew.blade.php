@@ -40,7 +40,7 @@
                     <!-- Tab: QR -->
                     <div id="tab-content-qr" class="h-[200px] flex flex-col items-center justify-center bg-white rounded-xl border border-slate-100 p-3 shadow-sm relative overflow-hidden group">
                         <div class="relative w-full max-w-[130px] aspect-[4/5] rounded-lg overflow-hidden shadow-sm">
-                            <img src="/images/{{ $paymentSettings['qr_path'] ?? 'payment_qr_code.png' }}" alt="Payment QR Code" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500">
+                            <img src="{{ $paymentSettings['qr_url'] ?? asset('images/payment_qr_code.png') }}" alt="Payment QR Code" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500">
                         </div>
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mt-2 text-center">Scan with any UPI App</span>
                     </div>
@@ -72,7 +72,6 @@
                     <div class="bg-gradient-to-r from-orange-50/70 to-amber-50/30 border border-orange-100/60 rounded-xl p-3 shadow-sm">
                         <h4 class="text-[9px] font-black text-orange-800 uppercase tracking-wider">Institute Reference</h4>
                         <div class="text-[10px] text-slate-500 mt-0.5 font-medium space-y-0.5">
-                            <div>ID: <strong class="text-slate-800" id="ref-inst-id">ST-{{ sprintf('%04d', $institute->id) }}</strong></div>
                             <div>Code: <strong class="text-slate-800" id="ref-inst-code">{{ $institute->institute_code }}</strong></div>
                         </div>
                     </div>

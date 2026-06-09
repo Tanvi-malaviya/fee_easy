@@ -126,7 +126,7 @@
                                 <div class="flex items-center gap-4">
                                     @if(isset($settings['payment_qr_path']) && $settings['payment_qr_path'] !== '')
                                         <div class="shrink-0">
-                                            <img src="/images/{{ $settings['payment_qr_path'] }}" alt="Current QR" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">
+                                            <img src="{{ \App\Models\SystemSetting::getQrUrl() }}" alt="Current QR" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">
                                         </div>
                                     @endif
                                     
