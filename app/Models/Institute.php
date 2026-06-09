@@ -90,6 +90,48 @@ class Institute extends Authenticatable
             ->exists();
     }
 
+    /**
+     * Resolve the institute-level subscription status.
+     *
+     * Combines the latest subscription with the latest renewal request so the
+     * full set of states is surfaced: active, expire_soon, expired, cancelled,
+     * pending (a renewal is awaiting review) and rejected (last renewal was
+     * rejected and there is no active plan).
+     *
+     * @return array{status:string,label:string,days_left:?int,end_date:?string,plan_name:?string}
+     */
+    public function subscriptionStatus(): array
+    {
+        $subscription = $this->subscriptions()->orderByDesc('end_date')->first();
+        $latestRenewal = $this->subscriptionRenewals()->latest()->first();
+
+        $hasActivePlan = $subscription
+            && $subscription->status === Subscription::STATUS_ACTIVE
+            && $subscription->end_date
+            && \Carbon\Carbon::parse($subscription->end_date)->startOfDay()->gte(\Carbon\Carbon::today());
+
+        // A pending renewal request always takes priority — the institute is
+        // waiting on admin review.
+        if ($latestRenewal && $latestRenewal->status === 'pending') {
+            $status = Subscription::STATUS_PENDING;
+        } elseif ($latestRenewal && $latestRenewal->status === 'rejected' && ! $hasActivePlan) {
+            // Last renewal was rejected and there is no active plan to fall back on.
+            $status = Subscription::STATUS_REJECTED;
+        } elseif ($subscription) {
+            $status = $subscription->effective_status;
+        } else {
+            $status = Subscription::STATUS_EXPIRED;
+        }
+
+        return [
+            'status'    => $status,
+            'label'     => Subscription::labelFor($status),
+            'days_left' => $subscription?->days_left,
+            'end_date'  => optional($subscription?->end_date)->toDateString(),
+            'plan_name' => $subscription?->plan_name,
+        ];
+    }
+
     public function students()
     {
         return $this->hasMany(Student::class);

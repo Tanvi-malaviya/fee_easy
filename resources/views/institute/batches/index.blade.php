@@ -1,9 +1,6 @@
 @extends('layouts.institute')
 
 @section('content')
-    @php
-        $staffList = \App\Models\Staff::where('institute_id', Auth::guard('institute')->id())->orderBy('full_name')->get();
-    @endphp
     <div class="max-w-[1600px] mx-auto ">
 
         <!-- MAIN LIST VIEW -->

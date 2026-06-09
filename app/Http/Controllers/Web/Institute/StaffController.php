@@ -110,8 +110,9 @@ class StaffController extends Controller
         $staff = Staff::with(['role', 'department', 'attendances', 'salaries'])
             ->where('institute_id', $institute->id)
             ->findOrFail($id);
+        $departments = StaffDepartment::orderBy('name')->get();
 
-        return view('institute.staff.show', compact('staff'));
+        return view('institute.staff.show', compact('staff', 'departments'));
     }
 
     public function edit($id)

@@ -148,7 +148,7 @@
                             <div id="modal-dept-menu"
                                 class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
                                 <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                    @foreach(App\Models\StaffDepartment::orderBy('name')->get() as $dept)
+                                    @foreach($departments as $dept)
                                         <button type="button"
                                             onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
                                             class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">

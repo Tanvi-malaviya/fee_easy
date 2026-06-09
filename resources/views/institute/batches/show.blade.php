@@ -1,9 +1,6 @@
 @extends('layouts.institute')
 
 @section('content')
-    @php
-        $staffList = \App\Models\Staff::where('institute_id', Auth::guard('institute')->id())->with('department')->orderBy('full_name')->get();
-    @endphp
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
     <div class="max-w-[1400px] mx-auto pb-4 px-4 sm:px-6">
         <!-- Breadcrumb & Actions -->

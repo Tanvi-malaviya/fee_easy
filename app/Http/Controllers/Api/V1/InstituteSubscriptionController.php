@@ -201,14 +201,18 @@ class InstituteSubscriptionController extends Controller
     public function allData(Request $request)
     {
         $institute = $request->user();
-        
+
         // 1. Current Subscription
         $subscription = $institute->subscriptions()
             ->where('status', 'active')
             ->where('end_date', '>', Carbon::now())
             ->latest('end_date')
             ->first();
-            
+
+        // Institute-level effective status (active / expire_soon / expired /
+        // cancelled / pending / rejected) with pending days for "expire soon".
+        $subscriptionStatus = $institute->subscriptionStatus();
+
         $enrolledCount = \App\Models\Student::where('institute_id', $institute->id)->count();
 
         // 2. Plans
@@ -245,13 +249,17 @@ class InstituteSubscriptionController extends Controller
             'data' => [
                 'subscription' => $subscription ? [
                     'plan_name' => $subscription->plan_name,
-                    'status' => $subscription->status,
+                    'status' => $subscriptionStatus['status'],
+                    'status_label' => $subscriptionStatus['label'],
+                    'pending_days' => $subscriptionStatus['days_left'],
                     'expires_at' => $subscription->end_date,
                     'students_enrolled' => $enrolledCount,
                 ] : [
-                    'plan_name' => 'No Active Plan',
-                    'status' => 'Inactive',
-                    'expires_at' => null,
+                    'plan_name' => $subscriptionStatus['plan_name'] ?? 'No Active Plan',
+                    'status' => $subscriptionStatus['status'],
+                    'status_label' => $subscriptionStatus['label'],
+                    'pending_days' => $subscriptionStatus['days_left'],
+                    'expires_at' => $subscriptionStatus['end_date'],
                     'students_enrolled' => $enrolledCount,
                 ],
                 'plans' => $plans,
