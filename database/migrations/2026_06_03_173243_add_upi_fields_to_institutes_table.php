@@ -11,8 +11,12 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('institutes', function (Blueprint $table) {
-            $table->string('upi_id')->nullable()->after('fcm_token');
-            $table->string('upi_qr_code')->nullable()->after('upi_id');
+            if (!Schema::hasColumn('institutes', 'upi_id')) {
+                $table->string('upi_id')->nullable()->after('fcm_token');
+            }
+            if (!Schema::hasColumn('institutes', 'upi_qr_code')) {
+                $table->string('upi_qr_code')->nullable()->after('upi_id');
+            }
         });
     }
 

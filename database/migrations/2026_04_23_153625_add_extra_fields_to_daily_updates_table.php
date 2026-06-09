@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('daily_updates', function (Blueprint $table) {
-            $table->string('category')->default('Notice')->after('institute_id');
-            $table->string('target_type')->default('all')->after('category');
-            $table->string('standard')->nullable()->after('target_type');
-            $table->string('attachment')->nullable()->after('description');
+            if (!Schema::hasColumn('daily_updates', 'category')) {
+                $table->string('category')->default('Notice')->after('institute_id');
+            }
+            if (!Schema::hasColumn('daily_updates', 'target_type')) {
+                $table->string('target_type')->default('all')->after('category');
+            }
+            if (!Schema::hasColumn('daily_updates', 'standard')) {
+                $table->string('standard')->nullable()->after('target_type');
+            }
+            if (!Schema::hasColumn('daily_updates', 'attachment')) {
+                $table->string('attachment')->nullable()->after('description');
+            }
         });
     }
 

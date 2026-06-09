@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('fees', function (Blueprint $table) {
-            $table->dropColumn(['month', 'year']);
-            $table->date('date')->nullable()->after('status');
+            $cols = [];
+            if (Schema::hasColumn('fees', 'month')) $cols[] = 'month';
+            if (Schema::hasColumn('fees', 'year')) $cols[] = 'year';
+            if (!empty($cols)) $table->dropColumn($cols);
+            if (!Schema::hasColumn('fees', 'date')) {
+                $table->date('date')->nullable()->after('status');
+            }
         });
 
         // Use DB statement for ENUM change if modifying existing string column
