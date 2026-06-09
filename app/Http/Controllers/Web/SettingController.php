@@ -25,6 +25,7 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'settings' => 'required|array',
+            'payment_qr_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         foreach ($request->input('settings', []) as $key => $value) {
@@ -37,13 +38,22 @@ class SettingController extends Controller
         // Handle QR Code Image Upload
         if ($request->hasFile('payment_qr_image')) {
             $file = $request->file('payment_qr_image');
-            $filename = 'qr_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images'), $filename);
+            if ($file->isValid()) {
+                try {
+                    $filename = 'qr_' . time() . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('images'), $filename);
 
-            SystemSetting::updateOrCreate(
-                ['key' => 'payment_qr_path'],
-                ['value' => $filename, 'group' => 'general']
-            );
+                    SystemSetting::updateOrCreate(
+                        ['key' => 'payment_qr_path'],
+                        ['value' => $filename, 'group' => 'general']
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Settings QR Upload Error: ' . $e->getMessage());
+                    return redirect()->back()->with('error', 'Failed to save QR code image. Please check directory permissions.');
+                }
+            } else {
+                return redirect()->back()->with('error', 'The uploaded QR code image is not valid.');
+            }
         }
 
         Activity::log("Global system settings updated");

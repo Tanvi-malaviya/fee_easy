@@ -542,7 +542,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="field-salary" required placeholder="Enter Salary"
+                                    <input type="number" name="base_salary" id="field-salary" required min="1" max="999999" oninput="limitIntegerDigits(this, 6)" placeholder="Enter Salary"
                                         class="w-full pl-8 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all">
                                 </div>
                             </div>
@@ -752,8 +752,8 @@
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Salary Amount</label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-2.5 text-slate-400 text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="salary_base_amount"
-                                        oninput="updateSalaryPreview()" placeholder="0.00"
+                                    <input type="number" name="base_salary" id="salary_base_amount" min="1" max="999999"
+                                        oninput="limitIntegerDigits(this, 6); updateSalaryPreview()" placeholder="0.00"
                                         class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#FF6B00] transition-all">
                                 </div>
                             </div>
@@ -763,14 +763,14 @@
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Leaves & Deduction</label>
                                 <div class="flex rounded-xl overflow-hidden border border-slate-200 bg-slate-50 focus-within:border-[#FF6B00] focus-within:ring-1 focus-within:ring-[#FF6B00]/20 transition-all">
                                     <div class="relative w-1/3 border-r border-slate-200">
-                                        <input type="number" name="leaves" id="salary_leaves" placeholder="Leaves" min="0" step="0.5"
+                                        <input type="number" name="leaves" id="salary_leaves" placeholder="Leaves" min="0" max="31" step="0.5"
                                             oninput="updateSalaryPreview()"
                                             class="w-full px-3 py-2.5 bg-transparent border-none text-xs font-bold outline-none text-center"
                                             title="Number of absent days">
                                     </div>
                                     <div class="relative w-2/3">
                                         <span class="absolute left-3 top-2.5 text-slate-400 text-xs">₹</span>
-                                        <input type="number" name="deductions" id="salary_leave_deduction_amount" placeholder="Deduction Amt" min="0"
+                                        <input type="number" name="deductions" id="salary_leave_deduction_amount" placeholder="Deduction Amt" min="0" max="999999"
                                             oninput="updateSalaryPreview()"
                                             class="w-full pl-7 pr-3 py-2.5 bg-transparent border-none text-xs font-bold outline-none"
                                             title="Total deduction amount for leaves">
@@ -886,6 +886,17 @@
         const CSRF_TOKEN = "{{ csrf_token() }}";
         const PRIMARY_COLOR = '#FF6B00';
         const PRIMARY_HOVER = '#e66000';
+
+        // Restrict a numeric input's integer part to a maximum number of digits
+        function limitIntegerDigits(el, maxDigits) {
+            let val = el.value;
+            if (!val) return;
+            const parts = val.split('.');
+            if (parts[0].length > maxDigits) {
+                parts[0] = parts[0].slice(0, maxDigits);
+                el.value = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0, 2) : parts[0];
+            }
+        }
 
         let staffListData = [];
         let departmentsListData = [];

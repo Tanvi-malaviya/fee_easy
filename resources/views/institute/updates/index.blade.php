@@ -82,9 +82,6 @@
                 <form id="update-form" class="space-y-3" enctype="multipart/form-data">
                     <!-- Audience & Category Section -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <!-- Recipient is always "students" (parent option removed) -->
-                        <input type="hidden" name="recipient" id="recipient-select" value="students">
-
                         <div id="student-audience-container" class="space-y-1 relative">
                             <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Target
                                 Audience</label>
@@ -363,7 +360,7 @@
             if (chevron) chevron.classList.remove('rotate-180');
             
             // Trigger change callback if any
-            if (type === 'recipient' || type === 'target_type') {
+            if (type === 'target_type') {
                 handleTargetChange();
             } else if (type === 'category') {
                 handleCategoryChange();
@@ -372,7 +369,6 @@
 
         function resetUpdatesDropdowns() {
             // Reset hidden input values
-            document.getElementById('recipient-select').value = 'students';
             document.getElementById('target-type-select').value = 'all';
             document.getElementById('category-select').value = 'Academic';
             document.getElementById('modal-batch-select').value = '';
@@ -439,7 +435,6 @@
         });
 
         function handleTargetChange() {
-            const recipient = document.getElementById('recipient-select').value;
             const type = document.getElementById('target-type-select').value;
 
             const audienceCont = document.getElementById('student-audience-container');
@@ -448,30 +443,13 @@
             const allPlaceholder = document.getElementById('all-students-placeholder');
             const placeholderText = document.getElementById('placeholder-text');
 
-            if (recipient === 'parents') {
-                audienceCont.style.opacity = '0.3';
-                audienceCont.style.pointerEvents = 'none';
-                batchCont.classList.add('hidden');
-                standardCont.classList.add('hidden');
-                allPlaceholder.classList.remove('hidden');
-                placeholderText.innerText = "Broadcasting to all Parents";
-            } else if (recipient === 'both') {
-                audienceCont.style.opacity = '1';
-                audienceCont.style.pointerEvents = 'auto';
+            audienceCont.style.opacity = '1';
+            audienceCont.style.pointerEvents = 'auto';
 
-                batchCont.classList.toggle('hidden', type !== 'batch');
-                standardCont.classList.toggle('hidden', type !== 'standard');
-                allPlaceholder.classList.toggle('hidden', type !== 'all');
-                placeholderText.innerText = "Broadcasting to both Students & Parents";
-            } else {
-                audienceCont.style.opacity = '1';
-                audienceCont.style.pointerEvents = 'auto';
-
-                batchCont.classList.toggle('hidden', type !== 'batch');
-                standardCont.classList.toggle('hidden', type !== 'standard');
-                allPlaceholder.classList.toggle('hidden', type !== 'all');
-                placeholderText.innerText = "Broadcasting to all Students";
-            }
+            batchCont.classList.toggle('hidden', type !== 'batch');
+            standardCont.classList.toggle('hidden', type !== 'standard');
+            allPlaceholder.classList.toggle('hidden', type !== 'all');
+            placeholderText.innerText = "Broadcasting to all Students";
         }
 
         function handleCategoryChange() {
@@ -594,20 +572,14 @@
                 const attachmentUrl = formatAttachmentUrl(update.attachment);
 
                 // Improved Target Display Logic
-                let targetLabel = 'Target';
                 let targetValue = 'Everyone';
 
-                if (update.recipient === 'parents') {
-                    targetValue = 'Parents Only';
-                } else {
-                    const audience = update.recipient === 'both' ? '(Std & Par)' : '';
-                    if (update.target_type === 'all') {
-                        targetValue = update.recipient === 'both' ? 'All (Std & Par)' : 'All Students';
-                    } else if (update.target_type === 'batch') {
-                        targetValue = (update.batch ? update.batch.name : 'Batch') + ' ' + audience;
-                    } else if (update.target_type === 'standard') {
-                        targetValue = (update.standard ? update.standard + ' Std' : 'Standard') + ' ' + audience;
-                    }
+                if (update.target_type === 'all') {
+                    targetValue = 'All Students';
+                } else if (update.target_type === 'batch') {
+                    targetValue = update.batch ? update.batch.name : 'Batch';
+                } else if (update.target_type === 'standard') {
+                    targetValue = update.standard ? update.standard + ' Std' : 'Standard';
                 }
 
                 return `
@@ -702,17 +674,12 @@
 
             // Target audience display
             let targetValue = 'Everyone';
-            if (update.recipient === 'parents') {
-                targetValue = 'Parents Only';
-            } else {
-                const audience = update.recipient === 'both' ? '(Students & Parents)' : '';
-                if (update.target_type === 'all') {
-                    targetValue = update.recipient === 'both' ? 'All (Students & Parents)' : 'All Students';
-                } else if (update.target_type === 'batch') {
-                    targetValue = (update.batch ? update.batch.name : 'Batch') + ' ' + audience;
-                } else if (update.target_type === 'standard') {
-                    targetValue = (update.standard ? update.standard + ' Std' : 'Standard') + ' ' + audience;
-                }
+            if (update.target_type === 'all') {
+                targetValue = 'All Students';
+            } else if (update.target_type === 'batch') {
+                targetValue = update.batch ? update.batch.name : 'Batch';
+            } else if (update.target_type === 'standard') {
+                targetValue = update.standard ? update.standard + ' Std' : 'Standard';
             }
             document.getElementById('view-target').innerText = targetValue;
             document.getElementById('view-description').innerText = update.description;
@@ -739,7 +706,6 @@
             e.preventDefault();
 
             // Client-side Validation
-            const recipient = document.getElementById('recipient-select').value;
             const targetType = document.getElementById('target-type-select').value;
             const category = document.getElementById('category-select').value;
             
@@ -751,13 +717,13 @@
                 }
             }
             
-            if ((recipient === 'students' || recipient === 'both') && targetType === 'batch') {
+            if (targetType === 'batch') {
                 const batchVal = document.getElementById('modal-batch-select').value;
                 if (!batchVal) {
                     showToast('Please select a batch.', 'error');
                     return;
                 }
-            } else if ((recipient === 'students' || recipient === 'both') && targetType === 'standard') {
+            } else if (targetType === 'standard') {
                 const standardVal = document.getElementById('standard-select').value;
                 if (!standardVal) {
                     showToast('Please select a standard.', 'error');

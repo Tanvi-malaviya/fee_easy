@@ -196,7 +196,8 @@
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Amount</p>
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-2xl font-black text-primary">₹</span>
-                            <input type="number" name="amount" required step="0.01" placeholder="0.00"
+                            <input type="number" name="amount" required min="1" max="999999" step="0.01" placeholder="0.00"
+                                oninput="limitIntegerDigits(this, 6)"
                                 class="w-40 text-4xl font-black text-primary border-none focus:ring-0 p-0 placeholder-primary/20 bg-transparent text-center">
                         </div>
                     </div>
@@ -313,6 +314,17 @@
         <script>
             const API_BASE = '/api/v1/institute/expenses';
             const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Restrict a numeric input's integer part to a maximum number of digits
+            function limitIntegerDigits(el, maxDigits) {
+                let val = el.value;
+                if (!val) return;
+                const parts = val.split('.');
+                if (parts[0].length > maxDigits) {
+                    parts[0] = parts[0].slice(0, maxDigits);
+                    el.value = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0, 2) : parts[0];
+                }
+            }
 
             let trendsChart = null;
             let categoryChart = null;

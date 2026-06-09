@@ -214,7 +214,7 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <x-input-label for="create_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
-                        <x-text-input id="create_price" name="price" type="number" step="1" min="0"
+                        <x-text-input id="create_price" name="price" type="number" step="1" min="0" max="999999"
                             class="mt-0.5 block w-full bg-gray-50 p-2 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="100" required />
                     </div>
 
@@ -235,8 +235,6 @@
                     </div>
                 </div>
             </div>
-
-            <input type="hidden" name="trial_days" value="0">
 
             <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
                 <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
@@ -263,7 +261,7 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <x-input-label for="edit_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
-                        <x-text-input id="edit_price" name="price" type="number" step="1" min="0"
+                        <x-text-input id="edit_price" name="price" type="number" step="1" min="0" max="999999"
                             class="mt-0.5 block w-full bg-gray-50 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
                     </div>
 
@@ -284,8 +282,6 @@
                     </div>
                 </div>
             </div>
-
-            <input type="hidden" name="trial_days" id="edit_trial" value="0">
 
             <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
                 <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>

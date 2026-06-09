@@ -85,7 +85,7 @@ class Institute extends Authenticatable
     public function hasActiveSubscription()
     {
         return $this->subscriptions()
-            ->whereIn('status', ['active', 'trial'])
+            ->whereIn('status', ['active'])
             ->where('end_date', '>=', now()->startOfDay())
             ->exists();
     }

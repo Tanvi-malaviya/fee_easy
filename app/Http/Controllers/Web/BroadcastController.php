@@ -19,7 +19,7 @@ class BroadcastController extends Controller
         $totalInstitutes = Institute::count();
         $subscribedInstitutes = Institute::whereHas('subscriptions', function ($query) {
             $query->where('end_date', '>=', now())
-                  ->whereIn('status', ['active', 'trial']);
+                  ->whereIn('status', ['active']);
         })->count();
 
         $query = Notification::where('type', 'system_broadcast')
@@ -69,7 +69,7 @@ class BroadcastController extends Controller
         if ($validated['target'] === 'subscribed') {
             $query->whereHas('subscriptions', function ($query) {
                 $query->where('end_date', '>=', now())
-                      ->whereIn('status', ['active', 'trial']);
+                      ->whereIn('status', ['active']);
             });
         }
 

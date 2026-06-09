@@ -83,9 +83,8 @@ class SubscriptionController extends Controller
         $plan = Plan::find($request->plan_id);
         $startDate = Carbon::parse($request->start_date);
         
-        // Dynamic Duration Logic
-        $days = $request->has('is_trial') ? $plan->trial_days : $plan->duration_days;
-        $endDate = $startDate->copy()->addDays($days);
+        // Duration Logic
+        $endDate = $startDate->copy()->addDays($plan->duration_days);
 
         $subscription = Subscription::create([
             'institute_id' => $request->institute_id,
@@ -160,7 +159,7 @@ class SubscriptionController extends Controller
     {
         $request->validate([
             'days' => 'required|integer|min:1',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0|max:999999',
         ]);
 
         $currentEndDate = Carbon::parse($subscription->end_date);
@@ -246,83 +245,6 @@ class SubscriptionController extends Controller
         $subscription->update(['status' => 'active']);
 
         return redirect()->back()->with('success', 'Subscription activated successfully.');
-    }
-
-    /**
-     * Convert trial to paid subscription.
-     */
-    public function convertToPaid(Subscription $subscription, Request $request)
-    {
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
-        ]);
-
-        $plan = Plan::find($request->plan_id);
-        $endDate = now()->addDays($plan->duration_days);
-
-        $subscription->update([
-            'plan_name' => $plan->name,
-            'amount' => $plan->price,
-            'status' => 'active',
-            'start_date' => now(),
-            'end_date' => $endDate,
-        ]);
-
-        // Record Conversion Payment
-        if ($plan->price > 0) {
-            SubscriptionPayment::create([
-                'subscription_id' => $subscription->id,
-                'amount' => $plan->price,
-                'payment_source' => 'admin',
-                'paid_at' => now(),
-            ]);
-        }
-
-        $institute = $subscription->institute;
-
-        // Send Email
-        try {
-            \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionStatusMail(
-                $institute->institute_name,
-                $plan->name,
-                $endDate,
-                $plan->price,
-                'converted'
-            ));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to send subscription converted email: " . $e->getMessage());
-        }
-
-        // Send DB Notification
-        $notifTitle = "Plan Activated";
-        $notifBody = "Your {$plan->name} plan is now active. Welcome aboard!";
-        
-        \App\Models\Notification::create([
-            'user_type' => 'institute',
-            'user_id' => $institute->id,
-            'title' => $notifTitle,
-            'message' => $notifBody,
-            'type' => 'subscription_alert',
-            'is_read' => false,
-        ]);
-
-        // Send FCM Notification
-        if (!empty($institute->fcm_token)) {
-            try {
-                $fcmService = app(\App\Services\FCMService::class);
-                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                    'type' => 'subscription_alert',
-                    'plan_name' => $plan->name,
-                    'status' => 'converted',
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Failed to send subscription converted FCM: " . $e->getMessage());
-            }
-        }
-
-        Activity::log("Trial converted to paid plan: {$plan->name} for {$subscription->institute->institute_name}");
-
-        return redirect()->back()->with('success', 'Trial converted to paid subscription.');
     }
 
     /**

@@ -156,13 +156,10 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            @php
-                                $wa = auth()->guard('institute')->user()->whatsappSettings;
-                                $waConfigured = $wa && $wa->access_token && $wa->phone_number_id;
-                            @endphp
-                            @unless($waConfigured)
-                                <span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-100 whitespace-nowrap">Not Configured</span>
-                            @endunless
+                            <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-orange-50 text-[#FF6B00] border border-orange-100 whitespace-nowrap">
+                                <span class="h-1 w-1 rounded-full bg-[#FF6B00] animate-ping"></span>
+                                Coming Soon
+                            </span>
                             <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
@@ -593,76 +590,46 @@
     <div id="whatsapp-modal"
         class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
         <div
-            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <!-- Header -->
-            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
-                <div>
-                    <h3 class="text-base font-bold text-white leading-tight">WhatsApp Integration</h3>
-                    <p class="text-[10px] text-white/80 mt-0.5">Connect your Meta WhatsApp Cloud API credentials.</p>
+            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 relative">
+            <!-- Top Gradient Accent -->
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 via-[#ff6c00] to-orange-500"></div>
+
+            <!-- Close -->
+            <button onclick="closeWhatsAppModal()"
+                class="absolute top-4 right-4 text-slate-300 hover:text-slate-500 transition-colors z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="px-6 pt-10 pb-8 text-center flex flex-col items-center">
+                <!-- Icon with Pulse Glow -->
+                <div class="relative mb-5">
+                    <div class="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl animate-pulse"></div>
+                    <div class="h-16 w-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-inner relative z-10">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                    </div>
                 </div>
-                <button onclick="closeWhatsAppModal()" class="text-white/80 hover:text-white transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+
+                <!-- Coming Soon Badge -->
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#ff6c00] text-[9px] font-black uppercase tracking-widest mb-3">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#ff6c00] animate-ping"></span>
+                    Coming Soon
+                </span>
+
+                <h3 class="text-lg font-black text-slate-800 tracking-tight mb-2">WhatsApp Integration</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mb-6">
+                    We're building a direct integration with the Meta WhatsApp Cloud API. Soon you'll be able to send
+                    fee reminders, receipts, and daily updates straight to parents' phones.
+                </p>
+
+                <button type="button" onclick="closeWhatsAppModal()"
+                    class="px-5 py-2.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all">
+                    Got it
                 </button>
             </div>
-
-            <!-- Form -->
-            <form id="whatsapp-modal-form" class="pt-4 pb-4 px-4 space-y-3">
-                @csrf
-                <div id="wa-loader" class="py-4 flex flex-col items-center justify-center">
-                    <div class="h-4 w-4 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin"></div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Loading credentials...
-                    </p>
-                </div>
-
-                <div id="wa-form-content" class="space-y-2 hidden">
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Phone
-                            Number</label>
-                        <input type="text" name="phone_number" id="wa-phone_number" required class="input-wa"
-                            placeholder="e.g. 919876543210">
-                        <p class="text-[8px] text-slate-400 font-medium ml-1">Include country code without +</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="space-y-1">
-                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number
-                                ID</label>
-                            <input type="text" name="phone_number_id" id="wa-phone_number_id" required class="input-wa"
-                                placeholder="e.g. 1098425...">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Business
-                                ID</label>
-                            <input type="text" name="business_account_id" id="wa-business_account_id" required
-                                class="input-wa" placeholder="e.g. 1530948...">
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Access
-                            Token</label>
-                        <textarea name="access_token" id="wa-access_token" rows="3" required class="textarea-wa"
-                            placeholder="EAAW..."></textarea>
-                    </div>
-
-                    <!-- Footer Buttons -->
-                    <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 mt-2">
-                        <button type="button" onclick="closeWhatsAppModal()"
-                            class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
-                            Discard
-                        </button>
-                        <button type="submit" id="wa-submit-btn"
-                            class="px-4 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5">
-                            <span>Save Integration</span>
-                            <div id="wa-submit-loader"
-                                class="h-3 w-3 border-2 border-white/20 border-t-white rounded-full animate-spin hidden">
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -1024,88 +991,11 @@
         function openWhatsAppModal() {
             document.getElementById('whatsapp-modal').classList.replace('hidden', 'flex');
             document.body.style.overflow = 'hidden';
-            fetchWhatsAppSettings();
         }
 
         function closeWhatsAppModal() {
             document.getElementById('whatsapp-modal').classList.replace('flex', 'hidden');
             document.body.style.overflow = 'auto';
         }
-
-        async function fetchWhatsAppSettings() {
-            const loader = document.getElementById('wa-loader');
-            const content = document.getElementById('wa-form-content');
-
-            try {
-                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
-                const token = localStorage.getItem('token');
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-
-                const response = await fetch('/api/v1/institute/whatsapp-settings', { headers });
-                const result = await response.json();
-
-                if (result.status === 'success' && result.data) {
-                    const data = result.data;
-                    document.getElementById('wa-phone_number').value = data.phone_number || '';
-                    document.getElementById('wa-phone_number_id').value = data.phone_number_id || '';
-                    document.getElementById('wa-business_account_id').value = data.business_account_id || '';
-                    document.getElementById('wa-access_token').value = data.access_token || '';
-                    document.getElementById('wa-is_active').checked = data.is_active;
-                }
-            } catch (error) {
-                console.error('Fetch WA Settings Error:', error);
-            } finally {
-                loader.classList.add('hidden');
-                content.classList.remove('hidden');
-            }
-        }
-
-        document.getElementById('whatsapp-modal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('wa-submit-btn');
-            const loader = document.getElementById('wa-submit-loader');
-
-            btn.disabled = true;
-            loader.classList.remove('hidden');
-
-            try {
-                const formData = new FormData(e.target);
-                const data = {
-                    phone_number: formData.get('phone_number'),
-                    phone_number_id: formData.get('phone_number_id'),
-                    business_account_id: formData.get('business_account_id'),
-                    access_token: formData.get('access_token'),
-                    is_active: 1
-                };
-
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                };
-                const token = localStorage.getItem('token');
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-
-                const response = await fetch('/api/v1/institute/whatsapp-settings', {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    showToast('WhatsApp integration saved successfully!');
-                    closeWhatsAppModal();
-                } else {
-                    showToast(result.message || 'Error saving settings', 'error');
-                }
-            } catch (error) {
-                console.error('Update Request Failed:', error);
-                showToast('Something went wrong.', 'error');
-            } finally {
-                btn.disabled = false;
-                loader.classList.add('hidden');
-            }
-        });
     </script>
 @endsection

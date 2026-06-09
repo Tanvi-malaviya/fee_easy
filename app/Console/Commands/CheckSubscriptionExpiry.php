@@ -21,7 +21,7 @@ class CheckSubscriptionExpiry extends Command
      *
      * @var string
      */
-    protected $description = 'Automated check to expire trials and paid plans that have reached their end date.';
+    protected $description = 'Automated check to expire paid plans that have reached their end date.';
 
     /**
      * Execute the console command.
@@ -32,7 +32,7 @@ class CheckSubscriptionExpiry extends Command
 
         // 1. Send Expiry Warning Notifications (expiring in 7 days down to 0 days)
         $warningSubscriptions = Subscription::whereBetween('end_date', [$today, $today->copy()->addDays(7)])
-            ->whereIn('status', ['active', 'trial'])
+            ->whereIn('status', ['active'])
             ->get();
 
         $fcmService = app(\App\Services\FCMService::class);
@@ -75,9 +75,9 @@ class CheckSubscriptionExpiry extends Command
             }
         }
 
-        // 2. Find all active or trial subscriptions that should have expired by now
+        // 2. Find all active subscriptions that should have expired by now
         $expiredSubscriptions = Subscription::where('end_date', '<', $today)
-            ->whereIn('status', ['active', 'trial'])
+            ->whereIn('status', ['active'])
             ->get();
 
         foreach ($expiredSubscriptions as $subscription) {

@@ -20,7 +20,6 @@ class DailyUpdate extends Model
         'target_type',
         'standard',
         'attachment',
-        'recipient',
         'topic',
     ];
 

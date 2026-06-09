@@ -33,7 +33,7 @@ class StaffController extends Controller
             'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
-            'base_salary' => 'required|numeric|min:0',
+            'base_salary' => 'required|numeric|min:1|max:999999',
             'profile_image' => 'nullable|image|max:2048',
         ], [
             'staff_department_id.required' => 'staff department is required',
@@ -136,7 +136,7 @@ class StaffController extends Controller
             'staff_role_id' => 'nullable|exists:staff_roles,id',
             'staff_department_id' => 'required|exists:staff_departments,id',
             'employment_type' => 'required|in:Salary,Hourly',
-            'base_salary' => 'required|numeric|min:0',
+            'base_salary' => 'required|numeric|min:1|max:999999',
             'profile_image' => 'nullable|image|max:2048',
         ], [
             'staff_department_id.required' => 'staff department is required',

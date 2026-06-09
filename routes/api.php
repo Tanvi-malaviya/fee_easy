@@ -41,7 +41,6 @@ use App\Http\Controllers\Api\V1\ParentFeesController;
 use App\Http\Controllers\Api\V1\ParentPaymentController;
 use App\Http\Controllers\Api\V1\ParentReceiptsController;
 use App\Http\Controllers\Api\V1\ParentAttendanceController;
-use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
@@ -347,7 +346,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/pay-fee', [ParentPaymentController::class, 'store']);
             Route::get('/receipts', [ParentReceiptsController::class, 'index']);
             Route::get('/attendance', [ParentAttendanceController::class, 'index']);
-            Route::get('/daily-updates', [ParentDailyUpdateController::class, 'index']);
             Route::get('/homeworks', [ParentHomeworkController::class, 'index']);
             Route::get('/report', [ParentReportController::class, 'index']);
             Route::get('/notifications', [ParentNotificationController::class, 'index']);

@@ -74,7 +74,6 @@ class InstituteDailyUpdateTest extends TestCase
         $response = $this->actingAs($institute, 'sanctum')
             ->postJson('/api/v1/institute/daily-updates', [
                 'category' => 'Holiday',
-                'recipient' => 'both',
                 'target_type' => 'all',
                 'topic' => 'Diwali Vacation',
                 'description' => 'School will remain closed for Diwali.',
@@ -100,11 +99,10 @@ class InstituteDailyUpdateTest extends TestCase
             'type' => 'daily_update',
         ]);
 
-        // Assert parent notification was created
-        $this->assertDatabaseHas('notifications', [
+        // Assert parents are NOT notified for daily updates
+        $this->assertDatabaseMissing('notifications', [
             'user_type' => 'parent',
             'user_id' => $parent->id,
-            'title' => 'Daily Update · Holiday',
             'type' => 'daily_update',
         ]);
 

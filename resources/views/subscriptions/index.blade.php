@@ -193,7 +193,6 @@
                             class="block w-full pl-3 pr-10 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-white transition font-medium text-gray-700 cursor-pointer outline-none">
                             <option value="all">All Status</option>
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="trial" {{ request('status') == 'trial' ? 'selected' : '' }}>Trial</option>
                             <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
                             <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
@@ -262,9 +261,9 @@
                                             @endphp
                                             @if($daysLeft > 0)
                                                 <div class="inline-flex items-center mt-1.5">
-                                                    <span class="w-1.5 h-1.5 rounded-full {{ strtolower($subscription->status) == 'trial' ? 'bg-primary' : 'bg-emerald-500' }} mr-2"></span>
-                                                    <span class="text-[10px] font-bold {{ strtolower($subscription->status) == 'trial' ? 'text-primary' : 'text-emerald-600' }} uppercase tracking-wider">
-                                                        {{ $daysLeft }} Days {{ strtolower($subscription->status) == 'trial' ? 'Trial left' : 'Remaining' }}
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                                                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
+                                                        {{ $daysLeft }} Days Remaining
                                                     </span>
                                                 </div>
                                             @elseif($daysLeft == 0)
@@ -285,26 +284,14 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                          @php $status = trim(strtolower($subscription->status)); @endphp
                                          <span class="px-2 py-0.5 inline-flex text-[10px] font-bold rounded uppercase tracking-wider
-                                             @if($status == 'active') bg-emerald-50 text-emerald-700 border border-emerald-100 
-                                             @elseif($status == 'trial') bg-primary/10 text-primary border border-primary/20 
+                                             @if($status == 'active') bg-emerald-50 text-emerald-700 border border-emerald-100
                                              @elseif($status == 'cancelled') bg-gray-50 text-gray-500 border border-gray-100
                                              @else bg-red-50 text-red-700 border border-red-100 @endif">
-                                             {{ $status == 'trial' ? 'Trial' : $status }}
+                                             {{ $status }}
                                          </span>
                                      </td>
                                      <td class="px-6 py-4 whitespace-nowrap text-right">
                                          <div class="flex justify-end items-center gap-1">
-                                              @if($status == 'trial')
-                                                 <button @click="$dispatch('open-modal', 'convert-trial-{{ $subscription->id }}')"
-                                                     title="Convert to Paid"
-                                                     class="no-loader inline-flex items-center justify-center w-8 h-8 bg-primary text-white rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition transform active:scale-95">
-                                                     <!-- Dollar / Paid icon -->
-                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                     </svg>
-                                                 </button>
-                                             @endif
-
                                              @if($status == 'cancelled')
                                                  <form action="{{ route('subscriptions.activate', $subscription) }}" method="POST" class="inline">
                                                       @csrf @method('PATCH')
@@ -347,36 +334,6 @@
                                          </div>
 
                                         <!-- Modals nested for context -->
-                                        <x-modal name="convert-trial-{{ $subscription->id }}" :show="false" focusable>
-                                            <form method="post" action="{{ route('subscriptions.convert', $subscription) }}" class="p-5 text-left">
-                                                @csrf @method('PATCH')
-                                                <h2 class="text-base font-bold text-gray-900 leading-tight">Convert Trial to Paid</h2>
-                                                <p class="mt-1 text-[10px] text-gray-500 font-medium border-b border-gray-50 pb-2.5">Select plan and confirm activation.</p>
-
-                                                <div class="mt-4">
-                                                    <x-input-label for="plan_id" value="Select Purchased Plan" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
-                                                    <select name="plan_id" id="plan_id" class="mt-1 block w-full border-gray-100 bg-gray-50/50 focus:border-primary focus:ring-primary rounded-xl shadow-sm text-sm font-bold py-2 px-3 transition appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22currentColor%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[size:1.25em_1.25em] bg-[position:right_1rem_center] bg-no-repeat pr-10 outline-none" required>
-                                                        @foreach($plans as $plan)
-                                                            <option value="{{ $plan->id }}">{{ $plan->name }} ({{ $currency }}{{ number_format($plan->price, 0) }})</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-
-                                                    <div class="mt-5 flex justify-end gap-2">
-                                                        <button type="button" x-on:click="$el.closest('form').reset(); $dispatch('close')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3">Cancel</button>
-                                                        <button type="submit" onclick="showBtnLoader(this)" class="relative inline-flex items-center justify-center bg-primary text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition min-w-[110px]">
-                                                            <span class="btn-content">Confirm Payment</span>
-                                                            <span class="hidden btn-loader">
-                                                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                            </form>
-                                        </x-modal>
-
                                         <x-modal name="extend-subscription-{{ $subscription->id }}" :show="false" focusable>
                                              <form id="extend-form-{{ $subscription->id }}" method="post" action="{{ route('subscriptions.extend', $subscription) }}" class="p-5 text-left">
                                                 @csrf @method('PATCH')
@@ -390,7 +347,7 @@
                                                      </div>
                                                      <div>
                                                          <x-input-label for="amount" value="Amount Received ({{ $currency }})" class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1" />
-                                                         <x-text-input id="amount" name="amount" type="number" min="0" step="0.01" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="0.00" required />
+                                                         <x-text-input id="amount" name="amount" type="number" min="0" max="999999" step="0.01" class="mt-1 block w-full py-2 px-3 text-sm font-bold bg-gray-50/50 border-gray-100 rounded-xl" placeholder="0.00" required />
                                                      </div>
                                                  </div>
                                                 

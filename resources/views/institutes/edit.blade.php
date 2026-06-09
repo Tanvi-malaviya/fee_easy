@@ -108,8 +108,8 @@
                         <label for="phone"
                             class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Phone
                             Number <span class="text-red-500">*</span></label>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone', $institute->phone) }}" required
-                            oninput="clearError(this)"
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone', $institute->phone) }}" required maxlength="10" pattern="[0-9]{10}"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10); clearError(this)"
                             class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror">
                         @error('phone')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>

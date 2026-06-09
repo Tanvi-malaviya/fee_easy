@@ -137,7 +137,8 @@
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Amount</label>
-                    <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
+                    <input type="number" name="total_amount" id="fee-amount-input" required min="1" step="0.01" disabled placeholder="Select a student first" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                    <p id="fee-amount-hint" class="hidden text-[10px] font-bold text-slate-400 ml-1 mt-1"></p>
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
@@ -310,15 +311,35 @@
 
         // Show pending fee
         const student = allStudents.find(s => s.id == id);
+        const amountInput = document.getElementById('fee-amount-input');
+        const amountHint = document.getElementById('fee-amount-hint');
         if (student) {
             const pendingFeeDiv = document.getElementById('selected-student-pending-fee');
             const pendingAmountSpan = document.getElementById('pending-fee-amount');
-            const pending = student.total_due !== undefined ? student.total_due : 0;
-            pendingAmountSpan.innerText = `₹${Number(pending).toLocaleString()}`;
+            const pending = Number(student.total_due !== undefined ? student.total_due : 0);
+            pendingAmountSpan.innerText = `₹${pending.toLocaleString('en-IN')}`;
             if (pending > 0) {
                 pendingFeeDiv.classList.remove('hidden');
             } else {
                 pendingFeeDiv.classList.add('hidden');
+            }
+
+            // Enable the amount field and cap it at the pending amount
+            if (pending > 0) {
+                amountInput.disabled = false;
+                amountInput.max = pending;
+                amountInput.value = '';
+                amountInput.placeholder = `Max ₹${pending.toLocaleString('en-IN')}`;
+                amountHint.innerText = `Cannot exceed pending fees of ₹${pending.toLocaleString('en-IN')}`;
+                amountHint.classList.remove('hidden');
+            } else {
+                // Nothing pending — keep the amount locked
+                amountInput.disabled = true;
+                amountInput.removeAttribute('max');
+                amountInput.value = '';
+                amountInput.placeholder = 'No pending fees';
+                amountHint.innerText = 'This student has no pending fees.';
+                amountHint.classList.remove('hidden');
             }
         }
     }
@@ -329,6 +350,15 @@
         document.getElementById('student-search-input').readOnly = false;
         document.getElementById('clear-student-btn').classList.add('hidden');
         document.getElementById('selected-student-pending-fee').classList.add('hidden');
+
+        // Lock the amount field again until a student is chosen
+        const amountInput = document.getElementById('fee-amount-input');
+        amountInput.disabled = true;
+        amountInput.removeAttribute('max');
+        amountInput.value = '';
+        amountInput.placeholder = 'Select a student first';
+        document.getElementById('fee-amount-hint').classList.add('hidden');
+
         document.getElementById('student-search-input').focus();
     }
 
@@ -486,7 +516,27 @@
 
     document.getElementById('fee-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
+        // Guard: a student must be selected before collecting fees
+        const studentId = document.getElementById('selected-student-id').value;
+        if (!studentId) {
+            showToast('Please select a student first.', 'error');
+            return;
+        }
+
+        // Guard: amount must be positive and within the pending fees
+        const amountInput = document.getElementById('fee-amount-input');
+        const amount = parseFloat(amountInput.value);
+        const maxPending = amountInput.max ? parseFloat(amountInput.max) : null;
+        if (isNaN(amount) || amount <= 0) {
+            showToast('Please enter a valid amount.', 'error');
+            return;
+        }
+        if (maxPending !== null && amount > maxPending) {
+            showToast(`Amount cannot be greater than pending fees of ₹${maxPending.toLocaleString('en-IN')}.`, 'error');
+            return;
+        }
+
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalBtnHtml = submitBtn.innerHTML;
         

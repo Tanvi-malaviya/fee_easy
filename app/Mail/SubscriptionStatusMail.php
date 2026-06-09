@@ -17,7 +17,7 @@ class SubscriptionStatusMail extends Mailable
     public $planName;
     public $endDate;
     public $amount;
-    public $type; // 'assigned', 'extended', 'changed', 'converted', 'approved'
+    public $type; // 'assigned', 'extended', 'changed', 'approved'
 
     /**
      * Create a new message instance.
@@ -40,7 +40,6 @@ class SubscriptionStatusMail extends Mailable
             'assigned' => '🎉 New Subscription Plan Assigned! - Tuoora',
             'extended' => '📅 Subscription Validity Extended! - Tuoora',
             'changed' => '🔄 Subscription Plan Upgraded! - Tuoora',
-            'converted' => '✨ Trial Plan Converted to Paid! - Tuoora',
             'approved' => '✅ Subscription Renewal Approved! - Tuoora',
         ];
 

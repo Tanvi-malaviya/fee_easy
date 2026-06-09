@@ -19,7 +19,6 @@ class StudentDailyUpdateController extends Controller
         $instituteId = $student->institute_id;
 
         $dailyUpdates = DailyUpdate::where('institute_id', $instituteId)
-            ->whereIn('recipient', ['students', 'both'])
             ->where(function($q) use ($student) {
                 $q->where('target_type', 'all')
                   ->orWhere('batch_id', $student->batch_id)

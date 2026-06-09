@@ -1,52 +1,252 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Tuoora</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @include('institute.auth.partials.brand-styles')
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 3.1rem;
+            padding: 0 1.5rem 0 3.25rem;
+            background: #fcfdfe;
+            border: 2px solid #f1f5f9;
+            border-radius: 0.85rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #FF6B00;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.05);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1.15rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus+.input-icon {
+            color: #FF6B00;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1.15rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #FF6B00;
+        }
+
+        .submit-btn {
+            width: 100%;
+            height: 3.1rem;
+            background: #FF6B00;
+            color: white;
+            border: none;
+            border-radius: 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.15);
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            background: #e66000;
+            transform: translateY(-2px);
+        }
+
+        .footer-text {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .footer-text a {
+            color: #FF6B00;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .error-box {
+            background: #fff1f2;
+            border-radius: 0.85rem;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .error-box p {
+            font-size: 0.8rem;
+            color: #e11d48;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-shell">
+        @include('institute.auth.partials.brand-panel', [
+            'brandHeadline' => 'Tuoora Admin Portal',
+            'brandSubtext' => 'Create a new administrator account to start managing the Tuoora SaaS ecosystem.',
+            'modules' => [
+                ['fa-university', 'Institute Management'],
+                ['fa-file-invoice-dollar', 'Revenue & Payments'],
+                ['fa-tags', 'Subscription Plans'],
+                ['fa-bullhorn', 'System Broadcasts'],
+                ['fa-comments', 'WhatsApp Settings'],
+                ['fa-gears', 'System Settings'],
+            ],
+            'brandFooterTagline' => 'A bridge of knowledge for all'
+        ])
+
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div class="form-head">
+                    <h1>Create Account</h1>
+                    <p>Register a new administrator account.</p>
+                </div>
+
+                @if ($errors->any())
+                    <div class="error-box">
+                        @foreach ($errors->all() as $error)
+                            <p><i class="fas fa-circle-exclamation"></i> {{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="name" required value="{{ old('name') }}"
+                                class="input-field" placeholder="John Doe" autofocus autocomplete="name">
+                            <i class="fas fa-user input-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" required value="{{ old('email') }}"
+                                class="input-field" placeholder="admin@example.com" autocomplete="username">
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="register-password" required
+                                class="input-field" placeholder="••••••••" style="padding-right:3rem" autocomplete="new-password">
+                            <i class="fas fa-lock input-icon"></i>
+                            <i class="fas fa-eye password-toggle" onclick="togglePwd('register-password', this)"></i>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password_confirmation" id="register-password-conf" required
+                                class="input-field" placeholder="••••••••" style="padding-right:3rem" autocomplete="new-password">
+                            <i class="fas fa-check-double input-icon"></i>
+                            <i class="fas fa-eye password-toggle" onclick="togglePwd('register-password-conf', this)"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Register
+                    </button>
+                </form>
+
+                <div class="footer-text">
+                    <p>Already registered? <a href="{{ route('login') }}">Log In</a></p>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+    <script>
+        function togglePwd(id, el) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            el.classList.toggle('fa-eye', showing);
+            el.classList.toggle('fa-eye-slash', !showing);
+        }
+    </script>
+</body>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>

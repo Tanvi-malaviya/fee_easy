@@ -123,7 +123,7 @@
                                                 {{ \Carbon\Carbon::parse($sub->end_date)->format('M d, Y') }}</div>
                                         </td>
                                         <td class="px-6 py-4"><span
-                                                class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($sub->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($sub->status == 'trial') bg-blue-50 text-blue-600 border border-blue-100 @elseif($sub->status == 'expired') bg-red-50 text-red-600 border border-red-100 @else bg-gray-50 text-gray-600 border border-gray-100 @endif">{{ $sub->status }}</span>
+                                                class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider @if($sub->status == 'active') bg-emerald-50 text-emerald-600 border border-emerald-100 @elseif($sub->status == 'expired') bg-red-50 text-red-600 border border-red-100 @else bg-gray-50 text-gray-600 border border-gray-100 @endif">{{ $sub->status }}</span>
                                         </td>
                                     </tr>
                                 @empty
@@ -721,17 +721,12 @@
                                 };
 
                                 $targetValue = 'Everyone';
-                                if ($update->recipient === 'parents') {
-                                    $targetValue = 'Parents Only';
-                                } else {
-                                    $audience = $update->recipient === 'both' ? '(Std & Par)' : '';
-                                    if ($update->target_type === 'all') {
-                                        $targetValue = $update->recipient === 'both' ? 'All (Std & Par)' : 'All Students';
-                                    } elseif ($update->target_type === 'batch') {
-                                        $targetValue = ($update->batch ? $update->batch->name : 'Batch') . ' ' . $audience;
-                                    } elseif ($update->target_type === 'standard') {
-                                        $targetValue = ($update->standard ? $update->standard . ' Std' : 'Standard') . ' ' . $audience;
-                                    }
+                                if ($update->target_type === 'all') {
+                                    $targetValue = 'All Students';
+                                } elseif ($update->target_type === 'batch') {
+                                    $targetValue = $update->batch ? $update->batch->name : 'Batch';
+                                } elseif ($update->target_type === 'standard') {
+                                    $targetValue = $update->standard ? $update->standard . ' Std' : 'Standard';
                                 }
                             @endphp
                             <div class="bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:shadow-md transition relative flex flex-col" x-show="show({{ $i }})">
