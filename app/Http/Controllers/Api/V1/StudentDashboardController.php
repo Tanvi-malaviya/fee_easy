@@ -235,12 +235,15 @@ class StudentDashboardController extends Controller
             'status' => 'success',
             'data' => [
                 'student_name' => $student->name,
+                'enrollment_id' => $student->enrollment_id,
                 'batch_id' => $student->batch_id,
                 'batch_name' => $student->batch->name ?? null,
                 'attendance_rate' => round($attendanceRate, 2),
                 'total_fees' => $totalFeesFormatted,
                 'paid_fees' => $paidFeesFormatted,
                 'due_fees' => $dueFeesFormatted,
+                'is_birthday_today' => $student->is_birthday_today,
+                'dob' => $student->dob,
                 
                 // New widgets mapping the requested dashboard design
                 'today_class' => $todayClass,

@@ -18,7 +18,7 @@ class ParentFeesController extends Controller
         $parent = $request->user();
         $studentIds = $parent->students()->pluck('id');
 
-        $fees = Fee::with('student:id,name,batch_id')
+        $fees = Fee::with('student:id,name,batch_id,enrollment_id')
             ->whereIn('student_id', $studentIds)
             ->orderByDesc('created_at')
             ->get();

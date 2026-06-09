@@ -237,7 +237,7 @@ class InstituteSubscriptionController extends Controller
             'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
             'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
             'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
-            'qr_url'           => url('images/' . \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png')),
+            'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
         ];
 
         return response()->json([

@@ -63,7 +63,7 @@ class InstituteReportController extends Controller
 
         $institute_id = $request->user()->id;
 
-        $query = Fee::with('student')->where('institute_id', $institute_id);
+        $query = Fee::with('student:id,name,enrollment_id,batch_id')->where('institute_id', $institute_id);
 
         if ($request->filled('batch_id')) {
             $query->whereHas('student', function ($q) use ($request) {
@@ -179,7 +179,7 @@ class InstituteReportController extends Controller
         $institute_id = $request->user()->id;
         $batch_ids = Batch::where('institute_id', $institute_id)->pluck('id');
 
-        $query = Attendance::with('student');
+        $query = Attendance::with('student:id,name,enrollment_id,batch_id');
 
         if ($request->filled('batch_id')) {
             $query->where('batch_id', $request->batch_id);
@@ -585,7 +585,7 @@ class InstituteReportController extends Controller
 
         if ($request->filled('batch_id')) {
             $batch = Batch::find($request->batch_id);
-            $query = Attendance::with('student')->where('batch_id', $request->batch_id);
+            $query = Attendance::with('student:id,name,enrollment_id,batch_id')->where('batch_id', $request->batch_id);
             if ($request->filled('month')) {
                 $query->whereMonth('date', $request->month);
             }

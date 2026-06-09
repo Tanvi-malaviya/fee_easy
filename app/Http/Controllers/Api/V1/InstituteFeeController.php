@@ -189,7 +189,7 @@ class InstituteFeeController extends Controller
             }
             
             // Load student and payments relations for the frontend
-            $fee->load(['student:id,name,profile_image', 'payments']);
+            $fee->load(['student:id,name,profile_image,enrollment_id', 'payments']);
 
             return response()->json([
                 'status' => 'success',

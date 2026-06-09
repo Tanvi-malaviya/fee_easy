@@ -31,11 +31,11 @@ class InstituteAttendanceController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Batch not found'], 404);
             }
             // Get all students in the specific batch
-            $students = $batch->students()->select('id', 'name', 'phone', 'batch_id')->get();
+            $students = $batch->students()->select('id', 'name', 'phone', 'batch_id', 'enrollment_id')->get();
             $batchIds = [$batch->id];
         } else {
             // Get all students for the whole institute
-            $students = $institute->students()->select('id', 'name', 'phone', 'batch_id')->get();
+            $students = $institute->students()->select('id', 'name', 'phone', 'batch_id', 'enrollment_id')->get();
             $batchIds = $institute->batches()->pluck('id')->toArray();
         }
 
@@ -53,6 +53,7 @@ class InstituteAttendanceController extends Controller
                 'student_name' => $student->name,
                 'phone' => $student->phone,
                 'batch_id' => $student->batch_id,
+                'enrollment_id' => $student->enrollment_id,
                 'status' => $record ? $record->status : null,
                 'marked_by' => $record ? $record->marked_by : null,
                 'attendance_id' => $record ? $record->id : null,

@@ -25,6 +25,21 @@ class SystemSetting extends Model
     }
 
     /**
+     * Get the full URL for the payment QR code setting.
+     */
+    public static function getQrUrl()
+    {
+        $path = self::get('payment_qr_path', 'payment_qr_code.png');
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        return asset('images/' . $path);
+    }
+
+    /**
      * Helper to set a setting value.
      */
     public static function set($key, $value, $group = 'general')
