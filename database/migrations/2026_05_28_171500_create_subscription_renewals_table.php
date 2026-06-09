@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscription_renewals', function (Blueprint $table) {
+        if (!Schema::hasTable('subscription_renewals')) {
+            Schema::create('subscription_renewals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
             $table->string('transaction_id');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, approved, rejected
             $table->timestamps();
         });
+        }
     }
 
     /**

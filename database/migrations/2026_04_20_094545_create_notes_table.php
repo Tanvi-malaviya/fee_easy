@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notes', function (Blueprint $table) {
+        if (!Schema::hasTable('notes')) {
+            Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->morphs('notable');
             $table->text('content');
             $table->timestamps();
         });
+        }
     }
 
     /**

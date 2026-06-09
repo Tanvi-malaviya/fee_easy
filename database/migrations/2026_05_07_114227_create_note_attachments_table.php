@@ -10,10 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('note_attachments', function (Blueprint $table) {
+        if (!Schema::hasTable('note_attachments')) {
+            Schema::create('note_attachments', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
+        }
     }
 
     /**

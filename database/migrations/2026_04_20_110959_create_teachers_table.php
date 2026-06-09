@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teachers', function (Blueprint $table) {
+        if (!Schema::hasTable('teachers')) {
+            Schema::create('teachers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->string('name');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->timestamps();
         });
+        }
     }
 
     /**

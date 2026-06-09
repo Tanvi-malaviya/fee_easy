@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        if (!Schema::hasTable('expenses')) {
+            Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->foreignId('expense_category_id')->constrained()->onDelete('cascade');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('receipt_image')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

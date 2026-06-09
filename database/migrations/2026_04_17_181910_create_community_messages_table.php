@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('community_messages', function (Blueprint $table) {
+        if (!Schema::hasTable('community_messages')) {
+            Schema::create('community_messages', function (Blueprint $table) {
             $table->id();
             $table->string('city_name')->index();
             $table->morphs('sender');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('attachment')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

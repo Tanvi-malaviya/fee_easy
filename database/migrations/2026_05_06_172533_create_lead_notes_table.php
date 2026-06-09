@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lead_notes', function (Blueprint $table) {
+        if (!Schema::hasTable('lead_notes')) {
+            Schema::create('lead_notes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lead_id')->constrained('leads')->onDelete('cascade');
             $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**
