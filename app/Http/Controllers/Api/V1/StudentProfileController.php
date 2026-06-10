@@ -72,6 +72,7 @@ class StudentProfileController extends Controller
 
         $presentCount = 0;
         $absentCount  = 0;
+        $leaveCount   = 0;
 
         for ($i = 1; $i <= $monthDate->daysInMonth; $i++) {
             $currentDate = $monthDate->copy()->day($i);
@@ -85,21 +86,25 @@ class StudentProfileController extends Controller
                     $presentCount++;
                 } elseif ($s === 'absent') {
                     $absentCount++;
+                } elseif ($s === 'leave') {
+                    $leaveCount++;
                 }
             } elseif (!$currentDate->isSunday() && !empty($batchDays)) {
-                // Virtual absent: past batch day with no record
+                // Determine if it was a batch day
                 $dayName = $currentDate->format('l');
-                if (
-                    ($currentDate->isPast() && !$currentDate->isToday()) &&
-                    (in_array($dayName, $batchDays) || in_array(substr($dayName, 0, 3), $batchDays))
-                ) {
-                    $absentCount++;
+                if (in_array($dayName, $batchDays) || in_array(substr($dayName, 0, 3), $batchDays)) {
+                    if ($currentDate->isPast() && !$currentDate->isToday()) {
+                        $assignDate = $student->created_at ? $student->created_at->startOfDay() : null;
+                        if (!$assignDate || $currentDate->greaterThanOrEqualTo($assignDate)) {
+                            $absentCount++;
+                        }
+                    }
                 }
             }
         }
 
-        $monthTotal    = $presentCount + $absentCount;
-        $attendancePct = $monthTotal > 0 ? round(($presentCount / $monthTotal) * 100) : 0;
+        $monthTotal    = $presentCount + $absentCount + $leaveCount;
+        $attendancePct = $monthTotal > 0 ? round(($presentCount / $monthTotal) * 100) : 100;
 
         // Assignments completed %
         $batchId        = $student->batch_id;
@@ -111,11 +116,24 @@ class StudentProfileController extends Controller
             : 0;
         $assignmentsPct = $totalHomeworks > 0 ? min(100, round(($completedHw / $totalHomeworks) * 100)) : 0;
 
+        // Performance score (homework submissions average score)
+        $homeworkIds = $batchId ? Homework::where('batch_id', $batchId)->pluck('id') : [];
+        $submissions = HomeworkSubmission::where('student_id', $student->id)
+            ->whereIn('homework_id', $homeworkIds)
+            ->whereNotNull('score')
+            ->get();
+        $stuAvg = $submissions->avg('score');
+        if ($stuAvg > 0 && $stuAvg <= 10) {
+            $stuAvg = $stuAvg * 10;
+        }
+        $performanceScore = $stuAvg ? (int) round($stuAvg) : 0;
+
         $stats = [
-            'attendance_pct'    => $attendancePct,
+            'attendance_pct'    => (int) $attendancePct,
             'attendance_label'  => 'this month',
-            'assignments_pct'   => $assignmentsPct,
+            'assignments_pct'   => (int) $assignmentsPct,
             'assignments_label' => 'of assignments',
+            'performance_score' =>  (int) $performanceScore,
         ];
 
         // ── Student QR ─────────────────────────────────────────────────────────
