@@ -12,12 +12,34 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff_salaries', function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexes = $sm->listTableIndexes('staff_salaries');
-            if (!isset($indexes['staff_salaries_staff_id_index'])) {
+            $dbDriver = Schema::getConnection()->getDriverName();
+            $indexExists = false;
+            $uniqueExists = false;
+
+            if ($dbDriver === 'mysql') {
+                $indexExists = count(\Illuminate\Support\Facades\DB::select("
+                    SHOW INDEX FROM staff_salaries WHERE Key_name = 'staff_salaries_staff_id_index'
+                ")) > 0;
+
+                $uniqueExists = count(\Illuminate\Support\Facades\DB::select("
+                    SHOW INDEX FROM staff_salaries WHERE Key_name = 'staff_salaries_staff_id_month_year_unique'
+                ")) > 0;
+            } elseif ($dbDriver === 'sqlite') {
+                $indexExists = count(\Illuminate\Support\Facades\DB::select("
+                    SELECT name FROM sqlite_master WHERE type='index' AND name='staff_salaries_staff_id_index'
+                ")) > 0;
+
+                $uniqueExists = count(\Illuminate\Support\Facades\DB::select("
+                    SELECT name FROM sqlite_master WHERE type='index' AND name='staff_salaries_staff_id_month_year_unique'
+                ")) > 0;
+            } else {
+                $uniqueExists = true;
+            }
+
+            if (!$indexExists) {
                 $table->index('staff_id');
             }
-            if (isset($indexes['staff_salaries_staff_id_month_year_unique'])) {
+            if ($uniqueExists) {
                 $table->dropUnique(['staff_id', 'month', 'year']);
             }
         });
