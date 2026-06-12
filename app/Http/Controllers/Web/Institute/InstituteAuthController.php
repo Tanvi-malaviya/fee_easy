@@ -90,7 +90,20 @@ class InstituteAuthController extends Controller
                 'institute_name' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:institutes'],
-                'password' => ['required', 'string', 'min:8'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'max:15',
+                    'regex:/[a-z]/',      // at least one lowercase
+                    'regex:/[A-Z]/',      // at least one uppercase
+                    'regex:/[0-9]/',      // at least one number
+                    'regex:/[\W_]/',      // at least one special character
+                ],
+            ], [
+                'password.min' => 'Password must be at least 8 characters.',
+                'password.max' => 'Password must not exceed 15 characters.',
+                'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
             ]);
 
             $otp = rand(100000, 999999);
@@ -390,7 +403,22 @@ class InstituteAuthController extends Controller
     {
         $request->validate([
             'otp' => 'required|string|size:6',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'confirmed',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.confirmed' => 'New password and confirmation do not match.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
         ]);
 
         if (!Session::has('reset_email') || !Session::has('reset_otp')) {
