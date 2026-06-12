@@ -145,6 +145,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
                 Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
                 Route::post('/students/{student}/fee-reminder', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendFeeReminder'])->name('students.fee_reminder');
+                Route::post('/students/{student}/send-password', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendPasswordEmail'])->name('students.send_password');
+                Route::post('/students/{student}/reset-password-direct', [App\Http\Controllers\Web\Institute\StudentController::class, 'resetPasswordDirect'])->name('students.reset_password_direct');
 
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');

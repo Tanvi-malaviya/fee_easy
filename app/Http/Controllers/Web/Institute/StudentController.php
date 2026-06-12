@@ -498,4 +498,88 @@ class StudentController extends Controller
             }
         }
     }
+
+    /**
+     * Generate a new random password and send it to the student via email.
+     */
+    public function sendPasswordEmail(Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $special = '@#$%&*';
+        
+        $password = $uppercase[rand(0, strlen($uppercase)-1)] . 
+                    $lowercase[rand(0, strlen($lowercase)-1)] . 
+                    $numbers[rand(0, strlen($numbers)-1)] . 
+                    $special[rand(0, strlen($special)-1)] . 
+                    Str::random(4); // Total 8 characters
+                    
+        $student->update([
+            'password' => Hash::make($password),
+        ]);
+
+        try {
+            Mail::to($student->email)->send(new \App\Mail\StudentPasswordSentMail(
+                $student->name,
+                $student->email,
+                $password,
+                $institute->institute_name,
+                $institute->logo
+            ));
+        } catch (\Exception $e) {
+            \Log::error("Failed to send student password email: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password was updated in database, but failed to send email. Please check mail settings.'
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password has been generated and sent to student email successfully!'
+        ]);
+    }
+
+    /**
+     * Directly reset/change the student password from the admin panel.
+     */
+    public function resetPasswordDirect(Request $request, Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
+        ]);
+
+        $student->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student password has been reset successfully!'
+        ]);
+    }
 }
