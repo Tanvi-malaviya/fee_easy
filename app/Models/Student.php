@@ -38,6 +38,8 @@ class Student extends Authenticatable
         'pincode',
         'fcm_token',
         'notification_settings',
+        'otp',
+        'otp_expires_at',
     ];
 
     protected $hidden = [
@@ -49,6 +51,7 @@ class Student extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
         'notification_settings' => 'array',
+        'otp_expires_at' => 'datetime',
     ];
 
     public function institute()

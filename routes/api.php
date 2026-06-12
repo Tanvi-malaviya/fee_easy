@@ -302,6 +302,8 @@ Route::prefix('v1')->group(function () {
     // Student Auth Routes
     Route::prefix('student')->group(function () {
         Route::post('/login', [StudentAuthController::class, 'login']);
+        Route::post('/forgot-password', [StudentAuthController::class, 'sendResetPasswordEmail']);
+        Route::post('/reset-password', [StudentAuthController::class, 'resetPassword']);
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [StudentAuthController::class, 'logout']);
             Route::get('/profile', [StudentProfileController::class, 'show']);
