@@ -38,6 +38,7 @@ class Institute extends Authenticatable
         'upi_id',
         'upi_qr_code',
         'template_id',
+        'website_settings',
     ];
 
     protected $hidden = [

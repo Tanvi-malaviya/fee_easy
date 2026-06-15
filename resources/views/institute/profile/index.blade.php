@@ -926,7 +926,7 @@
     </style>
 
     <script>
-        let currentTemplateId = 1;
+        let currentTemplateId = null;
         document.addEventListener('DOMContentLoaded', fetchProfile);
 
         async function fetchProfile() {
@@ -939,7 +939,7 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     const data = result.data;
-                    currentTemplateId = data.template_id || 1;
+                    currentTemplateId = data.template_id || null;
                     const logoPreview = document.getElementById('profile-logo-preview');
                     const logoPlaceholder = document.getElementById('profile-logo-placeholder');
 

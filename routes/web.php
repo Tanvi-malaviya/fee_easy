@@ -130,6 +130,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
             Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
+            Route::post('/profile/website-settings/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateWebsiteSettings'])->name('profile.website-settings.update');
+            Route::post('/profile/website-settings/upload-image', [App\Http\Controllers\Web\Institute\ProfileController::class, 'uploadWebsiteImage'])->name('profile.website-settings.upload-image');
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
@@ -281,21 +283,22 @@ Route::get('/mail-preview/fee-invoice', function () {
 
 
 // =========================================================================
-// WEBSITE TEMPLATES TEST ROUTES
+// WEBSITE TEMPLATES TEST & CUSTOMIZER ROUTES
 // =========================================================================
-Route::get('/templates/1', function () {
-    return view('website_templates.template_1');
-});
-Route::get('/templates/2', function () {
-    return view('website_templates.template_2');
-});
-Route::get('/templates/3', function () {
-    return view('website_templates.template_3');
-});
-Route::get('/templates/4', function () {
-    return view('website_templates.template_4');
-});
-Route::get('/templates/5', function () {
-    return view('website_templates.template_5');
-});
+Route::get('/templates/{id}', function ($id) {
+    if (!in_array($id, [1, 2, 3, 4, 5])) {
+        abort(404);
+    }
+    
+    $institute = auth('institute')->user();
+    $isEditable = false;
+    $settings = [];
+    
+    if ($institute && $institute->template_id == $id) {
+        $isEditable = true;
+        $settings = json_decode($institute->website_settings, true) ?: [];
+    }
+    
+    return view("website_templates.template_{$id}", compact('isEditable', 'settings', 'institute'));
+})->name('templates.preview');
 

@@ -126,10 +126,10 @@
             <!-- LOGO / BRANDING -->
             <a href="#home" class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-secondary to-brand-accent flex items-center justify-center text-white font-black text-sm shadow-md shadow-brand-secondary/20">
-                    N
+                    {!! ($institute && $institute->template_id == 5 && isset($institute->institute_name)) ? strtoupper(substr($institute->institute_name, 0, 1)) : 'N' !!}
                 </div>
                 <span class="text-base font-extrabold tracking-tight font-outfit uppercase">
-                    NOBLE <span class="bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent font-medium">ACADEMY</span>
+                    {!! ($institute && $institute->template_id == 5) ? ($institute->institute_name ?? 'NOBLE <span class="bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent font-medium">ACADEMY</span>') : 'NOBLE <span class="bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent font-medium">ACADEMY</span>' !!}
                 </span>
             </a>
 
@@ -151,7 +151,7 @@
             activeSlide: 0,
             slides: [
                 {
-                    img: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1000&q=80',
+                    img: {{ json_encode($settings['hero_image_1'] ?? 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1000&q=80') }},
                     tag: 'CAMPUS LIFE',
                     title1: 'Experiment & Innovate',
                     highlight: 'Future Pioneers',
@@ -159,7 +159,7 @@
                     desc: 'Noble Academy offers a state-of-the-art environment promoting creative learning, academic rigor, and global perspectives.'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80',
+                    img: {{ json_encode($settings['hero_image_2'] ?? 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80') }},
                     tag: 'ACADEMIC EXCELLENCE',
                     title1: 'Fostering Innovation',
                     highlight: 'Academic Honors',
@@ -167,7 +167,7 @@
                     desc: 'Our interactive curriculum prepares students for future challenges through robust theoretical and hands-on modules.'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1000&q=80',
+                    img: {{ json_encode($settings['hero_image_3'] ?? 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1000&q=80') }},
                     tag: 'MODERN RESEARCH',
                     title1: 'Creative Workspaces',
                     highlight: 'Tech Incubators',
@@ -226,13 +226,35 @@
 
             <!-- Right Column: Interactive Image Frame with Ambient Shadows -->
             <div class="lg:col-span-5 relative flex items-center justify-center">
-                <div class="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-900/10 border border-slate-200/40 p-2 bg-white/50 backdrop-blur-sm">
+                <div class="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-900/10 border border-slate-200/40 p-2 bg-white/50 backdrop-blur-sm group">
                     <div class="w-full h-full rounded-2xl overflow-hidden relative">
                         <template x-for="(slide, index) in slides" :key="index">
                             <img :src="slide.img"
                                 class="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out"
                                 :class="activeSlide === index ? 'opacity-100 scale-100' : 'opacity-0 scale-105'">
                         </template>
+
+                        @if($isEditable)
+                            <!-- Upload Button Overlay -->
+                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                                <button @click="document.getElementById('hero-file-input-' + activeSlide).click()" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all">
+                                    Change Image
+                                </button>
+                            </div>
+                            
+                            <!-- Hidden File Inputs -->
+                            <input type="file" id="hero-file-input-0" data-slide-index="0" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[0].img = url; })">
+                            <input type="file" id="hero-file-input-1" data-slide-index="1" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[1].img = url; })">
+                            <input type="file" id="hero-file-input-2" data-slide-index="2" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[2].img = url; })">
+                            
+                            <!-- Hidden inputs bound to Alpine slides array to automatically save via Customizer -->
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_1" :value="slides[0].img">
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_2" :value="slides[1].img">
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_3" :value="slides[2].img">
+                        @endif
                     </div>
                 </div>
             </div>
@@ -281,25 +303,60 @@
                 <!-- Left Column: Interactive Selector -->
                 <div class="lg:col-span-5 space-y-8">
                     <div class="space-y-3">
-                        <span class="inline-block px-3 py-1 bg-brand-secondary/5 rounded-full text-[10px] font-bold text-brand-secondary uppercase tracking-widest font-outfit">Core Foundations</span>
-                        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-primary font-outfit">OUR EDUCATIONAL PILLARS</h2>
-                        <p class="text-sm text-slate-500 leading-relaxed">Click through our key pillars below to explore the educational frameworks that define the Noble Academy learning experience.</p>
+                        <span class="inline-block px-3 py-1 bg-brand-secondary/5 rounded-full text-[10px] font-bold text-brand-secondary uppercase tracking-widest font-outfit dynamic-editable" data-key="about_badge" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['about_badge'] ?? 'Core Foundations' !!}
+                        </span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-primary font-outfit dynamic-editable" data-key="about_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['about_title'] ?? 'OUR EDUCATIONAL PILLARS' !!}
+                        </h2>
+                        <p class="text-sm text-slate-500 leading-relaxed dynamic-editable" data-key="about_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['about_desc'] ?? 'Click through our key pillars below to explore the educational frameworks that define the Noble Academy learning experience.' !!}
+                        </p>
                     </div>
 
                     <!-- Vertical Button Group -->
                     <div class="space-y-3">
-                        <template x-for="(pillar, index) in pillars" :key="index">
-                            <button @click="selectedPillar = index" 
-                                    class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group"
-                                    :class="selectedPillar === index ? 'border-brand-secondary/35 bg-indigo-50/20 shadow-md shadow-indigo-600/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200'">
-                                <div class="flex items-center gap-4">
-                                    <span class="text-xs font-mono font-bold text-slate-400 group-hover:text-brand-secondary transition-colors" x-text="pillar.num"></span>
-                                    <span class="text-lg group-hover:scale-110 transition-transform" x-text="pillar.emoji"></span>
-                                    <span class="text-sm font-bold text-brand-primary font-outfit" x-text="pillar.title"></span>
-                                </div>
-                                <span class="text-xs font-bold transition-all" :class="selectedPillar === index ? 'text-brand-secondary translate-x-0' : 'text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'">Explore &rarr;</span>
-                            </button>
-                        </template>
+                        <!-- Vision Button -->
+                        <button @click="selectedPillar = 0" 
+                                class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group"
+                                :class="selectedPillar === 0 ? 'border-brand-secondary/35 bg-indigo-50/20 shadow-md shadow-indigo-600/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200'">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-mono font-bold text-slate-400 group-hover:text-brand-secondary transition-colors">01</span>
+                                <span class="text-lg group-hover:scale-110 transition-transform">🔭</span>
+                                <span class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="pillar1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar1_title'] ?? 'Vision & Standard' !!}
+                                </span>
+                            </div>
+                            <span class="text-xs font-bold transition-all" :class="selectedPillar === 0 ? 'text-brand-secondary translate-x-0' : 'text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'">Explore &rarr;</span>
+                        </button>
+
+                        <!-- Mission Button -->
+                        <button @click="selectedPillar = 1" 
+                                class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group"
+                                :class="selectedPillar === 1 ? 'border-brand-secondary/35 bg-indigo-50/20 shadow-md shadow-indigo-600/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200'">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-mono font-bold text-slate-400 group-hover:text-brand-secondary transition-colors">02</span>
+                                <span class="text-lg group-hover:scale-110 transition-transform">🚀</span>
+                                <span class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="pillar2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar2_title'] ?? 'Mission Excellence' !!}
+                                </span>
+                            </div>
+                            <span class="text-xs font-bold transition-all" :class="selectedPillar === 1 ? 'text-brand-secondary translate-x-0' : 'text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'">Explore &rarr;</span>
+                        </button>
+
+                        <!-- Values Button -->
+                        <button @click="selectedPillar = 2" 
+                                class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group"
+                                :class="selectedPillar === 2 ? 'border-brand-secondary/35 bg-indigo-50/20 shadow-md shadow-indigo-600/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200'">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-mono font-bold text-slate-400 group-hover:text-brand-secondary transition-colors">03</span>
+                                <span class="text-lg group-hover:scale-110 transition-transform">🛡️</span>
+                                <span class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="pillar3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar3_title'] ?? 'Values & Principles' !!}
+                                </span>
+                            </div>
+                            <span class="text-xs font-bold transition-all" :class="selectedPillar === 2 ? 'text-brand-secondary translate-x-0' : 'text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'">Explore &rarr;</span>
+                        </button>
                     </div>
                 </div>
 
@@ -309,34 +366,110 @@
                     <div class="absolute -inset-1 bg-gradient-to-tr from-brand-secondary to-brand-accent rounded-3xl blur opacity-10"></div>
                     
                     <div class="relative bg-white border border-slate-100 rounded-3xl p-8 md:p-10 shadow-xl shadow-slate-150/30 min-h-[380px] flex flex-col justify-between">
-                        <!-- Dynamic Animated Content wrapper -->
-                        <template x-for="(pillar, index) in pillars" :key="index">
-                            <div x-show="selectedPillar === index"
-                                 x-transition:enter="transition ease-out duration-350 transform"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 class="space-y-6 flex-1 flex flex-col justify-between">
+                        <!-- Vision Detail -->
+                        <div x-show="selectedPillar === 0"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner bg-indigo-50">🔭</div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest font-mono text-slate-400">Pillar Reference</span>
+                                </div>
                                 
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner" :class="pillar.accentBg" x-text="pillar.emoji"></div>
-                                        <span class="text-[10px] font-bold uppercase tracking-widest font-mono text-slate-400">Pillar Reference</span>
-                                    </div>
-                                    
-                                    <div class="space-y-2">
-                                        <h3 class="text-2xl font-extrabold text-brand-primary font-outfit" x-text="pillar.title"></h3>
-                                        <p class="text-xs font-semibold text-slate-400" x-text="pillar.desc"></p>
-                                    </div>
-                                    
-                                    <p class="text-xs sm:text-sm text-slate-500 leading-relaxed pt-2" x-text="pillar.detail"></p>
+                                <div class="space-y-2">
+                                    <h3 class="text-2xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="pillar1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar1_title'] ?? 'Vision & Standard' !!}
+                                    </h3>
+                                    <p class="text-xs font-semibold text-slate-400 dynamic-editable" data-key="pillar1_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar1_desc'] ?? 'To establish global benchmarks in academic training by combining creative science labs with classical artistic expression.' !!}
+                                    </p>
                                 </div>
-
-                                <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
-                                    <span class="text-slate-400">Strategic Target</span>
-                                    <span class="px-3 py-1 rounded-full text-[9px]" :class="[pillar.accentBg, pillar.accentText]" x-text="pillar.focus"></span>
-                                </div>
+                                
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed pt-2 dynamic-editable" data-key="pillar1_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar1_detail'] ?? 'Our vision centers on nurturing multidisciplinary thinking. We integrate high-level software coding and scientific prototyping directly with classical humanities, ensuring students develop both analytical depth and creative adaptability.' !!}
+                                </p>
                             </div>
-                        </template>
+
+                            <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                <span class="text-slate-400">Strategic Target</span>
+                                <span class="px-3 py-1 rounded-full text-[9px] bg-indigo-50 text-brand-secondary dynamic-editable" data-key="pillar1_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar1_focus'] ?? 'Holistic Tech' !!}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Mission Detail -->
+                        <div x-show="selectedPillar === 1"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner bg-purple-50">🚀</div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest font-mono text-slate-400">Pillar Reference</span>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <h3 class="text-2xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="pillar2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar2_title'] ?? 'Mission Excellence' !!}
+                                    </h3>
+                                    <p class="text-xs font-semibold text-slate-400 dynamic-editable" data-key="pillar2_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar2_desc'] ?? 'Providing stimulating learning areas where students push past academic norms to secure leadership traits and moral integrity.' !!}
+                                    </p>
+                                </div>
+                                
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed pt-2 dynamic-editable" data-key="pillar2_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar2_detail'] ?? 'Our mission is executed daily through active student mentorship and collaborative problem-solving bootcamps. We push students beyond memorization to construct real-world projects, developing critical leadership qualities.' !!}
+                                </p>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                <span class="text-slate-400">Strategic Target</span>
+                                <span class="px-3 py-1 rounded-full text-[9px] bg-purple-50 text-brand-accent dynamic-editable" data-key="pillar2_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar2_focus'] ?? 'Leadership' !!}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Values Detail -->
+                        <div x-show="selectedPillar === 2"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner bg-rose-50">🛡️</div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest font-mono text-slate-400">Pillar Reference</span>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <h3 class="text-2xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="pillar3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar3_title'] ?? 'Values & Principles' !!}
+                                    </h3>
+                                    <p class="text-xs font-semibold text-slate-400 dynamic-editable" data-key="pillar3_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['pillar3_desc'] ?? 'Anchored on unyielding tenets of mutual collaboration, active civic duties, and robust competitive growth.' !!}
+                                    </p>
+                                </div>
+                                
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed pt-2 dynamic-editable" data-key="pillar3_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar3_detail'] ?? 'Honor and civic responsibility form the bedrock of our student registry. We believe true excellence is collaborative, encouraging shared milestones, peer support networks, and community-enriching civic contributions.' !!}
+                                </p>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                <span class="text-slate-400">Strategic Target</span>
+                                <span class="px-3 py-1 rounded-full text-[9px] bg-rose-50 text-brand-rose dynamic-editable" data-key="pillar3_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['pillar3_focus'] ?? 'Core Integrity' !!}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -390,10 +523,16 @@
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200/60">
                 <div class="space-y-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-brand-accent font-outfit">Campus Statistics</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-primary font-outfit">MILESTONE ACHIEVEMENTS</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-brand-accent font-outfit dynamic-editable" data-key="achieve_badge" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['achieve_badge'] ?? 'Campus Statistics' !!}
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-primary font-outfit dynamic-editable" data-key="achieve_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['achieve_title'] ?? 'MILESTONE ACHIEVEMENTS' !!}
+                    </h2>
                 </div>
-                <p class="text-sm text-slate-500 max-w-sm">Historic milestones marking our dedication towards research, scholarship, and global athletics.</p>
+                <p class="text-sm text-slate-500 max-w-sm dynamic-editable" data-key="achieve_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                    {!! $settings['achieve_desc'] ?? 'Historic milestones marking our dedication towards research, scholarship, and global athletics.' !!}
+                </p>
             </div>
 
             <!-- Modern Timeline & Details layout -->
@@ -401,25 +540,74 @@
                 <!-- Left: Interactive Vertical Milestones Navigator (Col-span 5) -->
                 <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
                     <div class="space-y-3">
-                        <template x-for="(stat, index) in stats" :key="index">
-                            <div @click="selectedStat = index" 
-                                 class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center justify-between group"
-                                 :class="selectedStat === index ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center font-bold font-outfit text-sm transition-transform group-hover:scale-105"
-                                         :class="selectedStat === index ? 'text-brand-secondary ring-2 ring-indigo-100' : 'text-slate-500'"
-                                         x-text="stat.year">
-                                    </div>
-                                    <div>
-                                        <span class="text-[9px] font-bold text-slate-400 font-mono" x-text="stat.tag"></span>
-                                        <h4 class="text-sm font-bold text-brand-primary font-outfit" x-text="stat.title"></h4>
-                                    </div>
+                        <!-- Stat 1 Button -->
+                        <div @click="selectedStat = 0" 
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center justify-between group"
+                             :class="selectedStat === 0 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center font-bold font-outfit text-sm transition-transform group-hover:scale-105"
+                                     :class="selectedStat === 0 ? 'text-brand-secondary ring-2 ring-indigo-100' : 'text-slate-500'"
+                                     x-text="'2025'">
                                 </div>
-                                <div class="w-8 h-8 rounded-full border border-slate-150 bg-white flex items-center justify-center text-slate-400 group-hover:text-brand-secondary transition-colors">
-                                    <span class="text-xs font-bold" x-text="selectedStat === index ? '●' : '→'"></span>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="stat1_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat1_tag'] ?? 'AWARD' !!}
+                                    </span>
+                                    <h4 class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat1_title'] ?? 'Best Innovative Campus' !!}
+                                    </h4>
                                 </div>
                             </div>
-                        </template>
+                            <div class="w-8 h-8 rounded-full border border-slate-150 bg-white flex items-center justify-center text-slate-400 group-hover:text-brand-secondary transition-colors">
+                                <span class="text-xs font-bold" x-text="selectedStat === 0 ? '●' : '→'"></span>
+                            </div>
+                        </div>
+
+                        <!-- Stat 2 Button -->
+                        <div @click="selectedStat = 1" 
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center justify-between group"
+                             :class="selectedStat === 1 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center font-bold font-outfit text-sm transition-transform group-hover:scale-105"
+                                     :class="selectedStat === 1 ? 'text-brand-secondary ring-2 ring-indigo-100' : 'text-slate-500'"
+                                     x-text="'100%'">
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="stat2_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat2_tag'] ?? 'RECORD' !!}
+                                    </span>
+                                    <h4 class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat2_title'] ?? 'Senior Success Rate' !!}
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full border border-slate-150 bg-white flex items-center justify-center text-slate-400 group-hover:text-brand-secondary transition-colors">
+                                <span class="text-xs font-bold" x-text="selectedStat === 1 ? '●' : '→'"></span>
+                            </div>
+                        </div>
+
+                        <!-- Stat 3 Button -->
+                        <div @click="selectedStat = 2" 
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center justify-between group"
+                             :class="selectedStat === 2 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center font-bold font-outfit text-sm transition-transform group-hover:scale-105"
+                                     :class="selectedStat === 2 ? 'text-brand-secondary ring-2 ring-indigo-100' : 'text-slate-500'"
+                                     x-text="'04 GD'">
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="stat3_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat3_tag'] ?? 'SPORTS' !!}
+                                    </span>
+                                    <h4 class="text-sm font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat3_title'] ?? 'National Championship' !!}
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full border border-slate-150 bg-white flex items-center justify-center text-slate-400 group-hover:text-brand-secondary transition-colors">
+                                <span class="text-xs font-bold" x-text="selectedStat === 2 ? '●' : '→'"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -428,42 +616,128 @@
                     <div class="absolute -inset-1 bg-gradient-to-tr from-brand-secondary to-brand-accent rounded-3xl blur opacity-5"></div>
                     
                     <div class="relative w-full bg-white border border-slate-100 rounded-3xl p-8 md:p-10 shadow-xl shadow-slate-150/20 flex flex-col justify-between">
-                        <template x-for="(stat, index) in stats" :key="index">
-                            <div x-show="selectedStat === index"
-                                 x-transition:enter="transition ease-out duration-300 transform"
-                                 x-transition:enter-start="opacity-0 translate-y-4"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                 class="space-y-6 flex-1 flex flex-col justify-between">
-                                
-                                <div class="space-y-6">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs font-bold font-mono text-slate-400" x-text="'MILESTONE //' + stat.tag"></span>
-                                        <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider" :class="[stat.statusBg, stat.statusText]" x-text="stat.status"></span>
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <h3 class="text-5xl font-black font-outfit bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent" x-text="stat.year"></h3>
-                                        <h4 class="text-xl font-bold text-brand-primary font-outfit" x-text="stat.title"></h4>
-                                        <p class="text-xs text-slate-500 font-semibold leading-relaxed" x-text="stat.subtitle"></p>
-                                    </div>
-
-                                    <p class="text-xs sm:text-sm text-slate-500 leading-relaxed" x-text="stat.detail"></p>
+                        <!-- Stat 1 Detail -->
+                        <div x-show="selectedStat === 0"
+                             x-transition:enter="transition ease-out duration-300 transform"
+                             x-transition:enter-start="opacity-0 translate-y-4"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold font-mono text-slate-400">MILESTONE // <span class="dynamic-editable inline-block" data-key="stat1_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['stat1_tag'] ?? 'AWARD' !!}</span></span>
+                                    <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600">CONFIRMED</span>
                                 </div>
 
-                                <!-- Mini Progress Gauge -->
-                                <div class="pt-6 border-t border-slate-100 space-y-3">
-                                    <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
-                                        <span class="text-slate-400">Verified Accreditation</span>
-                                        <span class="text-brand-secondary font-mono" x-text="stat.hash"></span>
-                                    </div>
-                                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out"
-                                             :style="'width: ' + stat.progress + '%'"></div>
-                                    </div>
+                                <div class="space-y-2">
+                                    <h3 class="text-5xl font-black font-outfit bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent">2025</h3>
+                                    <h4 class="text-xl font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat1_title'] ?? 'Best Innovative Campus' !!}
+                                    </h4>
+                                    <p class="text-xs text-slate-500 font-semibold leading-relaxed dynamic-editable" data-key="stat1_subtitle" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat1_subtitle'] ?? 'Recognized state-wide for incorporating next-gen interactive workspaces.' !!}
+                                    </p>
                                 </div>
 
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed dynamic-editable" data-key="stat1_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['stat1_detail'] ?? 'Approved by the Higher Education Council for state-of-the-art laboratory systems, research workspaces, and collaborative lecture environments that foster multi-disciplinary engagement.' !!}
+                                </p>
                             </div>
-                        </template>
+
+                            <!-- Mini Progress Gauge -->
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Verified Accreditation</span>
+                                    <span class="text-brand-secondary font-mono">#AC-992</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out"
+                                         style="width: 95%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 2 Detail -->
+                        <div x-show="selectedStat === 1"
+                             x-transition:enter="transition ease-out duration-300 transform"
+                             x-transition:enter-start="opacity-0 translate-y-4"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold font-mono text-slate-400">MILESTONE // <span class="dynamic-editable inline-block" data-key="stat2_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['stat2_tag'] ?? 'RECORD' !!}</span></span>
+                                    <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-brand-secondary">EXCELLENCE</span>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <h3 class="text-5xl font-black font-outfit bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent">100%</h3>
+                                    <h4 class="text-xl font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat2_title'] ?? 'Senior Success Rate' !!}
+                                    </h4>
+                                    <p class="text-xs text-slate-500 font-semibold leading-relaxed dynamic-editable" data-key="stat2_subtitle" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat2_subtitle'] ?? 'For 8 consecutive years, achieving complete success distinctions.' !!}
+                                    </p>
+                                </div>
+
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed dynamic-editable" data-key="stat2_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['stat2_detail'] ?? 'Our senior student cohort achieved a perfect graduation and college enrollment rate. 100% of graduating students secured immediate offers to global top-tier institutions.' !!}
+                                </p>
+                            </div>
+
+                            <!-- Mini Progress Gauge -->
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Verified Accreditation</span>
+                                    <span class="text-brand-secondary font-mono">#EX-100</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out"
+                                         style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 3 Detail -->
+                        <div x-show="selectedStat === 2"
+                             x-transition:enter="transition ease-out duration-300 transform"
+                             x-transition:enter-start="opacity-0 translate-y-4"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold font-mono text-slate-400">MILESTONE // <span class="dynamic-editable inline-block" data-key="stat3_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['stat3_tag'] ?? 'SPORTS' !!}</span></span>
+                                    <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-rose-50 text-brand-rose">ATHLETICS</span>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <h3 class="text-5xl font-black font-outfit bg-gradient-to-r from-brand-secondary to-brand-accent bg-clip-text text-transparent">04 GD</h3>
+                                    <h4 class="text-xl font-bold text-brand-primary font-outfit dynamic-editable" data-key="stat3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat3_title'] ?? 'National Championship' !!}
+                                    </h4>
+                                    <p class="text-xs text-slate-500 font-semibold leading-relaxed dynamic-editable" data-key="stat3_subtitle" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                        {!! $settings['stat3_subtitle'] ?? 'Winning top accolades in track events and secondary divisions.' !!}
+                                    </p>
+                                </div>
+
+                                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed dynamic-editable" data-key="stat3_detail" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                    {!! $settings['stat3_detail'] ?? 'Noble Academy track and field athletes earned first-place gold distinctions at the annual National Athletics Championship across four major individual track divisions.' !!}
+                                </p>
+                            </div>
+
+                            <!-- Mini Progress Gauge -->
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Verified Accreditation</span>
+                                    <span class="text-brand-secondary font-mono">#SP-4G2</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out"
+                                         style="width: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -481,37 +755,37 @@
             lightboxIndex: 0,
             items: [
                 {
-                    img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_1'] ?? 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'academics',
                     tag: 'LABORATORY',
                     title: 'Chemistry Workstation'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_2'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'academics',
                     tag: 'RESOURCES',
                     title: 'Central Library Archives'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_3'] ?? 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'infrastructure',
                     tag: 'CREATIVE LAB',
                     title: 'Digital IT Hub'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_4'] ?? 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'infrastructure',
                     tag: 'CAMPUS',
                     title: 'University Courtyard'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_5'] ?? 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'sports',
                     tag: 'TRACK',
                     title: 'Running Track & Courts'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_6'] ?? 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'co-curricular',
                     tag: 'ARTS',
                     title: 'Fine Arts Studio'
@@ -558,6 +832,18 @@
                 </div>
             </div>
 
+            <!-- Hidden inputs to bind gallery images to website_settings keys -->
+            @if(isset($isEditable) && $isEditable)
+            <div class="hidden">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_1" :value="items[0] ? items[0].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_2" :value="items[1] ? items[1].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_3" :value="items[2] ? items[2].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_4" :value="items[3] ? items[3].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_5" :value="items[4] ? items[4].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_6" :value="items[5] ? items[5].img : ''">
+            </div>
+            @endif
+
             <!-- Immersive Expanding Accordion Gallery Grid -->
             <div class="flex flex-col md:flex-row items-stretch gap-4 min-h-[460px] w-full">
                 <template x-for="(item, index) in items" :key="index">
@@ -571,6 +857,19 @@
                         <!-- Zooming background image -->
                         <img :src="item.img" 
                              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+
+                        @if(isset($isEditable) && $isEditable)
+                        <div class="absolute top-4 right-4 z-20 pointer-events-auto">
+                            <button @click.stop="const fileInput = document.getElementById('gallery-file-input-' + index); if(fileInput) fileInput.click()" class="bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition flex items-center gap-1.5 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Change Image
+                            </button>
+                            <input type="file" :id="'gallery-file-input-' + index" class="hidden" accept="image/*" @change="uploadGalleryImage($event, index)">
+                        </div>
+                        @endif
 
                         <!-- Soft Vignette Gradient -->
                         <div class="absolute inset-0 bg-gradient-to-t from-brand-primary/90 via-brand-primary/10 to-transparent transition-opacity duration-300 opacity-60 group-hover:opacity-100"></div>
@@ -635,47 +934,7 @@
     </section>
 
     <!-- SCHEDULE EVENTS SECTION -->
-    <section id="events" class="py-16 bg-brand-cream relative overflow-hidden" x-data="{
-        selectedEvent: 0,
-        events: [
-            {
-                day: '25',
-                month: 'JUN',
-                time: '10:00 AM',
-                category: 'SUMMIT',
-                title: 'Global Alumni Summit 2026',
-                location: 'Main Auditorium',
-                desc: 'Connecting graduating seniors with active technical leaders in worldwide tech divisions. Discover post-grad placement paths, industry integration challenges, and direct job offerings.',
-                booked: 88,
-                speaker: 'Dr. Sarah Jenkins & Alumni Panel',
-                speakerRole: 'Director of Tech Innovation / Senior Alumni Members'
-            },
-            {
-                day: '10',
-                month: 'JUL',
-                time: '02:30 PM',
-                category: 'ECOLOGY',
-                title: 'Sustainability Campaign Drive',
-                location: 'Science Block Yard',
-                desc: 'Exploring green layouts, eco energy cells, and active recycling standards on campus. Participate in live solar panel workshops and campus ecosystem sustainability challenges.',
-                booked: 65,
-                speaker: 'Prof. Marcus Vance',
-                speakerRole: 'Dean of Environmental Science Department'
-            },
-            {
-                day: '05',
-                month: 'AUG',
-                time: '06:00 PM',
-                category: 'EXHIBITION',
-                title: 'Arts & Classical Showcase',
-                location: 'Creative Center',
-                desc: 'Annual visual reviews, custom sculpting exhibits, and classical musical performances. Highlights include student art galleries, short film reviews, and live orchestra performances.',
-                booked: 92,
-                speaker: 'Elena Rostova',
-                speakerRole: 'Chairperson of Classical Fine Arts Division'
-            }
-        ]
-    }">
+    <section id="events" class="py-16 bg-brand-cream relative overflow-hidden" x-data="{ selectedEvent: 0 }">
         <div class="max-w-6xl mx-auto px-6 space-y-12 relative z-10">
             <!-- Header -->
             <div class="text-center space-y-3 max-w-xl mx-auto">
@@ -689,26 +948,51 @@
                 <!-- Left: Event Selector Cards (Col-span 5) -->
                 <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
                     <div class="space-y-3">
-                        <template x-for="(event, index) in events" :key="index">
-                            <div @click="selectedEvent = index" 
-                                 class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center gap-5 group"
-                                 :class="selectedEvent === index ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
-                                
-                                <!-- Date Badge -->
-                                <div class="w-14 h-14 rounded-2xl flex flex-col items-center justify-center leading-none transition-transform group-hover:scale-105"
-                                     :class="selectedEvent === index ? 'bg-indigo-50 text-brand-secondary ring-2 ring-indigo-100' : 'bg-white text-slate-500 shadow-sm'">
-                                    <span class="text-base font-extrabold font-outfit" x-text="event.day"></span>
-                                    <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5" x-text="event.month"></span>
-                                </div>
-
-                                <div class="flex-1 min-w-0">
-                                    <span class="text-[9px] font-bold text-slate-400 font-mono" x-text="event.category"></span>
-                                    <h4 class="text-sm font-bold text-brand-primary font-outfit truncate" x-text="event.title"></h4>
-                                    <p class="text-[10px] text-slate-400 font-mono truncate" x-text="event.time + ' | ' + event.location"></p>
-                                </div>
-
+                        <!-- Selector 1 -->
+                        <div @click="selectedEvent = 0"
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center gap-5 group"
+                             :class="selectedEvent === 0 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="w-14 h-14 rounded-2xl flex flex-col items-center justify-center leading-none transition-transform group-hover:scale-105"
+                                 :class="selectedEvent === 0 ? 'bg-indigo-50 text-brand-secondary ring-2 ring-indigo-100' : 'bg-white text-slate-500 shadow-sm'">
+                                <span class="text-base font-extrabold font-outfit dynamic-editable" data-key="event_1_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_day'] ?? '25' !!}</span>
+                                <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 dynamic-editable" data-key="event_1_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_month'] ?? 'JUN' !!}</span>
                             </div>
-                        </template>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="event_1_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_category'] ?? 'SUMMIT' !!}</span>
+                                <h4 class="text-sm font-bold text-brand-primary font-outfit truncate dynamic-editable" data-key="event_1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_title'] ?? 'Global Alumni Summit 2026' !!}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono truncate"><span class="dynamic-editable" data-key="event_1_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_time'] ?? '10:00 AM' !!}</span> | <span class="dynamic-editable" data-key="event_1_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_location'] ?? 'Main Auditorium' !!}</span></p>
+                            </div>
+                        </div>
+                        <!-- Selector 2 -->
+                        <div @click="selectedEvent = 1"
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center gap-5 group"
+                             :class="selectedEvent === 1 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="w-14 h-14 rounded-2xl flex flex-col items-center justify-center leading-none transition-transform group-hover:scale-105"
+                                 :class="selectedEvent === 1 ? 'bg-indigo-50 text-brand-secondary ring-2 ring-indigo-100' : 'bg-white text-slate-500 shadow-sm'">
+                                <span class="text-base font-extrabold font-outfit dynamic-editable" data-key="event_2_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_day'] ?? '10' !!}</span>
+                                <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 dynamic-editable" data-key="event_2_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_month'] ?? 'JUL' !!}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="event_2_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_category'] ?? 'ECOLOGY' !!}</span>
+                                <h4 class="text-sm font-bold text-brand-primary font-outfit truncate dynamic-editable" data-key="event_2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_title'] ?? 'Sustainability Campaign Drive' !!}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono truncate"><span class="dynamic-editable" data-key="event_2_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_time'] ?? '02:30 PM' !!}</span> | <span class="dynamic-editable" data-key="event_2_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_location'] ?? 'Science Block Yard' !!}</span></p>
+                            </div>
+                        </div>
+                        <!-- Selector 3 -->
+                        <div @click="selectedEvent = 2"
+                             class="p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex items-center gap-5 group"
+                             :class="selectedEvent === 2 ? 'bg-white border-slate-100 shadow-lg shadow-slate-150/20' : 'bg-transparent border-transparent hover:bg-slate-100/50'">
+                            <div class="w-14 h-14 rounded-2xl flex flex-col items-center justify-center leading-none transition-transform group-hover:scale-105"
+                                 :class="selectedEvent === 2 ? 'bg-indigo-50 text-brand-secondary ring-2 ring-indigo-100' : 'bg-white text-slate-500 shadow-sm'">
+                                <span class="text-base font-extrabold font-outfit dynamic-editable" data-key="event_3_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_day'] ?? '05' !!}</span>
+                                <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5 dynamic-editable" data-key="event_3_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_month'] ?? 'AUG' !!}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[9px] font-bold text-slate-400 font-mono dynamic-editable" data-key="event_3_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_category'] ?? 'EXHIBITION' !!}</span>
+                                <h4 class="text-sm font-bold text-brand-primary font-outfit truncate dynamic-editable" data-key="event_3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_title'] ?? 'Arts & Classical Showcase' !!}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono truncate"><span class="dynamic-editable" data-key="event_3_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_time'] ?? '06:00 PM' !!}</span> | <span class="dynamic-editable" data-key="event_3_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_location'] ?? 'Creative Center' !!}</span></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -717,51 +1001,116 @@
                     <div class="absolute -inset-1 bg-gradient-to-tr from-brand-secondary to-brand-accent rounded-3xl blur opacity-5"></div>
                     
                     <div class="relative w-full bg-white border border-slate-100 rounded-3xl p-8 md:p-10 shadow-xl shadow-slate-150/20 flex flex-col justify-between">
-                        <template x-for="(event, index) in events" :key="index">
-                            <div x-show="selectedEvent === index"
-                                 x-transition:enter="transition ease-out duration-350 transform"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 class="space-y-6 flex-1 flex flex-col justify-between">
-                                
-                                <div class="space-y-5">
-                                    <div class="flex justify-between items-center">
-                                        <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[8px] font-bold uppercase tracking-wide" x-text="event.category"></span>
-                                        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-                                            <span>📍</span>
-                                            <span x-text="event.location"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <h3 class="text-xl font-extrabold text-brand-primary font-outfit" x-text="event.title"></h3>
-                                        <p class="text-xs text-slate-500 leading-relaxed" x-text="event.desc"></p>
-                                    </div>
-
-                                    <!-- Speaker Panel -->
-                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100/50 flex items-start gap-3">
-                                        <div class="text-lg">🎙️</div>
-                                        <div>
-                                            <h4 class="text-xs font-bold text-brand-primary" x-text="event.speaker"></h4>
-                                            <p class="text-[9px] text-slate-400 mt-0.5" x-text="event.speakerRole"></p>
-                                        </div>
+                        <!-- Detail Panel 1 -->
+                        <div x-show="selectedEvent === 0"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="flex justify-between items-center">
+                                    <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[8px] font-bold uppercase tracking-wide dynamic-editable" data-key="event_1_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_category'] ?? 'SUMMIT' !!}</span>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                                        <span>📍</span>
+                                        <span class="dynamic-editable" data-key="event_1_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_location'] ?? 'Main Auditorium' !!}</span>
                                     </div>
                                 </div>
-
-                                <!-- Seat capacity & countdown -->
-                                <div class="pt-6 border-t border-slate-100 space-y-3">
-                                    <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
-                                        <span class="text-slate-400">Seat Booking Status</span>
-                                        <span class="text-brand-secondary" x-text="event.booked + '% Capacity Booked'"></span>
-                                    </div>
-                                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out"
-                                             :style="'width: ' + event.booked + '%'"></div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="event_1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_title'] ?? 'Global Alumni Summit 2026' !!}</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed dynamic-editable" data-key="event_1_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_desc'] ?? 'Connecting graduating seniors with active technical leaders in worldwide tech divisions. Discover post-grad placement paths, industry integration challenges, and direct job offerings.' !!}</p>
+                                </div>
+                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100/50 flex items-start gap-3">
+                                    <div class="text-lg">🎙️</div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-brand-primary dynamic-editable" data-key="event_1_speaker" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_speaker'] ?? 'Dr. Sarah Jenkins & Alumni Panel' !!}</h4>
+                                        <p class="text-[9px] text-slate-400 mt-0.5 dynamic-editable" data-key="event_1_speaker_role" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_speaker_role'] ?? 'Director of Tech Innovation / Senior Alumni Members' !!}</p>
                                     </div>
                                 </div>
-
                             </div>
-                        </template>
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Seat Booking Status</span>
+                                    <span class="text-brand-secondary dynamic-editable" data-key="event_1_occupancy" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_occupancy'] ?? '88% Capacity Booked' !!}</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out w-[88%]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detail Panel 2 -->
+                        <div x-show="selectedEvent === 1"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="flex justify-between items-center">
+                                    <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[8px] font-bold uppercase tracking-wide dynamic-editable" data-key="event_2_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_category'] ?? 'ECOLOGY' !!}</span>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                                        <span>📍</span>
+                                        <span class="dynamic-editable" data-key="event_2_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_location'] ?? 'Science Block Yard' !!}</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="event_2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_title'] ?? 'Sustainability Campaign Drive' !!}</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed dynamic-editable" data-key="event_2_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_desc'] ?? 'Exploring green layouts, eco energy cells, and active recycling standards on campus. Participate in live solar panel workshops and campus ecosystem sustainability challenges.' !!}</p>
+                                </div>
+                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100/50 flex items-start gap-3">
+                                    <div class="text-lg">🎙️</div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-brand-primary dynamic-editable" data-key="event_2_speaker" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_speaker'] ?? 'Prof. Marcus Vance' !!}</h4>
+                                        <p class="text-[9px] text-slate-400 mt-0.5 dynamic-editable" data-key="event_2_speaker_role" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_speaker_role'] ?? 'Dean of Environmental Science Department' !!}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Seat Booking Status</span>
+                                    <span class="text-brand-secondary dynamic-editable" data-key="event_2_occupancy" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_occupancy'] ?? '65% Capacity Booked' !!}</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out w-[65%]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detail Panel 3 -->
+                        <div x-show="selectedEvent === 2"
+                             x-transition:enter="transition ease-out duration-350 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="space-y-6 flex-1 flex flex-col justify-between">
+                            <div class="space-y-5">
+                                <div class="flex justify-between items-center">
+                                    <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[8px] font-bold uppercase tracking-wide dynamic-editable" data-key="event_3_category" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_category'] ?? 'EXHIBITION' !!}</span>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                                        <span>📍</span>
+                                        <span class="dynamic-editable" data-key="event_3_location" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_location'] ?? 'Creative Center' !!}</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-extrabold text-brand-primary font-outfit dynamic-editable" data-key="event_3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_title'] ?? 'Arts & Classical Showcase' !!}</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed dynamic-editable" data-key="event_3_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_desc'] ?? 'Annual visual reviews, custom sculpting exhibits, and classical musical performances. Highlights include student art galleries, short film reviews, and live orchestra performances.' !!}</p>
+                                </div>
+                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100/50 flex items-start gap-3">
+                                    <div class="text-lg">🎙️</div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-brand-primary dynamic-editable" data-key="event_3_speaker" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_speaker'] ?? 'Elena Rostova' !!}</h4>
+                                        <p class="text-[9px] text-slate-400 mt-0.5 dynamic-editable" data-key="event_3_speaker_role" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_speaker_role'] ?? 'Chairperson of Classical Fine Arts Division' !!}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-6 border-t border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider font-outfit">
+                                    <span class="text-slate-400">Seat Booking Status</span>
+                                    <span class="text-brand-secondary dynamic-editable" data-key="event_3_occupancy" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_occupancy'] ?? '92% Capacity Booked' !!}</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-secondary to-brand-accent rounded-full transition-all duration-1000 ease-out w-[92%]"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -783,14 +1132,14 @@
                 <div class="space-y-5">
                     <a href="#home" class="flex items-center gap-2 group">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-secondary to-brand-accent flex items-center justify-center text-white font-black text-base shadow-lg shadow-indigo-600/20 group-hover:scale-105 transition-transform duration-300">
-                            N
+                            {!! ($institute && $institute->template_id == 5 && isset($institute->institute_name)) ? strtoupper(substr($institute->institute_name, 0, 1)) : 'N' !!}
                         </div>
                         <span class="text-lg font-extrabold tracking-tight text-brand-primary font-outfit uppercase">
-                            NOBLE <span class="text-brand-secondary font-medium">ACADEMY</span>
+                            {!! ($institute && $institute->template_id == 5) ? ($institute->institute_name ?? 'NOBLE <span class="text-brand-secondary font-medium">ACADEMY</span>') : 'NOBLE <span class="text-brand-secondary font-medium">ACADEMY</span>' !!}
                         </span>
                     </a>
-                    <p class="text-xs text-slate-500 leading-relaxed max-w-sm">
-                        A premium and responsive design system featuring elegant glass components, rich fluid animations, and high-contrast styling.
+                    <p class="text-xs text-slate-500 leading-relaxed max-w-sm dynamic-editable" data-key="footer_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['footer_desc'] ?? 'A premium and responsive design system featuring elegant glass components, rich fluid animations, and high-contrast styling.' !!}
                     </p>
                     <!-- Social icons -->
                     <div class="flex items-center gap-3 pt-2">
@@ -842,15 +1191,21 @@
                     <div class="space-y-3.5 text-xs text-slate-500">
                         <div class="flex items-center gap-2">
                             <span class="text-sm">📍</span>
-                            <span>Education Valley 12, Campus Zone</span>
+                            <span class="dynamic-editable" data-key="footer_address" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['footer_address'] ?? 'Education Valley 12, Campus Zone' !!}
+                            </span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-sm">📞</span>
-                            <span>+1 (555) 019-2834</span>
+                            <span class="dynamic-editable" data-key="footer_phone" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['footer_phone'] ?? '+1 (555) 019-2834' !!}
+                            </span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-sm">📧</span>
-                            <span>info@nobleacademy.edu</span>
+                            <span class="dynamic-editable" data-key="footer_email" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['footer_email'] ?? 'info@nobleacademy.edu' !!}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -860,7 +1215,7 @@
             <!-- Bottom: Legal Details -->
             <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-slate-400 font-outfit">
                 <div class="flex flex-col md:flex-row items-center gap-6">
-                    <p>&copy; {{ date('Y') }} Noble Academy. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} {!! ($institute && $institute->template_id == 5) ? ($institute->institute_name ?? 'Noble Academy') : 'Noble Academy' !!}. All rights reserved.</p>
                     <div class="flex gap-4">
                         <a href="#" class="hover:text-slate-600 transition-colors">Privacy Policy</a>
                         <a href="#" class="hover:text-slate-600 transition-colors">Terms of Service</a>
@@ -914,6 +1269,8 @@
             if (section) observer.observe(section);
         });
     </script>
+
+    @include('website_templates.customizer_script')
 </body>
 
 </html>

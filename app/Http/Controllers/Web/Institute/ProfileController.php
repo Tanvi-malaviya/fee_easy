@@ -87,4 +87,52 @@ class ProfileController extends Controller
             'message' => 'Website template updated successfully.'
         ]);
     }
+
+    /**
+     * Update the website settings for the active template.
+     */
+    public function updateWebsiteSettings(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'settings' => ['required', 'array'],
+        ]);
+
+        $currentSettings = json_decode($institute->website_settings, true) ?: [];
+        $newSettings = array_merge($currentSettings, $validated['settings']);
+
+        $institute->update([
+            'website_settings' => json_encode($newSettings)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Website customizer settings saved successfully.'
+        ]);
+    }
+
+    /**
+     * Upload an image for the website customizer.
+     */
+    public function uploadWebsiteImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'], // max 5MB
+        ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('website/hero', 'public');
+            $url = asset('storage/' . $path);
+            return response()->json([
+                'status' => 'success',
+                'url' => $url
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No file uploaded.'
+        ], 400);
+    }
 }

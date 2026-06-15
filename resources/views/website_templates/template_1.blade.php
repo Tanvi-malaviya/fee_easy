@@ -44,7 +44,9 @@
     <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <a href="#home" class="flex items-center gap-2">
-                <span class="text-2xl font-black text-brand-500 tracking-tight">NOBLE<span class="text-slate-800">ACADEMY</span></span>
+                <span class="text-2xl font-black text-brand-500 tracking-tight">
+                    {!! ($institute && $institute->template_id == 1) ? ($institute->institute_name ?? 'NOBLE<span class="text-slate-800">ACADEMY</span>') : 'NOBLE<span class="text-slate-800">ACADEMY</span>' !!}
+                </span>
             </a>
             
             <nav class="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-600">
@@ -78,19 +80,19 @@
             progress: 0,
             slides: [
                 {
-                    img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+                    img: {{ json_encode($settings['hero_image_1'] ?? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80') }},
                     badge: 'Empowering Minds',
                     title: 'Empowering Minds, Shaping Futures',
                     desc: 'Welcome to Noble Academy. We offer a world-class environment fostering academic brilliance and leadership traits.'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1600&q=80',
+                    img: {{ json_encode($settings['hero_image_2'] ?? 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1600&q=80') }},
                     badge: 'Interactive Learning',
                     title: 'Innovative Academic Programs',
                     desc: 'Dynamic curricula paired with hands-on lab experiments, empowering students with the skills for tomorrow.'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+                    img: {{ json_encode($settings['hero_image_3'] ?? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80') }},
                     badge: 'Future-Ready Labs',
                     title: 'State-of-the-Art Infrastructure',
                     desc: 'Explore our spacious modern classrooms, fully integrated computer hubs, science labs, and lush sports grounds.'
@@ -155,6 +157,28 @@
                             </div>
                         </template>
                         
+                        @if($isEditable)
+                            <!-- Upload Button Overlay -->
+                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                                <button @click="document.getElementById('hero-file-input-' + activeSlide).click()" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all">
+                                    Change Image
+                                </button>
+                            </div>
+                            
+                            <!-- Hidden File Inputs -->
+                            <input type="file" id="hero-file-input-0" data-slide-index="0" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[0].img = url; })">
+                            <input type="file" id="hero-file-input-1" data-slide-index="1" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[1].img = url; })">
+                            <input type="file" id="hero-file-input-2" data-slide-index="2" accept="image/*" class="hidden" 
+                                @change="window.uploadCustomizerImage($event, (url) => { slides[2].img = url; })">
+                            
+                            <!-- Hidden inputs bound to Alpine slides array to automatically save via Customizer -->
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_1" :value="slides[0].img">
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_2" :value="slides[1].img">
+                            <input type="hidden" class="dynamic-editable-img" data-key="hero_image_3" :value="slides[2].img">
+                        @endif
+                        
                         <!-- Floating Top Badge -->
                         <div class="absolute top-4 right-4 px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-lg text-[9px] font-bold text-slate-800 shadow-sm">
                             ★ Top Choice
@@ -208,9 +232,9 @@
         <div class="max-w-7xl mx-auto px-6 space-y-8">
             
             <div class="text-center space-y-2 max-w-xl mx-auto">
-                <span class="text-[10px] font-extrabold text-brand-500 uppercase tracking-widest">About Our Academy</span>
-                <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Our Core Pillars</h2>
-                <p class="text-xs text-slate-500">Combining academic innovation with core values to empower the leaders of tomorrow.</p>
+                <span class="text-[10px] font-extrabold text-brand-500 uppercase tracking-widest dynamic-editable" data-key="about_badge" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['about_badge'] ?? 'About Our Academy' !!}</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight dynamic-editable" data-key="about_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['about_title'] ?? 'Our Core Pillars' !!}</h2>
+                <p class="text-xs text-slate-500 dynamic-editable" data-key="about_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['about_desc'] ?? 'Combining academic innovation with core values to empower the leaders of tomorrow.' !!}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -225,9 +249,9 @@
                         </div>
                         
                         <div class="space-y-1.5">
-                            <h3 class="text-sm font-black text-slate-800">Nurturing Leaders Since 2012</h3>
-                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                                To establish a global standard in education that balances academic rigor with creative expression, cultivating visionary leaders of tomorrow.
+                            <h3 class="text-sm font-black text-slate-800 dynamic-editable" data-key="vision_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['vision_title'] ?? 'Nurturing Leaders Since 2012' !!}</h3>
+                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="vision_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['vision_desc'] ?? 'To establish a global standard in education that balances academic rigor with creative expression, cultivating visionary leaders of tomorrow.' !!}
                             </p>
                         </div>
                     </div>
@@ -235,8 +259,8 @@
                     <!-- Key Pillars Text Field -->
                     <div class="pt-3 border-t border-slate-100/80">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Key Focus</span>
-                        <p class="text-[10px] font-extrabold text-brand-600 leading-normal">
-                            Holistic Growth • Integrated Technology • Creative Innovation
+                        <p class="text-[10px] font-extrabold text-brand-600 leading-normal dynamic-editable" data-key="vision_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['vision_focus'] ?? 'Holistic Growth • Integrated Technology • Creative Innovation' !!}
                         </p>
                     </div>
                 </div>
@@ -252,9 +276,9 @@
                         </div>
                         
                         <div class="space-y-1.5">
-                            <h3 class="text-sm font-black text-slate-800">Fostering Excellence & Integrity</h3>
-                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                                To provide a stimulating learning environment where students excel academically, develop strong moral values, and become responsible global citizens.
+                            <h3 class="text-sm font-black text-slate-800 dynamic-editable" data-key="mission_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['mission_title'] ?? 'Fostering Excellence & Integrity' !!}</h3>
+                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="mission_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['mission_desc'] ?? 'To provide a stimulating learning environment where students excel academically, develop strong moral values, and become responsible global citizens.' !!}
                             </p>
                         </div>
                     </div>
@@ -262,8 +286,8 @@
                     <!-- Key Pillars Text Field -->
                     <div class="pt-3 border-t border-slate-100/80">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Key Focus</span>
-                        <p class="text-[10px] font-extrabold text-indigo-600 leading-normal">
-                            Qualified Mentors • Student curriculum • Civic Foundations
+                        <p class="text-[10px] font-extrabold text-indigo-600 leading-normal dynamic-editable" data-key="mission_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['mission_focus'] ?? 'Qualified Mentors • Student curriculum • Civic Foundations' !!}
                         </p>
                     </div>
                 </div>
@@ -279,9 +303,9 @@
                         </div>
                         
                         <div class="space-y-1.5">
-                            <h3 class="text-sm font-black text-slate-800">Our Core Pillars of Success</h3>
-                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                                We are anchored in key moral and academic tenets that guide every lesson, interaction, and milestone achieved within our campus.
+                            <h3 class="text-sm font-black text-slate-800 dynamic-editable" data-key="values_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['values_title'] ?? 'Our Core Pillars of Success' !!}</h3>
+                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="values_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['values_desc'] ?? 'We are anchored in key moral and academic tenets that guide every lesson, interaction, and milestone achieved within our campus.' !!}
                             </p>
                         </div>
                     </div>
@@ -289,8 +313,8 @@
                     <!-- Key Pillars Text Field -->
                     <div class="pt-3 border-t border-slate-100/80">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Key Focus</span>
-                        <p class="text-[10px] font-extrabold text-emerald-600 leading-normal">
-                            Unyielding Integrity • Empathetic Collaboration • Inquisitive Mindsets
+                        <p class="text-[10px] font-extrabold text-emerald-600 leading-normal dynamic-editable" data-key="values_focus" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                            {!! $settings['values_focus'] ?? 'Unyielding Integrity • Empathetic Collaboration • Inquisitive Mindsets' !!}
                         </p>
                     </div>
                 </div>
@@ -303,60 +327,51 @@
     <section id="achievements" class="pt-8 pb-12 md:pt-10 md:pb-14 bg-slate-50 border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-6 space-y-8">
             <div class="text-center space-y-2 max-w-xl mx-auto">
-                <span class="text-[10px] font-extrabold text-brand-500 uppercase tracking-widest">Our Milestones</span>
-                <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Recent Achievements</h2>
-                <p class="text-xs text-slate-500">Proud moments demonstrating our dedication to academic and athletic excellence.</p>
+                <span class="text-[10px] font-extrabold text-brand-500 uppercase tracking-widest dynamic-editable" data-key="achieve_badge" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['achieve_badge'] ?? 'Our Milestones' !!}</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight dynamic-editable" data-key="achieve_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['achieve_title'] ?? 'Recent Achievements' !!}</h2>
+                <p class="text-xs text-slate-500 dynamic-editable" data-key="achieve_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['achieve_desc'] ?? 'Proud moments demonstrating our dedication to academic and athletic excellence.' !!}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Achievement 1 -->
                 <div class="group relative bg-white border border-slate-100 p-6 rounded-[2rem] space-y-3.5 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
-                    <!-- Top Line Expand Animation -->
                     <div class="absolute top-0 left-0 h-1 bg-amber-500 w-0 group-hover:w-full transition-all duration-300"></div>
-                    
                     <div class="flex items-center justify-between">
                         <div class="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500 border border-amber-100 group-hover:scale-110 transition-transform duration-300">🏆</div>
-                        <!-- Watermark Number -->
                         <span class="text-5xl font-black text-slate-100/50 group-hover:text-slate-100 transition-colors duration-300 select-none">01</span>
                     </div>
                     
-                    <h3 class="text-sm font-bold text-slate-800 pt-1">Best School Award 2025</h3>
-                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                        Named "State’s Most Innovational Education Center" for integrating interactive smart panels in 100% of classrooms.
+                    <h3 class="text-sm font-bold text-slate-800 pt-1 dynamic-editable" data-key="ach1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['ach1_title'] ?? 'Best School Award 2025' !!}</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="ach1_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['ach1_desc'] ?? 'Named "State’s Most Innovational Education Center" for integrating interactive smart panels in 100% of classrooms.' !!}
                     </p>
                 </div>
 
                 <!-- Achievement 2 -->
                 <div class="group relative bg-white border border-slate-100 p-6 rounded-[2rem] space-y-3.5 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
-                    <!-- Top Line Expand Animation -->
                     <div class="absolute top-0 left-0 h-1 bg-indigo-500 w-0 group-hover:w-full transition-all duration-300"></div>
-                    
                     <div class="flex items-center justify-between">
                         <div class="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 border border-indigo-100 group-hover:scale-110 transition-transform duration-300">🎓</div>
-                        <!-- Watermark Number -->
                         <span class="text-5xl font-black text-slate-100/50 group-hover:text-slate-100 transition-colors duration-300 select-none">02</span>
                     </div>
                     
-                    <h3 class="text-sm font-bold text-slate-800 pt-1">100% Board Exam Success</h3>
-                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                        For 8 consecutive years, our senior batch students have achieved a 100% pass rate with over 45% scoring distinctions.
+                    <h3 class="text-sm font-bold text-slate-800 pt-1 dynamic-editable" data-key="ach2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['ach2_title'] ?? '100% Board Exam Success' !!}</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="ach2_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['ach2_desc'] ?? 'For 8 consecutive years, our senior batch students have achieved a 100% pass rate with over 45% scoring distinctions.' !!}
                     </p>
                 </div>
 
                 <!-- Achievement 3 -->
                 <div class="group relative bg-white border border-slate-100 p-6 rounded-[2rem] space-y-3.5 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
-                    <!-- Top Line Expand Animation -->
                     <div class="absolute top-0 left-0 h-1 bg-emerald-500 w-0 group-hover:w-full transition-all duration-300"></div>
-                    
                     <div class="flex items-center justify-between">
                         <div class="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 border border-emerald-100 group-hover:scale-110 transition-transform duration-300">🏅</div>
-                        <!-- Watermark Number -->
                         <span class="text-5xl font-black text-slate-100/50 group-hover:text-slate-100 transition-colors duration-300 select-none">03</span>
                     </div>
                     
-                    <h3 class="text-sm font-bold text-slate-800 pt-1">National Sports Champions</h3>
-                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
-                        Our athletic team brought home 4 Gold and 2 Silver medals from the All-India Inter-School Sports Championship.
+                    <h3 class="text-sm font-bold text-slate-800 pt-1 dynamic-editable" data-key="ach3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['ach3_title'] ?? 'National Sports Champions' !!}</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed font-medium dynamic-editable" data-key="ach3_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                        {!! $settings['ach3_desc'] ?? 'Our athletic team brought home 4 Gold and 2 Silver medals from the All-India Inter-School Sports Championship.' !!}
                     </p>
                 </div>
             </div>
@@ -369,37 +384,37 @@
             activeFilter: 'all',
             items: [
                 {
-                    img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_1'] ?? 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'academics',
                     tag: 'Laboratory',
                     title: 'Chemistry Research Lab'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_2'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'academics',
                     tag: 'Academics',
                     title: 'Resource Center & Library'
                 },
                 {
-                     img: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_3'] ?? 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'sports',
                     tag: 'Sports',
                     title: 'Athletic Running Track'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_4'] ?? 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'co-curricular',
                     tag: 'Co-Curricular',
                     title: 'Creative Arts & Pottery'
                 },
                 {
-                    img: '  ',
+                    img: {{ json_encode($settings['gallery_image_5'] ?? 'https://images.unsplash.com/photo-1581092918056-0c4c3acd37bd?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'infrastructure',
                     tag: 'Technology',
                     title: 'Digital IT Hub & Coding Lab'
                 },
                 {
-                    img: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
+                    img: {{ json_encode($settings['gallery_image_6'] ?? 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80') }},
                     cat: 'infrastructure',
                     tag: 'Campus',
                     title: 'Central University Courtyard'
@@ -443,6 +458,18 @@
                 </button>
             </div>
 
+            <!-- Hidden inputs to bind gallery images to website_settings keys -->
+            @if(isset($isEditable) && $isEditable)
+            <div class="hidden">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_1" :value="items[0] ? items[0].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_2" :value="items[1] ? items[1].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_3" :value="items[2] ? items[2].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_4" :value="items[3] ? items[3].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_5" :value="items[4] ? items[4].img : ''">
+                <input type="hidden" class="dynamic-editable-img" data-key="gallery_image_6" :value="items[5] ? items[5].img : ''">
+            </div>
+            @endif
+
             <!-- Gallery Grid with Alpine Transitions -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <template x-for="(item, index) in items" :key="index">
@@ -456,6 +483,19 @@
                         <!-- Zoom image -->
                         <img :src="item.img" class="w-full h-full object-cover transition-transform duration-[6000ms] ease-out group-hover:scale-105 group-hover:rotate-1">
                         
+                        @if(isset($isEditable) && $isEditable)
+                        <div class="absolute top-4 right-4 z-20 pointer-events-auto">
+                            <button @click.stop="const fileInput = document.getElementById('gallery-file-input-' + index); if(fileInput) fileInput.click()" class="bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition flex items-center gap-1.5 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Change Image
+                            </button>
+                            <input type="file" :id="'gallery-file-input-' + index" class="hidden" accept="image/*" @change="uploadGalleryImage($event, index)">
+                        </div>
+                        @endif
+
                         <!-- Overlay gradient -->
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
@@ -493,19 +533,19 @@
                     <div class="flex items-center gap-4">
                         <!-- Date Block -->
                         <div class="h-14 w-14 shrink-0 bg-brand-50 border border-brand-100 text-brand-600 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-brand-500 group-hover:text-white group-hover:rotate-3">
-                            <span class="text-lg font-black leading-none">25</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1">Jun</span>
+                            <span class="text-lg font-black leading-none dynamic-editable" data-key="event_1_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_day'] ?? '25' !!}</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1 dynamic-editable" data-key="event_1_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_month'] ?? 'Jun' !!}</span>
                         </div>
                         
                         <!-- Event Info -->
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider">Networking</span>
-                                <span class="text-[10px] text-slate-400 font-bold">09:00 AM - 04:00 PM</span>
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider dynamic-editable" data-key="event_1_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_tag'] ?? 'Networking' !!}</span>
+                                <span class="text-[10px] text-slate-400 font-bold dynamic-editable" data-key="event_1_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_time'] ?? '09:00 AM - 04:00 PM' !!}</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-brand-500">Global Alumni Summit 2026</h3>
-                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed">
-                                Connecting current students with notable alumni across top tech companies & research hubs worldwide for mentorship.
+                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-brand-500 dynamic-editable" data-key="event_1_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_1_title'] ?? 'Global Alumni Summit 2026' !!}</h3>
+                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed dynamic-editable" data-key="event_1_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['event_1_desc'] ?? 'Connecting current students with notable alumni across top tech companies & research hubs worldwide for mentorship.' !!}
                             </p>
                         </div>
                     </div>
@@ -518,19 +558,19 @@
                     <div class="flex items-center gap-4">
                         <!-- Date Block -->
                         <div class="h-14 w-14 shrink-0 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-indigo-500 group-hover:text-white group-hover:rotate-3">
-                            <span class="text-lg font-black leading-none">10</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1">Jul</span>
+                            <span class="text-lg font-black leading-none dynamic-editable" data-key="event_2_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_day'] ?? '10' !!}</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1 dynamic-editable" data-key="event_2_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_month'] ?? 'Jul' !!}</span>
                         </div>
                         
                         <!-- Event Info -->
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider">Ecology</span>
-                                <span class="text-[10px] text-slate-400 font-bold">10:00 AM - 02:00 PM</span>
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider dynamic-editable" data-key="event_2_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_tag'] ?? 'Ecology' !!}</span>
+                                <span class="text-[10px] text-slate-400 font-bold dynamic-editable" data-key="event_2_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_time'] ?? '10:00 AM - 02:00 PM' !!}</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-indigo-500">Sustainability & Green Initiative</h3>
-                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed">
-                                A student-led program launching campus solar grids and active waste-recycling workshops.
+                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-indigo-500 dynamic-editable" data-key="event_2_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_2_title'] ?? 'Sustainability & Green Initiative' !!}</h3>
+                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed dynamic-editable" data-key="event_2_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['event_2_desc'] ?? 'A student-led program launching campus solar grids and active waste-recycling workshops.' !!}
                             </p>
                         </div>
                     </div>
@@ -543,19 +583,19 @@
                     <div class="flex items-center gap-4">
                         <!-- Date Block -->
                         <div class="h-14 w-14 shrink-0 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-emerald-500 group-hover:text-white group-hover:rotate-3">
-                            <span class="text-lg font-black leading-none">05</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1">Aug</span>
+                            <span class="text-lg font-black leading-none dynamic-editable" data-key="event_3_day" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_day'] ?? '05' !!}</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-none mt-1 dynamic-editable" data-key="event_3_month" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_month'] ?? 'Aug' !!}</span>
                         </div>
                         
                         <!-- Event Info -->
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider">Exhibition</span>
-                                <span class="text-[10px] text-slate-400 font-bold">04:30 PM - 09:00 PM</span>
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-bold uppercase tracking-wider dynamic-editable" data-key="event_3_tag" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_tag'] ?? 'Exhibition' !!}</span>
+                                <span class="text-[10px] text-slate-400 font-bold dynamic-editable" data-key="event_3_time" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_time'] ?? '04:30 PM - 09:00 PM' !!}</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-emerald-500">Art & Film Showcase (Aura 2026)</h3>
-                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed">
-                                Exhibition of student-produced documentaries, canvas installations, and classical acoustic music.
+                            <h3 class="text-sm font-bold text-slate-800 transition-colors group-hover:text-emerald-500 dynamic-editable" data-key="event_3_title" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['event_3_title'] ?? 'Art & Film Showcase (Aura 2026)' !!}</h3>
+                            <p class="text-[11px] text-slate-500 max-w-xl leading-relaxed dynamic-editable" data-key="event_3_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                                {!! $settings['event_3_desc'] ?? 'Exhibition of student-produced documentaries, canvas installations, and classical acoustic music.' !!}
                             </p>
                         </div>
                     </div>
@@ -570,8 +610,12 @@
     <footer class="bg-slate-950 text-slate-400 py-12 px-6 border-t border-slate-900">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 border-b border-slate-900 pb-8">
             <div class="space-y-4">
-                <span class="text-2xl font-black text-brand-500 tracking-tight">NOBLE<span class="text-white">ACADEMY</span></span>
-                <p class="text-xs text-slate-400 leading-relaxed">Combining academic innovation with core values to empower the leaders of tomorrow since 2012.</p>
+                <span class="text-2xl font-black text-brand-500 tracking-tight">
+                    {!! ($institute && $institute->template_id == 1) ? ($institute->institute_name ?? 'NOBLE<span class="text-white">ACADEMY</span>') : 'NOBLE<span class="text-white">ACADEMY</span>' !!}
+                </span>
+                <p class="text-xs text-slate-400 leading-relaxed dynamic-editable" data-key="footer_desc" contenteditable="{{ $isEditable ? 'true' : 'false' }}">
+                    {!! $settings['footer_desc'] ?? 'Combining academic innovation with core values to empower the leaders of tomorrow since 2012.' !!}
+                </p>
                 
                 <!-- Interactive Newsletter Form -->
                
@@ -611,21 +655,21 @@
                 <ul class="text-xs space-y-3 font-semibold">
                     <li class="flex items-center gap-2.5 text-slate-400 hover:text-white transition-colors">
                         <span class="h-6 w-6 rounded-lg bg-slate-900 border border-slate-850 flex items-center justify-center text-[10px]">📧</span>
-                        <a href="mailto:admissions@nobleacademy.edu" class="hover:underline">admissions@nobleacademy.edu</a>
+                        <span class="dynamic-editable" data-key="footer_email" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['footer_email'] ?? 'admissions@nobleacademy.edu' !!}</span>
                     </li>
                     <li class="flex items-center gap-2.5 text-slate-400 hover:text-white transition-colors">
                         <span class="h-6 w-6 rounded-lg bg-slate-900 border border-slate-850 flex items-center justify-center text-[10px]">📞</span>
-                        <a href="tel:+919876543210" class="hover:underline">+91 98765 43210</a>
+                        <span class="dynamic-editable" data-key="footer_phone" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['footer_phone'] ?? '+91 98765 43210' !!}</span>
                     </li>
                     <li class="flex items-center gap-2.5 text-slate-400 hover:text-white transition-colors">
                         <span class="h-6 w-6 rounded-lg bg-slate-900 border border-slate-850 flex items-center justify-center text-[10px]">📍</span>
-                        <a href="https://maps.google.com" target="_blank" class="hover:underline">Ahmedabad, Gujarat, India</a>
+                        <span class="dynamic-editable" data-key="footer_address" contenteditable="{{ $isEditable ? 'true' : 'false' }}">{!! $settings['footer_address'] ?? 'Ahmedabad, Gujarat, India' !!}</span>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 font-medium">
-            <p>&copy; {{ date('Y') }} Noble Academy. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {!! ($institute && $institute->template_id == 1) ? ($institute->institute_name ?? 'Noble Academy') : 'Noble Academy' !!}. All rights reserved.</p>
             
             <!-- Interactive Social Media Badges -->
             <div class="flex gap-2.5 mt-4 md:mt-0">
@@ -680,5 +724,6 @@
             });
         });
     </script>
+    @include('website_templates.customizer_script')
 </body>
 </html>
