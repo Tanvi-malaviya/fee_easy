@@ -278,3 +278,23 @@ Route::get('/mail-preview/fee-invoice', function () {
     );
 });
 
+
+// =========================================================================
+// WEBSITE TEMPLATES TEST ROUTES
+// =========================================================================
+Route::get('/templates/1', function () {
+    return view('website_templates.template_1');
+});
+Route::get('/templates/2', function () {
+    return view('website_templates.template_2');
+});
+Route::get('/templates/3', function () {
+    return view('website_templates.template_3');
+});
+Route::get('/templates/4', function () {
+    return view('website_templates.template_4');
+});
+Route::get('/templates/5', function () {
+    return view('website_templates.template_5');
+});
+
