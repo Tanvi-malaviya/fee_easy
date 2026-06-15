@@ -37,6 +37,7 @@ class Institute extends Authenticatable
         'fcm_token',
         'upi_id',
         'upi_qr_code',
+        'template_id',
     ];
 
     protected $hidden = [

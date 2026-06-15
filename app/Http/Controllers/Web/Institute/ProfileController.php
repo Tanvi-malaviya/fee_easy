@@ -66,4 +66,25 @@ class ProfileController extends Controller
 
         return response()->json(['message' => 'Profile updated successfully.']);
     }
+
+    /**
+     * Update the active website template.
+     */
+    public function updateTemplate(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'template_id' => ['required', 'integer', 'between:1,5'],
+        ]);
+
+        $institute->update([
+            'template_id' => $validated['template_id']
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Website template updated successfully.'
+        ]);
+    }
 }

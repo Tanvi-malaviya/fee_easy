@@ -139,6 +139,28 @@
                         </svg>
                     </a>
 
+                    <!-- Manage Website -->
+                    <button type="button" onclick="openWebsiteModal()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Manage Website</h3>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Select template and customize landing page</p>
+                            </div>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
                     <!-- WhatsApp Integration -->
                     <button type="button" onclick="openWhatsAppModal()"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
@@ -633,6 +655,213 @@
         </div>
     </div>
 
+    <!-- Manage Website Modal -->
+    <div id="website-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative shrink-0">
+                <div>
+                    <h3 class="text-base font-bold text-white leading-tight">Manage Website</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Select and activate a website template for your institute landing page.</p>
+                </div>
+                <button onclick="closeWebsiteModal()" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <!-- Grid of Templates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Template 1 Card -->
+                    <div id="template-card-1" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="h-28 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 1</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Classic Academic</h4>
+                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">Classic</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    A classic, structured academic layout using emerald-600 accents and standard clean sections.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/1" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(1)" id="btn-activate-1"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 2 Card -->
+                    <div id="template-card-2" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="h-28 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 2</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Mint Glassmorphic</h4>
+                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">Glass</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Beautiful modern cards with soft mint shadows, subtle glass layers, and interactive panels.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/2" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(2)" id="btn-activate-2"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 3 Card -->
+                    <div id="template-card-3" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="h-28 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 3</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Cyber Indigo</h4>
+                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">Interactive</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Sleek theme with a sticky floating navigation bar, sliding indicator, and rich animation details.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/3" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(3)" id="btn-activate-3"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 4 Card -->
+                    <div id="template-card-4" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="h-28 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 4</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Royal Corporate</h4>
+                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">Corporate</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    A professional corporate theme focusing on structure, stats displays, and reliable authority.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/4" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(4)" id="btn-activate-4"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 5 Card -->
+                    <div id="template-card-5" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="h-28 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 5</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Futuristic Neon</h4>
+                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100 whitespace-nowrap">Modern</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Futuristic timeline theme featuring milestones progress bars and ambient glow highlights.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/5" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(5)" id="btn-activate-5"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loader Spinner Overlay -->
+            <div id="website-loader-overlay" class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center hidden z-50">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="h-10 w-10 border-4 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-widest">Activating Template...</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="py-3 px-5 border-t border-slate-100 flex items-center justify-end bg-slate-50 shrink-0">
+                <button type="button" onclick="closeWebsiteModal()"
+                    class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md transition-all">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <style>
         .input-wa {
             width: 100%;
@@ -697,6 +926,7 @@
     </style>
 
     <script>
+        let currentTemplateId = 1;
         document.addEventListener('DOMContentLoaded', fetchProfile);
 
         async function fetchProfile() {
@@ -709,6 +939,7 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     const data = result.data;
+                    currentTemplateId = data.template_id || 1;
                     const logoPreview = document.getElementById('profile-logo-preview');
                     const logoPlaceholder = document.getElementById('profile-logo-placeholder');
 
@@ -996,6 +1227,84 @@
         function closeWhatsAppModal() {
             document.getElementById('whatsapp-modal').classList.replace('flex', 'hidden');
             document.body.style.overflow = 'auto';
+        }
+
+        // ── Website Template Customizer Modal ──────────────────────────────
+        function openWebsiteModal() {
+            document.getElementById('website-modal').classList.replace('hidden', 'flex');
+            document.body.style.overflow = 'hidden';
+            highlightActiveTemplateCard(currentTemplateId);
+        }
+
+        function closeWebsiteModal() {
+            document.getElementById('website-modal').classList.replace('flex', 'hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function highlightActiveTemplateCard(templateId) {
+            currentTemplateId = templateId;
+            // Reset all cards styling
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('border-[#ff6c00]', 'bg-orange-50/20');
+                card.classList.add('border-slate-200');
+            });
+            document.querySelectorAll('.badge-active').forEach(badge => {
+                badge.classList.add('hidden');
+            });
+            document.querySelectorAll('.btn-activate').forEach(btn => {
+                btn.disabled = false;
+                btn.innerText = 'Activate';
+                btn.className = 'btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition';
+            });
+
+            // Apply active styles to the selected template card
+            const activeCard = document.getElementById(`template-card-${templateId}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-200');
+                activeCard.classList.add('border-[#ff6c00]', 'bg-orange-50/20');
+                
+                const activeBadge = activeCard.querySelector('.badge-active');
+                if (activeBadge) activeBadge.classList.remove('hidden');
+
+                const activeBtn = document.getElementById(`btn-activate-${templateId}`);
+                if (activeBtn) {
+                    activeBtn.disabled = true;
+                    activeBtn.innerText = 'Active';
+                    activeBtn.className = 'btn-activate flex-1 py-2 bg-slate-100 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center cursor-not-allowed';
+                }
+            }
+        }
+
+        async function activateTemplate(id) {
+            const loader = document.getElementById('website-loader-overlay');
+            if (loader) loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch('{{ route("institute.profile.template.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ template_id: id })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast(result.message || 'Website template updated successfully!');
+                    currentTemplateId = id;
+                    highlightActiveTemplateCard(id);
+                } else {
+                    showToast(result.message || 'Error updating template', 'error');
+                }
+            } catch (error) {
+                console.error('Error activating template:', error);
+                showToast('Something went wrong.', 'error');
+            } finally {
+                if (loader) loader.classList.add('hidden');
+            }
         }
     </script>
 @endsection

@@ -129,6 +129,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
             })->name('profile.payment-settings');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+            Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
