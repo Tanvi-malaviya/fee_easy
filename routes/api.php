@@ -204,6 +204,8 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [InstituteStudentController::class, 'destroy']);
                 Route::get('/{id}/id-card', [InstituteStudentController::class, 'idCard']);
                 Route::post('/{id}/fee-reminder', [InstituteStudentController::class, 'sendFeeReminder']);
+                Route::post('/{id}/send-password', [InstituteStudentController::class, 'sendPasswordEmail']);
+                Route::post('/{id}/reset-password', [InstituteStudentController::class, 'resetPasswordDirect']);
             });
 
             // Batch Management
@@ -303,11 +305,11 @@ Route::prefix('v1')->group(function () {
     Route::prefix('student')->group(function () {
         Route::post('/login', [StudentAuthController::class, 'login']);
         Route::post('/forgot-password', [StudentAuthController::class, 'sendResetPasswordEmail']);
-        Route::post('/reset-password', [StudentAuthController::class, 'resetPassword']);
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [StudentAuthController::class, 'logout']);
             Route::get('/profile', [StudentProfileController::class, 'show']);
             Route::post('/profile/avatar', [StudentProfileController::class, 'updateAvatar']);
+            Route::post('/profile/change-password', [StudentProfileController::class, 'changePassword']);
             Route::get('/dashboard', [StudentDashboardController::class, 'index']);
             Route::get('/fees', [StudentFeesController::class, 'index']);
             Route::get('/fees/{id}', [StudentFeesController::class, 'show']);

@@ -81,71 +81,40 @@ class StudentAuthController extends Controller
         ]);
 
         $student = Student::where('email', $request->email)->first();
+        $institute = $student->institute;
 
-        $otp = rand(100000, 999999);
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $special = '@#$%&*';
+        
+        $password = $uppercase[rand(0, strlen($uppercase)-1)] . 
+                    $lowercase[rand(0, strlen($lowercase)-1)] . 
+                    $numbers[rand(0, strlen($numbers)-1)] . 
+                    $special[rand(0, strlen($special)-1)] . 
+                    \Illuminate\Support\Str::random(4); // Total 8 characters
+
         $student->update([
-            'otp' => $otp,
-            'otp_expires_at' => Carbon::now()->addMinutes(10),
+            'password' => Hash::make($password),
+            'otp' => null,
+            'otp_expires_at' => null,
         ]);
 
         try {
-            Mail::to($student->email)->send(new ForgotPasswordMail($otp, $student->name));
+            Mail::to($student->email)->send(new \App\Mail\StudentPasswordSentMail(
+                $student->name,
+                $student->email,
+                $password,
+                $institute ? $institute->institute_name : 'Fee Easy',
+                $institute ? $institute->logo : null
+            ));
         } catch (\Exception $e) {
             \Log::error("Failed to send student forgot password email: " . $e->getMessage());
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Reset password OTP has been sent successfully to your email.',
-        ]);
-    }
-
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|exists:students,email',
-            'otp' => 'required|string|size:6',
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'max:15',
-                'regex:/[a-z]/',      // at least one lowercase
-                'regex:/[A-Z]/',      // at least one uppercase
-                'regex:/[0-9]/',      // at least one number
-                'regex:/[\W_]/',      // at least one special character
-            ],
-        ], [
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.max' => 'Password must not exceed 15 characters.',
-            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
-        ]);
-
-        $student = Student::where('email', $request->email)->first();
-
-        if ($student->otp !== $request->otp) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid OTP.',
-            ], 400);
-        }
-
-        if ($student->otp_expires_at && $student->otp_expires_at->isPast()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'OTP has expired.',
-            ], 400);
-        }
-
-        $student->update([
-            'password' => Hash::make($request->password),
-            'otp' => null,
-            'otp_expires_at' => null,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Password reset successfully.',
+            'message' => 'Your password has been reset successfully and the new password has been sent to your email.',
         ]);
     }
 }

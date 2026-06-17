@@ -6,7 +6,7 @@ use App\Models\Institute;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ForgotPasswordMail;
+use App\Mail\StudentPasswordSentMail;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
@@ -40,7 +40,7 @@ class StudentForgotPasswordTest extends TestCase
         ]);
     }
 
-    public function test_forgot_password_sends_otp_successfully(): void
+    public function test_forgot_password_resets_password_and_emails_successfully(): void
     {
         Mail::fake();
 
@@ -51,15 +51,16 @@ class StudentForgotPasswordTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'message' => 'Reset password OTP has been sent successfully to your email.',
+                'message' => 'Your password has been reset successfully and the new password has been sent to your email.',
             ]);
 
         $this->student->refresh();
-        $this->assertNotNull($this->student->otp);
-        $this->assertNotNull($this->student->otp_expires_at);
+        $this->assertFalse(\Illuminate\Support\Facades\Hash::check('oldpassword', $this->student->password));
 
-        Mail::assertSent(ForgotPasswordMail::class, function ($mail) {
-            return $mail->hasTo('student@example.com') && !empty($mail->otp);
+        Mail::assertSent(StudentPasswordSentMail::class, function ($mail) {
+            return $mail->hasTo('student@example.com') 
+                && !empty($mail->password)
+                && $mail->institute_name === 'Tuoora Academy';
         });
     }
 
@@ -71,101 +72,5 @@ class StudentForgotPasswordTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
-    }
-
-    public function test_reset_password_succeeds_with_correct_otp(): void
-    {
-        // 1. Generate OTP
-        $this->student->update([
-            'otp' => '123456',
-            'otp_expires_at' => Carbon::now()->addMinutes(10),
-        ]);
-
-        // 2. Reset Password
-        $response = $this->postJson('/api/v1/student/reset-password', [
-            'email' => 'student@example.com',
-            'otp' => '123456',
-            'password' => 'NewPassword@123',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'status' => 'success',
-                'message' => 'Password reset successfully.',
-            ]);
-
-        $this->student->refresh();
-        $this->assertNull($this->student->otp);
-        $this->assertNull($this->student->otp_expires_at);
-
-        // 3. Try to log in with new password
-        $loginResponse = $this->postJson('/api/v1/student/login', [
-            'email' => 'student@example.com',
-            'password' => 'NewPassword@123',
-        ]);
-
-        $loginResponse->assertStatus(200)
-            ->assertJson([
-                'status' => 'success',
-                'message' => 'Logged in successfully',
-            ]);
-    }
-
-    public function test_reset_password_fails_with_incorrect_otp(): void
-    {
-        $this->student->update([
-            'otp' => '123456',
-            'otp_expires_at' => Carbon::now()->addMinutes(10),
-        ]);
-
-        $response = $this->postJson('/api/v1/student/reset-password', [
-            'email' => 'student@example.com',
-            'otp' => '654321',
-            'password' => 'NewPassword@123',
-        ]);
-
-        $response->assertStatus(400)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'Invalid OTP.',
-            ]);
-    }
-
-    public function test_reset_password_fails_with_expired_otp(): void
-    {
-        $this->student->update([
-            'otp' => '123456',
-            'otp_expires_at' => Carbon::now()->subMinutes(1),
-        ]);
-
-        $response = $this->postJson('/api/v1/student/reset-password', [
-            'email' => 'student@example.com',
-            'otp' => '123456',
-            'password' => 'NewPassword@123',
-        ]);
-
-        $response->assertStatus(400)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'OTP has expired.',
-            ]);
-    }
-
-    public function test_reset_password_fails_with_weak_password(): void
-    {
-        $this->student->update([
-            'otp' => '123456',
-            'otp_expires_at' => Carbon::now()->addMinutes(10),
-        ]);
-
-        // Weak password: no capital letter, no special character, too short
-        $response = $this->postJson('/api/v1/student/reset-password', [
-            'email' => 'student@example.com',
-            'otp' => '123456',
-            'password' => 'pass12',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['password']);
     }
 }

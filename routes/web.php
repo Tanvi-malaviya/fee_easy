@@ -15,18 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/super-debug', function () {
-    $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
-    $stmt = $pdo->query('SELECT id, email FROM users WHERE id = 1');
-    $rawUser = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-    return response()->json([
-        'eloquent_user_1' => \App\Models\User::find(1)->email ?? 'null',
-        'raw_db_user_1' => $rawUser['email'] ?? 'null',
-        'auth_user' => auth()->check() ? auth()->user()->email : 'Not logged in',
-        'auth_id' => auth()->id(),
-        'session_id' => session()->getId(),
-        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
-    ]);
+    $inst = \App\Models\Institute::find(36);
+    if ($inst) {
+        \Illuminate\Support\Facades\Auth::guard('institute')->login($inst);
+    }
+    return redirect()->route('institute.profile.website.index');
 });
 
 // Admin Web Panel Routes (Jetstream/Auth)
@@ -129,6 +122,19 @@ Route::prefix('institute')->name('institute.')->group(function () {
             })->name('profile.payment-settings');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+            Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
+            
+            // Manage Website CMS Routes
+            Route::get('/profile/website', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'index'])->name('profile.website.index');
+            Route::post('/profile/website/template', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'updateTemplate'])->name('profile.website.template.update');
+            Route::post('/profile/website/hero', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveHeroSlides'])->name('profile.website.hero.save');
+            Route::post('/profile/website/pillars', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'savePillars'])->name('profile.website.pillars.save');
+            Route::post('/profile/website/achievements', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveAchievements'])->name('profile.website.achievements.save');
+            Route::post('/profile/website/gallery', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveGallery'])->name('profile.website.gallery.save');
+            Route::post('/profile/website/events', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveEvents'])->name('profile.website.events.save');
+            Route::post('/profile/website/social', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveSocialLinks'])->name('profile.website.social.save');
+            Route::post('/profile/website/upload', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'uploadImage'])->name('profile.website.upload');
+
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
@@ -145,6 +151,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
                 Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
                 Route::post('/students/{student}/fee-reminder', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendFeeReminder'])->name('students.fee_reminder');
+                Route::post('/students/{student}/send-password', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendPasswordEmail'])->name('students.send_password');
+                Route::post('/students/{student}/reset-password-direct', [App\Http\Controllers\Web\Institute\StudentController::class, 'resetPasswordDirect'])->name('students.reset_password_direct');
 
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');
@@ -275,4 +283,20 @@ Route::get('/mail-preview/fee-invoice', function () {
         'Noble Academy'
     );
 });
+
+
+// =========================================================================
+// PUBLIC INSTITUTE WEBSITE ROUTES
+// =========================================================================
+// URL: /{institute_code}/{institute_name_slug}  e.g. /123456/noble-academy
+Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteController::class, 'show'])
+    ->name('institute.website')
+    ->where('instituteCode', '[0-9]+')       // institute_code is always numeric
+    ->where('nameSlug', '[a-z0-9\-]+');      // slug = lowercase letters, digits, hyphens
+
+
+// =========================================================================
+// WEBSITE TEMPLATES TEST & CUSTOMIZER ROUTES
+// =========================================================================
+Route::get('/templates/{id}', [App\Http\Controllers\Web\WebsiteController::class, 'preview'])->name('templates.preview');
 

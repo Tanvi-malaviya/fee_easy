@@ -16,6 +16,7 @@ class Institute extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'alternate_email',
         'phone',
         'password',
         'institute_name',
@@ -37,6 +38,7 @@ class Institute extends Authenticatable
         'fcm_token',
         'upi_id',
         'upi_qr_code',
+        'template_id',
     ];
 
     protected $hidden = [
@@ -70,6 +72,11 @@ class Institute extends Authenticatable
     public function getUpiQrCodeUrlAttribute()
     {
         return $this->upi_qr_code ? url(Storage::url($this->upi_qr_code)) : null;
+    }
+
+    public function websiteContent()
+    {
+        return $this->hasOne(InstituteWebsiteContent::class);
     }
 
     public function subscriptions()

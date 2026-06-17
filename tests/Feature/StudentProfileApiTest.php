@@ -231,4 +231,163 @@ class StudentProfileApiTest extends TestCase
         $this->assertEquals(85, $data['stats']['performance_score']);
         $this->assertIsInt($data['stats']['performance_score']);
     }
+
+    public function test_student_can_change_password_with_valid_criteria(): void
+    {
+        $institute = Institute::create([
+            'name' => 'Test Owner',
+            'email' => 'testinst@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('password123'),
+            'institute_name' => 'Alpha Academy',
+            'status' => 1,
+        ]);
+
+        $student = Student::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('OldPassword123#'),
+            'institute_id' => $institute->id,
+            'status' => 1,
+        ]);
+
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'OldPassword123#',
+                'new_password' => 'NewPassword987$',
+                'new_password_confirmation' => 'NewPassword987$',
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'success',
+            'message' => 'Password changed successfully.'
+        ]);
+
+        $student->refresh();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('NewPassword987$', $student->password));
+    }
+
+    public function test_student_cannot_change_password_with_incorrect_current_password(): void
+    {
+        $institute = Institute::create([
+            'name' => 'Test Owner',
+            'email' => 'testinst@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('password123'),
+            'institute_name' => 'Alpha Academy',
+            'status' => 1,
+        ]);
+
+        $student = Student::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('OldPassword123#'),
+            'institute_id' => $institute->id,
+            'status' => 1,
+        ]);
+
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'WrongPassword123#',
+                'new_password' => 'NewPassword987$',
+                'new_password_confirmation' => 'NewPassword987$',
+            ]);
+
+        $response->assertStatus(400);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'Current password does not match.'
+        ]);
+    }
+
+    public function test_student_cannot_change_password_with_same_password(): void
+    {
+        $institute = Institute::create([
+            'name' => 'Test Owner',
+            'email' => 'testinst@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('password123'),
+            'institute_name' => 'Alpha Academy',
+            'status' => 1,
+        ]);
+
+        $student = Student::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('OldPassword123#'),
+            'institute_id' => $institute->id,
+            'status' => 1,
+        ]);
+
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'OldPassword123#',
+                'new_password' => 'OldPassword123#',
+                'new_password_confirmation' => 'OldPassword123#',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'New password cannot be the same as current password.'
+        ]);
+    }
+
+    public function test_student_cannot_change_password_with_invalid_criteria(): void
+    {
+        $institute = Institute::create([
+            'name' => 'Test Owner',
+            'email' => 'testinst@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('password123'),
+            'institute_name' => 'Alpha Academy',
+            'status' => 1,
+        ]);
+
+        $student = Student::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '1234567890',
+            'password' => bcrypt('OldPassword123#'),
+            'institute_id' => $institute->id,
+            'status' => 1,
+        ]);
+
+        // Case 1: Too short
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'OldPassword123#',
+                'new_password' => 'Short1#',
+                'new_password_confirmation' => 'Short1#',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['new_password']);
+
+        // Case 2: No uppercase
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'OldPassword123#',
+                'new_password' => 'nouppercase123#',
+                'new_password_confirmation' => 'nouppercase123#',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['new_password']);
+
+        // Case 3: No special char
+        $response = $this->actingAs($student, 'sanctum')
+            ->postJson('/api/v1/student/profile/change-password', [
+                'current_password' => 'OldPassword123#',
+                'new_password' => 'NoSpecialChar123',
+                'new_password_confirmation' => 'NoSpecialChar123',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['new_password']);
+    }
 }

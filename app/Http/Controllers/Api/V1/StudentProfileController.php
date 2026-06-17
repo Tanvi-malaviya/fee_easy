@@ -9,6 +9,7 @@ use App\Models\Homework;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class StudentProfileController extends Controller
 {
@@ -201,6 +202,76 @@ class StudentProfileController extends Controller
             'status'     => 'success',
             'message'    => 'Profile photo updated successfully.',
             'avatar_url' => $student->profile_image_url,
+        ]);
+    }
+
+    /**
+     * Change password for student.
+     */
+    public function changePassword(Request $request)
+    {
+        /** @var Student $student */
+        $student = $request->user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string',
+        ]);
+
+        if (!Hash::check($request->current_password, $student->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Current password does not match.'
+            ], 400);
+        }
+
+        if ($request->current_password === $request->new_password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'New password cannot be the same as current password.',
+            ], 422);
+        }
+
+        $newPassword = $request->new_password;
+        $errors = [];
+
+        if (strlen($newPassword) < 8 || strlen($newPassword) > 15) {
+            $errors[] = 'Password must be between 8 and 15 characters long.';
+        }
+        if (!preg_match('/[a-z]/i', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 standard letter.';
+        }
+        if (!preg_match('/[A-Z]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 capital letter.';
+        }
+        if (!preg_match('/\d/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 number.';
+        }
+        if (!preg_match('/[\W_]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 special character.';
+        }
+
+        // Evaluate confirmation only if all strength criteria have passed successfully
+        if (empty($errors) && $request->new_password !== $request->new_password_confirmation) {
+            $errors[] = 'The new password field confirmation does not match.';
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'new_password' => $errors
+                ]
+            ], 422);
+        }
+
+        $student->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password changed successfully.'
         ]);
     }
 }

@@ -55,6 +55,8 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'institute_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:institutes,email,' . $institute->id],
+            'alternate_email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'digits:10'],
             'address' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:100'],
@@ -65,5 +67,26 @@ class ProfileController extends Controller
         $institute->update($validated);
 
         return response()->json(['message' => 'Profile updated successfully.']);
+    }
+
+    /**
+     * Update the active website template.
+     */
+    public function updateTemplate(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'template_id' => ['required', 'integer', 'between:1,5'],
+        ]);
+
+        $institute->update([
+            'template_id' => $validated['template_id']
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Website template updated successfully.'
+        ]);
     }
 }
