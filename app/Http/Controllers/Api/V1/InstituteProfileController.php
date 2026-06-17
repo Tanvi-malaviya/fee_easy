@@ -34,6 +34,8 @@ class InstituteProfileController extends Controller
         $request->validate([
             'institute_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:institutes,email,' . $institute->id,
+            'alternate_email' => 'nullable|email|max:255',
             'phone' => 'required|digits:10',
             'address' => 'nullable|string',
             'address_line_2' => 'nullable|string',
@@ -48,6 +50,8 @@ class InstituteProfileController extends Controller
         $data = $request->only([
             'institute_name',
             'name',
+            'email',
+            'alternate_email',
             'phone',
             'address',
             'address_line_2',
@@ -180,16 +184,16 @@ class InstituteProfileController extends Controller
         $qrCodeRule = $institute->upi_qr_code ? 'nullable' : 'required';
 
         $data = $request->validate([
-            'upi_id'          => 'required|string|regex:/^[\w\.\-]+@[\w\-]+$/',
-            'upi_qr_code'     => "{$qrCodeRule}|image|mimes:jpeg,png,jpg|max:2048",
+            'upi_id' => 'required|string|regex:/^[\w\.\-]+@[\w\-]+$/',
+            'upi_qr_code' => "{$qrCodeRule}|image|mimes:jpeg,png,jpg|max:2048",
             'upi_qr_code_url' => "nullable|image|mimes:jpeg,png,jpg|max:2048", // alias field name
         ], [
-            'upi_id.required'      => 'UPI ID is required.',
-            'upi_id.regex'         => 'Invalid UPI ID format. Use format: name@bank (e.g. merchant@okaxis).',
+            'upi_id.required' => 'UPI ID is required.',
+            'upi_id.regex' => 'Invalid UPI ID format. Use format: name@bank (e.g. merchant@okaxis).',
             'upi_qr_code.required' => 'QR code image is required.',
-            'upi_qr_code.image'    => 'QR code must be an image file.',
-            'upi_qr_code.mimes'    => 'QR code must be a JPEG or PNG image.',
-            'upi_qr_code.max'      => 'QR code image must not exceed 2MB.',
+            'upi_qr_code.image' => 'QR code must be an image file.',
+            'upi_qr_code.mimes' => 'QR code must be a JPEG or PNG image.',
+            'upi_qr_code.max' => 'QR code image must not exceed 2MB.',
         ]);
 
         $updateData = ['upi_id' => $data['upi_id']];
@@ -214,10 +218,10 @@ class InstituteProfileController extends Controller
         $institute->refresh();
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Payment settings updated successfully.',
-            'data'    => [
-                'upi_id'          => $institute->upi_id,
+            'data' => [
+                'upi_id' => $institute->upi_id,
                 'upi_qr_code_url' => $institute->upi_qr_code_url,
             ]
         ]);

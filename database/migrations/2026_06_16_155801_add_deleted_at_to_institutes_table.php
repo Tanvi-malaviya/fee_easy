@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('institutes', function (Blueprint $table) {
-            if (!Schema::hasColumn('institutes', 'template_id')) {
-                $table->integer('template_id')->nullable()->default(null);
-            } else {
-                $table->integer('template_id')->nullable()->default(null)->change();
+            if (!Schema::hasColumn('institutes', 'deleted_at')) {
+                $table->softDeletes();
             }
         });
     }
@@ -26,8 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('institutes', function (Blueprint $table) {
-            if (Schema::hasColumn('institutes', 'template_id')) {
-                $table->dropColumn('template_id');
+            if (Schema::hasColumn('institutes', 'deleted_at')) {
+                $table->dropSoftDeletes();
             }
         });
     }

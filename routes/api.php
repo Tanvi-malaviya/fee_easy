@@ -204,6 +204,8 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [InstituteStudentController::class, 'destroy']);
                 Route::get('/{id}/id-card', [InstituteStudentController::class, 'idCard']);
                 Route::post('/{id}/fee-reminder', [InstituteStudentController::class, 'sendFeeReminder']);
+                Route::post('/{id}/send-password', [InstituteStudentController::class, 'sendPasswordEmail']);
+                Route::post('/{id}/reset-password', [InstituteStudentController::class, 'resetPasswordDirect']);
             });
 
             // Batch Management

@@ -140,7 +140,7 @@
                     </a>
 
                     <!-- Manage Website -->
-                    <button type="button" onclick="openWebsiteModal()"
+                    <a href="{{ route('institute.profile.website.index') }}"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
                         <div class="flex items-center gap-4">
                             <div
@@ -159,7 +159,7 @@
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                    </button>
+                    </a>
 
                     <!-- WhatsApp Integration -->
                     <button type="button" onclick="openWhatsAppModal()"
@@ -853,11 +853,29 @@
             </div>
 
             <!-- Footer -->
-            <div class="py-3 px-5 border-t border-slate-100 flex items-center justify-end bg-slate-50 shrink-0">
-                <button type="button" onclick="closeWebsiteModal()"
-                    class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md transition-all">
-                    Done
-                </button>
+            <div class="py-3 px-5 border-t border-slate-100 bg-slate-50 shrink-0 flex flex-col gap-2">
+                <!-- Public Website URL Banner (shown only when a template is active) -->
+                <div id="website-public-url-banner" class="hidden flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                    <span class="text-[9px] font-bold text-emerald-700 uppercase tracking-widest shrink-0">Your Website:</span>
+                    <a id="website-public-url-link" href="#" target="_blank"
+                        class="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline truncate transition-colors">
+                        —
+                    </a>
+                    <button onclick="copyWebsiteUrl()" class="ml-auto shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors" title="Copy URL">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="button" onclick="closeWebsiteModal()"
+                        class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md transition-all">
+                        Done
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -927,6 +945,9 @@
 
     <script>
         let currentTemplateId = null;
+        // Public website URL components (from server-side)
+        const INSTITUTE_CODE = '{{ auth()->guard("institute")->user()->institute_code ?? "" }}';
+        const INSTITUTE_SLUG = '{{ \Illuminate\Support\Str::slug(auth()->guard("institute")->user()->institute_name ?? "") }}';
         document.addEventListener('DOMContentLoaded', fetchProfile);
 
         async function fetchProfile() {
@@ -1262,7 +1283,7 @@
             if (activeCard) {
                 activeCard.classList.remove('border-slate-200');
                 activeCard.classList.add('border-[#ff6c00]', 'bg-orange-50/20');
-                
+
                 const activeBadge = activeCard.querySelector('.badge-active');
                 if (activeBadge) activeBadge.classList.remove('hidden');
 
@@ -1271,6 +1292,22 @@
                     activeBtn.disabled = true;
                     activeBtn.innerText = 'Active';
                     activeBtn.className = 'btn-activate flex-1 py-2 bg-slate-100 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center cursor-not-allowed';
+                }
+
+                // Keep the Live Preview link on the editable /templates/{id} route
+                // (The public URL is shown separately in the footer banner below)
+            }
+
+            // Show/hide the public website banner in the modal footer
+            const publicBanner = document.getElementById('website-public-url-banner');
+            if (publicBanner) {
+                if (templateId && INSTITUTE_CODE && INSTITUTE_SLUG) {
+                    const publicUrl = `${window.location.origin}/${INSTITUTE_CODE}/${INSTITUTE_SLUG}`;
+                    const urlLink = document.getElementById('website-public-url-link');
+                    if (urlLink) { urlLink.href = publicUrl; urlLink.innerText = publicUrl; }
+                    publicBanner.classList.remove('hidden');
+                } else {
+                    publicBanner.classList.add('hidden');
                 }
             }
         }
@@ -1304,6 +1341,17 @@
                 showToast('Something went wrong.', 'error');
             } finally {
                 if (loader) loader.classList.add('hidden');
+            }
+        }
+
+        function copyWebsiteUrl() {
+            const urlLink = document.getElementById('website-public-url-link');
+            if (urlLink && urlLink.href !== '#') {
+                navigator.clipboard.writeText(urlLink.href).then(() => {
+                    showToast('Website URL copied to clipboard!');
+                }).catch(() => {
+                    showToast('Could not copy URL.', 'error');
+                });
             }
         }
     </script>
