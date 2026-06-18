@@ -683,5 +683,34 @@ class InstituteStudentController extends Controller
             'message' => 'Student password has been reset successfully!'
         ]);
     }
+
+    /**
+     * Import students via API (for mobile app).
+     */
+    public function import(Request $request, \App\Services\StudentImportService $importService)
+    {
+        if (!$request->user() || !($request->user() instanceof \App\Models\Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $result = $importService->import($request->file('file'), $request->user());
+
+        if ($result['status'] === 'success') {
+            return response()->json([
+                'status' => 'success',
+                'message' => $result['message']
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => $result['message'],
+            'errors' => $result['errors'] ?? []
+        ], 422);
+    }
 }
 

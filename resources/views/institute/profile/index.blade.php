@@ -189,6 +189,24 @@
                         </div>
                     </button>
 
+                    <!-- Delete Account -->
+                    <button type="button" onclick="confirmInstituteDelete()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors group text-left rounded-b-[0.85rem] border-t border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Delete Account</h3>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Permanently remove your institute account and revoke access.</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Danger</span>
+                    </button>
 
                     <!-- Terms & Conditions -->
                     <a href="https://tuoora.com/terms-conditions" target="_blank"
@@ -1352,6 +1370,49 @@
                 }).catch(() => {
                     showToast('Could not copy URL.', 'error');
                 });
+            }
+        }
+
+        function confirmInstituteDelete() {
+            const message = 'Deleting your institute account is permanent. All data and tokens will be revoked. Do you want to continue?';
+            if (!window.confirm(message)) {
+                return;
+            }
+
+            deleteInstituteAccount();
+        }
+
+        async function deleteInstituteAccount() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                };
+
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch('/api/v1/institute/profile/delete', {
+                    method: 'DELETE',
+                    headers,
+                });
+
+                if (response.ok) {
+                    showToast('Your institute account has been deleted. Redirecting...', 'success');
+                    localStorage.removeItem('token');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("institute.login") }}';
+                    }, 900);
+                    return;
+                }
+
+                const result = await response.json().catch(() => ({}));
+                showToast(result.message || 'Unable to delete account at this time.', 'error');
+            } catch (error) {
+                console.error('Delete account error:', error);
+                showToast('Unable to delete account at this time.', 'error');
             }
         }
     </script>

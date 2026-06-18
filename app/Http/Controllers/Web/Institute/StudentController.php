@@ -582,4 +582,52 @@ class StudentController extends Controller
             'message' => 'Student password has been reset successfully!'
         ]);
     }
+
+    /**
+     * Download a sample CSV template for student import.
+     */
+    public function importSample()
+    {
+        $filename = 'student_import_template.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Name', 'Email', 'Phone', 'Standard', 'Date of Birth (YYYY-MM-DD)', 'Guardian Name']);
+            fputcsv($file, ['John Doe', 'john.doe@example.com', '9876543210', '10th', '2010-05-15', 'Robert Doe']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Import students via CSV upload.
+     */
+    public function import(Request $request, \App\Services\StudentImportService $importService)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $result = $importService->import($request->file('file'), $institute);
+
+        if ($result['status'] === 'success') {
+            return response()->json([
+                'status' => 'success',
+                'message' => $result['message']
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => $result['message'],
+            'errors' => $result['errors'] ?? []
+        ], 422);
+    }
 }

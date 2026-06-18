@@ -64,7 +64,9 @@ class MessageSent implements ShouldBroadcastNow
             'created_at' => $this->message->created_at->toISOString(),
             'sender' => [
                 'id' => $this->message->sender->id,
-                'name' => $this->message->sender->name ?? $this->message->sender->full_name ?? $this->message->sender->institute_name ?? 'Unknown',
+                'name' => $this->message->sender instanceof \App\Models\Institute
+                    ? ($this->message->sender->institute_name ?: ($this->message->sender->name ?? 'Unknown'))
+                    : ($this->message->sender->name ?? $this->message->sender->full_name ?? $this->message->sender->institute_name ?? 'Unknown'),
             ]
         ];
     }

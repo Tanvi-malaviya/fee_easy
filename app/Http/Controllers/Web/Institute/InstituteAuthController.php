@@ -301,6 +301,11 @@ class InstituteAuthController extends Controller
                 'status' => 'success',
                 'redirect' => route('institute.dashboard'),
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Profile Setup Error: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Something went wrong.'], 500);
