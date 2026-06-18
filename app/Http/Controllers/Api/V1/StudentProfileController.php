@@ -171,6 +171,28 @@ class StudentProfileController extends Controller
     }
 
     /**
+     * Delete the authenticated student's account and revoke all tokens.
+     */
+    public function destroy(Request $request)
+    {
+        $student = $request->user();
+
+        if (!$student) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student->tokens()->delete();
+        $student->fcm_token = null;
+        $student->save();
+        $student->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student account deleted successfully.'
+        ]);
+    }
+
+    /**
      * POST /api/v1/student/profile/avatar
      *
      * Upload / replace the student's profile photo.

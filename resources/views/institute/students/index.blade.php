@@ -89,6 +89,15 @@
 
                 <!-- Secondary Buttons -->
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                    <button onclick="openImportModal()"
+                        class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
+                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        Import
+                    </button>
                     <button onclick="openExportModal()"
                         class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
                         <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
@@ -113,10 +122,6 @@
             </div>
         </div>
 
-       
-
-
-
         <!-- Registry Grid Container -->
         <div id="table-container" class="relative">
             <div id="loading-spinner"
@@ -134,39 +139,39 @@
             <!-- Pagination -->
             <div id="pagination-container"
                 class="mt-2 px-5 py-3 bg-white rounded-xl border border-slate-100 hidden items-center justify-between shadow-sm">
-                <!-- Pagination generated via JS -->
             </div>
         </div>
 
+        <!-- Empty State Template -->
+        <template id="students-empty-state">
+            <x-empty-state title="No scholars found" subtitle="Create a new student or import a list to get started."
+                icon="students" />
+        </template>
+
         @push('modals')
-                <!-- Empty State Template -->
-                <template id="students-empty-state">
-                    <x-empty-state title="No students found" subtitle="Try adjusting your filters or add a new student."
-                        icon="students" />
-                </template>
-                <!-- Export Selection Modal -->
-                <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
-                    <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-                    <div
-                        class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col">
-                        <!-- Modal Header -->
-                        <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
-                            <h3 class="text-base font-bold text-white tracking-tight">Export Student List</h3>
-                            <button type="button" onclick="closeExportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+            <!-- Export Selection Modal -->
+            <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+                <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+                <div
+                    class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col">
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                        <h3 class="text-base font-bold text-white tracking-tight">Export Student List</h3>
+                        <button type="button" onclick="closeExportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
 
-                        <div class="p-6">
-
+                    <div class="p-6">
                         <div class="space-y-2 mb-6">
-                            <label
-                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/30">
-                                <input type="radio" name="export-format" value="pdf" checked class="hidden">
+                            <!-- PDF Format Option -->
+                            <label id="format-option-pdf" onclick="selectExportFormat('pdf')"
+                                class="relative flex items-center p-3 border border-blue-500 bg-blue-50/30 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group">
+                                <input type="radio" id="radio-pdf" name="export-format" value="pdf" checked class="hidden">
                                 <div
-                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3 group-has-[:checked]:border-blue-200">
+                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3">
                                     <svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h10V4H7zm2 4h6v2H9V8zm0 4h6v2H9v-2zm0 4h3v2H9v-2z" />
@@ -176,19 +181,20 @@
                                     <p class="text-xs font-bold text-slate-700">PDF Document</p>
                                     <p class="text-[10px] font-medium text-slate-400">Best for printing & sharing</p>
                                 </div>
-                                <div
-                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center group-has-[:checked]:border-blue-500">
-                                    <div
-                                        class="h-2 w-2 bg-blue-500 rounded-full scale-0 transition-transform group-has-[:checked]:scale-100">
+                                <div id="check-dot-container-pdf"
+                                    class="h-4 w-4 border-2 border-blue-500 rounded-full flex items-center justify-center">
+                                    <div id="check-dot-pdf"
+                                        class="h-2 w-2 bg-blue-500 rounded-full scale-100 transition-transform">
                                     </div>
                                 </div>
                             </label>
 
-                            <label
-                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/30">
-                                <input type="radio" name="export-format" value="csv" class="hidden">
+                            <!-- CSV Format Option -->
+                            <label id="format-option-csv" onclick="selectExportFormat('csv')"
+                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group">
+                                <input type="radio" id="radio-csv" name="export-format" value="csv" class="hidden">
                                 <div
-                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3 group-has-[:checked]:border-emerald-200">
+                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3">
                                     <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                     </svg>
@@ -197,10 +203,10 @@
                                     <p class="text-xs font-bold text-slate-700">Excel / CSV</p>
                                     <p class="text-[10px] font-medium text-slate-400">Best for data analysis</p>
                                 </div>
-                                <div
-                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center group-has-[:checked]:border-emerald-500">
-                                    <div
-                                        class="h-2 w-2 bg-emerald-500 rounded-full scale-0 transition-transform group-has-[:checked]:scale-100">
+                                <div id="check-dot-container-csv"
+                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center">
+                                    <div id="check-dot-csv"
+                                        class="h-2 w-2 bg-emerald-500 rounded-full scale-0 transition-transform">
                                     </div>
                                 </div>
                             </label>
@@ -208,8 +214,83 @@
 
                         <div class="flex items-center space-x-3">
                             <button onclick="closeExportModal()" class="btn-white btn-sm flex-1">Cancel</button>
-                            <button onclick="runExport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-primary">OK,
-                                Export</button>
+                            <button onclick="runExport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-primary">OK, Export</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Selection Modal -->
+            <div id="import-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+                <div onclick="closeImportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+                <div
+                    class="bg-white w-full max-w-lg rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col mx-4">
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-between shrink-0 z-10">
+                        <h3 class="text-base font-bold text-white tracking-tight">Bulk Import Students</h3>
+                        <button type="button" onclick="closeImportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="p-6 overflow-y-auto max-h-[75vh]">
+                        <!-- Instructions -->
+                        <div class="mb-4 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100/80">
+                            <h4 class="text-xs font-bold text-emerald-800 mb-1.5 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Instructions for CSV Upload
+                            </h4>
+                            <ul class="text-[10px] text-emerald-700/95 space-y-1 list-disc list-inside leading-relaxed font-medium">
+                                <li>Please download and use the template below to format your data.</li>
+                                <li>Required fields: Name, Email, Phone (10 digits), Standard, Date of Birth (YYYY-MM-DD), Guardian Name.</li>
+                               
+                            </ul>
+                            <div class="mt-3 flex items-center">
+                                <a href="{{ route('institute.students.import.sample') }}" class="inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700 underline transition-all">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Download Sample CSV Template
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div id="import-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/50 hover:bg-emerald-50/10 group mb-4">
+                            <input type="file" id="import-file-input" accept=".csv" class="hidden">
+                            <div class="h-12 w-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-105 group-hover:border-emerald-100 transition-all">
+                                <svg class="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-700 group-hover:text-emerald-600 transition-colors mb-1" id="file-status-text">Click to browse or drag & drop CSV</p>
+                            <p class="text-[10px] text-slate-400 font-medium">Only .csv files up to 5MB are allowed</p>
+                        </div>
+
+                        <!-- Validation Errors Alert Box -->
+                        <div id="import-errors-container" class="hidden mb-4 p-4 bg-rose-50 rounded-xl border border-rose-100 max-h-40 overflow-y-auto">
+                            <h4 class="text-xs font-bold text-rose-800 mb-1.5 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Validation Errors
+                            </h4>
+                            <ul id="import-errors-list" class="text-[10px] text-rose-700 space-y-1 list-disc list-inside leading-relaxed font-semibold">
+                                <!-- Dynamic Error Rows -->
+                            </ul>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center space-x-3">
+                            <button onclick="closeImportModal()" class="btn-white btn-sm flex-1">Cancel</button>
+                            <button id="submit-import-btn" onclick="executeImport()" class="btn-brand btn-sm flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-center" disabled>
+                                <span id="import-btn-text">Import Students</span>
+                                <div id="import-btn-spinner" class="hidden h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -273,7 +354,7 @@
 
         async function fetchDashboardStats() {
             try {
-                const response = await fetch('{{ url('/api/v1/institute/reports/dashboard') }}', {
+                const response = await fetch('/api/v1/institute/reports/dashboard', {
                     headers: { 'Accept': 'application/json' }
                 });
                 const result = await response.json();
@@ -294,7 +375,7 @@
                 // Build Query Parameters
                 const search = document.getElementById('search-input').value;
 
-                let url = `{{ url('/api/v1/institute/students') }}?page=${page}`;
+                let url = `/api/v1/institute/students?page=${page}`;
                 if (search) url += `&search=${encodeURIComponent(search)}`;
 
                 const response = await fetch(url, {
@@ -331,11 +412,59 @@
         function openExportModal() {
             document.getElementById('export-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            selectExportFormat('pdf'); // default selection on open
         }
 
         function closeExportModal() {
             document.getElementById('export-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
+        }
+
+        function selectExportFormat(format) {
+            const pdfOption = document.getElementById('format-option-pdf');
+            const csvOption = document.getElementById('format-option-csv');
+            const pdfRadio = document.getElementById('radio-pdf');
+            const csvRadio = document.getElementById('radio-csv');
+            const pdfDotContainer = document.getElementById('check-dot-container-pdf');
+            const csvDotContainer = document.getElementById('check-dot-container-csv');
+            const pdfDot = document.getElementById('check-dot-pdf');
+            const csvDot = document.getElementById('check-dot-csv');
+
+            if (format === 'pdf') {
+                pdfRadio.checked = true;
+                csvRadio.checked = false;
+                
+                pdfOption.classList.remove('border-slate-100');
+                pdfOption.classList.add('border-blue-500', 'bg-blue-50/30');
+                pdfDotContainer.classList.remove('border-slate-200');
+                pdfDotContainer.classList.add('border-blue-500');
+                pdfDot.classList.remove('scale-0');
+                pdfDot.classList.add('scale-100');
+
+                csvOption.classList.add('border-slate-100');
+                csvOption.classList.remove('border-emerald-500', 'bg-emerald-50/30');
+                csvDotContainer.classList.add('border-slate-200');
+                csvDotContainer.classList.remove('border-emerald-500');
+                csvDot.classList.add('scale-0');
+                csvDot.classList.remove('scale-100');
+            } else {
+                csvRadio.checked = true;
+                pdfRadio.checked = false;
+
+                csvOption.classList.remove('border-slate-100');
+                csvOption.classList.add('border-emerald-500', 'bg-emerald-50/30');
+                csvDotContainer.classList.remove('border-slate-200');
+                csvDotContainer.classList.add('border-emerald-500');
+                csvDot.classList.remove('scale-0');
+                csvDot.classList.add('scale-100');
+
+                pdfOption.classList.add('border-slate-100');
+                pdfOption.classList.remove('border-blue-500', 'bg-blue-50/30');
+                pdfDotContainer.classList.add('border-slate-200');
+                pdfDotContainer.classList.remove('border-blue-500');
+                pdfDot.classList.add('scale-0');
+                pdfDot.classList.remove('scale-100');
+            }
         }
 
         function runExport() {
@@ -347,6 +476,169 @@
 
             closeExportModal();
             window.location.href = url;
+        }
+
+        // --- Import Modal Logic ---
+        let selectedImportFile = null;
+
+        function openImportModal() {
+            document.getElementById('import-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            resetImportState();
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            resetImportState();
+        }
+
+        function resetImportState() {
+            selectedImportFile = null;
+            document.getElementById('import-file-input').value = '';
+            document.getElementById('file-status-text').textContent = 'Click to browse or drag & drop CSV';
+            document.getElementById('import-errors-container').classList.add('hidden');
+            const errorsList = document.getElementById('import-errors-list');
+            if (errorsList) errorsList.innerHTML = '';
+            document.getElementById('submit-import-btn').disabled = true;
+            document.getElementById('import-btn-spinner').classList.add('hidden');
+            document.getElementById('import-btn-text').textContent = 'Import Students';
+
+            const zone = document.getElementById('import-drop-zone');
+            if (zone) {
+                zone.classList.remove('border-emerald-500', 'bg-emerald-50/10');
+                zone.classList.add('border-slate-200', 'bg-slate-50/50');
+            }
+        }
+
+        // Initialize drag and drop events
+        document.addEventListener('DOMContentLoaded', () => {
+            const zone = document.getElementById('import-drop-zone');
+            const fileInput = document.getElementById('import-file-input');
+
+            if (zone && fileInput) {
+                zone.addEventListener('click', () => fileInput.click());
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleSelectedFile(e.target.files[0]);
+                    }
+                });
+
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('border-slate-200', 'bg-slate-50/50');
+                    zone.classList.add('border-emerald-500', 'bg-emerald-50/10');
+                });
+
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    if (!selectedImportFile) {
+                        zone.classList.add('border-slate-200', 'bg-slate-50/50');
+                        zone.classList.remove('border-emerald-500', 'bg-emerald-50/10');
+                    }
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files.length > 0) {
+                        handleSelectedFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+        });
+
+        function handleSelectedFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                showToast('Please select a valid CSV file.', 'error');
+                resetImportState();
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('File size exceeds 5MB limit.', 'error');
+                resetImportState();
+                return;
+            }
+
+            selectedImportFile = file;
+            document.getElementById('file-status-text').innerHTML = `Selected: <span class="text-emerald-600 font-bold">${file.name}</span> (${(file.size / 1024).toFixed(1)} KB)`;
+            
+            const zone = document.getElementById('import-drop-zone');
+            if (zone) {
+                zone.classList.remove('border-slate-200', 'bg-slate-50/50');
+                zone.classList.add('border-emerald-500', 'bg-emerald-50/5');
+            }
+            
+            document.getElementById('submit-import-btn').disabled = false;
+        }
+
+        async function executeImport() {
+            if (!selectedImportFile) return;
+
+            const submitBtn = document.getElementById('submit-import-btn');
+            const btnText = document.getElementById('import-btn-text');
+            const btnSpinner = document.getElementById('import-btn-spinner');
+            const errorsContainer = document.getElementById('import-errors-container');
+            const errorsList = document.getElementById('import-errors-list');
+
+            // Set loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Importing...';
+            btnSpinner.classList.remove('hidden');
+            errorsContainer.classList.add('hidden');
+            errorsList.innerHTML = '';
+
+            const formData = new FormData();
+            formData.append('file', selectedImportFile);
+
+            try {
+                const response = await fetch('/institute/students/import', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast(result.message || 'Students imported successfully!', 'success');
+                    closeImportModal();
+                    fetchStudents();
+                    fetchDashboardStats();
+                } else {
+                    showToast(result.message || 'Import failed due to validation errors.', 'error');
+                    if (result.errors && result.errors.length > 0) {
+                        errorsContainer.classList.remove('hidden');
+                        errorsList.innerHTML = result.errors.map(err => `<li>${escapeHtml(err)}</li>`).join('');
+                    } else if (result.message) {
+                        errorsContainer.classList.remove('hidden');
+                        errorsList.innerHTML = `<li>${escapeHtml(result.message)}</li>`;
+                    }
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Import Students';
+                    btnSpinner.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                resetImportState();
+                showToast('Upload failed. If you modified the file after selecting it, please re-select it and try again.', 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
         let studentToDelete = null;

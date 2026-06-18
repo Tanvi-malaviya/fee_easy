@@ -25,6 +25,28 @@ class InstituteProfileController extends Controller
     }
 
     /**
+     * Delete the authenticated institute's account and revoke all tokens.
+     */
+    public function destroy(Request $request)
+    {
+        $institute = $request->user();
+
+        if (!$institute) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $institute->tokens()->delete();
+        $institute->fcm_token = null;
+        $institute->save();
+        $institute->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Institute account deleted successfully.'
+        ]);
+    }
+
+    /**
      * Update the authenticated institute's profile.
      */
     public function update(Request $request)

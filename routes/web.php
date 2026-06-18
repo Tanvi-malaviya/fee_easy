@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/super-debug', function () {
-    $inst = \App\Models\Institute::find(36);
+    $inst = \App\Models\Institute::latest()->first();
     if ($inst) {
         \Illuminate\Support\Facades\Auth::guard('institute')->login($inst);
     }
-    return redirect()->route('institute.profile.website.index');
+    return redirect()->route('institute.students.index');
 });
 
 // Admin Web Panel Routes (Jetstream/Auth)
@@ -142,6 +142,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
 
                 // Student Management
+                Route::get('/students/import-sample', [App\Http\Controllers\Web\Institute\StudentController::class, 'importSample'])->name('students.import.sample');
+                Route::post('/students/import', [App\Http\Controllers\Web\Institute\StudentController::class, 'import'])->name('students.import');
                 Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
                 Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
                 Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');

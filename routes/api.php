@@ -101,6 +101,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
             Route::post('/profile/payment/update', [InstituteProfileController::class, 'updatePaymentSettings']);
             Route::post('/profile/change-password', [InstituteProfileController::class, 'changePassword']);
+            Route::delete('/profile/delete', [InstituteProfileController::class, 'destroy']);
             Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo
 
             Route::post('/daily-updates', [InstituteDailyUpdateController::class, 'store']);
@@ -197,6 +198,7 @@ Route::prefix('v1')->group(function () {
 
             // Student Management
             Route::prefix('students')->group(function () {
+                Route::post('/import', [InstituteStudentController::class, 'import']);
                 Route::get('/', [InstituteStudentController::class, 'index']);
                 Route::post('/', [InstituteStudentController::class, 'store']);
                 Route::get('/{id}', [InstituteStudentController::class, 'show']);
@@ -310,6 +312,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/profile', [StudentProfileController::class, 'show']);
             Route::post('/profile/avatar', [StudentProfileController::class, 'updateAvatar']);
             Route::post('/profile/change-password', [StudentProfileController::class, 'changePassword']);
+            Route::delete('/profile/delete', [StudentProfileController::class, 'destroy']);
             Route::get('/dashboard', [StudentDashboardController::class, 'index']);
             Route::get('/fees', [StudentFeesController::class, 'index']);
             Route::get('/fees/{id}', [StudentFeesController::class, 'show']);
