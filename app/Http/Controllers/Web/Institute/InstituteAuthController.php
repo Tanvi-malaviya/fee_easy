@@ -223,12 +223,24 @@ class InstituteAuthController extends Controller
             $detection = \App\Models\DeviceSession::detect($request);
             $device = $detection['device'];
             $os = $detection['os'];
+            $sessionId = $detection['session_id'];
 
-            $existingSession = $institute->deviceSessions()
-                ->withTrashed()
-                ->where('device', $device)
-                ->where('os', $os)
-                ->first();
+            $existingSession = null;
+            if (!empty($sessionId)) {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $existingSession = $institute->deviceSessions()
+                        ->withTrashed()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
 
             if ($existingSession) {
                 if ($existingSession->trashed()) {
@@ -236,6 +248,7 @@ class InstituteAuthController extends Controller
                 }
                 $existingSession->update([
                     'token_id' => null,
+                    'session_id' => $sessionId,
                     'last_login' => now(),
                     'last_open' => now(),
                 ]);
@@ -243,6 +256,7 @@ class InstituteAuthController extends Controller
                 \App\Models\DeviceSession::create([
                     'institute_id' => $institute->id,
                     'token_id' => null,
+                    'session_id' => $sessionId,
                     'device' => $device,
                     'os' => $os,
                     'last_login' => now(),
@@ -364,13 +378,25 @@ class InstituteAuthController extends Controller
             $detection = \App\Models\DeviceSession::detect($request);
             $device = $detection['device'];
             $os = $detection['os'];
+            $sessionId = $detection['session_id'];
 
             // Look up existing session (including soft-deleted ones)
-            $existingSession = $institute->deviceSessions()
-                ->withTrashed()
-                ->where('device', $device)
-                ->where('os', $os)
-                ->first();
+            $existingSession = null;
+            if (!empty($sessionId)) {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $existingSession = $institute->deviceSessions()
+                        ->withTrashed()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
 
             $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
 
@@ -391,6 +417,7 @@ class InstituteAuthController extends Controller
                 }
                 $existingSession->update([
                     'token_id' => null,
+                    'session_id' => $sessionId,
                     'last_login' => now(),
                     'last_open' => now(),
                 ]);
@@ -398,6 +425,7 @@ class InstituteAuthController extends Controller
                 \App\Models\DeviceSession::create([
                     'institute_id' => $institute->id,
                     'token_id' => null,
+                    'session_id' => $sessionId,
                     'device' => $device,
                     'os' => $os,
                     'last_login' => now(),

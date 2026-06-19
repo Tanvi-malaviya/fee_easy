@@ -16,6 +16,7 @@ class DeviceSession extends Model
     protected $fillable = [
         'institute_id',
         'token_id',
+        'session_id',
         'device',
         'os',
         'last_login',
@@ -117,9 +118,21 @@ class DeviceSession extends Model
             }
         }
 
+        $sessionId = null;
+        if ($request->hasSession()) {
+            $sessionId = $request->session()->getId();
+        } else {
+            $sessionId = $request->input('device_id') 
+                ?: $request->input('uuid') 
+                ?: $request->header('X-Device-ID') 
+                ?: $request->header('Device-ID') 
+                ?: $request->header('X-Session-ID');
+        }
+
         return [
             'device' => $device ?: 'Unknown Device',
             'os' => $os ?: 'Unknown OS',
+            'session_id' => $sessionId,
         ];
     }
 }
