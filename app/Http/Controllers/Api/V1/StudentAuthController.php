@@ -118,11 +118,3 @@ class StudentAuthController extends Controller
         ]);
     }
 }
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Your password has been reset successfully and the new password has been sent to your email.',
-        ]);
-    }
-}
