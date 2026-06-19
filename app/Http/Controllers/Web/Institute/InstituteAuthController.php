@@ -459,11 +459,22 @@ class InstituteAuthController extends Controller
             $detection = \App\Models\DeviceSession::detect($request);
             $device = $detection['device'];
             $os = $detection['os'];
+            $sessionId = $detection['session_id'];
 
-            $session = $institute->deviceSessions()
-                ->where('device', $device)
-                ->where('os', $os)
-                ->first();
+            $session = null;
+            if (!empty($sessionId)) {
+                $session = $institute->deviceSessions()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $session = $institute->deviceSessions()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
 
             if ($session) {
                 $session->update(['token_id' => null]);
