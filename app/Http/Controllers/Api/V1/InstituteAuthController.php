@@ -286,20 +286,30 @@ class InstituteAuthController extends Controller
                 'message' => "Your institute account is currently marked as blocked. Please contact the administrator or support to activate your account."
             ], 403);
         }
-
         // Enforce 5 device limit
         $detection = \App\Models\DeviceSession::detect($request);
         $device = $detection['device'];
         $os = $detection['os'];
+        $sessionId = $detection['session_id'];
 
-        $existingSession = $institute->deviceSessions()
-            ->withTrashed()
-            ->where('device', $device)
-            ->where('os', $os)
-            ->first();
+        $existingSession = null;
+        if (!empty($sessionId)) {
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('session_id', $sessionId)
+                ->first();
+        } else {
+            if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('device', $device)
+                    ->where('os', $os)
+                    ->whereNull('session_id')
+                    ->first();
+            }
+        }
 
         $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
-
         if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
             return response()->json([
                 'status' => 'error',
@@ -429,14 +439,26 @@ class InstituteAuthController extends Controller
         $detection = \App\Models\DeviceSession::detect($request);
         $device = $detection['device'];
         $os = $detection['os'];
+        $sessionId = $detection['session_id'];
         $fcmToken = $request->input('fcm_token') ?: $request->input('fcm-token') ?: $request->input('fcm_device_token');
 
         // 2. Look up any existing session (including soft-deleted ones)
-        $existingSession = $institute->deviceSessions()
-            ->withTrashed()
-            ->where('device', $device)
-            ->where('os', $os)
-            ->first();
+        $existingSession = null;
+        if (!empty($sessionId)) {
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('session_id', $sessionId)
+                ->first();
+        } else {
+            if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('device', $device)
+                    ->where('os', $os)
+                    ->whereNull('session_id')
+                    ->first();
+            }
+        }
 
         if ($existingSession) {
             $oldTokenId = $existingSession->token_id;
@@ -447,6 +469,7 @@ class InstituteAuthController extends Controller
 
             $existingSession->update([
                 'token_id' => $tokenId,
+                'session_id' => $sessionId,
                 'last_login' => now(),
                 'last_open' => now(),
                 'fcm_token' => $fcmToken,
@@ -463,6 +486,7 @@ class InstituteAuthController extends Controller
         return \App\Models\DeviceSession::create([
             'institute_id' => $institute->id,
             'token_id' => $tokenId,
+            'session_id' => $sessionId,
             'device' => $device,
             'os' => $os,
             'last_login' => now(),
