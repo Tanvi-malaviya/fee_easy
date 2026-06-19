@@ -89,4 +89,32 @@ class ProfileController extends Controller
             'message' => 'Website template updated successfully.'
         ]);
     }
+
+    /**
+     * Terminate / log out a specific device session.
+     */
+    public function logoutDeviceSession($id)
+    {
+        $institute = Auth::guard('institute')->user();
+        
+        $session = \App\Models\DeviceSession::where('institute_id', $institute->id)
+            ->where('id', $id)
+            ->first();
+
+        if ($session) {
+            if ($session->token_id) {
+                \DB::table('personal_access_tokens')->where('id', $session->token_id)->delete();
+            }
+            $session->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Device session terminated successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Session not found.'
+        ], 404);
+    }
 }

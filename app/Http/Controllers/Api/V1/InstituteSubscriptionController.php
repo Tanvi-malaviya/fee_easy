@@ -240,6 +240,7 @@ class InstituteSubscriptionController extends Controller
             'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
             'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
             'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'upi_id'           => \App\Models\SystemSetting::get('payment_upi_id', '—'),
             'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
             'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
         ];

@@ -33,14 +33,24 @@ class FCMTokenController extends Controller
             ], 401);
         }
 
-        $user->fcm_token = $request->fcm_token;
-        $user->save();
+        if ($user instanceof \App\Models\Institute) {
+            $token = $user->currentAccessToken();
+            if ($token) {
+                \App\Models\DeviceSession::where('token_id', $token->id)
+                    ->update(['fcm_token' => $request->fcm_token]);
+            }
+            $fcmToken = $request->fcm_token;
+        } else {
+            $user->fcm_token = $request->fcm_token;
+            $user->save();
+            $fcmToken = $user->fcm_token;
+        }
 
         return response()->json([
             'status' => 'success',
             'message' => 'FCM token updated successfully.',
             'data' => [
-                'fcm_token' => $user->fcm_token,
+                'fcm_token' => $fcmToken,
             ],
         ]);
     }

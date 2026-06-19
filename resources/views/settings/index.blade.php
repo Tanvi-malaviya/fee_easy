@@ -121,6 +121,12 @@
                                 </div>
                             </div>
                             <div>
+                                <x-input-label for="payment_upi_id" value="UPI ID" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                <x-text-input id="payment_upi_id" name="settings[payment_upi_id]" type="text"
+                                    class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
+                                    value="{{ $settings['payment_upi_id'] ?? '' }}" placeholder="e.g., tuoora@paytm" />
+                            </div>
+                            <div>
                                 <x-input-label for="payment_qr_image" value="QR Code Image" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 
                                 <div class="flex items-center gap-4">

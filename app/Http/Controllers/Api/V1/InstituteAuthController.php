@@ -100,7 +100,9 @@ class InstituteAuthController extends Controller
             ]);
         }
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
         $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         try {
@@ -109,6 +111,8 @@ class InstituteAuthController extends Controller
             // Log or ignore gracefully
         }
 
+        $session = $this->handleDeviceSession($institute, $tokenId, $request);
+
         return response()->json([
             'status' => 'success',
             'message' => 'OTP verified successfully.',
@@ -116,6 +120,11 @@ class InstituteAuthController extends Controller
                 'token' => $accessToken,
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
+                'device' => $session->device,
+                'os' => $session->os,
+                'last_login' => $session->last_login ? $session->last_login->toDateTimeString() : null,
+                'last_open' => $session->last_open ? $session->last_open->toDateTimeString() : null,
+                'fcm_token' => $session->fcm_token,
             ]
         ]);
     }
@@ -258,9 +267,13 @@ class InstituteAuthController extends Controller
             ], 403);
         }
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
         $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
         $subscription = $institute->subscriptions()->latest()->first();
+
+        $session = $this->handleDeviceSession($institute, $tokenId, $request);
 
         return response()->json([
             'status' => 'success',
@@ -272,7 +285,14 @@ class InstituteAuthController extends Controller
                     'refresh_token' => $refreshToken,
                     'is_profile_setup' => $institute->isProfileComplete(),
                 ],
-                $institute->toArray()
+                $institute->toArray(),
+                [
+                    'device' => $session->device,
+                    'os' => $session->os,
+                    'last_login' => $session->last_login ? $session->last_login->toDateTimeString() : null,
+                    'last_open' => $session->last_open ? $session->last_open->toDateTimeString() : null,
+                    'fcm_token' => $session->fcm_token,
+                ]
             ),
             'subscription' => $subscription
         ]);
@@ -285,9 +305,11 @@ class InstituteAuthController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $user->fcm_token = null;
-        $user->save();
-        $user->currentAccessToken()->delete();
+        $currentToken = $user->currentAccessToken();
+        if ($currentToken) {
+            \App\Models\DeviceSession::where('token_id', $currentToken->id)->delete();
+            $currentToken->delete();
+        }
 
         return response()->json([
             'status' => 'success',
@@ -301,9 +323,28 @@ class InstituteAuthController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
+        $institute = $request->user();
+        $currentToken = $institute->currentAccessToken();
+        $session = null;
+        if ($currentToken) {
+            $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+            if ($session) {
+                $session->update(['last_open' => now()]);
+            }
+        }
+
         return response()->json([
             'status' => 'success',
-            'data' => $request->user()
+            'data' => array_merge(
+                $institute->toArray(),
+                [
+                    'device' => $session ? $session->device : null,
+                    'os' => $session ? $session->os : null,
+                    'last_login' => $session && $session->last_login ? $session->last_login->toDateTimeString() : null,
+                    'last_open' => $session && $session->last_open ? $session->last_open->toDateTimeString() : null,
+                    'fcm_token' => $session ? $session->fcm_token : null,
+                ]
+            )
         ]);
     }
 
@@ -332,6 +373,46 @@ class InstituteAuthController extends Controller
             'status' => 'success',
             'message' => 'Logo uploaded successfully.',
             'data' => ['logo' => $institute->logo],
+        ]);
+    }
+
+    /**
+     * Enforce strict 5-device limit and insert device session.
+     */
+    private function handleDeviceSession(Institute $institute, $tokenId, Request $request)
+    {
+        // 1. Detect device & OS
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+        $fcmToken = $request->input('fcm_token') ?: $request->input('fcm-token') ?: $request->input('fcm_device_token');
+
+        // 2. Check and enforce 5-device limit
+        $activeSessions = $institute->deviceSessions()->get();
+        if ($activeSessions->count() >= 5) {
+            // Find oldest session to prune
+            $sessionsToPrune = $institute->deviceSessions()
+                ->orderBy('last_login', 'asc')
+                ->limit($activeSessions->count() - 4) // leaves room for the new session
+                ->get();
+
+            foreach ($sessionsToPrune as $oldSession) {
+                if ($oldSession->token_id) {
+                    \DB::table('personal_access_tokens')->where('id', $oldSession->token_id)->delete();
+                }
+                $oldSession->delete();
+            }
+        }
+
+        // 3. Create the new session
+        return \App\Models\DeviceSession::create([
+            'institute_id' => $institute->id,
+            'token_id' => $tokenId,
+            'device' => $device,
+            'os' => $os,
+            'last_login' => now(),
+            'last_open' => now(),
+            'fcm_token' => $fcmToken,
         ]);
     }
 }

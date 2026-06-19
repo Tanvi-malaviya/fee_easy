@@ -17,9 +17,44 @@ class InstituteProfileController extends Controller
         $institute = $request->user();
         $subscription = $institute->subscriptions()->latest()->first();
 
+        $currentToken = $institute->currentAccessToken();
+        $session = null;
+        if ($currentToken) {
+            $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+            if ($session) {
+                $session->update(['last_open' => now()]);
+            }
+        }
+
+        // Get all active sessions for this institute
+        $activeSessions = \App\Models\DeviceSession::where('institute_id', $institute->id)
+            ->orderBy('last_login', 'desc')
+            ->get()
+            ->map(function ($s) use ($currentToken) {
+                return [
+                    'id' => $s->id,
+                    'device' => $s->device,
+                    'os' => $s->os,
+                    'last_login' => $s->last_login ? $s->last_login->toDateTimeString() : null,
+                    'last_open' => $s->last_open ? $s->last_open->toDateTimeString() : null,
+                    'fcm_token' => $s->fcm_token,
+                    'is_current' => $currentToken && $s->token_id == $currentToken->id,
+                ];
+            });
+
         return response()->json([
             'status' => 'success',
-            'data' => $institute,
+            'data' => array_merge(
+                $institute->toArray(),
+                [
+                    'device' => $session ? $session->device : null,
+                    'os' => $session ? $session->os : null,
+                    'last_login' => $session && $session->last_login ? $session->last_login->toDateTimeString() : null,
+                    'last_open' => $session && $session->last_open ? $session->last_open->toDateTimeString() : null,
+                    'fcm_token' => $session ? $session->fcm_token : null,
+                    'active_sessions' => $activeSessions,
+                ]
+            ),
             'subscription' => $subscription
         ]);
     }
@@ -36,8 +71,7 @@ class InstituteProfileController extends Controller
         }
 
         $institute->tokens()->delete();
-        $institute->fcm_token = null;
-        $institute->save();
+        $institute->deviceSessions()->delete();
         $institute->delete();
 
         return response()->json([
@@ -247,5 +281,33 @@ class InstituteProfileController extends Controller
                 'upi_qr_code_url' => $institute->upi_qr_code_url,
             ]
         ]);
+    }
+
+    /**
+     * Terminate / log out a specific device session.
+     */
+    public function logoutDeviceSession(Request $request, $id)
+    {
+        $institute = $request->user();
+        
+        $session = \App\Models\DeviceSession::where('institute_id', $institute->id)
+            ->where('id', $id)
+            ->first();
+
+        if ($session) {
+            if ($session->token_id) {
+                \DB::table('personal_access_tokens')->where('id', $session->token_id)->delete();
+            }
+            $session->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Device session terminated successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Session not found.'
+        ], 404);
     }
 }
