@@ -54,8 +54,41 @@ class TokenRefreshController extends Controller
         $tokenModel->delete();
 
         // Generate new access token (1 hour) and refresh token (24 hours)
-        $accessToken = $user->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
+        $accessTokenResult = $user->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $newTokenId = $accessTokenResult->accessToken->id;
+
         $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+
+        // Update the active device session with the new access token ID
+        if ($user instanceof \App\Models\Institute) {
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
+            $sessionId = $detection['session_id'];
+
+            $session = null;
+            if (!empty($sessionId)) {
+                $session = $user->deviceSessions()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $session = $user->deviceSessions()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
+
+            if ($session) {
+                $session->update([
+                    'token_id' => $newTokenId,
+                    'last_open' => now(),
+                ]);
+            }
+        }
 
         return response()->json([
             'status' => 'success',
