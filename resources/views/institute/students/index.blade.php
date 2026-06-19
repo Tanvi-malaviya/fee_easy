@@ -94,7 +94,7 @@
                         <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                                d="M7 3h7l4 4v14H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M12 12v6m0 0l-3-3m3 3l3-3" />
                         </svg>
                         Import
                     </button>
@@ -226,7 +226,7 @@
                 <div
                     class="bg-white w-full max-w-lg rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col mx-4">
                     <!-- Modal Header -->
-                    <div class="px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-between shrink-0 z-10">
+                    <div class="px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-between shrink-0 z-10">
                         <h3 class="text-base font-bold text-white tracking-tight">Bulk Import Students</h3>
                         <button type="button" onclick="closeImportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -237,20 +237,20 @@
 
                     <div class="p-6 overflow-y-auto max-h-[75vh]">
                         <!-- Instructions -->
-                        <div class="mb-4 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100/80">
-                            <h4 class="text-xs font-bold text-emerald-800 mb-1.5 flex items-center">
-                                <svg class="w-4 h-4 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="mb-4 p-4 bg-orange-50/50 rounded-xl border border-orange-100/80">
+                            <h4 class="text-xs font-bold text-orange-850 mb-1.5 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 Instructions for CSV Upload
                             </h4>
-                            <ul class="text-[10px] text-emerald-700/95 space-y-1 list-disc list-inside leading-relaxed font-medium">
+                            <ul class="text-[10px] text-orange-700/95 space-y-1 list-disc list-inside leading-relaxed font-medium">
                                 <li>Please download and use the template below to format your data.</li>
                                 <li>Required fields: Name, Email, Phone (10 digits), Standard, Date of Birth (YYYY-MM-DD), Guardian Name.</li>
                                
                             </ul>
                             <div class="mt-3 flex items-center">
-                                <a href="{{ route('institute.students.import.sample') }}" class="inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700 underline transition-all">
+                                <a href="{{ route('institute.students.import.sample') }}" class="inline-flex items-center text-xs font-bold text-primary hover:text-orange-600 underline transition-all">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
@@ -260,14 +260,14 @@
                         </div>
 
                         <!-- Drop Zone -->
-                        <div id="import-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/50 hover:bg-emerald-50/10 group mb-4">
+                        <div id="import-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-primary rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/50 hover:bg-orange-50/10 group mb-4">
                             <input type="file" id="import-file-input" accept=".csv" class="hidden">
-                            <div class="h-12 w-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-105 group-hover:border-emerald-100 transition-all">
-                                <svg class="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="h-12 w-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-105 group-hover:border-orange-100 transition-all">
+                                <svg class="w-6 h-6 text-slate-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                 </svg>
                             </div>
-                            <p class="text-xs font-bold text-slate-700 group-hover:text-emerald-600 transition-colors mb-1" id="file-status-text">Click to browse or drag & drop CSV</p>
+                            <p class="text-xs font-bold text-slate-700 group-hover:text-primary transition-colors mb-1" id="file-status-text">Click to browse or drag & drop CSV</p>
                             <p class="text-[10px] text-slate-400 font-medium">Only .csv files up to 5MB are allowed</p>
                         </div>
 
@@ -287,7 +287,7 @@
                         <!-- Actions -->
                         <div class="flex items-center space-x-3">
                             <button onclick="closeImportModal()" class="btn-white btn-sm flex-1">Cancel</button>
-                            <button id="submit-import-btn" onclick="executeImport()" class="btn-brand btn-sm flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-center" disabled>
+                            <button id="submit-import-btn" onclick="executeImport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-orange-600 text-white font-bold rounded-xl flex items-center justify-center" disabled>
                                 <span id="import-btn-text">Import Students</span>
                                 <div id="import-btn-spinner" class="hidden h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
                             </button>

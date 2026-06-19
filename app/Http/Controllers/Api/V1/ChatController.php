@@ -92,8 +92,21 @@ class ChatController extends Controller
 
         $message->load('sender', 'receiver');
 
+        $receiver = $message->receiver;
+        $hasFcm = false;
+        if ($receiver) {
+            if ($receiver instanceof Institute) {
+                $hasFcm = \App\Models\DeviceSession::where('institute_id', $receiver->id)
+                    ->whereNotNull('fcm_token')
+                    ->where('fcm_token', '!=', '')
+                    ->exists();
+            } else {
+                $hasFcm = !empty($receiver->fcm_token);
+            }
+        }
+
         // Trigger real-time FCM push notification to receiver mobile phone
-        if ($message->receiver && !empty($message->receiver->fcm_token)) {
+        if ($hasFcm) {
             $senderName = $user instanceof Institute
                 ? ($user->institute_name ?: ($user->name ?? 'Someone'))
                 : ($user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone');

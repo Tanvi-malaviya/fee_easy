@@ -123,6 +123,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
             Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
+            Route::delete('/profile/device-sessions/{id}', [App\Http\Controllers\Web\Institute\ProfileController::class, 'logoutDeviceSession'])->name('profile.device-sessions.destroy');
             
             // Manage Website CMS Routes
             Route::get('/profile/website', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'index'])->name('profile.website.index');
@@ -135,6 +136,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::post('/profile/website/social', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveSocialLinks'])->name('profile.website.social.save');
             Route::post('/profile/website/upload', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'uploadImage'])->name('profile.website.upload');
 
+            Route::get('/subscription', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showSubscriptionPage'])->name('subscription.index');
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 

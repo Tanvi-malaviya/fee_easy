@@ -134,17 +134,15 @@ class SubscriptionController extends Controller
         ]);
 
         // Send FCM Notification
-        if (!empty($institute->fcm_token)) {
-            try {
-                $fcmService = app(\App\Services\FCMService::class);
-                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                    'type' => 'subscription_alert',
-                    'plan_name' => $plan->name,
-                    'status' => 'assigned',
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Failed to send subscription assigned FCM: " . $e->getMessage());
-            }
+        try {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->sendToUser($institute, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'plan_name' => $plan->name,
+                'status' => 'assigned',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription assigned FCM: " . $e->getMessage());
         }
 
         Activity::log("New subscription assigned: {$subscription->plan_name} to {$subscription->institute->institute_name}");
@@ -209,17 +207,15 @@ class SubscriptionController extends Controller
         ]);
 
         // Send FCM Notification
-        if (!empty($institute->fcm_token)) {
-            try {
-                $fcmService = app(\App\Services\FCMService::class);
-                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                    'type' => 'subscription_alert',
-                    'plan_name' => $subscription->plan_name,
-                    'status' => 'extended',
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Failed to send subscription extended FCM: " . $e->getMessage());
-            }
+        try {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->sendToUser($institute, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'plan_name' => $subscription->plan_name,
+                'status' => 'extended',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription extended FCM: " . $e->getMessage());
         }
 
         Activity::log("Subscription extended for: {$subscription->institute->institute_name} (+{$request->days} days)");
@@ -307,17 +303,15 @@ class SubscriptionController extends Controller
         ]);
 
         // Send FCM Notification
-        if (!empty($institute->fcm_token)) {
-            try {
-                $fcmService = app(\App\Services\FCMService::class);
-                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                    'type' => 'subscription_alert',
-                    'plan_name' => $plan->name,
-                    'status' => 'changed',
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Failed to send subscription changed FCM: " . $e->getMessage());
-            }
+        try {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->sendToUser($institute, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'plan_name' => $plan->name,
+                'status' => 'changed',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription changed FCM: " . $e->getMessage());
         }
 
         Activity::log("Subscription plan changed to: {$plan->name} for {$subscription->institute->institute_name}");
@@ -408,17 +402,15 @@ class SubscriptionController extends Controller
             'is_read' => false,
         ]);
 
-        if (!empty($institute->fcm_token)) {
-            try {
-                $fcmService = app(\App\Services\FCMService::class);
-                $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
-                    'type' => 'subscription_alert',
-                    'plan_name' => $plan->name,
-                    'status' => 'approved',
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Failed to send subscription approved FCM: " . $e->getMessage());
-            }
+        try {
+            $fcmService = app(\App\Services\FCMService::class);
+            $fcmService->sendToUser($institute, $notifTitle, $notifBody, [
+                'type' => 'subscription_alert',
+                'plan_name' => $plan->name,
+                'status' => 'approved',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription approved FCM: " . $e->getMessage());
         }
 
         Activity::log("Manual renewal approved for {$institute->institute_name} (Plan: {$plan->name})");
@@ -450,12 +442,14 @@ class SubscriptionController extends Controller
             'is_read' => false,
         ]);
 
-        if (!empty($institute->fcm_token)) {
+        try {
             $fcmService = app(\App\Services\FCMService::class);
-            $fcmService->send($institute->fcm_token, $notifTitle, $notifBody, [
+            $fcmService->sendToUser($institute, $notifTitle, $notifBody, [
                 'type' => 'subscription_alert',
                 'status' => 'rejected',
             ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send subscription rejected FCM: " . $e->getMessage());
         }
 
         Activity::log("Manual renewal rejected for {$renewal->institute->institute_name}");

@@ -152,7 +152,8 @@
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-slate-800 leading-tight">Manage Website</h3>
-                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Select template and customize landing page</p>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Select template and customize
+                                    landing page</p>
                             </div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
@@ -178,7 +179,8 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-orange-50 text-[#FF6B00] border border-orange-100 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-orange-50 text-[#FF6B00] border border-orange-100 whitespace-nowrap">
                                 <span class="h-1 w-1 rounded-full bg-[#FF6B00] animate-ping"></span>
                                 Coming Soon
                             </span>
@@ -189,24 +191,7 @@
                         </div>
                     </button>
 
-                    <!-- Delete Account -->
-                    <button type="button" onclick="confirmInstituteDelete()"
-                        class="w-full py-2.5 px-5 flex items-center justify-between bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors group text-left rounded-b-[0.85rem] border-t border-slate-100">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="h-10 w-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Delete Account</h3>
-                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Permanently remove your institute account and revoke access.</p>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Danger</span>
-                    </button>
+
 
                     <!-- Terms & Conditions -->
                     <a href="https://tuoora.com/terms-conditions" target="_blank"
@@ -274,6 +259,26 @@
                         </svg>
                     </button>
 
+                    <!-- Delete Account -->
+                    <button type="button" onclick="confirmInstituteDelete()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between  text-primary transition-colors group text-left rounded-b-[0.85rem] border-t border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Delete Account</h3>
+                                <p class="text-[10px] text-slate-400  font-medium mt-0.5">Permanently remove your institute
+                                    account and revoke access.</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-primary  font-bold uppercase tracking-widest">Danger</span>
+                    </button>
+
                 </div>
             </div>
 
@@ -336,14 +341,16 @@
                 </div>
 
                 <!-- UPI & Payment settings show card -->
-                <div class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit">
+                <div
+                    class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <div class="w-1 h-3.5 bg-[#ff6c00] rounded-full"></div>
                             <h2 class="text-sm font-[550] text-slate-800 tracking-tight">UPI Payment Details</h2>
                         </div>
                         @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                            <button type="button" onclick="openPaymentModal()" class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
+                            <button type="button" onclick="openPaymentModal()"
+                                class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
                                 Edit Settings
                             </button>
                         @endif
@@ -353,12 +360,18 @@
                         <div class="space-y-3">
                             @if(auth()->guard('institute')->user()->upi_id)
                                 <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">UPI ID (VPA)</span>
-                                    <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl py-2 px-3">
-                                        <span class="text-xs font-bold text-slate-700 select-all">{{ auth()->guard('institute')->user()->upi_id }}</span>
-                                        <button onclick="navigator.clipboard.writeText('{{ auth()->guard('institute')->user()->upi_id }}'); showToast('UPI ID Copied!');" class="text-slate-400 hover:text-[#ff6c00] transition-colors p-1">
+                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">UPI ID
+                                        (VPA)</span>
+                                    <div
+                                        class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl py-2 px-3">
+                                        <span
+                                            class="text-xs font-bold text-slate-700 select-all">{{ auth()->guard('institute')->user()->upi_id }}</span>
+                                        <button
+                                            onclick="navigator.clipboard.writeText('{{ auth()->guard('institute')->user()->upi_id }}'); showToast('UPI ID Copied!');"
+                                            class="text-slate-400 hover:text-[#ff6c00] transition-colors p-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                             </svg>
                                         </button>
                                     </div>
@@ -367,10 +380,15 @@
 
                             @if(auth()->guard('institute')->user()->upi_qr_code_url)
                                 <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">QR Code</span>
-                                    <div class="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                                        <div class="h-28 w-28 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm flex items-center justify-center overflow-hidden">
-                                            <img id="profile-upi-qr-preview" src="{{ auth()->guard('institute')->user()->upi_qr_code_url }}" alt="UPI QR Code" class="w-full h-full object-contain">
+                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">QR
+                                        Code</span>
+                                    <div
+                                        class="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-3">
+                                        <div
+                                            class="h-28 w-28 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm flex items-center justify-center overflow-hidden">
+                                            <img id="profile-upi-qr-preview"
+                                                src="{{ auth()->guard('institute')->user()->upi_qr_code_url }}" alt="UPI QR Code"
+                                                class="w-full h-full object-contain">
                                         </div>
                                         <p class="text-[9px] text-slate-400 font-medium text-center mt-1.5">
                                             Scan QR code to pay student fees.
@@ -381,22 +399,91 @@
                         </div>
                     @else
                         <div class="text-center py-6">
-                            <div class="h-12 w-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <div
+                                class="h-12 w-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                             </div>
                             <h3 class="text-sm font-bold text-slate-700">Add UPI Details</h3>
-                            <p class="text-[10px] text-slate-400 font-medium mt-1 mb-4">Set up your UPI ID and QR code to enable fee payments.</p>
-                            <button type="button" onclick="openPaymentModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">
+                            <p class="text-[10px] text-slate-400 font-medium mt-1 mb-4">Set up your UPI ID and QR code to enable
+                                fee payments.</p>
+                            <button type="button" onclick="openPaymentModal()"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 4v16m8-8H4" />
                                 </svg>
                                 Add
                             </button>
                         </div>
                     @endif
                 </div>
+
+                <!-- Active Devices & Sessions Card -->
+                <div
+                    class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit mt-3">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1 h-3.5 bg-[#ff6c00] rounded-full"></div>
+                            <h2 class="text-sm font-[550] text-slate-800 tracking-tight">Active Devices & Sessions</h2>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-[#ff6c00] border border-orange-100">
+                            {{ auth()->guard('institute')->user()->deviceSessions->count() }} / 5 Devices
+                        </span>
+                    </div>
+
+                    @if(auth()->guard('institute')->user()->deviceSessions->isEmpty())
+                        <div class="text-center py-6">
+                            <div class="h-12 w-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-700">No Mobile Devices</h3>
+                            <p class="text-[10px] text-slate-400 font-medium mt-1">No mobile app or API login sessions are currently active.</p>
+                        </div>
+                    @else
+                        <div class="space-y-3">
+                            @foreach(auth()->guard('institute')->user()->deviceSessions as $sess)
+                                <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl p-3 relative group" id="device-session-{{ $sess->id }}">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center shrink-0">
+                                            @if(str_contains(strtolower($sess->os ?? ''), 'ios'))
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            @elseif(str_contains(strtolower($sess->os ?? ''), 'android'))
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="text-xs font-bold text-slate-700 leading-tight truncate">
+                                                {{ $sess->device ?: 'Unknown Device' }}
+                                            </h4>
+                                            <p class="text-[9px] text-slate-400 font-semibold mt-0.5">
+                                                {{ $sess->os ?: 'Unknown OS' }} &bull; Active {{ $sess->last_open ? $sess->last_open->diffForHumans() : 'N/A' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button onclick="terminateSession({{ $sess->id }})"
+                                        class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg font-bold text-[9px] uppercase tracking-wider transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shrink-0">
+                                        Log Out
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
             </div>
         </div>
 
@@ -409,7 +496,8 @@
         <div
             class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <!-- Header -->
-            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
                     <h3 class="text-base font-bold text-white leading-tight">Update Password</h3>
                     <p class="text-[10px] text-white/80 mt-0.5">Ensure your account stays secure with a strong password.
@@ -437,12 +525,20 @@
                                     d="M15 7a2 2 0 012 2m-2 4a5 5 0 111.707-9.707l3.707 3.707A1 1 0 0121 4v3h-2v2h-2v2h-2.293A5 5 0 0115 13zm-5-4a1 1 0 100-2 1 1 0 000 2z" />
                             </svg>
                         </span>
-                        <input type="password" name="current_password" id="pwd-current" placeholder="Enter current password" required
-                            class="input-with-icon" style="padding-right:38px">
+                        <input type="password" name="current_password" id="pwd-current" placeholder="Enter current password"
+                            required class="input-with-icon" style="padding-right:38px">
                         <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
-                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -461,8 +557,16 @@
                             class="input-with-icon" style="padding-right:38px">
                         <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
-                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
                         </button>
                     </div>
                     <p class="text-[9px] text-slate-400 flex items-center gap-1 ml-1 mt-0.5">
@@ -485,21 +589,32 @@
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </span>
-                        <input type="password" name="password_confirmation" id="pwd-confirm" placeholder="Re-enter new password" required
-                            class="input-with-icon" style="padding-right:38px">
+                        <input type="password" name="password_confirmation" id="pwd-confirm"
+                            placeholder="Re-enter new password" required class="input-with-icon" style="padding-right:38px">
                         <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
-                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
 
                 <!-- Inline Error Box -->
-                <div id="pwd-error" class="hidden bg-rose-50 border border-rose-100 rounded-xl p-2.5 flex items-start gap-2">
-                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div id="pwd-error"
+                    class="hidden bg-rose-50 border border-rose-100 rounded-xl p-2.5 flex items-start gap-2">
+                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p id="pwd-error-text" class="text-[10px] font-bold text-rose-600 leading-relaxed"></p>
                 </div>
@@ -527,7 +642,8 @@
         <div
             class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <!-- Header -->
-            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
                     <h3 class="text-base font-bold text-white leading-tight">UPI Payment Settings</h3>
                     <p class="text-[10px] text-white/80 mt-0.5">Configure UPI ID and QR code to enable direct online fee
@@ -632,7 +748,8 @@
         <div
             class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 relative">
             <!-- Top Gradient Accent -->
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 via-[#ff6c00] to-orange-500"></div>
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 via-[#ff6c00] to-orange-500">
+            </div>
 
             <!-- Close -->
             <button onclick="closeWhatsAppModal()"
@@ -646,15 +763,18 @@
                 <!-- Icon with Pulse Glow -->
                 <div class="relative mb-5">
                     <div class="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl animate-pulse"></div>
-                    <div class="h-16 w-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-inner relative z-10">
+                    <div
+                        class="h-16 w-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-inner relative z-10">
                         <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                         </svg>
                     </div>
                 </div>
 
                 <!-- Coming Soon Badge -->
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#ff6c00] text-[9px] font-black uppercase tracking-widest mb-3">
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#ff6c00] text-[9px] font-black uppercase tracking-widest mb-3">
                     <span class="h-1.5 w-1.5 rounded-full bg-[#ff6c00] animate-ping"></span>
                     Coming Soon
                 </span>
@@ -679,10 +799,12 @@
         <div
             class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
             <!-- Header -->
-            <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative shrink-0">
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative shrink-0">
                 <div>
                     <h3 class="text-base font-bold text-white leading-tight">Manage Website</h3>
-                    <p class="text-[10px] text-white/80 mt-0.5">Select and activate a website template for your institute landing page.</p>
+                    <p class="text-[10px] text-white/80 mt-0.5">Select and activate a website template for your institute
+                        landing page.</p>
                 </div>
                 <button onclick="closeWebsiteModal()" class="text-white/80 hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,18 +818,24 @@
                 <!-- Grid of Templates -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Template 1 Card -->
-                    <div id="template-card-1" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                    <div id="template-card-1"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
                         <div class="space-y-3">
-                            <div class="h-28 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden flex items-center justify-center shadow-inner">
-                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 1</span>
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    1</span>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between">
                                     <h4 class="text-sm font-bold text-slate-800">Classic Academic</h4>
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">Classic</span>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">Classic</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                                    A classic, structured academic layout using emerald-600 accents and standard clean sections.
+                                    A classic, structured academic layout using emerald-600 accents and standard clean
+                                    sections.
                                 </p>
                             </div>
                         </div>
@@ -721,7 +849,8 @@
                                 Activate
                             </button>
                         </div>
-                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                             </svg>
@@ -729,18 +858,24 @@
                     </div>
 
                     <!-- Template 2 Card -->
-                    <div id="template-card-2" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                    <div id="template-card-2"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
                         <div class="space-y-3">
-                            <div class="h-28 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 relative overflow-hidden flex items-center justify-center shadow-inner">
-                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 2</span>
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    2</span>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between">
                                     <h4 class="text-sm font-bold text-slate-800">Mint Glassmorphic</h4>
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">Glass</span>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">Glass</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                                    Beautiful modern cards with soft mint shadows, subtle glass layers, and interactive panels.
+                                    Beautiful modern cards with soft mint shadows, subtle glass layers, and interactive
+                                    panels.
                                 </p>
                             </div>
                         </div>
@@ -754,7 +889,8 @@
                                 Activate
                             </button>
                         </div>
-                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                             </svg>
@@ -762,18 +898,24 @@
                     </div>
 
                     <!-- Template 3 Card -->
-                    <div id="template-card-3" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                    <div id="template-card-3"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
                         <div class="space-y-3">
-                            <div class="h-28 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 relative overflow-hidden flex items-center justify-center shadow-inner">
-                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 3</span>
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    3</span>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between">
                                     <h4 class="text-sm font-bold text-slate-800">Cyber Indigo</h4>
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">Interactive</span>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">Interactive</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                                    Sleek theme with a sticky floating navigation bar, sliding indicator, and rich animation details.
+                                    Sleek theme with a sticky floating navigation bar, sliding indicator, and rich animation
+                                    details.
                                 </p>
                             </div>
                         </div>
@@ -787,7 +929,8 @@
                                 Activate
                             </button>
                         </div>
-                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                             </svg>
@@ -795,18 +938,24 @@
                     </div>
 
                     <!-- Template 4 Card -->
-                    <div id="template-card-4" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                    <div id="template-card-4"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
                         <div class="space-y-3">
-                            <div class="h-28 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 relative overflow-hidden flex items-center justify-center shadow-inner">
-                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 4</span>
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    4</span>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between">
                                     <h4 class="text-sm font-bold text-slate-800">Royal Corporate</h4>
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">Corporate</span>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">Corporate</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                                    A professional corporate theme focusing on structure, stats displays, and reliable authority.
+                                    A professional corporate theme focusing on structure, stats displays, and reliable
+                                    authority.
                                 </p>
                             </div>
                         </div>
@@ -820,7 +969,8 @@
                                 Activate
                             </button>
                         </div>
-                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                             </svg>
@@ -828,18 +978,24 @@
                     </div>
 
                     <!-- Template 5 Card -->
-                    <div id="template-card-5" class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                    <div id="template-card-5"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
                         <div class="space-y-3">
-                            <div class="h-28 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 relative overflow-hidden flex items-center justify-center shadow-inner">
-                                <span class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template 5</span>
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    5</span>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between">
                                     <h4 class="text-sm font-bold text-slate-800">Futuristic Neon</h4>
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100 whitespace-nowrap">Modern</span>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100 whitespace-nowrap">Modern</span>
                                 </div>
                                 <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                                    Futuristic timeline theme featuring milestones progress bars and ambient glow highlights.
+                                    Futuristic timeline theme featuring milestones progress bars and ambient glow
+                                    highlights.
                                 </p>
                             </div>
                         </div>
@@ -853,7 +1009,8 @@
                                 Activate
                             </button>
                         </div>
-                        <div class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                             </svg>
@@ -863,7 +1020,8 @@
             </div>
 
             <!-- Loader Spinner Overlay -->
-            <div id="website-loader-overlay" class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center hidden z-50">
+            <div id="website-loader-overlay"
+                class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center hidden z-50">
                 <div class="flex flex-col items-center gap-3">
                     <div class="h-10 w-10 border-4 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
                     <span class="text-xs font-bold text-slate-700 uppercase tracking-widest">Activating Template...</span>
@@ -873,18 +1031,24 @@
             <!-- Footer -->
             <div class="py-3 px-5 border-t border-slate-100 bg-slate-50 shrink-0 flex flex-col gap-2">
                 <!-- Public Website URL Banner (shown only when a template is active) -->
-                <div id="website-public-url-banner" class="hidden flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
-                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                <div id="website-public-url-banner"
+                    class="hidden flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                     </svg>
-                    <span class="text-[9px] font-bold text-emerald-700 uppercase tracking-widest shrink-0">Your Website:</span>
+                    <span class="text-[9px] font-bold text-emerald-700 uppercase tracking-widest shrink-0">Your
+                        Website:</span>
                     <a id="website-public-url-link" href="#" target="_blank"
                         class="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline truncate transition-colors">
                         —
                     </a>
-                    <button onclick="copyWebsiteUrl()" class="ml-auto shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors" title="Copy URL">
+                    <button onclick="copyWebsiteUrl()"
+                        class="ml-auto shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors" title="Copy URL">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </button>
                 </div>
@@ -1001,11 +1165,11 @@
                     }
 
                     document.getElementById('view-institute_name').innerHTML = `
-                                ${data.institute_name || data.name || 'Institute'}
-                                <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
-                                    ${data.institute_code || ''}
-                                </span>
-                            `;
+                                    ${data.institute_name || data.name || 'Institute'}
+                                    <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
+                                        ${data.institute_code || ''}
+                                    </span>
+                                `;
                     document.getElementById('view-city').innerText = data.city || 'Location';
                     document.getElementById('view-email').innerText = data.email || '';
 
@@ -1374,12 +1538,20 @@
         }
 
         function confirmInstituteDelete() {
+            const title = 'Delete Account';
             const message = 'Deleting your institute account is permanent. All data and tokens will be revoked. Do you want to continue?';
-            if (!window.confirm(message)) {
-                return;
-            }
-
-            deleteInstituteAccount();
+            showConfirmModal(
+                title,
+                message,
+                function () {
+                    deleteInstituteAccount();
+                },
+                'Delete Account',
+                'bg-primary shadow-primary/20 hover:bg-primary/80',
+                null,
+                'Danger Zone',
+                'primary'
+            );
         }
 
         async function deleteInstituteAccount() {
@@ -1413,6 +1585,51 @@
             } catch (error) {
                 console.error('Delete account error:', error);
                 showToast('Unable to delete account at this time.', 'error');
+            }
+        }
+        function terminateSession(id) {
+            const title = 'Logout Device';
+            const message = 'Are you sure you want to log out and terminate this device session?';
+            showConfirmModal(
+                title,
+                message,
+                function () {
+                    performSessionTermination(id);
+                },
+                'Log Out Device',
+                'bg-primary shadow-primary/20 hover:bg-primary/80',
+                null,
+                'Terminate Session',
+                'primary'
+            );
+        }
+
+        async function performSessionTermination(id) {
+            try {
+                const url = '{{ route("institute.profile.device-sessions.destroy", ":id") }}'.replace(':id', id);
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast(result.message || 'Device session terminated successfully.');
+                    const sessionRow = document.getElementById(`device-session-${id}`);
+                    if (sessionRow) {
+                        sessionRow.remove();
+                    }
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    showToast(result.message || 'Error terminating session.', 'error');
+                }
+            } catch (error) {
+                console.error('Session termination error:', error);
+                showToast('Something went wrong.', 'error');
             }
         }
     </script>

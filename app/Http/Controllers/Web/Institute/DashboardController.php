@@ -64,16 +64,38 @@ class DashboardController extends Controller
         // Payment/Bank settings from admin panel (SystemSetting)
         $paymentSettings = [
             'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
-            'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
-            'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
-            'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
-            'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
-            'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
+            'bank_name' => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account' => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc' => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'upi_id' => \App\Models\SystemSetting::get('payment_upi_id', '—'),
+            'qr_path' => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+            'qr_url' => \App\Models\SystemSetting::getQrUrl(),
         ];
 
         $hasPendingRenewal = $institute->subscriptionRenewals()->where('status', 'pending')->exists();
 
         return view('institute.dashboard', compact('stats', 'institute', 'recent_batches', 'recent_students', 'paymentSettings', 'activeSubscription', 'subscriptionDaysLeft', 'subscriptionStatus', 'hasPendingRenewal'));
+    }
+
+    /**
+     * Show the subscription payment details page for the iOS app.
+     */
+    public function showSubscriptionPage()
+    {
+        $institute = Auth::guard('institute')->user();
+
+        // Payment/Bank settings from admin panel (SystemSetting)
+        $paymentSettings = [
+            'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
+            'bank_name' => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account' => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc' => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'upi_id' => \App\Models\SystemSetting::get('payment_upi_id', '—'),
+            'qr_path' => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+            'qr_url' => \App\Models\SystemSetting::getQrUrl(),
+        ];
+
+        return view('institute.subscription.index', compact('institute', 'paymentSettings'));
     }
 
     /**
@@ -86,11 +108,12 @@ class DashboardController extends Controller
         // Payment/Bank settings from admin panel (SystemSetting)
         $paymentSettings = [
             'bank_holder_name' => \App\Models\SystemSetting::get('bank_holder_name', 'Tuoora Education'),
-            'bank_name'        => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
-            'bank_account'     => \App\Models\SystemSetting::get('bank_account_number', '—'),
-            'bank_ifsc'        => \App\Models\SystemSetting::get('bank_ifsc', '—'),
-            'qr_path'          => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
-            'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
+            'bank_name' => \App\Models\SystemSetting::get('bank_name', 'HDFC Bank'),
+            'bank_account' => \App\Models\SystemSetting::get('bank_account_number', '—'),
+            'bank_ifsc' => \App\Models\SystemSetting::get('bank_ifsc', '—'),
+            'upi_id' => \App\Models\SystemSetting::get('payment_upi_id', '—'),
+            'qr_path' => \App\Models\SystemSetting::get('payment_qr_path', 'payment_qr_code.png'),
+            'qr_url' => \App\Models\SystemSetting::getQrUrl(),
         ];
 
         return view('institute.subscription.renew', compact('institute', 'paymentSettings'));

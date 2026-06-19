@@ -38,15 +38,25 @@
                     </div>
 
                     <!-- Tab: QR -->
-                    <div id="tab-content-qr" class="h-[200px] flex flex-col items-center justify-center bg-white rounded-xl border border-slate-100 p-3 shadow-sm relative overflow-hidden group">
-                        <div class="relative w-full max-w-[130px] aspect-[4/5] rounded-lg overflow-hidden shadow-sm">
+                    <div id="tab-content-qr" class="min-h-[230px] py-4 flex flex-col items-center justify-center bg-white rounded-xl border border-slate-100 p-3 shadow-sm relative overflow-hidden group">
+                        <div class="relative w-full max-w-[110px] aspect-square rounded-lg overflow-hidden shadow-sm border border-slate-100">
                             <img src="{{ $paymentSettings['qr_url'] ?? asset('images/payment_qr_code.png') }}" alt="Payment QR Code" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500">
                         </div>
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mt-2 text-center">Scan with any UPI App</span>
+                        @if(!empty($paymentSettings['upi_id']) && $paymentSettings['upi_id'] !== '—')
+                            <div class="mt-2.5 flex items-center gap-2 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-lg max-w-full">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">UPI ID:</span>
+                                <span id="payment-upi-val" class="text-[10px] font-bold text-slate-700 select-all">{{ $paymentSettings['upi_id'] }}</span>
+                                <button type="button" onclick="copyUPIId()" class="text-slate-400 hover:text-[#ff6c00] transition-colors" title="Copy UPI ID">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                                </button>
+                            </div>
+                        @else
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-wider mt-2 text-center">Scan with any UPI App</span>
+                        @endif
                     </div>
 
                     <!-- Tab: Bank Details -->
-                    <div id="tab-content-bank" class="hidden h-[200px] flex-col justify-center bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
+                    <div id="tab-content-bank" class="hidden min-h-[230px] flex-col justify-center bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
                         <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Bank Transfer Details</h3>
                         <div class="space-y-2 text-[10px]">
                             <div class="flex justify-between border-b border-slate-50 pb-1">
@@ -141,6 +151,19 @@
             alert('Institute Details copied to clipboard!');
         }).catch(err => {
             console.error('Copy details failed: ', err);
+        });
+    }
+
+    function copyUPIId() {
+        const upiText = document.getElementById('payment-upi-val').innerText;
+        navigator.clipboard.writeText(upiText).then(() => {
+            if (typeof showToast === 'function') {
+                showToast('UPI ID copied to clipboard!');
+            } else {
+                alert('UPI ID copied to clipboard!');
+            }
+        }).catch(err => {
+            console.error('Copy UPI ID failed: ', err);
         });
     }
 

@@ -50,7 +50,7 @@
                     </svg>
                     Add Institute
                 </a>
-            </div>    <!-- @if(request()->has('search') || request()->has('status'))
+            </div> <!-- @if(request()->has('search') || request()->has('status'))
                     <a href="{{ route('institutes.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
                         Clear Filters
                     </a>
@@ -111,7 +111,8 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-bold text-gray-900 leading-tight">
-                                            {{ $institute->institute_name }}</div>
+                                            {{ $institute->institute_name }}
+                                        </div>
                                         <div class="text-xs text-gray-500">Owner: {{ $institute->name }}</div>
                                     </div>
                                 </div>
@@ -128,9 +129,9 @@
                                 <button type="button"
                                     onclick="togglePortalMenu(event, {{ $institute->id }}, '{{ $institute->status }}')"
                                     class="status-btn-{{ $institute->id }} no-loader px-2 py-0.5 inline-flex items-center justify-between text-[8.5px] font-bold uppercase tracking-widest leading-none rounded border transition cursor-pointer
-                                        @if($institute->status === 'active') bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
-                                        @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100
-                                        @else bg-gray-50 text-gray-700 border-gray-100/50 hover:bg-gray-100 @endif">
+                                            @if($institute->status === 'active') bg-green-50 text-green-700 border-green-100/50 hover:bg-green-100
+                                            @elseif($institute->status === 'blocked') bg-red-50 text-red-700 border-red-100/50 hover:bg-red-100
+                                            @else bg-gray-50 text-gray-700 border-gray-100/50 hover:bg-gray-100 @endif">
                                     {{ $institute->status }}
                                     <svg class="w-3 h-3 ml-2 opacity-60" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -176,13 +177,9 @@
                     @empty
                         <tr>
                             <td colspan="5" class="p-0">
-                                <x-empty-state 
-                                    title="No institutes found" 
-                                    subtitle="No institutes found matching your criteria. Try adjusting your search query or filters." 
-                                    icon="users"
-                                    plain="true"
-                                    class="py-12"
-                                />
+                                <x-empty-state title="No institutes found"
+                                    subtitle="No institutes found matching your criteria. Try adjusting your search query or filters."
+                                    icon="users" plain="true" class="py-12" />
                             </td>
                         </tr>
                     @endforelse
@@ -319,7 +316,8 @@
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <!-- Modal Dialog -->
-            <div class="inline-block px-6 py-6 overflow-hidden text-center align-middle transform bg-white rounded-2xl shadow-xl sm:my-8 sm:max-w-sm sm:w-full border border-gray-100">
+            <div
+                class="inline-block px-6 py-6 overflow-hidden text-center align-middle transform bg-white rounded-2xl shadow-xl sm:my-8 sm:max-w-sm sm:w-full border border-gray-100">
                 <div class="flex flex-col items-center">
                     <div class="flex items-center justify-center w-14 h-14 bg-red-50 rounded-full mb-4">
                         <svg class="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -328,7 +326,8 @@
                         </svg>
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-1" id="modal-title">Delete Institute?</h3>
-                    <p class="text-[10px] text-gray-500 font-medium px-4">All associated data will be permanently removed. This action cannot be undone. Are you sure you want to proceed?</p>
+                    <p class="text-[10px] text-gray-500 font-medium px-4">All associated data will be permanently
+                        removed. This action cannot be undone. Are you sure you want to proceed?</p>
                 </div>
 
                 <!-- Action Buttons -->
@@ -338,7 +337,8 @@
                     <form id="deleteForm" method="POST" action="" class="flex-1">
                         @csrf @method('DELETE')
                         <button type="submit"
-                            class="w-full py-2.5 text-[10px] font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition uppercase tracking-widest">Yes, Delete</button>
+                            class="w-full py-2.5 text-[10px] font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition uppercase tracking-widest">Yes,
+                            Delete</button>
                     </form>
                 </div>
             </div>

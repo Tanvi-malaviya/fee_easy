@@ -18,7 +18,7 @@ class ParentAuthController extends Controller
 
         $parent = StudentParent::where('email', $request->email)->first();
 
-        if (! $parent || ! Hash::check($request->password, $parent->password)) {
+        if (!$parent || !Hash::check($request->password, $parent->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials.',

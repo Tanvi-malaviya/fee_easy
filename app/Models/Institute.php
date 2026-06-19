@@ -35,7 +35,6 @@ class Institute extends Authenticatable
         'otp',
         'otp_expires_at',
         'email_verified_at',
-        'fcm_token',
         'upi_id',
         'upi_qr_code',
         'template_id',
@@ -121,7 +120,7 @@ class Institute extends Authenticatable
         // waiting on admin review.
         if ($latestRenewal && $latestRenewal->status === 'pending') {
             $status = Subscription::STATUS_PENDING;
-        } elseif ($latestRenewal && $latestRenewal->status === 'rejected' && ! $hasActivePlan) {
+        } elseif ($latestRenewal && $latestRenewal->status === 'rejected' && !$hasActivePlan) {
             // Last renewal was rejected and there is no active plan to fall back on.
             $status = Subscription::STATUS_REJECTED;
         } elseif ($subscription) {
@@ -131,10 +130,10 @@ class Institute extends Authenticatable
         }
 
         return [
-            'status'    => $status,
-            'label'     => Subscription::labelFor($status),
+            'status' => $status,
+            'label' => Subscription::labelFor($status),
             'days_left' => $subscription?->days_left,
-            'end_date'  => optional($subscription?->end_date)->toDateString(),
+            'end_date' => optional($subscription?->end_date)->toDateString(),
             'plan_name' => $subscription?->plan_name,
         ];
     }
@@ -217,6 +216,11 @@ class Institute extends Authenticatable
     public function staffSalaries()
     {
         return $this->hasMany(StaffSalary::class);
+    }
+
+    public function deviceSessions()
+    {
+        return $this->hasMany(DeviceSession::class);
     }
 
     protected static function boot()

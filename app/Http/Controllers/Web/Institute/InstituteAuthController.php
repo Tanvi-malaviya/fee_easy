@@ -350,11 +350,6 @@ class InstituteAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $user = Auth::guard('institute')->user();
-        if ($user) {
-            $user->fcm_token = null;
-            $user->save();
-        }
         Auth::guard('institute')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

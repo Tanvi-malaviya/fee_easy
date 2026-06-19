@@ -42,8 +42,7 @@
             <div class="flex flex-wrap items-center gap-3">
                 <a href="{{ route('institute.students.edit', $student->id) }}"
                     class="px-5 py-1.5 bg-white border-2 border-[#008080] text-[#008080] hover:bg-teal-50/50 rounded-xl font-bold text-sm transition-all flex items-center group shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-[#008080]" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-2 text-[#008080]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
@@ -51,8 +50,7 @@
                 </a>
                 <button onclick="openDeleteModal()"
                     class="px-5 py-1.5 bg-white border-2 border-rose-500 text-rose-500 hover:bg-rose-50/50 rounded-xl font-bold text-sm transition-all flex items-center group shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-rose-500" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-2 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -86,7 +84,8 @@
                                 <p class="text-sm font-bold text-slate-700">{{ $averageGrade }}/10</p>
                             </div>
                             <div class="{{ $feeStatusBg }} rounded-xl px-3 py-2 border {{ $feeStatusBorder }} min-w-[90px]">
-                                <p class="text-[8px] font-bold {{ $feeStatusLabel }} uppercase tracking-widest mb-0.5">Payment
+                                <p class="text-[8px] font-bold {{ $feeStatusLabel }} uppercase tracking-widest mb-0.5">
+                                    Payment
                                     Status</p>
                                 <p class="text-sm font-bold {{ $feeStatusValue }}">
                                     {{ $feeStatusText }}
@@ -105,15 +104,19 @@
                 <div class="md:absolute md:top-4 md:right-4 flex flex-row gap-2 mt-4 md:mt-0 justify-center">
                     <button onclick="sendPasswordEmail({{ $student->id }})" id="btn-send-pass"
                         class="px-4 py-1.5 bg-white border-2 border-amber-500 text-amber-500 hover:bg-amber-50/50 rounded-xl font-bold text-xs transition-all flex items-center justify-center group shadow-sm">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-amber-500 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <svg class="w-3.5 h-3.5 mr-1.5 text-amber-500 transition-transform group-hover:rotate-12"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                         Forgot Password
                     </button>
                     <button onclick="openResetPasswordModal()"
                         class="px-4 py-1.5 bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50/50 rounded-xl font-bold text-xs transition-all flex items-center justify-center group shadow-sm">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-600 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-600 transition-transform group-hover:scale-110"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         Reset Password
                     </button>
@@ -143,25 +146,27 @@
                     </div>
 
                     @if($balance > 0)
-                    @if(Auth::guard('institute')->user()->hasActiveSubscription())
-                    <button onclick="sendFeeReminder({{ $student->id }})" id="btn-fee-reminder"
-                        class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
-                        <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        Send Fee Reminder
-                    </button>
-                    @else
-                    <button onclick="handleExpiredSubscription(event)" id="btn-fee-reminder"
-                        class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
-                        <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        Send Fee Reminder
-                    </button>
-                    @endif
+                        @if(Auth::guard('institute')->user()->hasActiveSubscription())
+                            <button onclick="sendFeeReminder({{ $student->id }})" id="btn-fee-reminder"
+                                class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                                <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                Send Fee Reminder
+                            </button>
+                        @else
+                            <button onclick="handleExpiredSubscription(event)" id="btn-fee-reminder"
+                                class="w-full mt-3 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:translate-y-[-1px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                                <svg class="w-3.5 h-3.5 text-white animate-bounce" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                Send Fee Reminder
+                            </button>
+                        @endif
                     @endif
                 </div>
 
@@ -171,7 +176,7 @@
                         <span class="font-bold text-slate-600">{{ $student->standard }}</span>
                     </div>
                     <div class="flex justify-between text-[10px]">
-                        <span class="font-bold text-slate-400 uppercase">    Fee</span>
+                        <span class="font-bold text-slate-400 uppercase"> Fee</span>
                         <span class="font-bold text-slate-600">₹{{ number_format($student->monthly_fee) }}</span>
                     </div>
                 </div>
@@ -217,11 +222,20 @@
                     </p>
                 </div>
                 <div class="lg:col-span-4 pt-3 border-t border-slate-50">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Residential Address</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                        Residential Address
+                    </p>
+
                     <p class="text-sm font-medium text-slate-600 leading-relaxed max-w-3xl">
-                        {{ $student->address_line_1 }}@if($student->address_line_2), {{ $student->address_line_2 }} @endif,
-                        {{ $student->city }}@if($student->state), {{ $student->state }} @endif @if($student->pincode) -
-                        {{ $student->pincode }} @endif
+                        @if($student->address_line_1 || $student->address_line_2 || $student->city || $student->state || $student->pincode)
+                            {{ $student->address_line_1 }}
+                            @if($student->address_line_2), {{ $student->address_line_2 }} @endif
+                            @if($student->city), {{ $student->city }} @endif
+                            @if($student->state), {{ $student->state }} @endif
+                            @if($student->pincode) - {{ $student->pincode }} @endif
+                        @else
+                            N/A
+                        @endif
                     </p>
                 </div>
             </div>
@@ -240,7 +254,8 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <tr
+                                class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                 <th class="pb-3 pl-2">Date / Month</th>
                                 <th class="pb-3">Total Fee</th>
                                 <th class="pb-3">Paid Amount</th>
@@ -260,7 +275,8 @@
                                         $statusBg = 'bg-amber-50 text-amber-600 border-amber-100';
                                     }
                                 @endphp
-                                <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 cursor-pointer transition-colors" onclick="window.location.href='{{ route('institute.fees.receipts.show', $fee->id) }}'">
+                                <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 cursor-pointer transition-colors"
+                                    onclick="window.location.href='{{ route('institute.fees.receipts.show', $fee->id) }}'">
                                     <td class="py-3 pl-2 font-bold text-slate-700">
                                         {{ \Carbon\Carbon::parse($fee->date)->format('M Y') }}
                                     </td>
@@ -268,7 +284,8 @@
                                     <td class="py-3 font-bold text-emerald-600">₹{{ number_format($fee->paid_amount) }}</td>
                                     <td class="py-3 font-bold text-rose-500">₹{{ number_format($remaining) }}</td>
                                     <td class="py-3">
-                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $statusBg }}">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $statusBg }}">
                                             {{ $fee->status ?: ($remaining == 0 ? 'Paid' : 'Unpaid') }}
                                         </span>
                                     </td>
@@ -289,14 +306,16 @@
                 </div>
             @else
                 <div class="flex flex-col items-center justify-center py-6 text-center">
-                    <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 mb-2 border border-slate-100">
+                    <div
+                        class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 mb-2 border border-slate-100">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Fee Records Found</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">This student doesn't have any registered monthly fee cycles yet.</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">This student doesn't have any registered monthly fee cycles
+                        yet.</p>
                 </div>
             @endif
         </div>
@@ -309,13 +328,16 @@
     <!-- Reset Password Modal -->
     <div id="reset-password-modal" class="fixed inset-0 z-[200] hidden overflow-y-auto">
         <!-- Backdrop -->
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeResetPasswordModal()"></div>
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeResetPasswordModal()">
+        </div>
 
         <!-- Modal Wrapper -->
         <div class="flex min-h-full items-center justify-center p-4 text-center">
-            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-100">
+            <div
+                class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-100">
                 <!-- Close Button -->
-                <button onclick="closeResetPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="closeResetPasswordModal()"
+                    class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -324,60 +346,77 @@
                 <!-- Modal Content -->
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100">
+                        <div
+                            class="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <div>
                             <h3 class="text-base font-bold text-slate-800">Reset Student Password</h3>
-                            <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Direct Password Update</p>
+                            <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Direct Password
+                                Update</p>
                         </div>
                     </div>
 
                     <!-- Description -->
                     <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                        Update the password for <span class="font-bold text-slate-700">{{ $student->name }}</span>. The new password must satisfy the platform password policy.
+                        Update the password for <span class="font-bold text-slate-700">{{ $student->name }}</span>. The new
+                        password must satisfy the platform password policy.
                     </p>
 
                     <!-- Form -->
                     <form id="reset-password-form" onsubmit="submitResetPassword(event)">
                         @csrf
                         <div class="mb-4 relative">
-                            <label for="new_password" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">New Password</label>
+                            <label for="new_password"
+                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">New
+                                Password</label>
                             <div class="relative">
                                 <input type="password" name="password" id="new_password" required
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all pr-10"
                                     placeholder="Enter secure password">
-                                <button type="button" onclick="togglePasswordVisibility('new_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                <button type="button" onclick="togglePasswordVisibility('new_password', this)"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                                     <svg class="w-4 h-4 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                    <svg class="w-4 h-4 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                    <svg class="w-4 h-4 eye-closed hidden" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
                                     </svg>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Policy checklist -->
-                        <div class="mb-5 bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-[11px] text-slate-500 space-y-1.5 font-medium">
-                            <p class="font-bold text-slate-600 uppercase tracking-widest text-[9px] mb-1">Password Requirements:</p>
+                        <div
+                            class="mb-5 bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-[11px] text-slate-500 space-y-1.5 font-medium">
+                            <p class="font-bold text-slate-600 uppercase tracking-widest text-[9px] mb-1">Password
+                                Requirements:</p>
                             <div class="flex items-center gap-2" id="req-length">
-                                <span class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
+                                <span
+                                    class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
                                 <span>8 to 15 characters</span>
                             </div>
                             <div class="flex items-center gap-2" id="req-upper">
-                                <span class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
+                                <span
+                                    class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
                                 <span>At least 1 uppercase letter</span>
                             </div>
                             <div class="flex items-center gap-2" id="req-digit">
-                                <span class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
+                                <span
+                                    class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
                                 <span>At least 1 digit (number)</span>
                             </div>
                             <div class="flex items-center gap-2" id="req-special">
-                                <span class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
+                                <span
+                                    class="bullet w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200"></span>
                                 <span>At least 1 special character (@#$% etc.)</span>
                             </div>
                         </div>
@@ -442,7 +481,7 @@
             const btn = document.getElementById('btn-send-pass');
             if (typeof toggleLoader === 'function') toggleLoader(true);
             btn.disabled = true;
-            
+
             try {
                 const response = await fetch(`/institute/students/${studentId}/send-password`, {
                     method: 'POST',
@@ -499,21 +538,21 @@
         }
 
         // --- Live password criteria check ---
-        document.getElementById('new_password').addEventListener('input', function() {
+        document.getElementById('new_password').addEventListener('input', function () {
             const val = this.value;
-            
+
             // Length: 8-15
             const lenValid = val.length >= 8 && val.length <= 15;
             updateReqIndicator('req-length', lenValid);
-            
+
             // Uppercase
             const upperValid = /[A-Z]/.test(val);
             updateReqIndicator('req-upper', upperValid);
-            
+
             // Digit
             const digitValid = /[0-9]/.test(val);
             updateReqIndicator('req-digit', digitValid);
-            
+
             // Special Char
             const specialValid = /[\W_]/.test(val);
             updateReqIndicator('req-special', specialValid);
@@ -540,7 +579,7 @@
             event.preventDefault();
             const password = document.getElementById('new_password').value;
             const btn = document.getElementById('btn-submit-reset');
-            
+
             if (typeof toggleLoader === 'function') toggleLoader(true);
             btn.disabled = true;
 
@@ -554,9 +593,9 @@
                     },
                     body: JSON.stringify({ password: password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.status === 'success') {
                     if (typeof showToast === 'function') showToast(data.message, 'success');
                     closeResetPasswordModal();
