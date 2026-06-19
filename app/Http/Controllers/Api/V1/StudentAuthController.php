@@ -48,6 +48,10 @@ class StudentAuthController extends Controller
     public function logout(Request $request)
     {
         $user = $request->user();
+        \Log::info('API Student logout called', [
+            'user_id' => $user ? $user->id : null,
+            'user_class' => $user ? get_class($user) : null,
+        ]);
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
