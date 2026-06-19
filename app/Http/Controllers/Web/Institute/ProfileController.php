@@ -102,10 +102,13 @@ class ProfileController extends Controller
             ->first();
 
         if ($session) {
-            if ($session->token_id) {
-                \DB::table('personal_access_tokens')->where('id', $session->token_id)->delete();
-            }
+            $tokenId = $session->token_id;
+            $session->update(['token_id' => null]);
             $session->delete();
+
+            if ($tokenId) {
+                \DB::table('personal_access_tokens')->where('id', $tokenId)->delete();
+            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'Device session terminated successfully.'

@@ -100,6 +100,26 @@ class InstituteAuthController extends Controller
             ]);
         }
 
+        // Enforce 5 device limit
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+
+        $existingSession = $institute->deviceSessions()
+            ->withTrashed()
+            ->where('device', $device)
+            ->where('os', $os)
+            ->first();
+
+        $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+
+        if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
+            ], 422);
+        }
+
         $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
         $accessToken = $accessTokenResult->plainTextToken;
         $tokenId = $accessTokenResult->accessToken->id;
@@ -267,6 +287,26 @@ class InstituteAuthController extends Controller
             ], 403);
         }
 
+        // Enforce 5 device limit
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+
+        $existingSession = $institute->deviceSessions()
+            ->withTrashed()
+            ->where('device', $device)
+            ->where('os', $os)
+            ->first();
+
+        $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+
+        if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
+            ], 422);
+        }
+
         $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
         $accessToken = $accessTokenResult->plainTextToken;
         $tokenId = $accessTokenResult->accessToken->id;
@@ -307,7 +347,11 @@ class InstituteAuthController extends Controller
 
         $currentToken = $user->currentAccessToken();
         if ($currentToken) {
-            \App\Models\DeviceSession::where('token_id', $currentToken->id)->delete();
+            $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+            if ($session) {
+                $session->update(['token_id' => null]);
+                $session->delete();
+            }
             $currentToken->delete();
         }
 
@@ -387,21 +431,32 @@ class InstituteAuthController extends Controller
         $os = $detection['os'];
         $fcmToken = $request->input('fcm_token') ?: $request->input('fcm-token') ?: $request->input('fcm_device_token');
 
-        // 2. Check and enforce 5-device limit
-        $activeSessions = $institute->deviceSessions()->get();
-        if ($activeSessions->count() >= 5) {
-            // Find oldest session to prune
-            $sessionsToPrune = $institute->deviceSessions()
-                ->orderBy('last_login', 'asc')
-                ->limit($activeSessions->count() - 4) // leaves room for the new session
-                ->get();
+        // 2. Look up any existing session (including soft-deleted ones)
+        $existingSession = $institute->deviceSessions()
+            ->withTrashed()
+            ->where('device', $device)
+            ->where('os', $os)
+            ->first();
 
-            foreach ($sessionsToPrune as $oldSession) {
-                if ($oldSession->token_id) {
-                    \DB::table('personal_access_tokens')->where('id', $oldSession->token_id)->delete();
-                }
-                $oldSession->delete();
+        if ($existingSession) {
+            $oldTokenId = $existingSession->token_id;
+
+            if ($existingSession->trashed()) {
+                $existingSession->restore();
             }
+
+            $existingSession->update([
+                'token_id' => $tokenId,
+                'last_login' => now(),
+                'last_open' => now(),
+                'fcm_token' => $fcmToken,
+            ]);
+
+            if ($oldTokenId) {
+                \DB::table('personal_access_tokens')->where('id', $oldTokenId)->delete();
+            }
+
+            return $existingSession;
         }
 
         // 3. Create the new session

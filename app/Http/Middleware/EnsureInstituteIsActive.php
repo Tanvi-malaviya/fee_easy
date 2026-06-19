@@ -29,6 +29,32 @@ class EnsureInstituteIsActive
         }
 
         if ($institute) {
+            // Check active session existence for Web Guard specifically
+            if (Auth::guard('institute')->check() && !$request->routeIs('institute.logout')) {
+                $detection = \App\Models\DeviceSession::detect($request);
+                $device = $detection['device'];
+                $os = $detection['os'];
+
+                $session = $institute->deviceSessions()
+                    ->where('device', $device)
+                    ->where('os', $os)
+                    ->first();
+
+                if (!$session) {
+                    Auth::guard('institute')->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect()->route('institute.login')->withErrors([
+                        'email' => 'Your session was terminated from another device.',
+                    ]);
+                } else {
+                    $session->update([
+                        'last_open' => now()
+                    ]);
+                }
+            }
+
             if ($institute->status !== 'active') {
                 if ($request->expectsJson() || $request->is('api/*')) {
                     // Exclude essential endpoints (logout, profile check, fcm, app-versions) from block

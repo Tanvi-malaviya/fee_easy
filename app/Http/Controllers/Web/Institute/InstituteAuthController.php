@@ -219,7 +219,36 @@ class InstituteAuthController extends Controller
             Session::save();
 
             Auth::guard('institute')->login($institute);
+            // Register/reactivate web session in device_sessions
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
 
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('device', $device)
+                ->where('os', $os)
+                ->first();
+
+            if ($existingSession) {
+                if ($existingSession->trashed()) {
+                    $existingSession->restore();
+                }
+                $existingSession->update([
+                    'token_id' => null,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            } else {
+                \App\Models\DeviceSession::create([
+                    'institute_id' => $institute->id,
+                    'token_id' => null,
+                    'device' => $device,
+                    'os' => $os,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            }
             try {
                 Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name, route('institute.login')));
             } catch (\Exception $e) {
@@ -329,6 +358,53 @@ class InstituteAuthController extends Controller
         if (Auth::guard('institute')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            $institute = Auth::guard('institute')->user();
+
+            // Detect device & OS
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
+
+            // Look up existing session (including soft-deleted ones)
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('device', $device)
+                ->where('os', $os)
+                ->first();
+
+            $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+
+            if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+                Auth::guard('institute')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Maximum device limit reached (5 devices). Please log out of another device first.',
+                ])->onlyInput('email');
+            }
+
+            // Create or reactivate session (token_id is null for web panel)
+            if ($existingSession) {
+                if ($existingSession->trashed()) {
+                    $existingSession->restore();
+                }
+                $existingSession->update([
+                    'token_id' => null,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            } else {
+                \App\Models\DeviceSession::create([
+                    'institute_id' => $institute->id,
+                    'token_id' => null,
+                    'device' => $device,
+                    'os' => $os,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            }
+
             if ($remember) {
                 \Illuminate\Support\Facades\Cookie::queue('institute_email', $request->email, 43200);
                 \Illuminate\Support\Facades\Cookie::queue('institute_password', $request->password, 43200);
@@ -350,6 +426,23 @@ class InstituteAuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $institute = Auth::guard('institute')->user();
+        if ($institute) {
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
+
+            $session = $institute->deviceSessions()
+                ->where('device', $device)
+                ->where('os', $os)
+                ->first();
+
+            if ($session) {
+                $session->update(['token_id' => null]);
+                $session->delete();
+            }
+        }
+
         Auth::guard('institute')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class DeviceSession extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'device_sessions';
 
@@ -65,6 +67,18 @@ class DeviceSession extends Model
             $detectedDevice = 'Unknown Device';
 
             if ($userAgent) {
+                // Determine browser name
+                $browser = 'Web Browser';
+                if (preg_match('/edg/i', $userAgent)) {
+                    $browser = 'Edge';
+                } elseif (preg_match('/chrome|crios/i', $userAgent)) {
+                    $browser = 'Chrome';
+                } elseif (preg_match('/firefox|fxios/i', $userAgent)) {
+                    $browser = 'Firefox';
+                } elseif (preg_match('/safari/i', $userAgent) && !preg_match('/chrome|crios/i', $userAgent)) {
+                    $browser = 'Safari';
+                }
+
                 // OS detection
                 if (preg_match('/iphone/i', $userAgent)) {
                     $detectedOs = 'iOS';
@@ -77,7 +91,7 @@ class DeviceSession extends Model
                     $detectedDevice = 'iPod';
                 } elseif (preg_match('/android/i', $userAgent)) {
                     $detectedOs = 'Android';
-                    // Try to extract Android device model from User-Agent: e.g. Android 10; SM-A505F Build/QP1A.190711.020
+                    // Try to extract Android device model from User-Agent
                     if (preg_match('/android\s+[^;]+;\s+([^;)]+)/i', $userAgent, $matches)) {
                         $detectedDevice = trim($matches[1]);
                     } else {
@@ -85,13 +99,13 @@ class DeviceSession extends Model
                     }
                 } elseif (preg_match('/windows/i', $userAgent)) {
                     $detectedOs = 'Windows';
-                    $detectedDevice = 'Windows PC';
+                    $detectedDevice = "{$browser} on Windows";
                 } elseif (preg_match('/macintosh|mac os x/i', $userAgent)) {
                     $detectedOs = 'macOS';
-                    $detectedDevice = 'Mac';
+                    $detectedDevice = "{$browser} on Mac";
                 } elseif (preg_match('/linux/i', $userAgent)) {
                     $detectedOs = 'Linux';
-                    $detectedDevice = 'Linux PC';
+                    $detectedDevice = "{$browser} on Linux";
                 }
             }
 
