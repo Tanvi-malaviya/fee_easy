@@ -51,9 +51,51 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = $request->user();
+        \Log::info('API General AuthController logout called', [
+            'user_id' => $user ? $user->id : null,
+            'user_class' => $user ? get_class($user) : null,
+        ]);
         if ($user) {
             $user->fcm_token = null;
             $user->save();
+
+            // Clear device session if the user is an Institute
+            if ($user instanceof \App\Models\Institute) {
+                $currentToken = $user->currentAccessToken();
+                if ($currentToken) {
+                    $isTransient = $currentToken instanceof \Laravel\Sanctum\TransientToken;
+                    $session = null;
+                    if (!$isTransient) {
+                        $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+                    }
+                    if (!$session) {
+                        $detection = \App\Models\DeviceSession::detect($request);
+                        $device = $detection['device'];
+                        $os = $detection['os'];
+                        $sessionId = $detection['session_id'];
+
+                        if (!empty($sessionId)) {
+                            $session = $user->deviceSessions()
+                                ->where('session_id', $sessionId)
+                                ->first();
+                        } else {
+                            if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                                $session = $user->deviceSessions()
+                                    ->where('device', $device)
+                                    ->where('os', $os)
+                                    ->whereNull('session_id')
+                                    ->first();
+                            }
+                        }
+                    }
+
+                    if ($session) {
+                        $session->update(['token_id' => null]);
+                        $session->delete();
+                    }
+                }
+            }
+
             $user->currentAccessToken()->delete();
         }
 

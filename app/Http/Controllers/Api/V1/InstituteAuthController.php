@@ -362,7 +362,11 @@ class InstituteAuthController extends Controller
 
         $currentToken = $user->currentAccessToken();
         if ($currentToken) {
-            $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+            $isTransient = $currentToken instanceof \Laravel\Sanctum\TransientToken;
+            $session = null;
+            if (!$isTransient) {
+                $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
+            }
             if (!$session) {
                 // Fallback to match by session_id or device/os
                 $detection = \App\Models\DeviceSession::detect($request);
