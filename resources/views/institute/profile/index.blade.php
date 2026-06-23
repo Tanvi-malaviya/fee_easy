@@ -466,9 +466,25 @@
                                             @endif
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <h4 class="text-xs font-bold text-slate-700 leading-tight truncate">
-                                                {{ $sess->device ?: 'Unknown Device' }}
-                                            </h4>
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <h4 class="text-xs font-bold text-slate-700 leading-tight truncate">
+                                                    {{ $sess->device ?: 'Unknown Device' }}
+                                                </h4>
+                                                @if(!empty($sess->token_id))
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                                        App
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-100">
+                                                        Web
+                                                    </span>
+                                                @endif
+                                                @if($sess->session_id === Session::getId())
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                                        Current Session
+                                                    </span>
+                                                @endif
+                                            </div>
                                             <p class="text-[9px] text-slate-400 font-semibold mt-0.5">
                                                 {{ $sess->os ?: 'Unknown OS' }} &bull; Active {{ $sess->last_open ? $sess->last_open->diffForHumans() : 'N/A' }}
                                             </p>
@@ -1623,7 +1639,11 @@
                     if (sessionRow) {
                         sessionRow.remove();
                     }
-                    setTimeout(() => window.location.reload(), 800);
+                    if (result.redirect) {
+                        setTimeout(() => window.location.href = result.redirect, 800);
+                    } else {
+                        setTimeout(() => window.location.reload(), 800);
+                    }
                 } else {
                     showToast(result.message || 'Error terminating session.', 'error');
                 }
