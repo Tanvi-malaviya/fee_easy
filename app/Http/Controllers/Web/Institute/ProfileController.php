@@ -103,12 +103,25 @@ class ProfileController extends Controller
 
         if ($session) {
             $tokenId = $session->token_id;
+            $sessionId = $session->session_id;
             $session->update(['token_id' => null]);
             $session->delete();
 
             if ($tokenId) {
                 \DB::table('personal_access_tokens')->where('id', $tokenId)->delete();
             }
+
+            if ($sessionId && $sessionId === session()->getId()) {
+                Auth::guard('institute')->logout();
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Your current session has been terminated.',
+                    'redirect' => route('institute.login')
+                ]);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Device session terminated successfully.'
