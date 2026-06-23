@@ -102,6 +102,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
             Route::post('/profile/payment/update', [InstituteProfileController::class, 'updatePaymentSettings']);
             Route::post('/profile/change-password', [InstituteProfileController::class, 'changePassword']);
+            Route::post('/profile/template/update', [InstituteProfileController::class, 'updateTemplate']);
             Route::delete('/profile/delete', [InstituteProfileController::class, 'destroy']);
             Route::delete('/profile/device-sessions/{id}', [InstituteProfileController::class, 'logoutDeviceSession']);
             Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo

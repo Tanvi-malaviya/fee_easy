@@ -1,12 +1,12 @@
 {{--
-    Left brand panel for institute auth pages.
-    Optional variables:
-      $brandHeadline  string  – big headline (default tagline)
-      $brandSubtext   string  – supporting line(s)
-      $brandSteps     array   – when set, renders vertical steps instead of the modules grid.
-                                each item: ['title' => ..., 'desc' => ...]
-      $activeStep     int     – which step is currently active (1-based). Steps before it
-                                render as done, after it as pending. Default 1.
+Left brand panel for institute auth pages.
+Optional variables:
+$brandHeadline string – big headline (default tagline)
+$brandSubtext string – supporting line(s)
+$brandSteps array – when set, renders vertical steps instead of the modules grid.
+each item: ['title' => ..., 'desc' => ...]
+$activeStep int – which step is currently active (1-based). Steps before it
+render as done, after it as pending. Default 1.
 --}}
 @php
     $modules = $modules ?? [
@@ -68,4 +68,3 @@
 
     <div class="brand-footer">© {{ date('Y') }} Tuoora · {{ $brandFooterTagline }}</div>
 </aside>
-

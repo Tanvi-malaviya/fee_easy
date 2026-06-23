@@ -116,6 +116,38 @@
                         </svg>
                     </button>
 
+                    <!-- UPI Payment Details -->
+                    <button type="button" onclick="openPaymentModal()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">UPI Payment Details</h3>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Configure UPI ID and payment QR code</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
+                                <span class="inline-flex items-center justify-center h-5 w-5 rounded-full bg-emerald-50 text-emerald-500 border border-emerald-100 shadow-sm shrink-0" title="UPI Details Configured">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
+                            @endif
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+
+
                     <!-- Subscription Plan -->
                     <a href="{{ route('institute.plans.index') }}"
                         class="py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
@@ -278,8 +310,8 @@
                         </div>
                         <span class="text-[10px] text-primary  font-bold uppercase tracking-widest">Danger</span>
                     </button>
-
                 </div>
+
             </div>
 
             <!-- Subscription -->
@@ -288,19 +320,19 @@
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-6 relative overflow-hidden h-fit">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-800 tracking-tight">Current Active Plan</h3>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span id="plan-title" class="text-sm font-bold text-slate-800 uppercase tracking-wider">
+                            <h3 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
+                                <span>Current Active Plan -</span>
+                                <span id="plan-title" class="text-sm font-bold text-[#ff6c00] uppercase tracking-wider">
                                     Loading...
                                 </span>
-                            </div>
+                            </h3>
                         </div>
 
                         <div
                             class="h-10 w-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
                             </svg>
                         </div>
                     </div>
@@ -338,87 +370,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- UPI & Payment settings show card -->
-                <div
-                    class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-1 h-3.5 bg-[#ff6c00] rounded-full"></div>
-                            <h2 class="text-sm font-[550] text-slate-800 tracking-tight">UPI Payment Details</h2>
-                        </div>
-                        @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                            <button type="button" onclick="openPaymentModal()"
-                                class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
-                                Edit Settings
-                            </button>
-                        @endif
-                    </div>
-
-                    @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                        <div class="space-y-3">
-                            @if(auth()->guard('institute')->user()->upi_id)
-                                <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">UPI ID
-                                        (VPA)</span>
-                                    <div
-                                        class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl py-2 px-3">
-                                        <span
-                                            class="text-xs font-bold text-slate-700 select-all">{{ auth()->guard('institute')->user()->upi_id }}</span>
-                                        <button
-                                            onclick="navigator.clipboard.writeText('{{ auth()->guard('institute')->user()->upi_id }}'); showToast('UPI ID Copied!');"
-                                            class="text-slate-400 hover:text-[#ff6c00] transition-colors p-1">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(auth()->guard('institute')->user()->upi_qr_code_url)
-                                <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">QR
-                                        Code</span>
-                                    <div
-                                        class="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                                        <div
-                                            class="h-28 w-28 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm flex items-center justify-center overflow-hidden">
-                                            <img id="profile-upi-qr-preview"
-                                                src="{{ auth()->guard('institute')->user()->upi_qr_code_url }}" alt="UPI QR Code"
-                                                class="w-full h-full object-contain">
-                                        </div>
-                                        <p class="text-[9px] text-slate-400 font-medium text-center mt-1.5">
-                                            Scan QR code to pay student fees.
-                                        </p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @else
-                        <div class="text-center py-6">
-                            <div
-                                class="h-12 w-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-700">Add UPI Details</h3>
-                            <p class="text-[10px] text-slate-400 font-medium mt-1 mb-4">Set up your UPI ID and QR code to enable
-                                fee payments.</p>
-                            <button type="button" onclick="openPaymentModal()"
-                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Add
-                            </button>
-                        </div>
-                    @endif
                 </div>
 
                 <!-- Active Devices & Sessions Card -->
@@ -491,7 +442,7 @@
                                         </div>
                                     </div>
                                     <button onclick="terminateSession({{ $sess->id }})"
-                                        class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg font-bold text-[9px] uppercase tracking-wider transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shrink-0">
+                                        class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg font-bold text-[9px] uppercase tracking-wider transition-all duration-200 shrink-0">
                                         Log Out
                                     </button>
                                 </div>
