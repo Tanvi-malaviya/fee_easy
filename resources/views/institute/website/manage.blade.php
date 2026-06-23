@@ -705,7 +705,7 @@
                         </div>
                         
                         <div class="flex items-center gap-1.5 mt-3.5 pt-2.5 border-t border-slate-100">
-                            <a href="{{ route('templates.preview', $id) }}" target="_blank"
+                            <a href="{{ route('institute.templates.preview', $id) }}" target="_blank"
                                 class="flex-1 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg font-bold text-[8px] uppercase tracking-wider text-center transition">
                                 Preview
                             </a>

@@ -135,6 +135,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::post('/profile/website/events', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveEvents'])->name('profile.website.events.save');
             Route::post('/profile/website/social', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveSocialLinks'])->name('profile.website.social.save');
             Route::post('/profile/website/upload', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'uploadImage'])->name('profile.website.upload');
+            Route::get('/templates/{id}', [App\Http\Controllers\Web\WebsiteController::class, 'preview'])->name('templates.preview');
 
             Route::get('/subscription', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showSubscriptionPage'])->name('subscription.index');
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
@@ -305,8 +306,5 @@ Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteContr
     ->where('nameSlug', '[a-z0-9\-]+');      // slug = lowercase letters, digits, hyphens
 
 
-// =========================================================================
-// WEBSITE TEMPLATES TEST & CUSTOMIZER ROUTES
-// =========================================================================
-Route::get('/templates/{id}', [App\Http\Controllers\Web\WebsiteController::class, 'preview'])->name('templates.preview');
+
 
