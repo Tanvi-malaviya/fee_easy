@@ -43,6 +43,7 @@ class InstituteAuthController extends Controller
             'otp' => $otp,
             'otp_expires_at' => Carbon::now()->addMinutes(10),
             'status' => 'pending',
+            'register_source' => 'app',
         ]);
 
         try {
