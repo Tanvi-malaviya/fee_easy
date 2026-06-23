@@ -86,33 +86,55 @@
     .free-trial-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
+        gap: 0.6rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
         border-radius: 9999px;
-        padding: 0.45rem 1rem;
-        font-size: 0.78rem;
-        font-weight: 700;
+        padding: 0.5rem 1.15rem;
+        font-size: 0.76rem;
+        font-weight: 800;
         color: #ffffff;
-        margin-top: 1.25rem;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        margin-top: 1.35rem;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         width: fit-content;
         align-self: flex-start;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 8px 32px rgba(255, 108, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        letter-spacing: 0.03em;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .free-trial-badge:hover {
+        transform: translateY(-2px) scale(1.02);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.12) 100%);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 12px 36px rgba(255, 108, 0, 0.25), 0 0 15px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
 
     .free-trial-badge .badge-dot {
-        width: 7px;
-        height: 7px;
-        background-color: #10b981; /* Emerald-500 */
+        position: relative;
+        width: 8px;
+        height: 8px;
+        background-color: #ffffff;
         border-radius: 50%;
-        animation: pulse-dot 1.8s infinite ease-in-out;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        shrink-0: 1;
     }
 
-    @keyframes pulse-dot {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.4); opacity: 0.6; }
+    .free-trial-badge .badge-dot::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        opacity: 0;
+        animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    @keyframes pulse-ring {
+        0% { transform: scale(0.5); opacity: 0; }
+        50% { opacity: 0.8; }
+        100% { transform: scale(1.8); opacity: 0; }
     }
 
     /* ---------- Modules grid ---------- */

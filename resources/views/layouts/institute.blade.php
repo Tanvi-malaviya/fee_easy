@@ -332,7 +332,7 @@
         <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100 flex flex-col items-center text-center"
             id="logout-modal-content">
             <!-- Center Icon -->
-            <div class="h-16 w-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 border border-rose-100 mb-5">
+            <div class="h-16 w-16 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 border border-orange-100 mb-5">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -340,7 +340,7 @@
             </div>
             
             <h3 class="text-xl font-black text-slate-900 tracking-tight mb-2 uppercase">Sign Out</h3>
-            <p class="text-xs font-bold text-rose-500 uppercase tracking-[0.2em] mb-4">Session End</p>
+            <p class="text-xs font-bold text-orange-500 uppercase tracking-[0.2em] mb-4">Session End</p>
             <p class="text-sm font-semibold text-slate-500 mb-8 leading-relaxed">
                 Are you sure you want to log out of your session?<br>You will need to log in again to access your dashboard.
             </p>
@@ -349,7 +349,7 @@
                 <button onclick="closeLogoutModal()"
                     class="flex-1 px-5 py-3 bg-white border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50 active:scale-95 transition-all">Cancel</button>
                 <button onclick="submitLogout()"
-                    class="flex-1 px-5 py-3 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-900/20 hover:bg-rose-700 active:scale-95 transition-all">Sign Out</button>
+                    class="flex-1 px-5 py-3 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-900/20 hover:bg-orange-700 active:scale-95 transition-all">Sign Out</button>
             </div>
         </div>
     </div>

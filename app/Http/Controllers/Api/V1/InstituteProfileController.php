@@ -60,6 +60,8 @@ class InstituteProfileController extends Controller
                     'last_open' => $s->last_open ? $s->last_open->toDateTimeString() : null,
                     'fcm_token' => $s->fcm_token,
                     'is_current' => $isCurrent,
+                    'is_app' => !empty($s->token_id),
+                    'session_type' => !empty($s->token_id) ? 'app' : 'web',
                 ];
             });
 
@@ -333,5 +335,29 @@ class InstituteProfileController extends Controller
             'status' => 'error',
             'message' => 'Session not found.'
         ], 404);
+    }
+
+    /**
+     * Update the website template for the authenticated institute.
+     */
+    public function updateTemplate(Request $request)
+    {
+        $institute = $request->user();
+
+        $validated = $request->validate([
+            'template_id' => ['required', 'integer', 'between:1,5'],
+        ]);
+
+        $institute->update([
+            'template_id' => $validated['template_id']
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Website template updated successfully.',
+            'data' => [
+                'template_id' => $institute->template_id
+            ]
+        ]);
     }
 }
