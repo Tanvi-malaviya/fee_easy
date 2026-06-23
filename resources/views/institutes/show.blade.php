@@ -51,6 +51,13 @@
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</span>
                         <p class="text-sm font-bold text-gray-900 mt-1">{{ $institute->name }}</p>
                     </div>
+                    <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Reg. Source</span>
+                        <p class="mt-1">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider whitespace-nowrap @if(($institute->register_source ?? 'web') === 'app') bg-indigo-50 text-indigo-600 border border-indigo-100 @else bg-blue-50 text-blue-600 border border-blue-100 @endif">
+                                {{ $institute->register_source ?? 'web' }}
+                            </span>
+                        </p>
+                    </div>
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</span>
                         <p class="text-sm font-bold text-gray-700 mt-1 break-all">{{ $institute->email }}</p>
                     </div>

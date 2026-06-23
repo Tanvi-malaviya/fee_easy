@@ -30,6 +30,12 @@
     <div class="brand-headline">
         <h2>{{ $brandHeadline }}</h2>
         <p>{{ $brandSubtext }}</p>
+        @if(isset($showTrialBadge) && $showTrialBadge)
+            <div class="free-trial-badge">
+                <span class="badge-dot"></span>
+                <span>1-Month Free Trial Included</span>
+            </div>
+        @endif
     </div>
 
     @isset($brandSteps)

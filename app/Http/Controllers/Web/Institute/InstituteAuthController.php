@@ -188,6 +188,7 @@ class InstituteAuthController extends Controller
                 $institute->update([
                     'email_verified_at' => now(),
                     'status' => 'active',
+                    'register_source' => 'web',
                 ]);
             } else {
                 $institute = Institute::create([
@@ -198,6 +199,7 @@ class InstituteAuthController extends Controller
                     'password' => $data['password'],
                     'email_verified_at' => now(),
                     'status' => 'active',
+                    'register_source' => 'web',
                 ]);
             }
 

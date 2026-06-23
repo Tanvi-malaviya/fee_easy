@@ -18,19 +18,40 @@ class InstituteProfileController extends Controller
         $subscription = $institute->subscriptions()->latest()->first();
 
         $currentToken = $institute->currentAccessToken();
+        $isTransient = $currentToken instanceof \Laravel\Sanctum\TransientToken;
         $session = null;
-        if ($currentToken) {
+        if ($currentToken && !$isTransient) {
             $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
-            if ($session) {
-                $session->update(['last_open' => now()]);
+        }
+
+        if (!$session) {
+            $detection = \App\Models\DeviceSession::detect($request);
+            $sessionId = $detection['session_id'];
+            if (!empty($sessionId)) {
+                $session = $institute->deviceSessions()
+                    ->where('session_id', $sessionId)
+                    ->first();
             }
+        }
+
+        if ($session) {
+            $session->update(['last_open' => now()]);
         }
 
         // Get all active sessions for this institute
         $activeSessions = \App\Models\DeviceSession::where('institute_id', $institute->id)
             ->orderBy('last_login', 'desc')
             ->get()
-            ->map(function ($s) use ($currentToken) {
+            ->map(function ($s) use ($currentToken, $isTransient, $request) {
+                $isCurrent = false;
+                if ($currentToken) {
+                    if (!$isTransient) {
+                        $isCurrent = $s->token_id == $currentToken->id;
+                    } else {
+                        $detection = \App\Models\DeviceSession::detect($request);
+                        $isCurrent = !empty($detection['session_id']) && $s->session_id === $detection['session_id'];
+                    }
+                }
                 return [
                     'id' => $s->id,
                     'device' => $s->device,
@@ -38,7 +59,7 @@ class InstituteProfileController extends Controller
                     'last_login' => $s->last_login ? $s->last_login->toDateTimeString() : null,
                     'last_open' => $s->last_open ? $s->last_open->toDateTimeString() : null,
                     'fcm_token' => $s->fcm_token,
-                    'is_current' => $currentToken && $s->token_id == $currentToken->id,
+                    'is_current' => $isCurrent,
                 ];
             });
 

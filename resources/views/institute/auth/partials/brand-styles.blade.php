@@ -83,6 +83,38 @@
         max-width: 30rem;
     }
 
+    .free-trial-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 9999px;
+        padding: 0.45rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-top: 1.25rem;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        width: fit-content;
+        align-self: flex-start;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .free-trial-badge .badge-dot {
+        width: 7px;
+        height: 7px;
+        background-color: #10b981; /* Emerald-500 */
+        border-radius: 50%;
+        animation: pulse-dot 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
     /* ---------- Modules grid ---------- */
     .module-grid {
         margin-top: 2.25rem;

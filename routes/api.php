@@ -66,6 +66,7 @@ use App\Http\Controllers\Api\V1\FCMTokenController;
 */
 
 Route::post('/book-demo', [DemoRequestController::class, 'store']);
+Route::get('/public-plans', [PlanController::class, 'index']);
 
 Route::prefix('v1')->group(function () {
 

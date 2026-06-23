@@ -89,6 +89,9 @@
                             Location</th>
                         <th scope="col"
                             class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Source</th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Status</th>
                         <th scope="col"
                             class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -124,6 +127,13 @@
                             <td class="px-6 py-3">
                                 <div class="text-sm text-gray-900">{{ $institute->city ?? 'N/A' }}</div>
                                 <div class="text-xs text-gray-500">{{ $institute->state ?? '' }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border 
+                                    @if(($institute->register_source ?? 'web') === 'app') bg-indigo-50/70 text-indigo-700 border-indigo-100/50
+                                    @else bg-blue-50/70 text-blue-700 border-blue-100/50 @endif">
+                                    {{ $institute->register_source ?? 'web' }}
+                                </span>
                             </td>
                             <td class="px-6 py-3">
                                 <button type="button"
@@ -176,7 +186,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-0">
+                            <td colspan="6" class="p-0">
                                 <x-empty-state title="No institutes found"
                                     subtitle="No institutes found matching your criteria. Try adjusting your search query or filters."
                                     icon="users" plain="true" class="py-12" />

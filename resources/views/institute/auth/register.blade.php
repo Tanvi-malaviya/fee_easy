@@ -196,6 +196,7 @@
     <div class="auth-shell">
         @include('institute.auth.partials.brand-panel', [
             'brandSubtext' => 'Set up your institute in three quick steps and start managing students, fees and staff right away.',
+            'showTrialBadge' => true,
             'brandSteps' => [
                 ['title' => 'Register', 'desc' => 'Create your institute account'],
                 ['title' => 'Verify Email', 'desc' => 'Confirm with a secure OTP'],

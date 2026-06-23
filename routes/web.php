@@ -96,7 +96,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::post('/resend-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resendOtp'])->name('resend-otp');
 
     // Authenticated Routes
-    Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
+    Route::match(['get', 'post'], '/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
 
     // Password Reset Routes
     Route::get('/forgot-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showForgotPassword'])->name('password.request');
