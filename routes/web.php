@@ -229,6 +229,12 @@ Route::prefix('institute')->name('institute.')->group(function () {
             });
         });
     });
+
+    // Public Institute Website Route (for subdomain rewritten by Nginx)
+    Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteController::class, 'show'])
+        ->name('website.subdomain')
+        ->where('instituteCode', '[a-zA-Z0-9]+')
+        ->where('nameSlug', '[a-z0-9\-]+');
 });
 
 Route::prefix('admin')->group(function () {
@@ -295,7 +301,7 @@ Route::get('/mail-preview/fee-invoice', function () {
 // URL: /{institute_code}/{institute_name_slug}  e.g. /123456/noble-academy
 Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteController::class, 'show'])
     ->name('institute.website')
-    ->where('instituteCode', '[0-9]+')       // institute_code is always numeric
+    ->where('instituteCode', '[a-zA-Z0-9]+')       // support alphanumeric institute codes
     ->where('nameSlug', '[a-z0-9\-]+');      // slug = lowercase letters, digits, hyphens
 
 
