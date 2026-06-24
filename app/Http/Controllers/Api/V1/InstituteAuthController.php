@@ -355,31 +355,57 @@ class InstituteAuthController extends Controller
     public function logout(Request $request)
     {
         $user = $request->user();
-        \Log::info('API Institute logout called', [
-            'user_id' => $user ? $user->id : null,
+
+        \Log::info('[Institute Logout] START', [
+            'user_id'    => $user ? $user->id : null,
             'user_class' => $user ? get_class($user) : null,
-            'headers' => $request->headers->all(),
+            'bearer'     => $request->bearerToken() ? substr($request->bearerToken(), 0, 20).'...' : null,
         ]);
+
         if (!$user || !($user instanceof Institute)) {
+            \Log::warning('[Institute Logout] Unauthorized');
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $currentToken = $user->currentAccessToken();
+
+        \Log::info('[Institute Logout] Token', [
+            'token_id'    => $currentToken ? $currentToken->id : null,
+            'token_name'  => $currentToken ? $currentToken->name : null,
+            'is_transient' => $currentToken instanceof \Laravel\Sanctum\TransientToken,
+        ]);
+
+        $allSessions = \App\Models\DeviceSession::where('institute_id', $user->id)->get(['id','token_id','device','os']);
+        \Log::info('[Institute Logout] Active sessions in DB', ['sessions' => $allSessions->toArray()]);
+
         if ($currentToken) {
             $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+
+            \Log::info('[Institute Logout] Session lookup', [
+                'found'            => $session ? true : false,
+                'session_id'       => $session ? $session->id : null,
+                'session_device'   => $session ? $session->device : null,
+                'session_token_id' => $session ? $session->token_id : null,
+            ]);
 
             $sessionTerminated = false;
             if ($session) {
                 $session->terminate();
                 $sessionTerminated = true;
+                \Log::info('[Institute Logout] Session terminated', ['session_id' => $session->id]);
             }
             if (!$sessionTerminated) {
                 $currentToken->delete();
+                \Log::warning('[Institute Logout] No session matched — only deleted token', ['token_id' => $currentToken->id]);
             }
+        } else {
+            \Log::warning('[Institute Logout] currentAccessToken() is null — token may be expired already');
         }
 
+        \Log::info('[Institute Logout] END');
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Logged out successfully',
         ]);
     }
