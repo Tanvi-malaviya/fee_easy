@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class InstituteAuthController extends Controller
 {
@@ -354,55 +355,43 @@ class InstituteAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $user = $request->user();
+        $bearerToken = $request->bearerToken();
 
-        \Log::info('[Institute Logout] START', [
-            'user_id'    => $user ? $user->id : null,
-            'user_class' => $user ? get_class($user) : null,
-            'bearer'     => $request->bearerToken() ? substr($request->bearerToken(), 0, 20).'...' : null,
-        ]);
-
-        if (!$user || !($user instanceof Institute)) {
-            \Log::warning('[Institute Logout] Unauthorized');
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        if (!$bearerToken) {
+            return response()->json(['status' => 'success', 'message' => 'Logged out successfully']);
         }
 
-        $currentToken = $user->currentAccessToken();
+        // Manually find the token — works even if it is expired or already deleted by Sanctum
+        $tokenModel = PersonalAccessToken::findToken($bearerToken);
 
-        \Log::info('[Institute Logout] Token', [
-            'token_id'    => $currentToken ? $currentToken->id : null,
-            'token_name'  => $currentToken ? $currentToken->name : null,
-            'is_transient' => $currentToken instanceof \Laravel\Sanctum\TransientToken,
-        ]);
+        if (!$tokenModel || !($tokenModel->tokenable instanceof Institute)) {
+            // Token not found or already deleted — nothing to clean up, treat as success
+            return response()->json(['status' => 'success', 'message' => 'Logged out successfully']);
+        }
 
-        $allSessions = \App\Models\DeviceSession::where('institute_id', $user->id)->get(['id','token_id','device','os']);
-        \Log::info('[Institute Logout] Active sessions in DB', ['sessions' => $allSessions->toArray()]);
+        $institute = $tokenModel->tokenable;
 
-        if ($currentToken) {
-            $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+        // Resolve the access token ID (handle refresh tokens too)
+        $resolvedTokenId = $tokenModel->id;
+        if (preg_match('/^refresh_token_for_(\d+)$/', $tokenModel->name, $matches)) {
+            $resolvedTokenId = (int) $matches[1];
+        }
 
-            \Log::info('[Institute Logout] Session lookup', [
-                'found'            => $session ? true : false,
-                'session_id'       => $session ? $session->id : null,
-                'session_device'   => $session ? $session->device : null,
-                'session_token_id' => $session ? $session->token_id : null,
-            ]);
+        // Find the linked device session
+        $session = \App\Models\DeviceSession::where('institute_id', $institute->id)
+            ->where('token_id', $resolvedTokenId)
+            ->first();
 
-            $sessionTerminated = false;
-            if ($session) {
-                $session->terminate();
-                $sessionTerminated = true;
-                \Log::info('[Institute Logout] Session terminated', ['session_id' => $session->id]);
-            }
-            if (!$sessionTerminated) {
-                $currentToken->delete();
-                \Log::warning('[Institute Logout] No session matched — only deleted token', ['token_id' => $currentToken->id]);
-            }
+        if ($session) {
+            // terminate() deletes both the access token, its refresh pair, and the session row
+            $session->terminate();
         } else {
-            \Log::warning('[Institute Logout] currentAccessToken() is null — token may be expired already');
+            // No session row — just delete this token and its refresh pair
+            DB::table('personal_access_tokens')
+                ->where('id', $resolvedTokenId)
+                ->orWhere('name', "refresh_token_for_{$resolvedTokenId}")
+                ->delete();
         }
-
-        \Log::info('[Institute Logout] END');
 
         return response()->json([
             'status'  => 'success',
