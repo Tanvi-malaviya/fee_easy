@@ -96,10 +96,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/forgot-password', [InstituteAuthController::class, 'sendResetPasswordEmail']);
         Route::post('/reset-password', [InstituteAuthController::class, 'resetPassword']);
 
-        // Logout is intentionally outside auth middleware so expired tokens can still clean up their session
-        Route::post('/logout', [InstituteAuthController::class, 'logout']);
-
         Route::middleware(['auth:sanctum,institute', 'active_institute', 'check_subscription'])->group(function () {
+            Route::post('/logout', [InstituteAuthController::class, 'logout']);
             Route::get('/profile', [InstituteProfileController::class, 'show']);
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
             Route::post('/profile/payment/update', [InstituteProfileController::class, 'updatePaymentSettings']);
