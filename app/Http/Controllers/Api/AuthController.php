@@ -30,8 +30,10 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $accessToken = $user->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+        $accessTokenResult = $user->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
+        $refreshToken = $user->createToken("refresh_token_for_{$tokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',

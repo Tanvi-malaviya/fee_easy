@@ -41,7 +41,14 @@ class DeviceSession extends Model
     {
         // 1. Try matching by currentToken token_id if available
         if ($currentToken && !($currentToken instanceof \Laravel\Sanctum\TransientToken)) {
-            $session = self::where('token_id', $currentToken->id)->first();
+            $tokenId = $currentToken->id;
+            
+            // If it is a refresh token, extract the linked access token ID from its name
+            if (preg_match('/^refresh_token_for_(\d+)$/', $currentToken->name, $matches)) {
+                $tokenId = (int)$matches[1];
+            }
+
+            $session = self::where('token_id', $tokenId)->first();
             if ($session) {
                 return $session;
             }
