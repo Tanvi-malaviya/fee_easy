@@ -461,8 +461,7 @@ class InstituteAuthController extends Controller
             $session = \App\Models\DeviceSession::findSessionForUser($institute, $request);
 
             if ($session) {
-                $session->update(['token_id' => null]);
-                $session->delete();
+                $session->terminate();
             }
         }
 

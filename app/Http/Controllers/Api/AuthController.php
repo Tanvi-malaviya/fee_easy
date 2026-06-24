@@ -58,23 +58,28 @@ class AuthController extends Controller
             'user_class' => $user ? get_class($user) : null,
         ]);
         if ($user) {
-            $user->fcm_token = null;
-            $user->save();
+            if (!($user instanceof \App\Models\Institute)) {
+                $user->fcm_token = null;
+                $user->save();
+            }
 
             // Clear device session if the user is an Institute
+            $sessionTerminated = false;
             if ($user instanceof \App\Models\Institute) {
                 $currentToken = $user->currentAccessToken();
                 if ($currentToken) {
                     $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
 
                     if ($session) {
-                        $session->update(['token_id' => null]);
-                        $session->delete();
+                        $session->terminate();
+                        $sessionTerminated = true;
                     }
                 }
             }
 
-            $user->currentAccessToken()->delete();
+            if (!$sessionTerminated && $user->currentAccessToken()) {
+                $user->currentAccessToken()->delete();
+            }
         }
 
         return response()->json([

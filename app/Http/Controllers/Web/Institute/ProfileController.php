@@ -102,14 +102,8 @@ class ProfileController extends Controller
             ->first();
 
         if ($session) {
-            $tokenId = $session->token_id;
             $sessionId = $session->session_id;
-            $session->update(['token_id' => null]);
-            $session->delete();
-
-            if ($tokenId) {
-                \DB::table('personal_access_tokens')->where('id', $tokenId)->delete();
-            }
+            $session->terminate();
 
             if ($sessionId && $sessionId === session()->getId()) {
                 Auth::guard('institute')->logout();

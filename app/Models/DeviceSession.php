@@ -34,6 +34,39 @@ class DeviceSession extends Model
         return $this->belongsTo(Institute::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($session) {
+            $tokenId = $session->token_id;
+            if ($tokenId) {
+                \DB::table('personal_access_tokens')
+                    ->where('id', $tokenId)
+                    ->orWhere('name', "refresh_token_for_{$tokenId}")
+                    ->delete();
+            }
+        });
+    }
+
+    /**
+     * Terminate the device session by deleting associated Sanctum tokens and deleting itself.
+     */
+    public function terminate()
+    {
+        $tokenId = $this->token_id;
+        if ($tokenId) {
+            \DB::table('personal_access_tokens')
+                ->where('id', $tokenId)
+                ->orWhere('name', "refresh_token_for_{$tokenId}")
+                ->delete();
+        }
+
+        $this->token_id = null;
+        $this->save();
+        $this->delete();
+    }
+
     /**
      * Find a matching device session for a user and request.
      */

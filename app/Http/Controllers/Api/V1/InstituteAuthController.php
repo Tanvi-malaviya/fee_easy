@@ -365,11 +365,14 @@ class InstituteAuthController extends Controller
         if ($currentToken) {
             $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
 
+            $sessionTerminated = false;
             if ($session) {
-                $session->update(['token_id' => null]);
-                $session->delete();
+                $session->terminate();
+                $sessionTerminated = true;
             }
-            $currentToken->delete();
+            if (!$sessionTerminated) {
+                $currentToken->delete();
+            }
         }
 
         return response()->json([
