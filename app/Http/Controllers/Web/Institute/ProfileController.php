@@ -11,7 +11,20 @@ use Illuminate\Validation\Rules\Password;
 class ProfileController extends Controller
 {
     /**
+     * Show the profile page, pruning expired device sessions first.
+     */
+    public function index()
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($institute) {
+            \App\Models\DeviceSession::pruneExpired($institute->id);
+        }
+        return view('institute.profile.index');
+    }
+
+    /**
      * Update the institute's password.
+
      */
     public function updatePassword(Request $request)
     {

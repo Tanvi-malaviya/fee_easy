@@ -60,7 +60,7 @@ class StudentForgotPasswordTest extends TestCase
         Mail::assertSent(StudentPasswordSentMail::class, function ($mail) {
             return $mail->hasTo('student@example.com') 
                 && !empty($mail->password)
-                && $mail->institute_name === 'Tuoora Academy';
+                && $mail->instituteName === 'Tuoora Academy';
         });
     }
 
