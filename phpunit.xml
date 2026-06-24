@@ -18,7 +18,6 @@
         </include>
     </coverage>
     <php>
-        <env name="APP_KEY" value="base64:nMF8XMBAlJGyQ1ex7Mp9Yt+Yflo5Xds55GdRBSc/hUM="/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_URL" value="http://localhost"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
