@@ -35,6 +35,70 @@ class DeviceSession extends Model
     }
 
     /**
+     * Find a matching device session for a user and request.
+     */
+    public static function findSessionForUser($user, \Illuminate\Http\Request $request, $currentToken = null): ?self
+    {
+        // 1. Try matching by currentToken token_id if available
+        if ($currentToken && !($currentToken instanceof \Laravel\Sanctum\TransientToken)) {
+            $session = self::where('token_id', $currentToken->id)->first();
+            if ($session) {
+                return $session;
+            }
+        }
+
+        // 2. Detect request properties
+        $detection = self::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+        $sessionId = $detection['session_id'];
+        $fcmToken = $request->input('fcm_token') ?: $request->input('fcm-token') ?: $request->input('fcm_device_token') ?: $request->header('X-FCM-Token') ?: $request->header('FCM-Token');
+
+        // 3. Try matching by FCM token
+        if (!empty($fcmToken)) {
+            $session = $user->deviceSessions()->where('fcm_token', $fcmToken)->first();
+            if ($session) {
+                return $session;
+            }
+        }
+
+        // 4. Try matching by session_id
+        if (!empty($sessionId)) {
+            $session = $user->deviceSessions()->where('session_id', $sessionId)->first();
+            if ($session) {
+                return $session;
+            }
+        }
+
+        // 5. Try matching by device and OS (preferring session_id null or any matching)
+        if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+            // First try with whereNull to find exact web session
+            $session = $user->deviceSessions()
+                ->where('device', $device)
+                ->where('os', $os)
+                ->whereNull('session_id')
+                ->first();
+            
+            if ($session) {
+                return $session;
+            }
+
+            // Fallback to any session on this device/os
+            $session = $user->deviceSessions()
+                ->where('device', $device)
+                ->where('os', $os)
+                ->first();
+            
+            if ($session) {
+                return $session;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
      * Detect real device and OS from request.
      */
     public static function detect($request): array

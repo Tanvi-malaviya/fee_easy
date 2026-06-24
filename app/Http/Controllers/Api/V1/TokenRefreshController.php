@@ -62,25 +62,7 @@ class TokenRefreshController extends Controller
 
         // Update the active device session with the new access token ID
         if ($user instanceof \App\Models\Institute) {
-            $detection = \App\Models\DeviceSession::detect($request);
-            $device = $detection['device'];
-            $os = $detection['os'];
-            $sessionId = $detection['session_id'];
-
-            $session = null;
-            if (!empty($sessionId)) {
-                $session = $user->deviceSessions()
-                    ->where('session_id', $sessionId)
-                    ->first();
-            } else {
-                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
-                    $session = $user->deviceSessions()
-                        ->where('device', $device)
-                        ->where('os', $os)
-                        ->whereNull('session_id')
-                        ->first();
-                }
-            }
+            $session = \App\Models\DeviceSession::findSessionForUser($user, $request);
 
             if ($session) {
                 $session->update([

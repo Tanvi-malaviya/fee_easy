@@ -35,9 +35,9 @@ class FCMTokenController extends Controller
 
         if ($user instanceof \App\Models\Institute) {
             $token = $user->currentAccessToken();
-            if ($token) {
-                \App\Models\DeviceSession::where('token_id', $token->id)
-                    ->update(['fcm_token' => $request->fcm_token]);
+            $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $token);
+            if ($session) {
+                $session->update(['fcm_token' => $request->fcm_token]);
             }
             $fcmToken = $request->fcm_token;
         } else {
