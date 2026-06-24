@@ -68,20 +68,62 @@ class DeviceSession extends Model
     }
 
     /**
+     * Prune sessions whose linked access token has expired or been deleted.
+     * Call this periodically or after login to prevent ghost sessions.
+     *
+     * @param int|null $instituteId  Only prune sessions for this institute (null = all)
+     */
+    public static function pruneExpired(?int $instituteId = null): int
+    {
+        $query = self::whereNotNull('token_id');
+        if ($instituteId !== null) {
+            $query->where('institute_id', $instituteId);
+        }
+
+        $sessions = $query->get();
+        $pruned = 0;
+
+        foreach ($sessions as $session) {
+            $token = \DB::table('personal_access_tokens')
+                ->where('id', $session->token_id)
+                ->first();
+
+            // Delete the session if the token no longer exists or has expired
+            $tokenMissing = !$token;
+            $tokenExpired = $token && $token->expires_at && \Carbon\Carbon::parse($token->expires_at)->isPast();
+
+            if ($tokenMissing || $tokenExpired) {
+                // Also remove the expired token row if present
+                if ($token) {
+                    \DB::table('personal_access_tokens')
+                        ->where('id', $session->token_id)
+                        ->orWhere('name', "refresh_token_for_{$session->token_id}")
+                        ->delete();
+                }
+                $session->delete();
+                $pruned++;
+            }
+        }
+
+        return $pruned;
+    }
+
+    /**
      * Find a matching device session for a user and request.
      */
     public static function findSessionForUser($user, \Illuminate\Http\Request $request, $currentToken = null): ?self
     {
         // 1. Try matching by currentToken token_id if available
+        $resolvedTokenId = null;
         if ($currentToken && !($currentToken instanceof \Laravel\Sanctum\TransientToken)) {
-            $tokenId = $currentToken->id;
-            
+            $resolvedTokenId = $currentToken->id;
+
             // If it is a refresh token, extract the linked access token ID from its name
             if (preg_match('/^refresh_token_for_(\d+)$/', $currentToken->name, $matches)) {
-                $tokenId = (int)$matches[1];
+                $resolvedTokenId = (int)$matches[1];
             }
 
-            $session = self::where('token_id', $tokenId)->first();
+            $session = self::where('token_id', $resolvedTokenId)->first();
             if ($session) {
                 return $session;
             }
@@ -118,7 +160,7 @@ class DeviceSession extends Model
                 ->where('os', $os)
                 ->whereNull('session_id')
                 ->first();
-            
+
             if ($session) {
                 return $session;
             }
@@ -128,7 +170,21 @@ class DeviceSession extends Model
                 ->where('device', $device)
                 ->where('os', $os)
                 ->first();
-            
+
+            if ($session) {
+                return $session;
+            }
+        }
+
+        // 6. Last resort: if we know the current token ID, look for any active app session
+        //    belonging to this user that still references that token. This catches cases where
+        //    device / OS info is missing ("Unknown Device / Unknown OS") and there is no
+        //    FCM token or session_id to match on.
+        if ($resolvedTokenId) {
+            $session = self::whereNotNull('token_id')
+                ->where('token_id', $resolvedTokenId)
+                ->first();
+
             if ($session) {
                 return $session;
             }

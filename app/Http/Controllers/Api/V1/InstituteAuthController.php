@@ -287,6 +287,9 @@ class InstituteAuthController extends Controller
                 'message' => "Your institute account is currently marked as blocked. Please contact the administrator or support to activate your account."
             ], 403);
         }
+        // Prune any sessions whose access token has expired (ghost-session cleanup)
+        \App\Models\DeviceSession::pruneExpired($institute->id);
+
         // Enforce 5 device limit
         $detection = \App\Models\DeviceSession::detect($request);
         $device = $detection['device'];
