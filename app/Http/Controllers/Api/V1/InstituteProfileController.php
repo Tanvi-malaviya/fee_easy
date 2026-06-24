@@ -305,13 +305,7 @@ class InstituteProfileController extends Controller
             ->first();
 
         if ($session) {
-            $tokenId = $session->token_id;
-            $session->update(['token_id' => null]);
-            $session->delete();
-
-            if ($tokenId) {
-                \DB::table('personal_access_tokens')->where('id', $tokenId)->delete();
-            }
+            $session->terminate();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Device session terminated successfully.'
