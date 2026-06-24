@@ -19,20 +19,7 @@ class InstituteProfileController extends Controller
 
         $currentToken = $institute->currentAccessToken();
         $isTransient = $currentToken instanceof \Laravel\Sanctum\TransientToken;
-        $session = null;
-        if ($currentToken && !$isTransient) {
-            $session = \App\Models\DeviceSession::where('token_id', $currentToken->id)->first();
-        }
-
-        if (!$session) {
-            $detection = \App\Models\DeviceSession::detect($request);
-            $sessionId = $detection['session_id'];
-            if (!empty($sessionId)) {
-                $session = $institute->deviceSessions()
-                    ->where('session_id', $sessionId)
-                    ->first();
-            }
-        }
+        $session = \App\Models\DeviceSession::findSessionForUser($institute, $request, $currentToken);
 
         if ($session) {
             $session->update(['last_open' => now()]);

@@ -31,25 +31,7 @@ class EnsureInstituteIsActive
         if ($institute) {
             // Check active session existence for Web Guard specifically
             if (Auth::guard('institute')->check() && !$request->routeIs('institute.logout')) {
-                $detection = \App\Models\DeviceSession::detect($request);
-                $device = $detection['device'];
-                $os = $detection['os'];
-                $sessionId = $detection['session_id'];
-
-                $session = null;
-                if (!empty($sessionId)) {
-                    $session = $institute->deviceSessions()
-                        ->where('session_id', $sessionId)
-                        ->first();
-                } else {
-                    if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
-                        $session = $institute->deviceSessions()
-                            ->where('device', $device)
-                            ->where('os', $os)
-                            ->whereNull('session_id')
-                            ->first();
-                    }
-                }
+                $session = \App\Models\DeviceSession::findSessionForUser($institute, $request);
 
                 if (!$session) {
                     Auth::guard('institute')->logout();
