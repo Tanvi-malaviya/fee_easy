@@ -456,19 +456,7 @@ class InstituteAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $institute = Auth::guard('institute')->user();
-        if ($institute) {
-            $session = \App\Models\DeviceSession::findSessionForUser($institute, $request);
-
-            if ($session) {
-                $session->terminate();
-            }
-        }
-
-        Auth::guard('institute')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('institute.login');
+        return app(\App\Http\Controllers\Api\V1\InstituteAuthController::class)->logout($request);
     }
 
     /**
