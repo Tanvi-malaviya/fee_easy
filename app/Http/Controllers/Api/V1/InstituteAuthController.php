@@ -378,28 +378,30 @@ class InstituteAuthController extends Controller
         $allSessions = \App\Models\DeviceSession::where('institute_id', $user->id)->get(['id','token_id','device','os']);
         \Log::info('[Institute Logout] Active sessions in DB', ['sessions' => $allSessions->toArray()]);
 
-        if ($currentToken) {
-            $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+        // Find the device session for the user (exactly like web logout does)
+        $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+        if (!$session) {
+            $session = \App\Models\DeviceSession::findSessionForUser($user, $request);
+        }
 
-            \Log::info('[Institute Logout] Session lookup', [
-                'found'            => $session ? true : false,
-                'session_id'       => $session ? $session->id : null,
-                'session_device'   => $session ? $session->device : null,
-                'session_token_id' => $session ? $session->token_id : null,
-            ]);
+        \Log::info('[Institute Logout] Session lookup', [
+            'found'            => $session ? true : false,
+            'session_id'       => $session ? $session->id : null,
+            'session_device'   => $session ? $session->device : null,
+            'session_token_id' => $session ? $session->token_id : null,
+        ]);
 
-            $sessionTerminated = false;
-            if ($session) {
-                $session->terminate();
-                $sessionTerminated = true;
-                \Log::info('[Institute Logout] Session terminated', ['session_id' => $session->id]);
-            }
-            if (!$sessionTerminated) {
-                $currentToken->delete();
-                \Log::warning('[Institute Logout] No session matched — only deleted token', ['token_id' => $currentToken->id]);
-            }
+        if ($session) {
+            $session->terminate();
+            \Log::info('[Institute Logout] Session terminated', ['session_id' => $session->id]);
         } else {
-            \Log::warning('[Institute Logout] currentAccessToken() is null — token may be expired already');
+            \Log::warning('[Institute Logout] No session matched for termination');
+        }
+
+        // Always delete the current access token if it exists
+        if ($currentToken) {
+            $currentToken->delete();
+            \Log::info('[Institute Logout] Deleted current access token');
         }
 
         \Log::info('[Institute Logout] END');
