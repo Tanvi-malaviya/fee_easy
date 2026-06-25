@@ -95,8 +95,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::post('/verify-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'verifyOtp'])->name('verify-otp');
     Route::post('/resend-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resendOtp'])->name('resend-otp');
 
-    // Authenticated Routes
-    Route::match(['get', 'post'], '/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
+    Route::match(['get', 'post'], '/logout', [App\Http\Controllers\Api\V1\InstituteAuthController::class, 'logout'])->name('logout');
 
     // Password Reset Routes
     Route::get('/forgot-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showForgotPassword'])->name('password.request');
