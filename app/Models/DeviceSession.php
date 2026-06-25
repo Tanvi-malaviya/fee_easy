@@ -55,6 +55,11 @@ class DeviceSession extends Model
     public function terminate()
     {
         $tokenId = $this->token_id;
+        
+        // Unlink first to prevent database cascade delete
+        $this->token_id = null;
+        $this->save();
+
         if ($tokenId) {
             \DB::table('personal_access_tokens')
                 ->where('id', $tokenId)
@@ -62,8 +67,6 @@ class DeviceSession extends Model
                 ->delete();
         }
 
-        $this->token_id = null;
-        $this->save();
         $this->delete();
     }
 
@@ -93,11 +96,17 @@ class DeviceSession extends Model
             $tokenExpired = $token && $token->expires_at && \Carbon\Carbon::parse($token->expires_at)->isPast();
 
             if ($tokenMissing || $tokenExpired) {
+                $sessionTokenId = $session->token_id;
+
+                // Unlink first to prevent database cascade delete
+                $session->token_id = null;
+                $session->save();
+
                 // Also remove the expired token row if present
                 if ($token) {
                     \DB::table('personal_access_tokens')
-                        ->where('id', $session->token_id)
-                        ->orWhere('name', "refresh_token_for_{$session->token_id}")
+                        ->where('id', $sessionTokenId)
+                        ->orWhere('name', "refresh_token_for_{$sessionTokenId}")
                         ->delete();
                 }
                 $session->delete();

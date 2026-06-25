@@ -69,9 +69,8 @@ class InstituteLogoutTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('status', 'success');
 
-        // Due to database cascade delete onDelete('cascade') on token_id, 
-        // deleting the personal access token deletes the device session physically.
-        $this->assertDatabaseMissing('device_sessions', [
+        // Verify the device session was terminated (soft deleted since token_id is unlinked before cascade delete)
+        $this->assertSoftDeleted('device_sessions', [
             'id' => $session->id,
         ]);
 
@@ -156,9 +155,8 @@ class InstituteLogoutTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('status', 'success');
 
-        // Due to database cascade delete onDelete('cascade') on token_id, 
-        // deleting the personal access token deletes the device session physically.
-        $this->assertDatabaseMissing('device_sessions', [
+        // Verify the device session was terminated (soft deleted since token_id is unlinked before cascade delete)
+        $this->assertSoftDeleted('device_sessions', [
             'id' => $session->id,
         ]);
 
@@ -208,8 +206,8 @@ class InstituteLogoutTest extends TestCase
 
         $response->assertOk();
 
-        // The session associated with the expired token should be deleted/pruned
-        $this->assertDatabaseMissing('device_sessions', [
+        // The session associated with the expired token should be soft-deleted/pruned
+        $this->assertSoftDeleted('device_sessions', [
             'id' => $session->id,
         ]);
     }
