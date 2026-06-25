@@ -29,8 +29,8 @@ class EnsureInstituteIsActive
         }
 
         if ($institute) {
-            // Check active session existence for Web Guard specifically (bypassed in unit tests)
-            if (Auth::guard('institute')->check() && !$request->routeIs('institute.logout') && !app()->runningUnitTests()) {
+            // Check active session existence for Web Guard specifically
+            if (Auth::guard('institute')->check() && !$request->routeIs('institute.logout')) {
                 $session = \App\Models\DeviceSession::findSessionForUser($institute, $request);
 
                 if (!$session) {

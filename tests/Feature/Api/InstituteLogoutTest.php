@@ -211,40 +211,4 @@ class InstituteLogoutTest extends TestCase
             'id' => $session->id,
         ]);
     }
-
-    public function test_institute_logout_via_web_terminates_device_session_and_redirects(): void
-    {
-        $institute = $this->createInstitute();
-
-        // Create a Device Session for web
-        $session = DeviceSession::create([
-            'institute_id' => $institute->id,
-            'token_id' => null,
-            'session_id' => 'some-random-or-null-session-id',
-            'device' => 'Desktop Chrome',
-            'os' => 'Windows 11',
-            'last_login' => now(),
-            'last_open' => now(),
-        ]);
-
-        $this->assertDatabaseHas('device_sessions', [
-            'id' => $session->id,
-            'deleted_at' => null,
-        ]);
-
-        // Call the institute web logout route sending headers for fallback matching
-        $response = $this->actingAs($institute, 'institute')
-            ->post('/institute/logout', [], [
-                'X-Device-Name' => 'Desktop Chrome',
-                'X-Device-OS' => 'Windows 11',
-            ]);
-
-        // Verify redirect to login
-        $response->assertRedirect(route('institute.login'));
-
-        // Verify the device session was terminated (soft deleted)
-        $this->assertSoftDeleted('device_sessions', [
-            'id' => $session->id,
-        ]);
-    }
 }

@@ -354,7 +354,7 @@ class InstituteAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $user = \Illuminate\Support\Facades\Auth::guard('institute')->user() ?: $request->user();
+        $user = $request->user();
 
         \Log::info('[Institute Logout] START', [
             'user_id'    => $user ? $user->id : null,
@@ -364,10 +364,7 @@ class InstituteAuthController extends Controller
 
         if (!$user || !($user instanceof Institute)) {
             \Log::warning('[Institute Logout] Unauthorized');
-            if ($request->expectsJson()) {
-                return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
-            }
-            return redirect()->route('institute.login');
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $currentToken = $user->currentAccessToken();
@@ -407,22 +404,12 @@ class InstituteAuthController extends Controller
             \Log::info('[Institute Logout] Deleted current access token');
         }
 
-        // Handle Web Session Logout if logged in via Web guard
-        \Illuminate\Support\Facades\Auth::guard('institute')->logout();
-
         \Log::info('[Institute Logout] END');
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'status'  => 'success',
-                'message' => 'Logged out successfully',
-            ]);
-        }
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('institute.login');
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Logged out successfully',
+        ]);
     }
 
     public function profile(Request $request)
