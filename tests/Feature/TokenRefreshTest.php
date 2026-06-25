@@ -44,10 +44,10 @@ class TokenRefreshTest extends TestCase
         $this->assertNotNull($accessToken);
         $this->assertNotNull($refreshToken);
 
-        // Access token should expire in ~1 hour (3600 seconds)
+        // Access token should expire in ~1 minute (60 seconds)
         $accessExpiresDiff = $accessToken->expires_at->diffInSeconds(now());
-        $this->assertGreaterThanOrEqual(3500, $accessExpiresDiff);
-        $this->assertLessThanOrEqual(3700, $accessExpiresDiff);
+        $this->assertGreaterThanOrEqual(50, $accessExpiresDiff);
+        $this->assertLessThanOrEqual(70, $accessExpiresDiff);
 
         // Refresh token should expire in ~24 hours (1440 minutes)
         $refreshExpiresDiff = $refreshToken->expires_at->diffInMinutes(now());

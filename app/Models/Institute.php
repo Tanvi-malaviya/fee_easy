@@ -60,7 +60,7 @@ class Institute extends Authenticatable
             !empty($this->address) &&
             !empty($this->city) &&
             !empty($this->state) &&
-            (!empty($this->country) || app()->runningUnitTests()) &&
+            !empty($this->country) &&
             !empty($this->pincode);
     }
 

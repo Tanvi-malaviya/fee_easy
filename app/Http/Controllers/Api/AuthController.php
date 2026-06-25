@@ -64,21 +64,24 @@ class AuthController extends Controller
             }
 
             // Clear device session if the user is an Institute
-            $sessionTerminated = false;
             if ($user instanceof \App\Models\Institute) {
                 $currentToken = $user->currentAccessToken();
-                if ($currentToken) {
-                    $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
-
-                    if ($session) {
-                        $session->terminate();
-                        $sessionTerminated = true;
-                    }
+                $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+                if (!$session) {
+                    $session = \App\Models\DeviceSession::findSessionForUser($user, $request);
                 }
-            }
 
-            if (!$sessionTerminated && $user->currentAccessToken()) {
-                $user->currentAccessToken()->delete();
+                if ($session) {
+                    $session->terminate();
+                }
+
+                if ($currentToken) {
+                    $currentToken->delete();
+                }
+            } else {
+                if ($user->currentAccessToken()) {
+                    $user->currentAccessToken()->delete();
+                }
             }
         }
 

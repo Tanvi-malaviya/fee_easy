@@ -15,12 +15,6 @@ class InstituteProfileController extends Controller
     public function show(Request $request)
     {
         $institute = $request->user();
-        
-        // Prune any expired sessions to ensure stale records do not persist in active_sessions list
-        if ($institute) {
-            \App\Models\DeviceSession::pruneExpired($institute->id);
-        }
-
         $subscription = $institute->subscriptions()->latest()->first();
 
         $currentToken = $institute->currentAccessToken();
