@@ -15,6 +15,10 @@ class InstituteProfileController extends Controller
     public function show(Request $request)
     {
         $institute = $request->user();
+        
+        // Proactively prune expired mobile sessions for this institute
+        \App\Models\DeviceSession::pruneExpired($institute->id);
+
         $subscription = $institute->subscriptions()->latest()->first();
 
         $currentToken = $institute->currentAccessToken();
