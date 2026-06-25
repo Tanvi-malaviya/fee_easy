@@ -167,4 +167,50 @@ class InstituteLogoutTest extends TestCase
             'id' => $tokenId,
         ]);
     }
+
+    public function test_loading_profile_via_api_prunes_expired_device_sessions(): void
+    {
+        $institute = $this->createInstitute();
+
+        // Create Sanctum Token that is already expired
+        $tokenResult = $institute->createToken('access_token', ['access-api']);
+        $token = $tokenResult->plainTextToken;
+        $tokenId = $tokenResult->accessToken->id;
+
+        // Set expires_at in the DB explicitly to the past
+        \DB::table('personal_access_tokens')
+            ->where('id', $tokenId)
+            ->update(['expires_at' => now()->subMinutes(5)]);
+
+        // Create a Device Session linked to that expired token
+        $session = DeviceSession::create([
+            'institute_id' => $institute->id,
+            'token_id' => $tokenId,
+            'device' => 'Android Device',
+            'os' => 'Android 13',
+            'last_login' => now(),
+            'last_open' => now(),
+        ]);
+
+        $this->assertDatabaseHas('device_sessions', [
+            'id' => $session->id,
+            'deleted_at' => null,
+        ]);
+
+        // Create a valid token to authenticate the profile request
+        $validTokenResult = $institute->createToken('valid_access_token', ['access-api']);
+        $validToken = $validTokenResult->plainTextToken;
+
+        // Call the profile endpoint
+        $response = $this->getJson('/api/v1/institute/profile', [
+            'Authorization' => 'Bearer ' . $validToken,
+        ]);
+
+        $response->assertOk();
+
+        // The session associated with the expired token should be deleted/pruned
+        $this->assertDatabaseMissing('device_sessions', [
+            'id' => $session->id,
+        ]);
+    }
 }

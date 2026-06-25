@@ -111,9 +111,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::middleware('verified_institute')->group(function () {
             Route::post('/fcm-token', [App\Http\Controllers\Api\V1\FCMTokenController::class, 'updateToken'])->name('fcm-token.update');
 
-            Route::get('/profile', function () {
-                return view('institute.profile.index');
-            })->name('profile.index');
+            Route::get('/profile', [App\Http\Controllers\Web\Institute\ProfileController::class, 'index'])->name('profile.index');
             Route::get('/profile/edit', function () {
                 return view('institute.profile.edit');
             })->name('profile.edit');
