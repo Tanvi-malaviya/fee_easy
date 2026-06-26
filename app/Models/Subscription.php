@@ -39,6 +39,8 @@ class Subscription extends Model
         'start_date',
         'end_date',
         'status',
+        'apple_transaction_id',
+        'google_order_id',
     ];
 
     protected $casts = [
