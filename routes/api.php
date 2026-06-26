@@ -126,7 +126,7 @@ Route::prefix('v1')->group(function () {
             // Plan and Subscription routes
             Route::get('/plans', [PlanController::class, 'index']);
             Route::get('/subscriptions/all-data', [InstituteSubscriptionController::class, 'allData']);
-            Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
+            Route::post('/subscription/iap-verify', [InstituteSubscriptionController::class, 'verifyIap']);
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 

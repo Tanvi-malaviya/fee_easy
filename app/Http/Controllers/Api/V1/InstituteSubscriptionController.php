@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
+use App\Models\Plan;
+use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class InstituteSubscriptionController extends Controller
 {
@@ -181,6 +185,172 @@ class InstituteSubscriptionController extends Controller
         }
     }
 
+        /**
+    * Verify In-App Purchase receipt for iOS and Android.
+    */
+    public function verifyIap(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'transaction_id' => 'required|string',
+            'receipt_data' => 'required|string',
+            'platform' => 'required|in:ios,android',
+        ]);
+
+        $plan = Plan::findOrFail($request->plan_id);
+        $platform = $request->platform;
+        $receiptData = $request->receipt_data;
+        $transactionId = $request->transaction_id;
+
+        if ($platform === 'ios') {
+            $appleSecret = env('APPLE_SHARED_SECRET');
+            $endpoint = env('APP_ENV') === 'production'
+                ? 'https://buy.itunes.apple.com/verifyReceipt'
+                : 'https://sandbox.itunes.apple.com/verifyReceipt';
+
+            $appleResponse = Http::post($endpoint, [
+                'receipt-data' => $receiptData,
+                'password' => $appleSecret,
+                'exclude-old-transactions' => true,
+            ]);
+
+            if ($appleResponse->failed()) {
+                Log::error('Apple verification failed', ['response' => $appleResponse->body()]);
+                return response()->json(['message' => 'Invalid/tampered receipt'], 422);
+            }
+
+            $data = $appleResponse->json();
+            if (($data['status'] ?? null) !== 0) {
+                return response()->json(['message' => 'Invalid/tampered receipt'], 422);
+            }
+
+            $inApp = collect($data['receipt']['in_app'] ?? []);
+            $matched = $inApp->firstWhere('transaction_id', $transactionId);
+            if (! $matched || ($matched['product_id'] ?? '') !== 'com.tuoora.plan' . $plan->id) {
+                return response()->json(['message' => 'Invalid receipt details'], 422);
+            }
+
+            // Idempotency check
+            $existing = Subscription::where('apple_transaction_id', $transactionId)->first();
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Already activated (duplicate)',
+                    'subscription' => $this->formatSubscription($existing),
+                ], 200);
+            }
+
+            // Activate subscription
+            $start = Carbon::now();
+            $end = $start->copy()->addDays($plan->duration_days);
+            $subscription = Subscription::create([
+                'institute_id' => $request->user()->id,
+                'plan_name' => $plan->name,
+                'amount' => $plan->price,
+                'start_date' => $start,
+                'end_date' => $end,
+                'status' => Subscription::STATUS_ACTIVE,
+                'apple_transaction_id' => $transactionId,
+            ]);
+        } else {
+            // Android flow
+            $packageName = env('GOOGLE_PACKAGE_NAME');
+            $productId = 'com.tuoora.plan' . $plan->id;
+            $url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{$packageName}/purchases/products/{$productId}/tokens/{$receiptData}";
+            $token = $this->getGoogleAccessToken();
+            $googleResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$token}",
+            ])->get($url);
+
+            if ($googleResponse->failed()) {
+                Log::error('Google verification failed', ['response' => $googleResponse->body()]);
+                return response()->json(['message' => 'Invalid/tampered receipt'], 422);
+            }
+
+            $data = $googleResponse->json();
+            if (($data['purchaseState'] ?? null) != 0) {
+                return response()->json(['message' => 'Invalid receipt details'], 422);
+            }
+            if (($data['productId'] ?? '') !== $productId || ($data['orderId'] ?? '') !== $transactionId) {
+                return response()->json(['message' => 'Invalid receipt details'], 422);
+            }
+
+            // Idempotency check
+            $existing = Subscription::where('google_order_id', $transactionId)->first();
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Already activated (duplicate)',
+                    'subscription' => $this->formatSubscription($existing),
+                ], 200);
+            }
+
+            // Acknowledge purchase
+            $ackUrl = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{$packageName}/purchases/products/{$productId}/tokens/{$receiptData}:acknowledge";
+            Http::withHeaders([
+                'Authorization' => "Bearer {$token}",
+            ])->post($ackUrl, []);
+
+            // Activate subscription
+            $start = Carbon::now();
+            $end = $start->copy()->addDays($plan->duration_days);
+            $subscription = Subscription::create([
+                'institute_id' => $request->user()->id,
+                'plan_name' => $plan->name,
+                'amount' => $plan->price,
+                'start_date' => $start,
+                'end_date' => $end,
+                'status' => Subscription::STATUS_ACTIVE,
+                'google_order_id' => $transactionId,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Subscription activated successfully',
+            'subscription' => $this->formatSubscription($subscription),
+        ], 200);
+    }
+
+    /**
+     * Helper to format subscription response.
+     */
+    protected function formatSubscription(Subscription $sub)
+    {
+        return [
+            'plan_name' => $sub->plan_name,
+            'status' => $sub->status,
+            'expires_at' => $sub->end_date,
+            'students_enrolled' => \App\Models\Student::where('institute_id', $sub->institute_id)->count(),
+            'student_limit' => $sub->plan_name ? \App\Models\Plan::where('name', $sub->plan_name)->value('student_limit') : null,
+        ];
+    }
+
+    /**
+     * Obtain Google Service Account access token.
+     */
+    protected function getGoogleAccessToken()
+    {
+        $serviceAccountPath = env('GOOGLE_SERVICE_ACCOUNT_JSON');
+        $json = json_decode(file_get_contents($serviceAccountPath), true);
+        $jwtHeader = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
+        $now = time();
+        $jwtPayload = base64_encode(json_encode([
+            'iss' => $json['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/androidpublisher',
+            'aud' => $json['token_uri'],
+            'exp' => $now + 3600,
+            'iat' => $now,
+        ]));
+        $signature = '';
+        openssl_sign("{$jwtHeader}.{$jwtPayload}", $signature, $json['private_key'], OPENSSL_ALGO_SHA256);
+        $jwt = "{$jwtHeader}.{$jwtPayload}." . base64_encode($signature);
+        $tokenResponse = Http::asForm()->post($json['token_uri'], [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $jwt,
+        ]);
+        return $tokenResponse->json()['access_token'] ?? '';
+    
+
+
+        }
     public function history(Request $request)
     {
         $subscriptions = $request->user()->subscriptions()
