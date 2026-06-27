@@ -42,4 +42,15 @@ return [
         'vapid_key' => env('FIREBASE_VAPID_KEY'),
     ],
 
+     'google' => [
+        'service_account_json' => env('GOOGLE_SERVICE_ACCOUNT_JSON', 'storage/app/google-service-account.json'),
+        'package_name' => env('GOOGLE_PACKAGE_NAME', 'com.app.tuoora'),
+        'apple_shared_secret' => env('APPLE_SHARED_SECRET'),
+    ],
+
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET'),
+    ],
+
 ];

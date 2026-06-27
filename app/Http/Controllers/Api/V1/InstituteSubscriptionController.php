@@ -86,7 +86,7 @@ class InstituteSubscriptionController extends Controller
         $plan = \App\Models\Plan::findOrFail($request->plan_id);
 
         try {
-            $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+            $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
 
             $orderData = [
                 'receipt'         => 'rcpt_' . $institute->id . '_' . time(),
@@ -108,7 +108,7 @@ class InstituteSubscriptionController extends Controller
                 'institute_name' => $institute->institute_name,
                 'email' => $institute->email,
                 'phone' => $institute->phone,
-                'razorpay_key' => env('RAZORPAY_KEY_ID')
+               'razorpay_key' => config('services.razorpay.key_id')
             ]);
 
         } catch (\Exception $e) {
@@ -129,7 +129,7 @@ class InstituteSubscriptionController extends Controller
             'plan_id' => 'required|exists:plans,id'
         ]);
 
-        $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+         $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
 
         try {
             $attributes = [
@@ -203,8 +203,8 @@ class InstituteSubscriptionController extends Controller
         $transactionId = $request->transaction_id;
 
         if ($platform === 'ios') {
-            $appleSecret = env('APPLE_SHARED_SECRET');
-            $endpoint = env('APP_ENV') === 'production'
+            $appleSecret = config('services.google.apple_shared_secret');
+            $endpoint = config('app.env') === 'production'
                 ? 'https://buy.itunes.apple.com/verifyReceipt'
                 : 'https://sandbox.itunes.apple.com/verifyReceipt';
 
@@ -253,7 +253,7 @@ class InstituteSubscriptionController extends Controller
             ]);
         } else {
             // Android flow
-            $packageName = env('GOOGLE_PACKAGE_NAME');
+            $packageName = config('services.google.package_name');
             $productId = 'com.tuoora.plan' . $plan->id;
             $url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{$packageName}/purchases/products/{$productId}/tokens/{$receiptData}";
             $token = $this->getGoogleAccessToken();
@@ -328,7 +328,7 @@ class InstituteSubscriptionController extends Controller
      */
     protected function getGoogleAccessToken()
     {
-        $serviceAccountPath = env('GOOGLE_SERVICE_ACCOUNT_JSON');
+        $serviceAccountPath = config('services.google.service_account_json');
         $resolvedPath = str_starts_with($serviceAccountPath, '/') || str_contains($serviceAccountPath, ':\\') 
             ? $serviceAccountPath 
             : base_path($serviceAccountPath);
