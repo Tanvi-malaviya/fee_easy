@@ -329,7 +329,10 @@ class InstituteSubscriptionController extends Controller
     protected function getGoogleAccessToken()
     {
         $serviceAccountPath = env('GOOGLE_SERVICE_ACCOUNT_JSON');
-        $json = json_decode(file_get_contents($serviceAccountPath), true);
+        $resolvedPath = str_starts_with($serviceAccountPath, '/') || str_contains($serviceAccountPath, ':\\') 
+            ? $serviceAccountPath 
+            : base_path($serviceAccountPath);
+        $json = json_decode(file_get_contents($resolvedPath), true);
         $jwtHeader = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
         $now = time();
         $jwtPayload = base64_encode(json_encode([
