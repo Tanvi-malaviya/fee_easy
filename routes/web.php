@@ -56,6 +56,10 @@ Route::middleware(array_filter([
 
         // Revenue Analysis
         Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
+
+        // QR Analytics
+        Route::get('qr-analytics', [App\Http\Controllers\Web\QrController::class, 'adminIndex'])->name('qr.analytics');
+        Route::get('qr-analytics/export', [App\Http\Controllers\Web\QrController::class, 'export'])->name('qr.export');
         Route::post('revenue/manual-payment', [App\Http\Controllers\Web\RevenueController::class, 'storeManualPayment'])->name('revenue.store_manual');
 
         // Broadcast Center
@@ -293,6 +297,16 @@ Route::get('/mail-preview/fee-invoice', function () {
     );
 });
 
+
+// =========================================================================
+// QR CODE TRACKING ROUTES (Public — no auth required)
+// =========================================================================
+Route::prefix('qr')->name('qr.')->group(function () {
+    // Both GET (for initial landing/bridge) and POST (for processing coordinates)
+    Route::match(['get', 'post'], '/web',     [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'web')->name('web');
+    Route::match(['get', 'post'], '/android', [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'android')->name('android');
+    Route::match(['get', 'post'], '/ios',     [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'ios')->name('ios');
+});
 
 // =========================================================================
 // PUBLIC INSTITUTE WEBSITE ROUTES
