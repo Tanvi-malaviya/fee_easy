@@ -185,9 +185,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900 leading-tight">
-                                            {{ $payment->subscription->institute->institute_name ?? 'N/A' }}</div>
+                                          {{ $payment->subscription?->institute?->institute_name ?? 'N/A' }}</div>
                                         <div class="text-xs text-gray-500">
-                                            {{ $payment->subscription->institute->name ?? 'Deleted' }}</div>
+                                            {{ $payment->subscription?->institute?->name ?? 'Deleted' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-col gap-1">

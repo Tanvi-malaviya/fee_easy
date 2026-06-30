@@ -65,8 +65,8 @@
                                     @foreach($pendingRenewals as $renewal)
                                         <tr class="hover:bg-slate-50/40 transition-colors">
                                             <td class="px-5 py-4 whitespace-nowrap">
-                                                <div class="text-xs font-black text-slate-800 leading-tight">{{ $renewal->institute->institute_name }}</div>
-                                                <div class="text-[10px] text-slate-400 font-bold mt-1">ID: ST-{{ sprintf('%04d', $renewal->institute->id) }} | Code: {{ $renewal->institute->institute_code }}</div>
+                                                  <div class="text-xs font-black text-slate-800 leading-tight">{{ $renewal->institute?->institute_name ?? 'Deleted Institute' }}</div>
+                                                <div class="text-[10px] text-slate-400 font-bold mt-1">ID: ST-{{ sprintf('%04d', $renewal->institute?->id ?? 0) }} | Code: {{ $renewal->institute?->institute_code ?? '-' }}</div>
                                             </td>
                                             <td class="px-5 py-4 whitespace-nowrap">
                                                 <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded-lg border border-slate-200">
@@ -114,7 +114,7 @@
                                                         @csrf @method('PATCH')
                                                         <h2 class="text-base font-bold text-slate-900 leading-tight">Approve Subscription Renewal</h2>
                                                         <p class="mt-1 text-[10px] text-slate-500 font-medium border-b border-slate-50 pb-2.5">
-                                                            Select the package to activate for <strong>{{ $renewal->institute->institute_name }}</strong>.
+                                                           Select the package to activate for <strong>{{ $renewal->institute?->institute_name ?? 'Deleted Institute' }}</strong>.
                                                         </p>
  
                                                         <div class="mt-4">
@@ -242,8 +242,8 @@
                             @forelse($subscriptions as $subscription)
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-gray-900 leading-tight">{{ $subscription->institute->institute_name }}</div>
-                                        <div class="text-xs text-gray-500 font-medium mt-0.5">{{ $subscription->institute->name }}</div>
+                                        <div class="text-sm font-bold text-gray-900 leading-tight">{{ $subscription->institute?->institute_name ?? 'Deleted Institute' }}</div>
+                                        <div class="text-xs text-gray-500 font-medium mt-0.5">{{ $subscription->institute?->name ?? '' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">{{ $subscription->plan_name }}</div>

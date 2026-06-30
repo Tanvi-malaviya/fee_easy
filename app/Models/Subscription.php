@@ -60,7 +60,7 @@ class Subscription extends Model
 
     public function institute()
     {
-        return $this->belongsTo(Institute::class);
+        return $this->belongsTo(Institute::class)->withTrashed();
     }
 
     public function payments()
