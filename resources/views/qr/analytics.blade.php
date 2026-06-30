@@ -1,7 +1,7 @@
 <x-admin-layout title="QR Analytics">
 
     {{-- ── Stats Cards ─────────────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+    <!-- <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
         @php
         $cards = [
             ['label'=>'Total Scans',    'value'=>$totalScans,   'color'=>'orange', 'icon'=>'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01'],
@@ -23,7 +23,7 @@
 
         @foreach($cards as $card)
         @php $c = $colorMap[$card['color']]; @endphp
-        <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col gap-2 hover:shadow-md transition-all duration-300">
+        <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex flex-col gap-2 hover:shadow-md transition-all duration-300">
             <div class="flex items-center justify-between">
                 <p class="text-[9px] font-black uppercase tracking-widest text-gray-400">{{ $card['label'] }}</p>
                 <div class="{{ $c['bg'] }} p-1.5 rounded-lg">
@@ -35,13 +35,13 @@
             <p class="text-2xl font-black {{ $c['text'] }}">{{ number_format($card['value']) }}</p>
         </div>
         @endforeach
-    </div>
+    </div> -->
 
     {{-- ── Trend Chart + Donut Charts Row ─────────────────────────────────── --}}
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-4">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-2 mb-2">
 
         {{-- Scan Trend (30 days) --}}
-        <div class="xl:col-span-2 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="xl:col-span-2 bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Scan Trend</h3>
@@ -65,7 +65,7 @@
     </div>
 
     {{-- ── Browser + OS Charts ──────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
         <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-1">Browser Distribution</h3>
             <p class="text-[10px] text-gray-400 font-medium uppercase mb-4">Top browsers used by scanners</p>
@@ -76,10 +76,10 @@
             <p class="text-[10px] text-gray-400 font-medium uppercase mb-4">Operating systems detected</p>
             <div id="osChart" class="min-h-[240px]"></div>
         </div>
-    </div>
+    </div> -->
 
     {{-- ── Country / City Stats ─────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-4">
+    <!-- <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Top Locations</h3>
         @if($countryStats->isEmpty())
         <p class="text-xs text-gray-400 text-center py-6">No location data yet. Geo-lookup requires a public IP.</p>
@@ -111,16 +111,16 @@
             </table>
         </div>
         @endif
-    </div>
+    </div> -->
 
     {{-- ── Recent Scans Table ───────────────────────────────────────────────── --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-2">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
             <div>
                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Recent Scans</h3>
                 <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase">Live scan history</p>
             </div>
-            <div class="flex items-center gap-2">
+            <!-- <div class="flex items-center gap-2">
                 <span class="text-[10px] font-bold text-gray-400">GPS Scans: <span class="text-purple-600">{{ number_format($gpsScans) }}</span></span>
                 <a href="{{ route('qr.export') }}"
                    class="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-[11px] font-bold uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-colors shadow-sm">
@@ -129,7 +129,7 @@
                     </svg>
                     Export CSV
                 </a>
-            </div>
+            </div> -->
         </div>
 
         <div class="overflow-x-auto">
@@ -195,15 +195,15 @@
     {{-- ── QR Code URLs Reference Card ─────────────────────────────────────── --}}
     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Your QR Tracking URLs</h3>
-        <p class="text-xs text-gray-400 mb-4">Point your QR codes to these URLs. Use the <code class="bg-gray-100 px-1 rounded">/location</code> variant to capture GPS coordinates.</p>
+        <!-- <p class="text-xs text-gray-400 mb-4">Point your QR codes to these URLs. Use the <code class="bg-gray-100 px-1 rounded">/location</code> variant to capture GPS coordinates.</p> -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             @foreach(['web'=>['Website','bg-blue-50 text-blue-700','border-blue-100'],'android'=>['Android','bg-green-50 text-green-700','border-green-100'],'ios'=>['iOS','bg-gray-50 text-gray-700','border-gray-200']] as $type => [$label,$badge,$border])
             <div class="border {{ $border }} rounded-xl p-4">
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase {{ $badge }}">{{ $label }}</span>
-                <p class="mt-2 text-[10px] font-bold text-gray-500 uppercase mb-1">Direct (no GPS)</p>
+                <p class="mt-2 text-[10px] font-bold text-gray-500 uppercase mb-1">Direct</p>
                 <code class="text-[10px] text-gray-700 break-all bg-gray-50 px-2 py-1 rounded block">{{ url('/qr/'.$type) }}</code>
-                <p class="mt-2 text-[10px] font-bold text-gray-500 uppercase mb-1">With GPS prompt</p>
-                <code class="text-[10px] text-gray-700 break-all bg-gray-50 px-2 py-1 rounded block">{{ url('/qr/'.$type.'/location') }}</code>
+                <!-- <p class="mt-2 text-[10px] font-bold text-gray-500 uppercase mb-1">With GPS prompt</p>
+                <code class="text-[10px] text-gray-700 break-all bg-gray-50 px-2 py-1 rounded block">{{ url('/qr/'.$type.'/location') }}</code> -->
             </div>
             @endforeach
         </div>
