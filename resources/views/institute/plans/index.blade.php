@@ -167,7 +167,15 @@
             } else {
                 const hasActiveSubscription = subscription && subscription.status && subscription.status.toLowerCase() === 'active';
                 if (!hasActiveSubscription) {
-                    buttonHtml = `<button id="plan-btn-${plan.id}" onclick="window.location.href='{{ route('institute.subscription.renew.show') }}'" class="w-full mt-6 py-3.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all">Select Plan</button>`;
+                    if (parseFloat(plan.price) === 0) {
+                        buttonHtml = `<button id="plan-btn-${plan.id}" onclick="window.location.href='{{ route('institute.subscription.renew.show') }}'" class="w-full mt-6 py-3.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all">Select Plan</button>`;
+                    } else {
+                        buttonHtml = `
+                        <div class="flex flex-col gap-2 w-full mt-6">
+                            <button id="plan-btn-${plan.id}" onclick="choosePlan(${plan.id})" class="w-full py-3.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all">Pay Online</button>
+                            <a href="{{ route('institute.subscription.renew.show') }}" class="w-full py-2.5 text-center bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all border border-slate-200">Pay Offline</a>
+                        </div>`;
+                    }
                 }
             }
 

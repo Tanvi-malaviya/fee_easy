@@ -248,6 +248,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900">{{ $subscription->plan_name }}</div>
                                         <div class="text-[10px] text-primary font-bold uppercase tracking-wider mt-1">{{ $currency }}{{ number_format($subscription->amount, 0) }}</div>
+                                        @if($subscription->razorpay_order_id)
+                                            <div class="text-[9px] text-slate-400 font-mono mt-1">Order: {{ $subscription->razorpay_order_id }}</div>
+                                        @endif
+                                        @if($subscription->razorpay_payment_id)
+                                            <div class="text-[9px] text-slate-400 font-mono">Payment: {{ $subscription->razorpay_payment_id }}</div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-col">

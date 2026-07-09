@@ -100,6 +100,9 @@ class InstituteSubscriptionController extends Controller
 
             $razorpayOrder = $api->order->create($orderData);
 
+            // Save order ID for replay protection
+            $institute->update(['razorpay_order_id' => $razorpayOrder['id']]);
+
             return response()->json([
                 'status' => 'success',
                 'razorpay_order_id' => $razorpayOrder['id'],
@@ -144,6 +147,14 @@ class InstituteSubscriptionController extends Controller
             $institute = $request->user();
             $plan = \App\Models\Plan::findOrFail($request->plan_id);
 
+            // Replay protection check
+            if ($institute->razorpay_order_id !== $request->razorpay_order_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Payment verification failed: Order ID mismatch'
+                ], 400);
+            }
+
             $activeSub = $institute->subscriptions()
                 ->where('status', 'active')
                 ->where('end_date', '>', Carbon::now())
@@ -160,6 +171,11 @@ class InstituteSubscriptionController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'status' => 'active',
+                'plan_id' => $plan->id,
+                'razorpay_order_id' => $request->razorpay_order_id,
+                'razorpay_payment_id' => $request->razorpay_payment_id,
+                'razorpay_signature' => $request->razorpay_signature,
+                'platform' => 'web',
             ]);
 
             SubscriptionPayment::create([
@@ -170,6 +186,9 @@ class InstituteSubscriptionController extends Controller
                 'transaction_id' => $request->razorpay_payment_id,
                 'paid_at' => Carbon::now(),
             ]);
+
+            // Clear the razorpay_order_id to prevent replay
+            $institute->update(['razorpay_order_id' => null]);
 
             return response()->json([
                 'status' => 'success',
@@ -183,6 +202,133 @@ class InstituteSubscriptionController extends Controller
                 'message' => 'Payment verification failed: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Create Razorpay Order for Android.
+     */
+    public function createOrder(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $institute = $request->user();
+        $plan = \App\Models\Plan::findOrFail($request->plan_id);
+
+        try {
+            $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
+
+            $orderData = [
+                'receipt'         => 'order_plan_' . $plan->id . '_' . $institute->id,
+                'amount'          => $plan->price * 100, // in paise
+                'currency'        => 'INR',
+                'notes'           => [
+                    'plan_id' => (string)$plan->id,
+                    'institute_id' => (string)$institute->id
+                ]
+            ];
+
+            $razorpayOrder = $api->order->create($orderData);
+
+            // Save order ID for replay protection
+            $institute->update(['razorpay_order_id' => $razorpayOrder['id']]);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'order_id' => $razorpayOrder['id'],
+                    'amount' => $plan->price * 100, // in paise
+                    'currency' => 'INR',
+                    'plan_name' => $plan->name,
+                    'plan_id' => (int)$plan->id
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Razorpay Android Order Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create order'
+            ]);
+        }
+    }
+
+    /**
+     * Verify Razorpay Payment for Android.
+     */
+    public function verifyPaymentAndroid(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'razorpay_order_id' => 'required|string',
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_signature' => 'required|string',
+        ]);
+
+        $institute = $request->user();
+        $plan = \App\Models\Plan::findOrFail($request->plan_id);
+
+        // 1. Verify signature
+        $secret = config('services.razorpay.key_secret');
+        $data = $request->razorpay_order_id . '|' . $request->razorpay_payment_id;
+        $generatedSignature = hash_hmac('sha256', $data, $secret);
+
+        if ($generatedSignature !== $request->razorpay_signature) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment verification failed'
+            ], 400);
+        }
+
+        // 2. Replay protection check
+        if ($institute->razorpay_order_id !== $request->razorpay_order_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment verification failed'
+            ], 400);
+        }
+
+        // 3. Activate subscription
+        $activeSub = $institute->subscriptions()
+            ->where('status', 'active')
+            ->where('end_date', '>', Carbon::now())
+            ->latest('end_date')
+            ->first();
+
+        $startDate = $activeSub ? $activeSub->end_date : Carbon::now();
+        $endDate = $startDate->copy()->addDays($plan->duration_days);
+
+        $subscription = Subscription::create([
+            'institute_id' => $institute->id,
+            'plan_name' => $plan->name,
+            'amount' => $plan->price,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => 'active',
+            'plan_id' => $plan->id,
+            'razorpay_order_id' => $request->razorpay_order_id,
+            'razorpay_payment_id' => $request->razorpay_payment_id,
+            'razorpay_signature' => $request->razorpay_signature,
+            'platform' => 'android',
+        ]);
+
+        SubscriptionPayment::create([
+            'subscription_id' => $subscription->id,
+            'amount' => $plan->price,
+            'payment_gateway' => 'razorpay',
+            'payment_source' => 'android',
+            'transaction_id' => $request->razorpay_payment_id,
+            'paid_at' => Carbon::now(),
+        ]);
+
+        // Clear the razorpay_order_id against the institute to prevent replays
+        $institute->update(['razorpay_order_id' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Subscription activated successfully'
+        ]);
     }
 
         /**

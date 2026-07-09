@@ -38,3 +38,31 @@ Content-Type: application/json
 GET {{baseUrl}}/institute/fees/export?date=2026-04-28
 Authorization: Bearer {{token}}
 Accept: application/pdf
+
+###
+
+### 1. Razorpay Create Order (Android App Flow)
+POST {{baseUrl}}/institute/subscription/create-order
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+    "plan_id": 2
+}
+
+###
+
+### 2. Razorpay Verify Payment (Android App Flow)
+# Replace placeholders with values returned from Razorpay in Step 1
+POST {{baseUrl}}/institute/subscription/verify-payment
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+    "plan_id": 2,
+    "razorpay_order_id": "order_placeholder",
+    "razorpay_payment_id": "pay_placeholder",
+    "razorpay_signature": "signature_placeholder"
+}

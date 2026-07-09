@@ -41,6 +41,11 @@ class Subscription extends Model
         'status',
         'apple_transaction_id',
         'google_order_id',
+        'plan_id',
+        'razorpay_order_id',
+        'razorpay_payment_id',
+        'razorpay_signature',
+        'platform',
     ];
 
     protected $casts = [
