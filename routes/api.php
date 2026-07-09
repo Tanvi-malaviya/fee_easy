@@ -128,6 +128,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/subscriptions/all-data', [InstituteSubscriptionController::class, 'allData']);
             Route::post('/subscription/iap-verify', [InstituteSubscriptionController::class, 'verifyIap']);
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
+            Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
+            Route::post('/subscription/create-order', [InstituteSubscriptionController::class, 'createOrder']);
+            Route::post('/subscription/verify-payment', [InstituteSubscriptionController::class, 'verifyPaymentAndroid']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 
             // Clean Rich Notes Module

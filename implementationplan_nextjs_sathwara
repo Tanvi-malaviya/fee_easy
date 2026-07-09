@@ -1,0 +1,59 @@
+# Deploy Next.js Website Live on sathwarainfotech.com
+
+Deploy the cloned Next.js application at `/var/www/html/sathwarainfotech.com/si-website` on the live domain `sathwarainfotech.com` (using port 9003 internally via PM2 and Nginx reverse proxy).
+
+## User Review Required
+
+> [!IMPORTANT]
+> **DNS Configuration Required**: The domain `sathwarainfotech.com` currently points to Hostinger parking IPs (`2.57.91.252`, `88.222.222.192`). 
+> You must point the **A record** for `sathwarainfotech.com` and `www.sathwarainfotech.com` to this server's public IP: **`72.62.135.9`** in your domain registrar (Hostinger) settings.
+> 
+> Once the DNS points to this server, we will run Certbot to configure SSL/HTTPS automatically.
+
+## Proposed Changes
+
+### Next.js Application Setup
+
+1. **Install Dependencies**: Run `npm install` inside `/var/www/html/sathwarainfotech.com/si-website`.
+2. **Build Application**: Run `npm run build` inside the same directory to build the production build.
+3. **PM2 Process**: Start the application on port `9003` and name it `sathwarainfotech-com`.
+   - Command: `pm2 start npm --name "sathwarainfotech-com" -- start -- -p 9003 -H 0.0.0.0`
+   - Save configuration: `pm2 save`
+
+### Nginx Configuration
+
+#### [NEW] [sathwarainfotech.com](file:///etc/nginx/sites-available/sathwarainfotech.com)
+Create a new Nginx server configuration pointing to port `9003`.
+
+```nginx
+server {
+    listen 80;
+    server_name sathwarainfotech.com www.sathwarainfotech.com;
+
+    location / {
+        proxy_pass http://localhost:9003;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Enable this site by creating a symlink:
+`ln -s /etc/nginx/sites-available/sathwarainfotech.com /etc/nginx/sites-enabled/`
+
+Verify Nginx syntax:
+`nginx -t`
+
+Reload Nginx:
+`systemctl reload nginx`
+
+## Verification Plan
+
+### Automated/Manual Verification
+- Verify that Nginx config is successfully reloaded.
+- Check PM2 status: `pm2 status` should show `sathwarainfotech-com` online.
+- Check local website response: `curl -I http://localhost:9003` to verify that Next.js is serving pages.
+- List of commands run will be shared with the user.

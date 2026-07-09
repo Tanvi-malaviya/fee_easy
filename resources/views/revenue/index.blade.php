@@ -207,6 +207,16 @@
                                                     Via {{ $payment->payment_gateway }}
                                                 </span>
                                             @endif
+                                            @if($payment->transaction_id)
+                                                <span class="text-[9px] text-slate-500 font-mono mt-1">
+                                                    Ref: {{ $payment->transaction_id }}
+                                                </span>
+                                            @endif
+                                            @if($payment->subscription && $payment->subscription->razorpay_order_id)
+                                                <span class="text-[9px] text-slate-400 font-mono">
+                                                    Order: {{ $payment->subscription->razorpay_order_id }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">

@@ -39,6 +39,7 @@ class Institute extends Authenticatable
         'upi_qr_code',
         'template_id',
         'register_source',
+        'razorpay_order_id',
     ];
 
     protected $hidden = [
