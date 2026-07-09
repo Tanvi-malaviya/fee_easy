@@ -588,4 +588,146 @@ class InstituteSubscriptionController extends Controller
             ]
         ]);
     }
+
+    public function handleWebhook(Request $request)
+    {
+        $signature = $request->header('X-Razorpay-Signature');
+        $webhookSecret = config('services.razorpay.webhook_secret');
+
+        if (!$signature) {
+            Log::error('Razorpay Webhook Error: Signature header missing');
+            return response()->json([
+                'success' => false,
+                'message' => 'Signature missing'
+            ], 400);
+        }
+
+        try {
+            $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
+            $api->utility->verifyWebhookSignature($request->getContent(), $signature, $webhookSecret);
+        } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+            Log::error('Razorpay Webhook Signature Verification Failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Signature verification failed'
+            ], 400);
+        }
+
+        $payload = json_decode($request->getContent(), true);
+        $event = $payload['event'] ?? null;
+
+        if ($event !== 'payment.captured') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Event ignored'
+            ]);
+        }
+
+        $paymentEntity = $payload['payload']['payment']['entity'] ?? null;
+        if (!$paymentEntity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid webhook payload structure'
+            ], 400);
+        }
+
+        $orderId = $paymentEntity['order_id'] ?? null;
+        $paymentId = $paymentEntity['id'] ?? null;
+
+        if (!$orderId || !$paymentId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order ID or Payment ID missing in payload'
+            ], 400);
+        }
+
+        // Idempotency: Check if the subscription for this order is already active/created
+        $existing = Subscription::where('razorpay_order_id', $orderId)->first();
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscription already active (idempotent)'
+            ]);
+        }
+
+        try {
+            // Fetch order details via SDK to read notes safely
+            $order = $api->order->fetch($orderId);
+            $planId = $order->notes->plan_id ?? null;
+            $instituteId = $order->notes->institute_id ?? null;
+
+            if (!$planId || !$instituteId) {
+                Log::error("Razorpay Webhook: plan_id or institute_id missing in order {$orderId} notes.");
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing plan_id or institute_id in order notes'
+                ], 400);
+            }
+
+            $institute = \App\Models\Institute::find($instituteId);
+            $plan = \App\Models\Plan::find($planId);
+
+            if (!$institute || !$plan) {
+                Log::error("Razorpay Webhook: Institute ({$instituteId}) or Plan ({$planId}) not found.");
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Institute or Plan not found'
+                ], 404);
+            }
+
+            // Calculate subscription dates
+            $activeSub = $institute->subscriptions()
+                ->where('status', 'active')
+                ->where('end_date', '>', Carbon::now())
+                ->latest('end_date')
+                ->first();
+
+            $startDate = $activeSub ? $activeSub->end_date : Carbon::now();
+            $endDate = $startDate->copy()->addDays($plan->duration_days);
+
+            $subscription = Subscription::create([
+                'institute_id' => $institute->id,
+                'plan_name' => $plan->name,
+                'amount' => $plan->price,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => 'active',
+                'plan_id' => $plan->id,
+                'razorpay_order_id' => $orderId,
+                'razorpay_payment_id' => $paymentId,
+                'razorpay_signature' => $signature,
+                'platform' => 'webhook',
+            ]);
+
+            SubscriptionPayment::create([
+                'subscription_id' => $subscription->id,
+                'amount' => $plan->price,
+                'payment_gateway' => 'razorpay',
+                'payment_source' => 'webhook',
+                'transaction_id' => $paymentId,
+                'paid_at' => Carbon::now(),
+            ]);
+
+            // Clear the razorpay_order_id to prevent replay
+            $institute->update(['razorpay_order_id' => null]);
+
+            Log::info("Razorpay Webhook: Subscription successfully activated for Institute {$instituteId}, Plan {$planId}.");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscription activated successfully via webhook',
+                'data' => [
+                    'subscription_id' => $subscription->id,
+                    'plan_name' => $plan->name
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Razorpay Webhook Activation Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process webhook activation: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
