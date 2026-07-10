@@ -177,7 +177,7 @@
             </a>
 
             <!-- Chats -->
-            <a href="{{ route('institute.chats.index') }}"
+            <!-- <a href="{{ route('institute.chats.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-700">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
@@ -196,7 +196,7 @@
                     <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-1">Chats</h3>
                     <p class="text-xs text-slate-400 font-medium">Instant messaging</p>
                 </div>
-            </a>
+            </a> -->
 
             <!-- Reports -->
             <a href="{{ route('institute.reports.index') }}"
