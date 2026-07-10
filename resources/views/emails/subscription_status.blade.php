@@ -26,6 +26,9 @@
       @elseif($type == 'approved')
         <h1 class="em-title">Renewal Approved!</h1>
         <p class="em-sub">Your offline plan renewal request has been approved by the administrator.</p>
+      @elseif($type == 'online_paid')
+        <h1 class="em-title">Payment Successful!</h1>
+        <p class="em-sub">Your online payment has been verified and your subscription is active.</p>
       @else
         <h1 class="em-title">Subscription Updated</h1>
         <p class="em-sub">Your subscription plan details have been successfully updated.</p>
@@ -53,9 +56,11 @@
         <p>Your subscription has been successfully upgraded/changed to the new plan. Enjoy your new features!</p>
       @elseif($type == 'approved')
         <p>Your offline renewal request has been reviewed and approved by the administrator.</p>
+      @elseif($type == 'online_paid')
+        <p>Thank you for your payment! Your subscription has been successfully activated. You can now use all platform features.</p>
       @endif
 
-      <div class="em-center"><a href="{{ url('/institute/login') }}" class="em-btn">Open Admin App</a></div>
+      <div class="em-center"><a href="{{ url('/institute/login') }}" class="em-btn">Go to Dashboard</a></div>
     </td></tr>
     <!-- FOOTER -->
     <tr><td class="em-footer">

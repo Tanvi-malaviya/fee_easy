@@ -527,7 +527,7 @@
                 'Subscription Expired',
                 'Your subscription has expired. Please renew your subscription to perform this action.',
                 function () {
-                    window.location.href = "{{ route('institute.subscription.renew.show') }}";
+                    window.location.href = "{{ route('institute.plans.index') }}";
                 },
                 'Renew Now',
                 'bg-[#FF6B00] shadow-orange-900/20'
