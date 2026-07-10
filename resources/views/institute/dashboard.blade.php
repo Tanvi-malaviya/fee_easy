@@ -33,7 +33,7 @@
                                 <p class="text-xs text-amber-600 mt-0.5">We have received your payment proof and transaction reference. Our billing team will verify it shortly.</p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
                             View Details</a>
                     </div>
                 @else
@@ -47,7 +47,7 @@
                                 <p class="text-xs text-rose-600 mt-0.5">You can edit and delete existing records, but you cannot add new data. Please renew your plan to restore full access.</p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-rose-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-rose-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
                             ? Renew Subscription Now</a>
                     </div>
                 @endif
@@ -63,7 +63,7 @@
                                 <p class="text-xs text-amber-600 mt-0.5">We have received your payment proof and transaction reference. Our billing team will verify it shortly.</p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
                             View Details</a>
                     </div>
                 @elseif($subscriptionDaysLeft !== null && $subscriptionDaysLeft >= 0 && $subscriptionDaysLeft <= 7)
@@ -80,7 +80,7 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-orange-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-orange-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
                             ⚡ Renew Subscription Now</a>
                     </div>
                 @endif
@@ -444,7 +444,7 @@
                                 class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors uppercase tracking-wider">
                             Remind Me Later
                         </button>
-                        <a href="{{ route('institute.subscription.renew.show') }}" 
+                        <a href="{{ route('institute.plans.index') }}" 
                            class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700 transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-wider">
                             ⚡ Renew Now
                         </a>

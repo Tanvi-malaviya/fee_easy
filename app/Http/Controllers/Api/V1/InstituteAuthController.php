@@ -325,7 +325,7 @@ class InstituteAuthController extends Controller
         $accessToken = $accessTokenResult->plainTextToken;
         $tokenId = $accessTokenResult->accessToken->id;
         $refreshToken = $institute->createToken("refresh_token_for_{$tokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
-        $subscription = $institute->subscriptions()->latest()->first();
+        $subscription = $institute->currentSubscription();
 
         $session = $this->handleDeviceSession($institute, $tokenId, $request);
 

@@ -318,7 +318,7 @@
             <div class="space-y-3">
                 <div
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-6 relative overflow-hidden h-fit">
-                    <div class="flex items-start justify-between">
+                    <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
                                 <span>Current Active Plan -</span>
@@ -328,12 +328,23 @@
                             </h3>
                         </div>
 
-                        <div
-                            class="h-10 w-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
-                            </svg>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('institute.plans.index') }}"
+                                class="inline-flex items-center gap-1.5 py-1.5 px-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-sm shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                Renew Plan
+                            </a>
+
+                            <div
+                                class="h-8 w-8 bg-emerald-50 text-emerald-500 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
@@ -350,23 +361,6 @@
                             <div>
                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Remaining</p>
                                 <p id="remaining-days-text" class="text-[11px] font-bold text-slate-700 mt-0.5">—</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Expiry Warning — shown only when subscription expires within 7 days -->
-                    <div id="expiry-warning" class="mt-2 hidden">
-                        <div class="flex items-center gap-2.5 bg-amber-50 rounded-xl p-3 border border-amber-200">
-                            <div
-                                class="h-8 w-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center shrink-0">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest">Expiring Soon</p>
-                                <p id="expiry-date-text" class="text-[11px] font-bold text-amber-800 mt-0.5">N/A</p>
                             </div>
                         </div>
                     </div>
@@ -1146,10 +1140,13 @@
                     if (sub) {
                         if (badgeSub) {
                             badgeSub.innerText = sub.status.toUpperCase();
-                            if (sub.status.toLowerCase() === 'expired' || sub.status.toLowerCase() === 'inactive') {
-                                badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
-                            } else {
+                            const statusLower = sub.status.toLowerCase();
+                            if (statusLower === 'active' || statusLower === 'expire_soon') {
                                 badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                            } else if (statusLower === 'pending') {
+                                badgeSub.className = 'text-[8px] bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-amber-100';
+                            } else {
+                                badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
                             }
                         }
                         planTitle.innerText = sub.plan_name;
@@ -1175,17 +1172,6 @@
                                     remainingText.innerText = `Expired on ${formattedDate}`;
                                 }
                                 remainingRow.classList.remove('hidden');
-                            }
-
-                            // Show expiry warning only when within 7 days
-                            if (diffDays >= 0 && diffDays <= 7) {
-                                const expiryWarning = document.getElementById('expiry-warning');
-                                const expiryText = document.getElementById('expiry-date-text');
-                                if (expiryWarning && expiryText) {
-                                    const daysLabel = diffDays === 0 ? 'Expires today' : (diffDays === 1 ? 'Expires tomorrow' : `Expires in ${diffDays} days`);
-                                    expiryText.innerText = `${daysLabel} — Renew now to avoid interruption`;
-                                    expiryWarning.classList.remove('hidden');
-                                }
                             }
                         }
                     }

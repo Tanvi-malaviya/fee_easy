@@ -90,12 +90,23 @@ class Institute extends Authenticatable
         return $this->hasMany(SubscriptionRenewal::class);
     }
 
-    public function hasActiveSubscription()
+    public function activeSubscription()
     {
         return $this->subscriptions()
-            ->whereIn('status', ['active'])
-            ->where('end_date', '>=', now()->startOfDay())
-            ->exists();
+            ->where('status', Subscription::STATUS_ACTIVE)
+            ->where('end_date', '>=', \Carbon\Carbon::today())
+            ->orderByDesc('end_date')
+            ->first();
+    }
+
+    public function currentSubscription()
+    {
+        return $this->activeSubscription() ?? $this->subscriptions()->latest()->first();
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->activeSubscription() !== null;
     }
 
     /**
@@ -110,7 +121,7 @@ class Institute extends Authenticatable
      */
     public function subscriptionStatus(): array
     {
-        $subscription = $this->subscriptions()->orderByDesc('end_date')->first();
+        $subscription = $this->currentSubscription();
         $latestRenewal = $this->subscriptionRenewals()->latest()->first();
 
         $hasActivePlan = $subscription

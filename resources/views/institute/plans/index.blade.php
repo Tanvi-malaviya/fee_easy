@@ -95,6 +95,38 @@
                     </tr>
                 </tbody>
             </table>
+    <!-- Beautiful Success/Error Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Card -->
+        <div class="relative bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl border border-slate-100/80 transform scale-95 opacity-0 transition-all duration-300 flex flex-col items-center text-center" id="payment-modal-card">
+            
+            <!-- Success Icon -->
+            <div id="modal-icon-success" class="hidden h-16 w-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+
+            <!-- Error Icon -->
+            <div id="modal-icon-error" class="hidden h-16 w-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-4 ring-8 ring-rose-50/50">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h3 id="modal-title" class="text-base font-black text-slate-800 tracking-tight mb-2"></h3>
+            
+            <!-- Message -->
+            <p id="modal-message" class="text-[11px] text-slate-500 font-medium leading-relaxed mb-6"></p>
+
+            <!-- Action Button -->
+            <button id="modal-btn" class="w-full py-3 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-orange-500/20 active:scale-95 transition-all">
+                OK
+            </button>
         </div>
     </div>
 </div>
@@ -146,10 +178,15 @@
 
         container.innerHTML = '';
         plans.forEach(plan => {
-            const card = document.createElement('div');
             const nameLower = plan.name.toLowerCase();
+            const isFreePlan = nameLower.includes('free') || parseFloat(plan.price) === 0;
+            
+            if (isFreePlan) {
+                return; // Hide free plan
+            }
+
+            const card = document.createElement('div');
             const isActive = subscription && subscription.plan_name && subscription.plan_name.toLowerCase() === nameLower;
-            const isFreePlan = nameLower.includes('free');
             
             if (isActive) {
                 card.className = `bg-gradient-to-br from-[#ff6c00] to-[#e05f00] rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center justify-between relative overflow-hidden transition-all duration-300 transform md:scale-105 z-10`;
@@ -229,6 +266,40 @@
         });
     }
 
+    function showModal(type, title, message, callback = null) {
+        const modal = document.getElementById('payment-modal');
+        const card = document.getElementById('payment-modal-card');
+        const successIcon = document.getElementById('modal-icon-success');
+        const errorIcon = document.getElementById('modal-icon-error');
+        const titleEl = document.getElementById('modal-title');
+        const msgEl = document.getElementById('modal-message');
+        const btn = document.getElementById('modal-btn');
+
+        successIcon.classList.add('hidden');
+        errorIcon.classList.add('hidden');
+
+        if (type === 'success') {
+            successIcon.classList.remove('hidden');
+        } else {
+            errorIcon.classList.remove('hidden');
+        }
+
+        titleEl.innerText = title;
+        msgEl.innerText = message;
+
+        btn.onclick = function() {
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            }, 150);
+        };
+
+        modal.classList.remove('hidden');
+        modal.offsetHeight; // Force reflow
+        card.classList.remove('scale-95', 'opacity-0');
+    }
+
     async function choosePlan(planId) {
         const btn = document.getElementById(`plan-btn-${planId}`);
         const originalText = btn.innerText;
@@ -261,25 +332,33 @@
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify({
-                            razorpay_order_id: resp.razorpay_order_id,
+                            razorpay_order_id: resp.razorpay_order_id || result.razorpay_order_id,
                             razorpay_payment_id: resp.razorpay_payment_id,
                             razorpay_signature: resp.razorpay_signature,
+                            razorpay_invoice_id: resp.razorpay_invoice_id || null,
                             plan_id: planId
                         })
                     });
 
                     if (verifyResponse.ok) {
-                        alert('Payment successful!');
-                        window.location.reload();
-                    } else { alert('Verification failed'); }
+                        showModal('success', 'Payment Successful!', 'Your payment has been verified and your subscription has been activated.', () => {
+                            window.location.reload();
+                        });
+                    } else {
+                        const errResult = await verifyResponse.json();
+                        showModal('error', 'Verification Failed', errResult.message || 'Unknown error occurred.');
+                    }
                 },
                 "theme": { "color": "#ff6c00" }
             };
             const rzp = new Razorpay(options);
             rzp.open();
 
-        } catch (error) { alert(error.message || 'Error'); }
-        finally { btn.disabled = false; btn.innerText = originalText; }
+        } catch (error) { 
+            showModal('error', 'Payment Error', error.message || 'Something went wrong.'); 
+        } finally { 
+            btn.disabled = false; btn.innerText = originalText; 
+        }
     }
 </script>
 @endsection

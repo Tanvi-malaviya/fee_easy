@@ -19,7 +19,7 @@ class InstituteProfileController extends Controller
         // Proactively prune expired mobile sessions for this institute
         \App\Models\DeviceSession::pruneExpired($institute->id);
 
-        $subscription = $institute->subscriptions()->latest()->first();
+        $subscription = $institute->currentSubscription();
 
         $currentToken = $institute->currentAccessToken();
         $isTransient = $currentToken instanceof \Laravel\Sanctum\TransientToken;

@@ -41,6 +41,7 @@ class SubscriptionStatusMail extends Mailable
             'extended' => '📅 Subscription Validity Extended! - Tuoora',
             'changed' => '🔄 Subscription Plan Upgraded! - Tuoora',
             'approved' => '✅ Subscription Renewal Approved! - Tuoora',
+            'online_paid' => '💳 Payment Successful & Subscription Active! - Tuoora',
         ];
 
         return new Envelope(
