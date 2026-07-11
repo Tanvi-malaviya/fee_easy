@@ -88,7 +88,7 @@ class CheckSubscriptionExpiry extends Command
             // Deactivate the institute associated with this subscription
             $institute = $subscription->institute;
             if ($institute && $institute->status === 'active') {
-                $institute->update(['status' => 'inactive']);
+                // $institute->update(['status' => 'inactive']);
                 $this->warn("Institute '{$institute->institute_name}' deactivated due to plan expiry.");
             }
         }

@@ -321,10 +321,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
-                                <span>Current Active Plan -</span>
-                                <span id="plan-title" class="text-sm font-bold text-[#ff6c00] uppercase tracking-wider">
-                                    Loading...
-                                </span>
+                                <span>Subscription Status</span>
+                                <span id="plan-title" class="hidden"></span>
                             </h3>
                         </div>
 

@@ -73,4 +73,42 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'System settings updated successfully.');
     }
+
+    /**
+     * Display the Razorpay credentials settings page.
+     */
+    public function razorpayIndex()
+    {
+        $settings = SystemSetting::whereIn('key', [
+            'razorpay_key_id',
+            'razorpay_key_secret',
+            'razorpay_webhook_secret'
+        ])->pluck('value', 'key');
+
+        return view('settings.razorpay', compact('settings'));
+    }
+
+    /**
+     * Update Razorpay credentials.
+     */
+    public function razorpayUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'settings' => 'required|array',
+            'settings.razorpay_key_id' => 'nullable|string',
+            'settings.razorpay_key_secret' => 'nullable|string',
+            'settings.razorpay_webhook_secret' => 'nullable|string',
+        ]);
+
+        foreach ($request->input('settings', []) as $key => $value) {
+            SystemSetting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value ?? '', 'group' => 'razorpay']
+            );
+        }
+
+        Activity::log("Razorpay credentials settings updated");
+
+        return redirect()->back()->with('success', 'Razorpay credentials updated successfully.');
+    }
 }

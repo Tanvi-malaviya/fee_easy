@@ -82,6 +82,8 @@ Route::middleware(array_filter([
         // App Settings
         Route::get('settings', [App\Http\Controllers\Web\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings/update', [App\Http\Controllers\Web\SettingController::class, 'update'])->name('settings.update');
+        Route::get('settings/razorpay', [App\Http\Controllers\Web\SettingController::class, 'razorpayIndex'])->name('settings.razorpay.index');
+        Route::post('settings/razorpay/update', [App\Http\Controllers\Web\SettingController::class, 'razorpayUpdate'])->name('settings.razorpay.update');
 
         // Activity Monitoring
         Route::get('activities', [App\Http\Controllers\Web\ActivityController::class, 'index'])->name('activity.index');
