@@ -186,20 +186,12 @@
             }
 
             const card = document.createElement('div');
-            const isActive = subscription && subscription.plan_name && subscription.plan_name.toLowerCase() === nameLower;
+            card.className = `bg-white rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-orange-200`;
             
-            if (isActive) {
-                card.className = `bg-gradient-to-br from-[#ff6c00] to-[#e05f00] rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center justify-between relative overflow-hidden transition-all duration-300 transform md:scale-105 z-10`;
-            } else {
-                card.className = `bg-white rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-orange-200`;
-            }
-            
-            const badgeHtml = isActive ? `<span class="absolute top-0 inset-x-0 bg-white/20 text-white text-[9px] font-black uppercase tracking-widest py-1.5 backdrop-blur-md shadow-sm">Current Active Plan</span>` : '';
+            const badgeHtml = '';
 
             let buttonHtml = '';
-            if (isActive) {
-                // No button needed — the "Current Active Plan" badge on top is sufficient
-            } else if (isFreePlan && hasUsedFreePlan) {
+            if (isFreePlan && hasUsedFreePlan) {
                 buttonHtml = `<button disabled class="w-full mt-6 py-3 bg-slate-50 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-not-allowed border border-slate-100">Already Used</button>`;
             } else {
                 if (parseFloat(plan.price) === 0) {
@@ -213,16 +205,16 @@
                 }
             }
 
-            const textColor = isActive ? 'text-white' : 'text-slate-800';
-            const mutedColor = isActive ? 'text-white/90' : 'text-slate-500';
+            const textColor = 'text-slate-800';
+            const mutedColor = 'text-slate-500';
 
             card.innerHTML = `
                 ${badgeHtml}
-                <div class="w-full ${isActive ? 'mt-4' : ''}">
+                <div class="w-full">
                     <h4 class="text-[11px] font-black uppercase tracking-widest ${mutedColor} mb-3">${plan.name}</h4>
                     <div class="flex flex-col items-center justify-center">
                         <span class="text-4xl font-black ${textColor} tracking-tight">₹${parseFloat(plan.price).toLocaleString()}</span>
-                        <span class="text-[9px] font-bold ${mutedColor} tracking-widest mt-2 bg-slate-100/10 px-3 py-1 rounded-full border ${isActive ? 'border-white/20' : 'border-slate-100'}">/${plan.duration_days} DAYS</span>
+                        <span class="text-[9px] font-bold ${mutedColor} tracking-widest mt-2 bg-slate-100/10 px-3 py-1 rounded-full border border-slate-100">/${plan.duration_days} DAYS</span>
                     </div>
                 </div>
                 ${buttonHtml}
@@ -326,6 +318,11 @@
                 "name": "FeeEasy",
                 "description": "Subscription for " + result.plan_name,
                 "order_id": result.razorpay_order_id,
+                "prefill": {
+                    "name": result.institute_name || "",
+                    "email": result.email || "",
+                    "contact": result.phone || ""
+                },
                 "handler": async function (resp) {
                     btn.innerText = 'VERIFY...';
                     const verifyResponse = await fetch('/api/v1/institute/subscriptions/verify-payment', {

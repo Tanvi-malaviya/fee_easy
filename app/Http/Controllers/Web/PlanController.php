@@ -28,7 +28,7 @@ class PlanController extends Controller
             $query->where('status', $status);
         }
 
-        $plans = $query->latest()->paginate(5);
+        $plans = $query->latest()->paginate(10);
         return view('plans.index', compact('plans'));
     }
 
