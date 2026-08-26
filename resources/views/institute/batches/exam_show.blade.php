@@ -3,7 +3,7 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-6 sm:pt-8 px-4 sm:px-6 pb-14">
+    <div class="max-w-7xl mx-auto pt-2  px-4 sm:px-3 pb-20">
         <!-- Breadcrumb -->
         <nav class="flex flex-wrap items-center gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-4">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-primary transition-colors">Batches</a>
@@ -21,10 +21,11 @@
             <span class="text-slate-600">Marks Entry</span>
         </nav>
 
-        <!-- Exam Header Card -->
-        <div class="bg-white rounded-xl p-6 border border-slate-100 shadow-sm mb-5">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
+        <!-- Exam Header & Stats Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-5">
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+                <!-- Left Details -->
+                <div class="shrink-0">
                     <div class="flex items-center gap-2 mb-1">
                         <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest bg-orange-50 text-[#FF6B00] border border-orange-100/60">
                             {{ $exam->subject ?: $batch->subject ?: 'General' }}
@@ -33,8 +34,8 @@
                             Batch: <strong class="text-slate-700">{{ $batch->name }}</strong>
                         </span>
                     </div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ $exam->title }}</h1>
-                    <p class="text-xs text-slate-400 mt-1 font-medium flex flex-wrap items-center gap-3">
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight leading-tight">{{ $exam->title }}</h1>
+                    <p class="text-xs text-slate-400 mt-1 font-medium flex flex-wrap items-center gap-2.5">
                         <span>Date: <strong class="text-slate-700">{{ $exam->formatted_date }}</strong></span>
                         <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                         <span>Total Marks: <strong class="text-slate-700">{{ (float) $exam->total_marks }}</strong></span>
@@ -43,41 +44,30 @@
                     </p>
                 </div>
 
-                <!-- Status & Back Action -->
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('institute.batches.exams', $batchId) }}"
-                        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Back to Exams
-                    </a>
+                <!-- Right 5 Stats Cards in place of Back button -->
+                <div id="stats-banner" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 w-full xl:w-auto xl:max-w-2xl">
+                    <div class="bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100/80 min-w-[95px] text-center">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight truncate">Total Students</span>
+                        <span id="stat-total-students" class="text-base font-bold text-slate-800 mt-0.5 block">0</span>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100/80 min-w-[95px] text-center">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight truncate">Present</span>
+                        <span id="stat-present" class="text-base font-bold text-slate-800 mt-0.5 block">0</span>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100/80 min-w-[95px] text-center">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight truncate">Absent</span>
+                        <span id="stat-absent" class="text-base font-bold text-amber-600 mt-0.5 block">0</span>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100/80 min-w-[95px] text-center">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight truncate">Passed</span>
+                        <span id="stat-passed" class="text-base font-bold text-emerald-600 mt-0.5 block">0</span>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100/80 min-w-[95px] text-center">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight truncate">Pass Rate</span>
+                        <span id="stat-pass-rate" class="text-base font-bold text-indigo-600 mt-0.5 block">0%</span>
+                    </div>
                 </div>
             </div>
-
-            <!-- Stats Bar -->
-            <div id="stats-banner" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mt-6 pt-6 border-t border-slate-100">
-                <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Total Students</span>
-                    <span id="stat-total-students" class="text-base font-bold text-slate-800 mt-1 block">0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Present / Entered</span>
-                    <span id="stat-present" class="text-base font-bold text-slate-800 mt-1 block">0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Absent</span>
-                    <span id="stat-absent" class="text-base font-bold text-amber-600 mt-1 block">0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Passed</span>
-                    <span id="stat-passed" class="text-base font-bold text-emerald-600 mt-1 block">0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Pass Rate</span>
-                    <span id="stat-pass-rate" class="text-base font-bold text-indigo-600 mt-1 block">0%</span>
-                </div>
-                <!-- <div class="bg-slate-50 p-3 rounded-2xl">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block leading-tight">Class Average</span>
-            </div> -->
         </div>
 
         @php
@@ -107,13 +97,24 @@
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mt-2">
             <!-- Table Action Toolbar -->
             <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50">
-                <div class="relative w-full sm:w-80">
-                    <input type="text" id="student-search" oninput="filterStudents()"
-                        placeholder="Search student by name or enrollment ID..."
-                        class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-primary transition-all">
-                    <svg class="w-4 h-4 text-slate-300 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                <!-- Search input (Matching exams list page design) -->
+                <div class="flex items-center gap-0 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm focus-within:border-primary transition-all w-full sm:w-auto">
+                    <div class="relative flex-1">
+                        <input type="text" id="student-search" onkeypress="if(event.key === 'Enter') filterStudents()"
+                            placeholder="Search student by name or ID..."
+                            class="pl-10 pr-8 py-2 bg-transparent rounded-xl text-xs sm:text-sm font-semibold outline-none w-full sm:w-[220px] md:w-[280px] min-w-0">
+                        <svg class="w-4 h-4 text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <button type="button" onclick="resetStudentSearch()" id="btn-reset-search"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 hidden cursor-pointer" title="Clear">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    <button type="button" onclick="filterStudents()"
+                        class="px-4 py-2 bg-primary text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-colors uppercase tracking-widest shrink-0 cursor-pointer">
+                        Search
+                    </button>
                 </div>
 
                 <div class="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end">
@@ -126,48 +127,32 @@
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/70">
-                            <th class="py-3.5 px-5">#</th>
-                            <th class="py-3.5 px-5">Student Information</th>
-                            <th class="py-3.5 px-5 w-44">Marks Scored (Max: {{ (float) $exam->total_marks }})</th>
-                            <th class="py-3.5 px-5 text-center w-24">Absent?</th>
-                            <th class="py-3.5 px-5 text-center w-36">Result Status</th>
-                            <th class="py-3.5 px-5">Teacher Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="students-table-body" class="divide-y divide-slate-100 text-sm">
-                        <tr>
-                            <td colspan="6" class="py-20 text-center">
-                                <div class="inline-block h-8 w-8 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-3">Loading batch students...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Student Cards Container (Compact 5 to 6 Cards per Row) -->
+            <div id="students-cards-container" class="p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5 bg-slate-50/50">
+                <div class="col-span-full py-16 text-center">
+                    <div class="inline-block h-7 w-7 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2.5">Loading batch students...</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Floating Sticky Save Bar -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-2xl py-3.5 px-6">
+    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-2xl py-3 px-6">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="h-9 w-9 rounded-xl bg-orange-50 text-[#FF6B00] flex items-center justify-center font-bold text-xs shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <div class="h-8 w-8 rounded-xl bg-orange-50 text-[#FF6B00] flex items-center justify-center font-bold text-xs shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>
                 <div>
                     <h4 class="text-xs font-bold text-slate-800 leading-tight">Batch: {{ $batch->name }} &bull; {{ $exam->title }}</h4>
-                    <p class="text-[11px] text-slate-400 font-medium">Be sure to click Save to record all student examination marks into the system.</p>
+                    <p class="text-[10px] text-slate-400 font-medium">Click Save to record all student marks into the system.</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <button type="button" onclick="saveAllMarks()" id="save-marks-btn"
-                    class="px-8 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg shadow-orange-700/20 font-bold uppercase tracking-widest text-xs transition-all transform active:scale-95 flex items-center gap-2">
+                    class="px-6 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg shadow-orange-700/20 font-bold uppercase tracking-widest text-xs transition-all transform active:scale-95 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                     <span>Save All Marks</span>
                 </button>
@@ -199,12 +184,12 @@
         const banner = document.getElementById('future-exam-banner');
         if (banner) {
             banner.innerHTML = `
-                <div class="flex items-center gap-2.5 text-emerald-800 text-xs font-bold w-full">
+                <div class="flex items-center gap-2 text-emerald-800 text-xs font-bold w-full">
                     <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span>Marks entry unlocked. You can now type and save marks for this exam.</span>
+                    <span>Marks entry unlocked. You can now enter and save marks.</span>
                 </div>
             `;
-            banner.className = 'bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 mb-4 flex items-center shadow-xs';
+            banner.className = 'bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4 flex items-center shadow-xs';
         }
         renderStudentsTable(studentsData);
         showToast('Marks entry unlocked successfully.', 'success');
@@ -238,47 +223,52 @@
     }
 
     function renderStudentsTable(students) {
-        const tbody = document.getElementById('students-table-body');
+        const container = document.getElementById('students-cards-container');
 
         if (!students || students.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="py-16 text-center text-slate-400 font-semibold text-xs">
-                        No students enrolled in this batch yet.
-                    </td>
-                </tr>
+            container.innerHTML = `
+                <div class="col-span-full py-16 text-center text-slate-400 font-semibold text-xs">
+                    No students enrolled in this batch yet.
+                </div>
             `;
             return;
         }
 
-        tbody.innerHTML = students.map((student, idx) => {
+        container.innerHTML = students.map((student, idx) => {
             const isAbsent = student.is_absent;
             const marksVal = student.marks_obtained !== null && student.marks_obtained !== undefined ? student.marks_obtained : '';
             const remarksVal = student.remarks || '';
             const inputDisabled = isAbsent || isFutureLocked;
 
             return `
-                <tr id="student-row-${student.student_id}" class="hover:bg-slate-50/70 transition-colors student-row" data-name="${(student.student_name || '').toLowerCase()}" data-enroll="${(student.enrollment_id || '').toLowerCase()}">
-                    <td class="py-4 px-5 text-xs font-bold text-slate-400">${idx + 1}</td>
-
-                    <!-- Student Profile -->
-                    <td class="py-4 px-5">
-                        <div class="flex items-center gap-3">
-                            <img src="${student.profile_image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.student_name)}"
-                                 class="h-9 w-9 rounded-xl object-cover border border-slate-200/80 shrink-0">
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 leading-snug">${student.student_name}</h4>
-                                <p class="text-[10px] font-semibold text-slate-400 leading-none mt-0.5">
-                                    ID: <span class="text-slate-600 font-mono">${student.enrollment_id || 'N/A'}</span>
-                                    ${student.phone ? ` &bull; ${student.phone}` : ''}
+                <div id="student-row-${student.student_id}" class="student-row bg-white rounded-xl p-2.5 border border-slate-100 shadow-2xs hover:shadow-md hover:border-orange-200/80 transition-all flex flex-col justify-between gap-2" data-name="${(student.student_name || '').toLowerCase()}" data-enroll="${(student.enrollment_id || '').toLowerCase()}">
+                    <!-- Top: Avatar, Name & Status Badge -->
+                    <div class="flex items-start justify-between gap-1 border-b border-slate-50 pb-1.5">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="h-4.5 w-4.5 rounded bg-slate-100 text-slate-500 font-black text-[8.5px] flex items-center justify-center shrink-0 px-1">
+                                ${idx + 1}
+                            </span>
+                          
+                            <div class="min-w-0">
+                                <h4 class="text-[10.5px] font-bold text-slate-900 leading-tight truncate" title="${student.student_name}">${student.student_name}</h4>
+                                <p class="text-[8.5px] font-medium text-slate-400 leading-none mt-0.5 truncate">
+                                    ID: <span class="text-slate-600 font-mono font-bold">${student.enrollment_id || 'N/A'}</span>
                                 </p>
                             </div>
                         </div>
-                    </td>
 
-                    <!-- Marks Input -->
-                    <td class="py-4 px-5">
-                        <div class="relative">
+                        <!-- Result Status Badge -->
+                        <div class="shrink-0" id="status-cell-${student.student_id}">
+                            ${getStatusBadge(marksVal, isAbsent)}
+                        </div>
+                    </div>
+
+                    <!-- Middle: Marks Input & Absent Checkbox -->
+                    <div class="grid grid-cols-3 gap-1.5 items-center">
+                        <div class="col-span-2">
+                            <label class="text-[8px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                                Marks <span class="text-slate-300 font-normal">(/${totalMarks})</span>
+                            </label>
                             <input type="number" step="any" min="0" max="${totalMarks}"
                                 id="mark-input-${student.student_id}"
                                 data-student-index="${idx}"
@@ -286,49 +276,44 @@
                                 ${inputDisabled ? 'disabled' : ''}
                                 oninput="onMarkChange(${student.student_id})"
                                 onkeydown="handleInputKeydown(event, ${idx})"
-                                placeholder="${isFutureLocked ? 'Locked until ' + '{{ $exam->formatted_date }}' : '0 to ' + totalMarks}"
-                                class="w-full px-3.5 py-2 text-sm font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all mark-cell-input ${inputDisabled ? 'bg-slate-100 opacity-50 cursor-not-allowed' : ''}">
+                                placeholder="0-${totalMarks}"
+                                class="w-full px-1.5 py-1 text-xs font-black text-slate-800 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all mark-cell-input text-center h-7 ${inputDisabled ? 'bg-slate-100 opacity-50 cursor-not-allowed' : ''}">
                         </div>
-                    </td>
 
-                    <!-- Absent Checkbox -->
-                    <td class="py-4 px-5 text-center">
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox"
-                                id="absent-check-${student.student_id}"
-                                ${isAbsent ? 'checked' : ''}
-                                ${isFutureLocked ? 'disabled' : ''}
-                                onchange="onAbsentToggle(${student.student_id})"
-                                class="h-4 w-4 rounded text-primary focus:ring-primary border-slate-300 ${isFutureLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}">
-                        </label>
-                    </td>
+                        <div>
+                            <label class="text-[8px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5 text-center">Absent</label>
+                            <label class="h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg cursor-pointer transition-all">
+                                <input type="checkbox"
+                                    id="absent-check-${student.student_id}"
+                                    ${isAbsent ? 'checked' : ''}
+                                    ${isFutureLocked ? 'disabled' : ''}
+                                    onchange="onAbsentToggle(${student.student_id})"
+                                    class="h-3 w-3 rounded text-primary focus:ring-primary border-slate-300 ${isFutureLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}">
+                            </label>
+                        </div>
+                    </div>
 
-                    <!-- Status Pill -->
-                    <td class="py-4 px-5 text-center" id="status-cell-${student.student_id}">
-                        ${getStatusBadge(marksVal, isAbsent)}
-                    </td>
-
-                    <!-- Remarks Input -->
-                    <td class="py-4 px-5">
+                    <!-- Bottom: Teacher Remarks -->
+                    <div>
                         <input type="text"
                             id="remarks-input-${student.student_id}"
                             value="${remarksVal}"
                             ${isFutureLocked ? 'disabled' : ''}
-                            placeholder="${isFutureLocked ? 'Locked' : 'Optional note / remarks...'}"
-                            class="w-full px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all ${isFutureLocked ? 'bg-slate-100 opacity-50 cursor-not-allowed' : ''}">
-                    </td>
-                </tr>
+                            placeholder="${isFutureLocked ? 'Locked' : 'Remarks...'}"
+                            class="w-full px-1.5 py-0.5 text-[10px] font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all h-6 ${isFutureLocked ? 'bg-slate-100 opacity-50 cursor-not-allowed' : ''}">
+                    </div>
+                </div>
             `;
         }).join('');
     }
 
     function getStatusBadge(marks, isAbsent) {
         if (isAbsent) {
-            return `<span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/60">Absent</span>`;
+            return `<span class="inline-block px-1.5 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/60">Absent</span>`;
         }
 
         if (marks === '' || marks === null || marks === undefined) {
-            return `<span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-400 border border-slate-200">Pending</span>`;
+            return `<span class="inline-block px-1.5 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider bg-slate-100 text-slate-400 border border-slate-200">Pending</span>`;
         }
 
         const numMarks = parseFloat(marks);
@@ -336,15 +321,15 @@
 
         if (numMarks >= passingMarks) {
             return `
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                    <span class="h-1 w-1 rounded-full bg-emerald-500"></span>
                     Pass (${pct}%)
                 </span>
             `;
         } else {
             return `
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/60">
-                    <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/60">
+                    <span class="h-1 w-1 rounded-full bg-rose-500"></span>
                     Fail (${pct}%)
                 </span>
             `;
@@ -427,8 +412,11 @@
         const passRate = present > 0 ? Math.round((passed / present) * 100) : 0;
         document.getElementById('stat-pass-rate').textContent = `${passRate}%`;
 
-        const avgScore = present > 0 ? (totalScore / present).toFixed(1) : '0.0';
-        document.getElementById('stat-avg').textContent = `${avgScore} / ${totalMarks}`;
+        const statAvg = document.getElementById('stat-avg');
+        if (statAvg) {
+            const avgScore = present > 0 ? (totalScore / present).toFixed(1) : '0.0';
+            statAvg.textContent = `${avgScore} / ${totalMarks}`;
+        }
     }
 
     function handleInputKeydown(e, idx) {
@@ -462,7 +450,7 @@
         markInputs.forEach(input => {
             const sid = input.id.replace('mark-input-', '');
             const check = document.getElementById(`absent-check-${sid}`);
-            if (check && !check.checked && input.value.trim() === '') {
+            if (check && !check.checked) {
                 input.value = passingMarks;
                 input.disabled = false;
                 input.classList.remove('bg-slate-100', 'opacity-40', 'opacity-50', 'cursor-not-allowed');
@@ -476,7 +464,7 @@
         });
 
         calculateLiveStats();
-        showToast(`Filled passing marks (${passingMarks}) for ${filledCount} students.`, 'success');
+        showToast(`Filled passing marks (${passingMarks}) for ${filledCount} student${filledCount === 1 ? '' : 's'}.`, 'success');
     }
 
     function clearAllMarks() {
@@ -519,10 +507,20 @@
     }
 
     function filterStudents() {
-        const query = document.getElementById('student-search').value.toLowerCase().trim();
+        const input = document.getElementById('student-search');
+        const query = (input ? input.value : '').toLowerCase().trim();
         const rows = document.querySelectorAll('.student-row');
-        let matchCount = 0;
+        const resetBtn = document.getElementById('btn-reset-search');
+        
+        if (resetBtn) {
+            if (query.length > 0) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
 
+        let matchCount = 0;
         rows.forEach(row => {
             const name = row.getAttribute('data-name') || '';
             const enroll = row.getAttribute('data-enroll') || '';
@@ -534,6 +532,13 @@
                 row.style.display = 'none';
             }
         });
+    }
+
+    function resetStudentSearch() {
+        const input = document.getElementById('student-search');
+        if (input) input.value = '';
+        filterStudents();
+        if (input) input.focus();
     }
 
     async function saveAllMarks() {

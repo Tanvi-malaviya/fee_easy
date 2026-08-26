@@ -67,6 +67,11 @@ class BatchController extends Controller
         return app(\App\Http\Controllers\Api\V1\InstituteBatchController::class)->destroy($request, $id);
     }
 
+    public function close(Request $request, $id)
+    {
+        return app(\App\Http\Controllers\Api\V1\InstituteBatchController::class)->close($request, $id);
+    }
+
     public function create()
     {
         return view('institute.batches.create');

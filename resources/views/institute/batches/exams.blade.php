@@ -3,9 +3,9 @@
 @section('content')
     <div id="toast-container" class="fixed top-24 right-8 z-[1000] space-y-4"></div>
 
-    <div class="max-w-7xl mx-auto pt-6 sm:pt-8 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto pt-3 sm:pt-2 px-4 sm:px-6">
         <!-- Breadcrumb -->
-        <nav class="flex flex-wrap items-center gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-4">
+        <nav class="flex flex-wrap items-center gap-y-1 gap-x-2 text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-2">
             <a href="{{ route('institute.batches.index') }}" class="hover:text-primary transition-colors">Batches</a>
             <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -703,9 +703,16 @@
     }
 
     function confirmDeleteExam(examId) {
-        if (confirm('Are you sure you want to delete this exam? All student marks associated with it will also be deleted.')) {
-            deleteExam(examId);
-        }
+        showConfirmModal(
+            'Delete Exam',
+            'Are you sure you want to delete this exam? All student marks and results associated with it will also be permanently deleted.',
+            () => deleteExam(examId),
+            'Delete Exam',
+            'bg-rose-600 hover:bg-rose-700 shadow-rose-900/20',
+            null,
+            'Irreversible Action',
+            'rose'
+        );
     }
 
     async function deleteExam(examId) {

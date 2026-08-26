@@ -184,41 +184,41 @@
         </div>
 
         <!-- Navigation Tabs Bar -->
-        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 mb-4 flex flex-wrap items-center gap-1.5">
-            <button type="button" onclick="switchStudentTab('academic')" id="tab-btn-academic"
-                class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-primary text-white shadow-xs">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                <span>Academic & Info</span>
-            </button>
+        <!-- <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 mb-4 flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="switchStudentTab('academic')" id="tab-btn-academic"
+                    class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-primary text-white shadow-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>Academic & Info</span>
+                </button>
 
-            <button type="button" onclick="switchStudentTab('exams')" id="tab-btn-exams"
-                class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Exams & Marks</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $totalExams }}</span>
-            </button>
+                <button type="button" onclick="switchStudentTab('exams')" id="tab-btn-exams"
+                    class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Exams & Marks</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $totalExams }}</span>
+                </button>
 
-            <button type="button" onclick="switchStudentTab('attendance')" id="tab-btn-attendance"
-                class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <span>Attendance</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-600 count-badge">{{ $attendancePercentage }}%</span>
-            </button>
+                <button type="button" onclick="switchStudentTab('attendance')" id="tab-btn-attendance"
+                    class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Attendance</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-600 count-badge">{{ $attendancePercentage }}%</span>
+                </button>
 
-            <button type="button" onclick="switchStudentTab('homework')" id="tab-btn-homework"
-                class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                <span>Homework</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $homeworkSubmissions ? $homeworkSubmissions->count() : 0 }}</span>
-            </button>
+                <button type="button" onclick="switchStudentTab('homework')" id="tab-btn-homework"
+                    class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span>Homework</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $homeworkSubmissions ? $homeworkSubmissions->count() : 0 }}</span>
+                </button>
 
-            <button type="button" onclick="switchStudentTab('fees')" id="tab-btn-fees"
-                class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                <span>Fee History</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $student->fees ? $student->fees->count() : 0 }}</span>
-            </button>
-        </div>
+                <button type="button" onclick="switchStudentTab('fees')" id="tab-btn-fees"
+                    class="student-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <span>Fee History</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 count-badge">{{ $student->fees ? $student->fees->count() : 0 }}</span>
+                </button>
+            </div> -->
 
         <!-- TAB 1: Academic & Contact Information -->
         <div id="tab-pane-academic" class="student-tab-pane">
@@ -236,14 +236,16 @@
                         </p>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date of Admission</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Date of Admission
+                        </p>
                         <p class="text-sm font-semibold text-slate-600 leading-tight">
                             {{ $student->created_at->format('M d, Y') }}
                         </p>
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Parent Name</p>
-                        <p class="text-sm font-semibold text-slate-600 leading-tight">{{ $student->guardian_name ?: 'N/A' }}</p>
+                        <p class="text-sm font-semibold text-slate-600 leading-tight">{{ $student->guardian_name ?: 'N/A' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Phone Number</p>
@@ -277,368 +279,6 @@
                         </p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- TAB 2: Examinations & Test Performance -->
-        <div id="tab-pane-exams" class="student-tab-pane hidden">
-            <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 mb-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-1.5 h-4 bg-indigo-600 rounded-full"></div>
-                        <h2 class="text-base font-semibold text-slate-700 tracking-tight">Examinations & Test Performance</h2>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                        <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
-                            Total: <strong>{{ $totalExams }}</strong>
-                        </span>
-                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[11px]">
-                            Passed: <strong>{{ $passedExams }}</strong>
-                        </span>
-                        <span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg border border-rose-100 text-[11px]">
-                            Failed: <strong>{{ $failedExams }}</strong>
-                        </span>
-                        @if($absentExams > 0)
-                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100 text-[11px]">
-                                Absent: <strong>{{ $absentExams }}</strong>
-                            </span>
-                        @endif
-                        <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100 text-[11px]">
-                            Avg Score: <strong>{{ $averageExamMarks }}</strong>
-                        </span>
-                    </div>
-                </div>
-
-                @if($examMarks && $examMarks->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th class="pb-3 pl-2">Exam Title</th>
-                                    <th class="pb-3">Subject</th>
-                                    <th class="pb-3">Date</th>
-                                    <th class="pb-3">Marks Scored</th>
-                                    <th class="pb-3">Passing Marks</th>
-                                    <th class="pb-3">Result</th>
-                                    <th class="pb-3 text-right pr-2">Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @foreach($examMarks as $mark)
-                                    @php
-                                        $exam = $mark->exam;
-                                        $passingMarks = $exam ? (float)$exam->passing_marks : 0;
-                                        $totalMarks = $exam ? (float)$exam->total_marks : 100;
-                                        $scored = $mark->is_absent ? 0 : (float)$mark->marks_obtained;
-                                        $percentage = $totalMarks > 0 ? round(($scored / $totalMarks) * 100) : 0;
-                                        $isPassed = !$mark->is_absent && $scored >= $passingMarks;
-                                    @endphp
-                                    <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 transition-colors">
-                                        <td class="py-3 pl-2 font-bold text-slate-800">
-                                            {{ $exam ? $exam->title : 'Exam #' . $mark->exam_id }}
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-600 border border-slate-100">
-                                                {{ ($exam && $exam->subject) ? $exam->subject : ($student->batch ? $student->batch->subject : 'General') }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3 text-slate-500 font-medium">
-                                            {{ ($exam && $exam->date) ? \Carbon\Carbon::parse($exam->date)->format('M d, Y') : $mark->created_at->format('M d, Y') }}
-                                        </td>
-                                        <td class="py-3 font-bold">
-                                            @if($mark->is_absent)
-                                                <span class="text-slate-400">Absent (0)</span>
-                                            @else
-                                                <span class="{{ $isPassed ? 'text-emerald-600' : 'text-rose-600' }}">{{ $scored }}</span>
-                                                <span class="text-slate-400 text-[10px] font-normal">/ {{ $totalMarks }} ({{ $percentage }}%)</span>
-                                            @endif
-                                        </td>
-                                        <td class="py-3 text-slate-500 font-medium">{{ $passingMarks }}</td>
-                                        <td class="py-3">
-                                            @if($mark->is_absent)
-                                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-                                                    Absent
-                                                </span>
-                                            @elseif($isPassed)
-                                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                                    Passed
-                                                </span>
-                                            @else
-                                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-100">
-                                                    Failed
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="py-3 text-right pr-2 text-slate-400 text-[11px] font-medium">
-                                            {{ $mark->remarks ?: '—' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center py-6 text-center">
-                        <div class="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 mb-2 border border-indigo-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Exam Records Found</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">This student has not participated in any batch examinations yet.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- TAB 3: Attendance Breakdown & History -->
-        <div id="tab-pane-attendance" class="student-tab-pane hidden">
-            <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 mb-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-1.5 h-4 bg-blue-600 rounded-full"></div>
-                        <h2 class="text-base font-semibold text-slate-700 tracking-tight">Attendance Breakdown & Logs</h2>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                        <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
-                            Total Days: <strong>{{ $totalDays }}</strong>
-                        </span>
-                        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[11px]">
-                            Present: <strong>{{ $presentDays }}</strong>
-                        </span>
-                        <span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg border border-rose-100 text-[11px]">
-                            Absent: <strong>{{ $absentDays }}</strong>
-                        </span>
-                        @if($lateDays > 0)
-                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100 text-[11px]">
-                                Late: <strong>{{ $lateDays }}</strong>
-                            </span>
-                        @endif
-                        <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 text-[11px]">
-                            Rate: <strong>{{ $attendancePercentage }}%</strong>
-                        </span>
-                    </div>
-                </div>
-
-                @if($attendanceRecords && $attendanceRecords->count() > 0)
-                    <div class="overflow-x-auto max-h-80 overflow-y-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="sticky top-0 bg-white">
-                                <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th class="pb-3 pl-2">Date</th>
-                                    <th class="pb-3">Day</th>
-                                    <th class="pb-3">Batch Name</th>
-                                    <th class="pb-3 text-right pr-2">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @foreach($attendanceRecords as $att)
-                                    @php
-                                        $attDate = \Carbon\Carbon::parse($att->date);
-                                        $badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-100';
-                                        if ($att->status === 'Absent') {
-                                            $badgeStyle = 'bg-rose-50 text-rose-700 border-rose-100';
-                                        } elseif ($att->status === 'Late') {
-                                            $badgeStyle = 'bg-amber-50 text-amber-700 border-amber-100';
-                                        }
-                                    @endphp
-                                    <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 transition-colors">
-                                        <td class="py-2.5 pl-2 font-bold text-slate-800">
-                                            {{ $attDate->format('M d, Y') }}
-                                        </td>
-                                        <td class="py-2.5 text-slate-400 font-medium">
-                                            {{ $attDate->format('l') }}
-                                        </td>
-                                        <td class="py-2.5 font-medium text-slate-600">
-                                            {{ $att->batch ? $att->batch->name : ($student->batch ? $student->batch->name : 'N/A') }}
-                                        </td>
-                                        <td class="py-2.5 text-right pr-2">
-                                            <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $badgeStyle }}">
-                                                {{ $att->status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center py-6 text-center">
-                        <div class="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 mb-2 border border-blue-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Attendance Logs</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">No attendance sessions have been marked for this scholar yet.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- TAB 4: Homework & Submissions -->
-        <div id="tab-pane-homework" class="student-tab-pane hidden">
-            <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 mb-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-1.5 h-4 bg-orange-500 rounded-full"></div>
-                        <h2 class="text-base font-semibold text-slate-700 tracking-tight">Homework & Assignment Submissions</h2>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                        <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
-                            Total Submissions: <strong>{{ $homeworkSubmissions ? $homeworkSubmissions->count() : 0 }}</strong>
-                        </span>
-                        <span class="px-2.5 py-1 bg-orange-50 text-orange-700 rounded-lg border border-orange-100 text-[11px]">
-                            Avg Grade: <strong>{{ $averageGrade }}/10</strong>
-                        </span>
-                    </div>
-                </div>
-
-                @if($homeworkSubmissions && $homeworkSubmissions->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th class="pb-3 pl-2">Homework Title</th>
-                                    <th class="pb-3">Subject</th>
-                                    <th class="pb-3">Due Date</th>
-                                    <th class="pb-3">Status</th>
-                                    <th class="pb-3">Grade / Score</th>
-                                    <th class="pb-3 text-right pr-2">Feedback</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @foreach($homeworkSubmissions as $sub)
-                                    @php
-                                        $hw = $sub->homework;
-                                        $statusBadge = 'bg-blue-50 text-blue-700 border-blue-100';
-                                        if ($sub->status === 'Reviewed') {
-                                            $statusBadge = 'bg-emerald-50 text-emerald-700 border-emerald-100';
-                                        } elseif ($sub->status === 'Pending') {
-                                            $statusBadge = 'bg-amber-50 text-amber-700 border-amber-100';
-                                        }
-                                    @endphp
-                                    <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 transition-colors">
-                                        <td class="py-3 pl-2 font-bold text-slate-800">
-                                            {{ $hw ? $hw->title : 'Homework #' . $sub->homework_id }}
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-600 border border-slate-100">
-                                                {{ ($hw && $hw->subject) ? $hw->subject : ($student->batch ? $student->batch->subject : 'General') }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3 text-slate-500 font-medium">
-                                            {{ ($hw && $hw->due_date) ? \Carbon\Carbon::parse($hw->due_date)->format('M d, Y') : '—' }}
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $statusBadge }}">
-                                                {{ $sub->status ?: 'Submitted' }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3 font-bold text-slate-800">
-                                            @if(!is_null($sub->score))
-                                                <span class="text-emerald-600">{{ (float)$sub->score }}</span>
-                                                <span class="text-slate-400 text-[10px] font-normal">/ 10</span>
-                                            @else
-                                                <span class="text-slate-400 text-[11px] font-medium">Not Graded</span>
-                                            @endif
-                                        </td>
-                                        <td class="py-3 text-right pr-2 text-slate-500 text-[11px] font-medium">
-                                            {{ $sub->feedback ?: '—' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center py-6 text-center">
-                        <div class="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500 mb-2 border border-orange-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Homework Records</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">No homework submissions have been recorded for this student yet.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- TAB 5: Fee Payment History -->
-        <div id="tab-pane-fees" class="student-tab-pane hidden">
-            <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 mb-4">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-1.5 h-4 bg-emerald-600 rounded-full"></div>
-                        <h2 class="text-base font-semibold text-slate-700 tracking-tight">Fee Payment History</h2>
-                    </div>
-                </div>
-
-                @if($student->fees && $student->fees->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th class="pb-3 pl-2">Date / Month</th>
-                                    <th class="pb-3">Total Fee</th>
-                                    <th class="pb-3">Paid Amount</th>
-                                    <th class="pb-3">Remaining</th>
-                                    <th class="pb-3">Status</th>
-                                    <th class="pb-3 text-right pr-2">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @foreach($student->fees->sortByDesc('date') as $fee)
-                                    @php
-                                        $remaining = max(0, $fee->total_amount - $fee->paid_amount);
-                                        $statusBg = 'bg-rose-50 text-rose-600 border-rose-100';
-                                        if ($fee->status === 'Paid' || $remaining == 0) {
-                                            $statusBg = 'bg-emerald-50 text-emerald-600 border-emerald-100';
-                                        } elseif ($fee->paid_amount > 0) {
-                                            $statusBg = 'bg-amber-50 text-amber-600 border-amber-100';
-                                        }
-                                    @endphp
-                                    <tr class="text-xs font-semibold text-slate-600 hover:bg-slate-50/50 cursor-pointer transition-colors"
-                                        onclick="window.location.href='{{ route('institute.fees.receipts.show', $fee->id) }}'">
-                                        <td class="py-3 pl-2 font-bold text-slate-700">
-                                            {{ \Carbon\Carbon::parse($fee->date)->format('M Y') }}
-                                        </td>
-                                        <td class="py-3 font-bold">₹{{ number_format($fee->total_amount) }}</td>
-                                        <td class="py-3 font-bold text-emerald-600">₹{{ number_format($fee->paid_amount) }}</td>
-                                        <td class="py-3 font-bold text-rose-500">₹{{ number_format($remaining) }}</td>
-                                        <td class="py-3">
-                                            <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $statusBg }}">
-                                                {{ $fee->status ?: ($remaining == 0 ? 'Paid' : 'Unpaid') }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3 text-right pr-2">
-                                            <a href="{{ route('institute.fees.receipts.show', $fee->id) }}"
-                                                class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border border-slate-100 hover:border-slate-200 rounded-lg text-[10px] font-bold transition-all shadow-sm">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                                View Receipt
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center py-6 text-center">
-                        <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 mb-2 border border-slate-100">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No Fee Records Found</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">This student doesn't have any registered monthly fee cycles yet.</p>
-                    </div>
-                @endif
             </div>
         </div>
     </div>

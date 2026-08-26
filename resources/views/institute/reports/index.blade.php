@@ -800,50 +800,125 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="exportStudentReport()" id="btn-export-student-report"
-                        class="px-3.5 py-2 bg-white border border-slate-100 text-slate-600 rounded-xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5">
+                        class="px-3.5 py-2 bg-white border border-slate-100 text-slate-600 rounded-xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5 cursor-pointer">
                         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Export PDF
                     </button>
-                    <div id="student-report-top-actions"></div>
+                    <!-- <button type="button" onclick="emailStudentReportFromReports()" id="btn-email-student-report"
+                        class="px-3.5 py-2 bg-white border border-emerald-200 text-emerald-600 rounded-xl font-bold text-xs shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Send Email Report
+                    </button> -->
+                    <!-- <div id="student-report-top-actions"></div> -->
                 </div>
             </div>
 
             <!-- Batch & Student Selectors Bar -->
             <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-                    <!-- Batch Selector -->
-                    <div class="sm:w-64">
+                    <!-- Searchable Batch Selector -->
+                    <div class="sm:w-72 relative" id="batch-dropdown-container">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
                             Select Batch (Default: Last Batch)
                         </label>
-                        <select id="student-report-batch-select" onchange="onStudentReportBatchChange()"
-                            class="w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#f97316] focus:bg-white transition-all">
+                        
+                        <!-- Hidden native select for fallback/form compatibility -->
+                        <select id="student-report-batch-select" class="hidden">
                             @forelse($batches as $b)
                                 <option value="{{ $b->id }}" {{ $loop->last ? 'selected' : '' }}>{{ $b->name }} ({{ $b->students_count ?? $b->students()->count() }} Students)</option>
                             @empty
                                 <option value="">No batches found</option>
                             @endforelse
                         </select>
+
+                        <!-- Custom Searchable Trigger Button -->
+                        <button type="button" id="batch-dropdown-btn" onclick="toggleBatchDropdown(event)"
+                            class="w-full text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200 focus:border-[#f97316] rounded-xl py-2 px-3 flex items-center justify-between gap-2 transition-all shadow-xs group">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <div class="h-6 w-6 rounded-lg bg-orange-100/80 text-[#f97316] flex items-center justify-center flex-shrink-0 text-xs font-black">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                </div>
+                                <span id="batch-dropdown-label" class="text-xs font-bold text-slate-800 truncate">Select Batch</span>
+                            </div>
+                            <svg id="batch-dropdown-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Custom Dropdown Panel -->
+                        <div id="batch-dropdown-menu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/60">
+                                <div class="relative">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input type="text" id="batch-search-input" oninput="filterBatchOptions()" placeholder="Search batch name..." autocomplete="off"
+                                        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-[#f97316] focus:ring-2 focus:ring-orange-500/10 transition-all">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div id="batch-options-list" class="max-h-56 overflow-y-auto p-1.5 space-y-0.5 custom-scrollbar">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Student Selector -->
-                    <div class="flex-1 sm:max-w-md">
+                    <!-- Searchable Student Selector -->
+                    <div class="flex-1 sm:max-w-md relative" id="student-dropdown-container">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                             Select Student
                         </label>
-                        <select id="student-report-student-select" onchange="onStudentReportStudentChange()"
-                            class="w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all">
+
+                        <!-- Hidden native select for fallback/form compatibility -->
+                        <select id="student-report-student-select" class="hidden">
                             <option value="">Loading students...</option>
                         </select>
+
+                        <!-- Custom Searchable Trigger Button -->
+                        <button type="button" id="student-dropdown-btn" onclick="toggleStudentDropdown(event)"
+                            class="w-full text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200 focus:border-indigo-500 rounded-xl py-2 px-3 flex items-center justify-between gap-2 transition-all shadow-xs group">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <div id="student-dropdown-avatar" class="h-6 w-6 rounded-lg bg-indigo-100/80 text-indigo-600 flex items-center justify-center flex-shrink-0 text-xs font-black">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div class="truncate flex-1">
+                                    <span id="student-dropdown-label" class="text-xs font-bold text-slate-800 truncate block">Loading students...</span>
+                                </div>
+                            </div>
+                            <svg id="student-dropdown-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Custom Dropdown Panel -->
+                        <div id="student-dropdown-menu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/60">
+                                <div class="relative">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input type="text" id="student-search-input" oninput="filterStudentOptions()" placeholder="Search by student name or ID..." autocomplete="off"
+                                        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div id="student-options-list" class="max-h-56 overflow-y-auto p-1.5 space-y-0.5 custom-scrollbar">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1843,6 +1918,211 @@
 
         let currentStudentReport = null;
         let batchStudentsMap = {};
+        let activeStudentList = [];
+
+        // ─────────────────────────────────────────────────────────────
+        // Searchable Batch Dropdown Logic
+        // ─────────────────────────────────────────────────────────────
+        function toggleBatchDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('batch-dropdown-menu');
+            const chevron = document.getElementById('batch-dropdown-chevron');
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close other dropdowns
+            closeStudentDropdown();
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                const searchInput = document.getElementById('batch-search-input');
+                searchInput.value = '';
+                renderBatchDropdownOptions(globalBatches);
+                setTimeout(() => searchInput.focus(), 50);
+            } else {
+                closeBatchDropdown();
+            }
+        }
+
+        function closeBatchDropdown() {
+            const menu = document.getElementById('batch-dropdown-menu');
+            const chevron = document.getElementById('batch-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+
+        function filterBatchOptions() {
+            const query = (document.getElementById('batch-search-input').value || '').toLowerCase().trim();
+            const filtered = (globalBatches || []).filter(b => {
+                const name = (b.name || '').toLowerCase();
+                const subject = (b.subject || '').toLowerCase();
+                return name.includes(query) || subject.includes(query);
+            });
+            renderBatchDropdownOptions(filtered, query);
+        }
+
+        function renderBatchDropdownOptions(batches, query = '') {
+            const list = document.getElementById('batch-options-list');
+            const currentVal = document.getElementById('student-report-batch-select').value;
+
+            if (!batches || batches.length === 0) {
+                list.innerHTML = `
+                    <div class="py-6 text-center text-slate-400 font-bold text-xs">
+                        <svg class="w-6 h-6 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        No batches matching "${query}"
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = batches.map(b => {
+                const isSelected = b.id == currentVal;
+                const count = b.students_count ?? (b.students ? b.students.length : 0);
+                return `
+                    <div onclick="selectBatchOption(${b.id})"
+                        class="px-3 py-2 rounded-xl flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                            isSelected 
+                                ? 'bg-orange-50 text-[#f97316] font-extrabold shadow-xs' 
+                                : 'hover:bg-slate-50 text-slate-700 font-bold'
+                        }">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <div class="h-6 w-6 rounded-lg ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center text-[10px] flex-shrink-0 font-black">
+                                ${b.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span class="truncate text-xs">${b.name}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${isSelected ? 'bg-orange-100/70 text-[#f97316]' : 'bg-slate-100 text-slate-500'}">${count} Students</span>
+                            ${isSelected ? '<svg class="w-4 h-4 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectBatchOption(batchId) {
+            const batchSelect = document.getElementById('student-report-batch-select');
+            batchSelect.value = batchId;
+            closeBatchDropdown();
+            await onStudentReportBatchChange();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Searchable Student Dropdown Logic
+        // ─────────────────────────────────────────────────────────────
+        function toggleStudentDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('student-dropdown-menu');
+            const chevron = document.getElementById('student-dropdown-chevron');
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close other dropdowns
+            closeBatchDropdown();
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                const searchInput = document.getElementById('student-search-input');
+                searchInput.value = '';
+                renderStudentDropdownOptions(activeStudentList);
+                setTimeout(() => searchInput.focus(), 50);
+            } else {
+                closeStudentDropdown();
+            }
+        }
+
+        function closeStudentDropdown() {
+            const menu = document.getElementById('student-dropdown-menu');
+            const chevron = document.getElementById('student-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+
+        function filterStudentOptions() {
+            const query = (document.getElementById('student-search-input').value || '').toLowerCase().trim();
+            const filtered = (activeStudentList || []).filter(s => {
+                const name = (s.name || '').toLowerCase();
+                const enrollment = (s.enrollment_id || ('#ST-' + s.id)).toLowerCase();
+                const phone = (s.phone || '').toLowerCase();
+                return name.includes(query) || enrollment.includes(query) || phone.includes(query);
+            });
+            renderStudentDropdownOptions(filtered, query);
+        }
+
+        function renderStudentDropdownOptions(students, query = '') {
+            const list = document.getElementById('student-options-list');
+            const currentVal = document.getElementById('student-report-student-select').value;
+
+            if (!students || students.length === 0) {
+                list.innerHTML = `
+                    <div class="py-6 text-center text-slate-400 font-bold text-xs">
+                        <svg class="w-6 h-6 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        ${query ? `No students matching "${query}"` : 'No students found in this batch'}
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = students.map(s => {
+                const isSelected = s.id == currentVal;
+                const enrollText = s.enrollment_id || ('#ST-' + s.id);
+                return `
+                    <div onclick="selectStudentOption(${s.id})"
+                        class="px-3 py-2 rounded-xl flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                            isSelected 
+                                ? 'bg-indigo-50 text-indigo-700 font-extrabold shadow-xs' 
+                                : 'hover:bg-slate-50 text-slate-700 font-bold'
+                        }">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div class="h-7 w-7 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center text-xs flex-shrink-0 font-bold">
+                                ${s.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="truncate min-w-0">
+                                <p class="truncate text-xs leading-tight">${s.name}</p>
+                                <p class="text-[10px] ${isSelected ? 'text-indigo-400' : 'text-slate-400'} font-semibold truncate mt-0.5">${enrollText}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            ${isSelected ? '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectStudentOption(studentId) {
+            const studentSelect = document.getElementById('student-report-student-select');
+            studentSelect.value = studentId;
+            closeStudentDropdown();
+            
+            const selectedStudent = activeStudentList.find(s => s.id == studentId);
+            if (selectedStudent) {
+                const enrollText = selectedStudent.enrollment_id || ('#ST-' + selectedStudent.id);
+                document.getElementById('student-dropdown-label').innerText = `${selectedStudent.name} (${enrollText})`;
+            }
+
+            await onStudentReportStudentChange();
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            const batchContainer = document.getElementById('batch-dropdown-container');
+            const studentContainer = document.getElementById('student-dropdown-container');
+            if (batchContainer && !batchContainer.contains(e.target)) {
+                closeBatchDropdown();
+            }
+            if (studentContainer && !studentContainer.contains(e.target)) {
+                closeStudentDropdown();
+            }
+        });
+
+        // Close dropdowns on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeBatchDropdown();
+                closeStudentDropdown();
+            }
+        });
 
         async function initStudentReport() {
             const batchSelect = document.getElementById('student-report-batch-select');
@@ -1867,12 +2147,19 @@
 
             if (!batchId) {
                 studentSelect.innerHTML = '<option value="">Select a batch first</option>';
+                document.getElementById('batch-dropdown-label').innerText = 'Select Batch';
+                document.getElementById('student-dropdown-label').innerText = 'Select a batch first';
                 document.getElementById('student-report-empty').classList.remove('hidden');
                 document.getElementById('student-report-container').classList.add('hidden');
                 return;
             }
 
             const selectedBatch = globalBatches.find(b => b.id == batchId);
+            if (selectedBatch) {
+                const count = selectedBatch.students_count ?? (selectedBatch.students ? selectedBatch.students.length : 0);
+                document.getElementById('batch-dropdown-label').innerText = `${selectedBatch.name} (${count} Students)`;
+            }
+
             let students = selectedBatch && selectedBatch.students ? selectedBatch.students : [];
 
             if (!students || students.length === 0) {
@@ -1895,9 +2182,11 @@
             }
 
             batchStudentsMap[batchId] = students;
+            activeStudentList = students || [];
 
             if (!students || students.length === 0) {
                 studentSelect.innerHTML = '<option value="">No students in this batch</option>';
+                document.getElementById('student-dropdown-label').innerText = 'No students in this batch';
                 document.getElementById('student-report-empty').classList.remove('hidden');
                 document.getElementById('student-report-container').classList.add('hidden');
                 document.getElementById('student-batch-badge').classList.add('hidden');
@@ -1905,6 +2194,10 @@
                 studentSelect.innerHTML = students.map((s, idx) => `
                     <option value="${s.id}" ${idx === 0 ? 'selected' : ''}>${s.name} (${s.enrollment_id || ('#ST-' + s.id)})</option>
                 `).join('');
+
+                const firstStudent = students[0];
+                const enrollText = firstStudent.enrollment_id || ('#ST-' + firstStudent.id);
+                document.getElementById('student-dropdown-label').innerText = `${firstStudent.name} (${enrollText})`;
 
                 document.getElementById('student-report-empty').classList.add('hidden');
                 document.getElementById('student-report-container').classList.remove('hidden');
@@ -1953,12 +2246,20 @@
             const exm = data.exams || {};
             const hw = data.homework || {};
 
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = (val !== null && val !== undefined && val !== '') ? val : '—';
+            };
+
             // Header profile data
-            document.getElementById('stu-report-name').innerText = stu.name || 'N/A';
-            document.getElementById('stu-report-enrollment').innerText = stu.enrollment_id || ('#ST-' + stu.id);
-            document.getElementById('stu-report-img').src = stu.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(stu.name || 'Student')}&color=7F9CF5&background=EBF4FF`;
-            document.getElementById('stu-report-standard').innerText = stu.standard || 'N/A';
-            document.getElementById('stu-report-batch-name').innerText = stu.batch_name || 'N/A';
+            setTxt('stu-report-name', stu.name || 'N/A');
+            setTxt('stu-report-enrollment', stu.enrollment_id || ('#ST-' + stu.id));
+            const imgEl = document.getElementById('stu-report-img');
+            if (imgEl) {
+                imgEl.src = stu.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(stu.name || 'Student')}&color=7F9CF5&background=EBF4FF`;
+            }
+            setTxt('stu-report-standard', stu.standard || 'N/A');
+            setTxt('stu-report-batch-name', stu.batch_name || 'N/A');
 
             // Top action button / Direct profile link
             const profileLink = `
@@ -1970,65 +2271,71 @@
                     Full Profile
                 </a>
             `;
-            document.getElementById('stu-report-profile-link-wrap').innerHTML = profileLink;
-            document.getElementById('student-report-top-actions').innerHTML = profileLink;
+            const profileLinkWrap = document.getElementById('stu-report-profile-link-wrap');
+            if (profileLinkWrap) profileLinkWrap.innerHTML = profileLink;
+            const topActionsWrap = document.getElementById('student-report-top-actions');
+            if (topActionsWrap) topActionsWrap.innerHTML = profileLink;
 
             // Summary metrics
-            document.getElementById('stu-report-avg-grade').innerText = (hw.average_grade || 0) + '/10';
-            document.getElementById('stu-report-attendance-pct').innerText = (att.percentage || 0) + '%';
-            document.getElementById('stu-report-exams-count').innerText = exm.total_exams || 0;
+            setTxt('stu-report-avg-grade', (hw.average_grade || 0) + '/10');
+            setTxt('stu-report-attendance-pct', (att.percentage || 0) + '%');
+            setTxt('stu-report-exams-count', exm.total_exams || 0);
 
             // Payment Status styling
             const feeStatusEl = document.getElementById('stu-report-payment-status');
             const feeBadgeEl = document.getElementById('stu-report-payment-badge');
-            feeStatusEl.innerText = fin.fee_status || 'Full Paid';
+            if (feeStatusEl) feeStatusEl.innerText = fin.fee_status || 'Full Paid';
 
-            feeBadgeEl.className = 'rounded-xl px-3 py-2 border min-w-[90px]';
-            if (fin.fee_status === 'Pending') {
-                feeBadgeEl.classList.add('bg-rose-50/30', 'border-rose-100');
-                feeStatusEl.className = 'text-sm font-bold text-rose-700';
-            } else if (fin.fee_status === 'Partial Dues') {
-                feeBadgeEl.classList.add('bg-amber-50/30', 'border-amber-100');
-                feeStatusEl.className = 'text-sm font-bold text-amber-700';
-            } else if (fin.fee_status === 'No Fee') {
-                feeBadgeEl.classList.add('bg-slate-50', 'border-slate-200');
-                feeStatusEl.className = 'text-sm font-bold text-slate-500';
-            } else {
-                feeBadgeEl.classList.add('bg-emerald-50/30', 'border-emerald-100');
-                feeStatusEl.className = 'text-sm font-bold text-emerald-700';
+            if (feeBadgeEl) {
+                feeBadgeEl.className = 'rounded-xl px-3 py-2 border min-w-[90px]';
+                if (fin.fee_status === 'Pending') {
+                    feeBadgeEl.classList.add('bg-rose-50/30', 'border-rose-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-rose-700';
+                } else if (fin.fee_status === 'Partial Dues') {
+                    feeBadgeEl.classList.add('bg-amber-50/30', 'border-amber-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-amber-700';
+                } else if (fin.fee_status === 'No Fee') {
+                    feeBadgeEl.classList.add('bg-slate-50', 'border-slate-200');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-slate-500';
+                } else {
+                    feeBadgeEl.classList.add('bg-emerald-50/30', 'border-emerald-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-emerald-700';
+                }
             }
 
             // Fee balance box
-            document.getElementById('stu-report-balance').innerText = '₹' + (fin.balance || 0).toLocaleString();
-            document.getElementById('stu-report-monthly-total').innerText = '/ ₹' + (stu.monthly_fee || 0).toLocaleString() + ' Total';
+            setTxt('stu-report-balance', '₹' + (fin.balance || 0).toLocaleString());
+            setTxt('stu-report-monthly-total', '/ ₹' + (stu.monthly_fee || 0).toLocaleString() + ' Total');
 
             // Sub-tab badges
-            document.getElementById('stu-report-badge-exams-count').innerText = exm.total_exams || 0;
-            document.getElementById('stu-report-badge-att-pct').innerText = (att.percentage || 0) + '%';
-            document.getElementById('stu-report-badge-hw-count').innerText = hw.total_submissions || 0;
-            document.getElementById('stu-report-badge-fees-count').innerText = (fin.fees_history ? fin.fees_history.length : 0);
+            setTxt('stu-report-badge-exams-count', exm.total_exams || 0);
+            setTxt('stu-report-badge-att-pct', (att.percentage || 0) + '%');
+            setTxt('stu-report-badge-hw-count', hw.total_submissions || 0);
+            setTxt('stu-report-badge-fees-count', (fin.fees_history ? fin.fees_history.length : 0));
 
             // Tab 1: Academic & Contact Info
-            document.getElementById('stu-report-info-batch').innerText = stu.batch_name || 'Unassigned';
-            document.getElementById('stu-report-info-admission').innerText = stu.admission_date || '—';
-            document.getElementById('stu-report-info-guardian').innerText = stu.guardian_name || 'N/A';
-            document.getElementById('stu-report-info-phone').innerText = stu.phone ? `+91 ${stu.phone}` : '—';
-            document.getElementById('stu-report-info-email').innerText = stu.email || '—';
-            document.getElementById('stu-report-info-dob').innerText = stu.dob || 'N/A';
-            document.getElementById('stu-report-info-address').innerText = stu.address || 'N/A';
+            setTxt('stu-report-info-batch', stu.batch_name || 'Unassigned');
+            setTxt('stu-report-info-admission', stu.admission_date || '—');
+            setTxt('stu-report-info-guardian', stu.guardian_name || 'N/A');
+            setTxt('stu-report-info-phone', stu.phone ? `+91 ${stu.phone}` : '—');
+            setTxt('stu-report-info-email', stu.email || '—');
+            setTxt('stu-report-info-dob', stu.dob || 'N/A');
+            setTxt('stu-report-info-address', stu.address || 'N/A');
 
             // Tab 2: Exams & Marks
-            document.getElementById('stu-report-exam-total').innerText = exm.total_exams || 0;
-            document.getElementById('stu-report-exam-passed').innerText = exm.passed_exams || 0;
-            document.getElementById('stu-report-exam-failed').innerText = exm.failed_exams || 0;
-            document.getElementById('stu-report-exam-absent').innerText = exm.absent_exams || 0;
-            document.getElementById('stu-report-exam-avg').innerText = (exm.average_score || 0);
+            setTxt('stu-report-exam-total', exm.total_exams || 0);
+            setTxt('stu-report-exam-passed', exm.passed_exams || 0);
+            setTxt('stu-report-exam-failed', exm.failed_exams || 0);
+            setTxt('stu-report-exam-absent', exm.absent_exams || 0);
+            setTxt('stu-report-exam-avg', exm.average_score || 0);
 
             const examAbsentBadge = document.getElementById('stu-report-exam-absent-badge');
-            if (exm.absent_exams > 0) {
-                examAbsentBadge.classList.remove('hidden');
-            } else {
-                examAbsentBadge.classList.add('hidden');
+            if (examAbsentBadge) {
+                if (exm.absent_exams > 0) {
+                    examAbsentBadge.classList.remove('hidden');
+                } else {
+                    examAbsentBadge.classList.add('hidden');
+                }
             }
 
             const examsTbody = document.getElementById('stu-report-exams-tbody');
@@ -2074,47 +2381,49 @@
             }
 
             // Tab 3: Attendance Breakdown
-            document.getElementById('stu-report-att-total').innerText = att.total_days || 0;
-            document.getElementById('stu-report-att-present').innerText = att.present_days || 0;
-            document.getElementById('stu-report-att-absent').innerText = att.absent_days || 0;
-            document.getElementById('stu-report-att-late').innerText = att.late_days || 0;
-            document.getElementById('stu-report-att-rate').innerText = (att.percentage || 0) + '%';
+            setTxt('stu-report-att-total', att.total_days || 0);
+            setTxt('stu-report-att-present', att.present_days || 0);
+            setTxt('stu-report-att-absent', att.absent_days || 0);
+            setTxt('stu-report-att-late', att.late_days || 0);
+            setTxt('stu-report-att-rate', (att.percentage || 0) + '%');
 
             const attTbody = document.getElementById('stu-report-attendance-tbody');
-            if (att.records && att.records.length > 0) {
-                attTbody.innerHTML = att.records.map(r => {
-                    let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-100';
-                    if (r.status === 'Absent') badgeStyle = 'bg-rose-50 text-rose-700 border-rose-100';
-                    else if (r.status === 'Late') badgeStyle = 'bg-amber-50 text-amber-700 border-amber-100';
+            if (attTbody) {
+                if (att.records && att.records.length > 0) {
+                    attTbody.innerHTML = att.records.map(r => {
+                        let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                        if (r.status === 'Absent') badgeStyle = 'bg-rose-50 text-rose-700 border-rose-100';
+                        else if (r.status === 'Late') badgeStyle = 'bg-amber-50 text-amber-700 border-amber-100';
 
-                    return `
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="py-2.5 pl-2 font-bold text-slate-800">${r.formatted_date}</td>
-                            <td class="py-2.5 text-slate-400 font-medium">${r.day}</td>
-                            <td class="py-2.5 font-medium text-slate-600">${r.batch_name}</td>
-                            <td class="py-2.5 text-right pr-2">
-                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${badgeStyle}">${r.status}</span>
+                        return `
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="py-2.5 pl-2 font-bold text-slate-800">${r.formatted_date}</td>
+                                <td class="py-2.5 text-slate-400 font-medium">${r.day}</td>
+                                <td class="py-2.5 font-medium text-slate-600">${r.batch_name}</td>
+                                <td class="py-2.5 text-right pr-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${badgeStyle}">${r.status}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    attTbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-slate-400">
+                                <div class="h-10 w-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2 border border-blue-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-500">No Attendance Logs</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">No attendance sessions recorded for this student yet.</p>
                             </td>
                         </tr>
                     `;
-                }).join('');
-            } else {
-                attTbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="py-8 text-center text-slate-400">
-                            <div class="h-10 w-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2 border border-blue-100">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            </div>
-                            <p class="text-xs font-bold text-slate-500">No Attendance Logs</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">No attendance sessions recorded for this student yet.</p>
-                        </td>
-                    </tr>
-                `;
+                }
             }
 
             // Tab 4: Homework Submissions
-            document.getElementById('stu-report-hw-total').innerText = hw.total_submissions || 0;
-            document.getElementById('stu-report-hw-avg').innerText = (hw.average_grade || 0) + '/10';
+            setTxt('stu-report-hw-total', hw.total_submissions || 0);
+            setTxt('stu-report-hw-avg', (hw.average_grade || 0) + '/10');
 
             const hwTbody = document.getElementById('stu-report-homework-tbody');
             if (hw.list && hw.list.length > 0) {
@@ -2271,6 +2580,59 @@
                 return;
             }
             window.location.href = `/institute/reports/student/export?student_id=${studentId}`;
+        }
+
+        async function emailStudentReportFromReports() {
+            const studentSelect = document.getElementById('student-report-student-select');
+            const studentId = studentSelect ? studentSelect.value : null;
+            if (!studentId) {
+                alert('Please select a student first.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-email-student-report');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<div class="h-3.5 w-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mr-1.5"></div> Sending...`;
+
+            try {
+                const response = await fetch(`{{ route('institute.reports.student.email') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ student_id: studentId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') {
+                        showToast(data.message, 'success');
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    const msg = data.message || 'Failed to email report.';
+                    if (typeof showToast === 'function') {
+                        showToast(msg, 'error');
+                    } else {
+                        alert(msg);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (typeof showToast === 'function') {
+                    showToast('Network error while emailing report.', 'error');
+                } else {
+                    alert('Network error.');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         }
     </script>
 @endsection
