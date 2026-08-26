@@ -236,6 +236,11 @@ class Institute extends Authenticatable
         return $this->hasMany(DeviceSession::class);
     }
 
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -20,10 +20,12 @@ use App\Http\Controllers\Api\V1\InstituteReceiptController;
 use App\Http\Controllers\Api\V1\InstituteAttendanceController;
 use App\Http\Controllers\Api\V1\InstituteDailyUpdateController;
 use App\Http\Controllers\Api\V1\InstituteHomeworkController;
+use App\Http\Controllers\Api\V1\InstituteExamController;
 use App\Http\Controllers\Api\V1\InstituteNotificationController;
 use App\Http\Controllers\Api\V1\InstituteWhatsappSettingController;
 use App\Http\Controllers\Api\V1\InstituteReportController;
 use App\Http\Controllers\Api\V1\InstituteSubscriptionController;
+use App\Http\Controllers\Api\V1\StudentExamController;
 use App\Http\Controllers\Api\V1\StudentProfileController;
 use App\Http\Controllers\Api\V1\StudentDashboardController;
 use App\Http\Controllers\Api\V1\StudentFeesController;
@@ -118,6 +120,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
             Route::post('/homeworks/{id}/reminder', [InstituteHomeworkController::class, 'sendReminder']);
 
+            // Exam Module Routes (Common for Mobile App & Web Panel)
+            Route::get('/exams', [InstituteExamController::class, 'index']);
+            Route::post('/exams', [InstituteExamController::class, 'store']);
+            Route::get('/exams/{id}', [InstituteExamController::class, 'show']);
+            Route::put('/exams/{id}', [InstituteExamController::class, 'update']);
+            Route::post('/exams/{id}/update', [InstituteExamController::class, 'update']);
+            Route::delete('/exams/{id}', [InstituteExamController::class, 'destroy']);
+            Route::get('/exams/{id}/marks', [InstituteExamController::class, 'getMarks']);
+            Route::post('/exams/{id}/marks', [InstituteExamController::class, 'saveMarks']);
+
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::post('/notifications/send-push', [InstituteNotificationController::class, 'sendPush']);
             Route::get('/notifications/recipient-stats', [InstituteNotificationController::class, 'recipientStats']);
@@ -199,12 +211,15 @@ Route::prefix('v1')->group(function () {
             Route::get('/reports/attendance/export', [InstituteReportController::class, 'exportAttendanceReport']);
             Route::get('/reports/performance', [InstituteReportController::class, 'performanceReport']);
             Route::get('/reports/performance/export', [InstituteReportController::class, 'exportPerformanceReport']);
+            Route::get('/reports/student', [InstituteReportController::class, 'studentReport']);
+            Route::get('/reports/student/export', [InstituteReportController::class, 'exportStudentReport']);
 
             Route::get('/subscription', [InstituteSubscriptionController::class, 'show']);
             Route::post('/subscription/renew', [InstituteSubscriptionController::class, 'renew']);
 
             // Student Management
             Route::prefix('students')->group(function () {
+                Route::post('/bulk-transfer', [InstituteStudentController::class, 'bulkTransfer']);
                 Route::post('/import', [InstituteStudentController::class, 'import']);
                 Route::get('/', [InstituteStudentController::class, 'index']);
                 Route::post('/', [InstituteStudentController::class, 'store']);
@@ -334,6 +349,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks/{id}/submit', [StudentHomeworkController::class, 'submit']);
             Route::get('/homeworks/{id}/attachment', [StudentHomeworkController::class, 'attachmentInfo']);
             Route::get('/homeworks/{id}/attachment/download', [StudentHomeworkController::class, 'attachmentDownload']);
+            Route::get('/exams', [StudentExamController::class, 'index']);
+            Route::get('/exams/{id}', [StudentExamController::class, 'show']);
             Route::get('/report', [StudentReportController::class, 'index']);
             Route::get('/notifications', [StudentNotificationController::class, 'index']);
             Route::get('/notifications/{id}/attachment/download', [StudentNotificationController::class, 'downloadAttachment']);

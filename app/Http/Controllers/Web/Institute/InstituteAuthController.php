@@ -402,6 +402,8 @@ class InstituteAuthController extends Controller
 
             $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
 
+            // Enforce 5 device limit (Temporarily commented out)
+            /*
             if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
                 Auth::guard('institute')->logout();
                 $request->session()->invalidate();
@@ -411,6 +413,7 @@ class InstituteAuthController extends Controller
                     'email' => 'Maximum device limit reached (5 devices). Please log out of another device first.',
                 ])->onlyInput('email');
             }
+            */
 
             // Create or reactivate session (token_id is null for web panel)
             if ($existingSession) {

@@ -89,6 +89,11 @@ class Student extends Authenticatable
         return $this->morphMany(Note::class, 'notable');
     }
 
+    public function examMarks()
+    {
+        return $this->hasMany(ExamMark::class);
+    }
+
     public function getProfileImageUrlAttribute()
     {
         if ($this->profile_image) {

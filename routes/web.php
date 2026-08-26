@@ -84,6 +84,9 @@ Route::middleware(array_filter([
         Route::post('settings/update', [App\Http\Controllers\Web\SettingController::class, 'update'])->name('settings.update');
         Route::get('settings/razorpay', [App\Http\Controllers\Web\SettingController::class, 'razorpayIndex'])->name('settings.razorpay.index');
         Route::post('settings/razorpay/update', [App\Http\Controllers\Web\SettingController::class, 'razorpayUpdate'])->name('settings.razorpay.update');
+        Route::get('settings/mail', [App\Http\Controllers\Web\SettingController::class, 'mailIndex'])->name('settings.mail.index');
+        Route::post('settings/mail/update', [App\Http\Controllers\Web\SettingController::class, 'mailUpdate'])->name('settings.mail.update');
+        Route::post('settings/mail/test', [App\Http\Controllers\Web\SettingController::class, 'testMail'])->name('settings.mail.test');
 
         // Activity Monitoring
         Route::get('activities', [App\Http\Controllers\Web\ActivityController::class, 'index'])->name('activity.index');
@@ -160,6 +163,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::post('/students/import', [App\Http\Controllers\Web\Institute\StudentController::class, 'import'])->name('students.import');
                 Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
                 Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
+                Route::post('/students/bulk-transfer', [App\Http\Controllers\Web\Institute\StudentController::class, 'bulkTransfer'])->name('students.bulk_transfer');
                 Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');
                 Route::get('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'show'])->name('students.show');
                 Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
@@ -176,6 +180,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/batches/{batch}/students', [App\Http\Controllers\Web\Institute\BatchController::class, 'students'])->name('batches.students');
                 Route::get('/batches/{batch}/homework/{homework}', [App\Http\Controllers\Web\Institute\BatchController::class, 'homeworkShow'])->name('batches.homework.show');
                 Route::get('/batches/{batch}/homework', [App\Http\Controllers\Web\Institute\BatchController::class, 'homework'])->name('batches.homework');
+                Route::get('/batches/{batch}/exams/{exam}', [App\Http\Controllers\Web\Institute\BatchController::class, 'examShow'])->name('batches.exams.show');
+                Route::get('/batches/{batch}/exams', [App\Http\Controllers\Web\Institute\BatchController::class, 'exams'])->name('batches.exams');
                 Route::get('/batches/{batch}/attendance', [App\Http\Controllers\Web\Institute\BatchController::class, 'attendance'])->name('batches.attendance');
                 Route::get('/batches/{batch}/resources', [App\Http\Controllers\Web\Institute\BatchController::class, 'resources'])->name('batches.resources');
                 Route::get('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'show'])->name('batches.show');
@@ -205,6 +211,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Reports
                 Route::get('/reports', [App\Http\Controllers\Web\Institute\ReportController::class, 'index'])->name('reports.index');
+                Route::get('/reports/student', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'studentReport'])->name('reports.student');
+                Route::get('/reports/student/export', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'exportStudentReport'])->name('reports.student.export');
 
                 // Subscription Plans
                 Route::get('/plans', [App\Http\Controllers\Web\Institute\PlanController::class, 'index'])->name('plans.index');

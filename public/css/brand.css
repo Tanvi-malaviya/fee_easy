@@ -1,4 +1,4 @@
-/* Brand Colors and Variables */
+/* Brand Colors and Variables based on Tuoora Infinity Logo */
 :root {
     --brand-50: #fff7ed;
     --brand-100: #ffedd5;
@@ -8,10 +8,21 @@
     --brand-500: #f97316;
     --brand-600: #ea580c;
     --brand-700: #c2410c;
-    --brand-800: #A8440B; /* Core brand color */
-    --brand-900: #7c2d12;
+    --brand-800: #FF6B00; /* Core brand orange from infinity logo */
+    --brand-900: #E55A00;
     
     --primary: #FF6B00;
+    --primary-hover: #E55A00;
+    --primary-light: rgba(255, 107, 0, 0.12);
+
+    /* Teal Cyan accents from infinity logo */
+    --accent-teal: #00A8B5;
+    --accent-teal-dark: #0E7490;
+    --accent-teal-light: rgba(0, 168, 181, 0.12);
+
+    /* Brand Gradient Flow */
+    --brand-gradient: linear-gradient(135deg, #FF7A1A 0%, #FF6B00 50%, #E55A00 100%);
+    --brand-gradient-hover: linear-gradient(135deg, #FF8A2A 0%, #FF6B00 50%, #CC5200 100%);
 }
 
 /* Brand Button (Primary Action) */
@@ -31,17 +42,43 @@
     background-color: var(--brand-800);
     color: white !important;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(168, 68, 11, 0.15);
+    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.2);
 }
 
 .btn-brand:hover {
     background-color: var(--brand-900);
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(168, 68, 11, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(255, 107, 0, 0.3);
 }
 
 .btn-brand:active {
     transform: scale(0.96);
+}
+
+/* Teal Accent Button */
+.btn-teal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    white-space: nowrap;
+    background-color: var(--accent-teal);
+    color: white !important;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 168, 181, 0.2);
+}
+
+.btn-teal:hover {
+    background-color: var(--accent-teal-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 168, 181, 0.3);
 }
 
 /* White Button (Secondary Action) */
@@ -94,7 +131,7 @@
 .tab-item.active {
     background-color: var(--brand-800);
     color: white !important;
-    box-shadow: 0 4px 6px -1px rgba(168, 68, 11, 0.1);
+    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.2);
 }
 
 .tab-item.inactive {

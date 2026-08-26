@@ -24,7 +24,7 @@ render as done, after it as pending. Default 1.
 
 <aside class="auth-brand">
     <div class="brand-logo">
-        <img src="{{ asset('images/2-remove.png') }}" alt="Tuoora">
+        <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora">
     </div>
 
     <div class="brand-headline">
