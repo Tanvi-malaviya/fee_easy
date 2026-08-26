@@ -112,7 +112,7 @@ return [
     |
     */
 
-    'support_address' => env('SUPPORT_EMAIL', 'support@tuoora.com'),
+    'support_address' => env('SUPPORT_EMAIL', 'noreply@tuoora.com'),
     'info_address' => env('INFO_EMAIL', 'info@tuoora.com'),
     'noreply_address' => env('NOREPLY_EMAIL', 'noreply@tuoora.com'),
 

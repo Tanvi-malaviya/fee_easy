@@ -215,13 +215,17 @@ class StudentController extends Controller
 
         // Send password to student via email
         try {
-            Mail::to($student->email)->send(new \App\Mail\StudentAddedMail(
-                $student->name,
+            \App\Services\InstituteMailService::send(
+                $institute,
                 $student->email,
-                $password,
-                $institute->institute_name,
-                $institute->logo
-            ));
+                new \App\Mail\StudentAddedMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
         } catch (\Exception $e) {
             // Log error or handle gracefully if mail fails
             \Log::error("Failed to send welcome email to student: " . $e->getMessage());
@@ -573,13 +577,17 @@ class StudentController extends Controller
         ]);
 
         try {
-            Mail::to($student->email)->send(new \App\Mail\StudentPasswordSentMail(
-                $student->name,
+            \App\Services\InstituteMailService::send(
+                $institute,
                 $student->email,
-                $password,
-                $institute->institute_name,
-                $institute->logo
-            ));
+                new \App\Mail\StudentPasswordSentMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
         } catch (\Exception $e) {
             \Log::error("Failed to send student password email: " . $e->getMessage());
             return response()->json([

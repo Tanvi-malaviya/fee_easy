@@ -75,7 +75,6 @@ class FeeInvoiceMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.noreply_address'), config('mail.from.name')),
             subject: 'Fee Invoice - ' . $this->invoiceNo . ' - ' . $this->instituteName,
         );
     }

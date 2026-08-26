@@ -32,7 +32,9 @@ class StudentReportMail extends Mailable
     public function build()
     {
         $fromName = $this->institute->institute_name ?? $this->institute->name ?? config('mail.from.name', 'Tuoora');
-        $fromAddress = config('mail.support_address', config('mail.from.address'));
+        $fromAddress = ($this->institute && $this->institute->hasCustomSmtp())
+            ? ($this->institute->mail_from_address ?: ($this->institute->email ?: config('mail.from.address')))
+            : config('mail.from.address');
 
         return $this->from($fromAddress, $fromName)
             ->subject('Student Academic & Comprehensive Performance Report - ' . $fromName)

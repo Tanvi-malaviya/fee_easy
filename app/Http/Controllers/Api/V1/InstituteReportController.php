@@ -744,7 +744,9 @@ class InstituteReportController extends Controller
         // Automatically email generated PDF report to student if email is present
         if (!empty($student->email)) {
             try {
-                \Illuminate\Support\Facades\Mail::to($student->email)->send(
+                \App\Services\InstituteMailService::send(
+                    $institute,
+                    $student->email,
                     new \App\Mail\StudentReportMail($student, $institute, $pdfOutput, $fileName)
                 );
             } catch (\Exception $e) {
@@ -793,7 +795,9 @@ class InstituteReportController extends Controller
             $fileName = "Student_Report_{$safeName}_{$student->id}.pdf";
             $pdfOutput = $pdf->output();
 
-            \Illuminate\Support\Facades\Mail::to($student->email)->send(
+            \App\Services\InstituteMailService::send(
+                $institute,
+                $student->email,
                 new \App\Mail\StudentReportMail($student, $institute, $pdfOutput, $fileName)
             );
 

@@ -48,6 +48,7 @@ Route::middleware(array_filter([
         Route::delete('institutes/{institute}/staff/{staff}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStaff'])->name('institutes.staff.destroy');
         Route::delete('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'deleteBatch'])->name('institutes.batches.destroy');
         Route::get('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'showBatch'])->name('institutes.batches.show');
+        Route::post('institutes/{institute}/test-smtp', [App\Http\Controllers\Web\InstituteController::class, 'testSmtp'])->name('institutes.test_smtp');
 
         // Subscription Management
         Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
@@ -139,6 +140,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
             Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
+            Route::post('/profile/smtp', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateSmtp'])->name('profile.smtp');
+            Route::post('/profile/smtp/test', [App\Http\Controllers\Web\Institute\ProfileController::class, 'testSmtp'])->name('profile.smtp.test');
             Route::delete('/profile/device-sessions/{id}', [App\Http\Controllers\Web\Institute\ProfileController::class, 'logoutDeviceSession'])->name('profile.device-sessions.destroy');
 
             // Manage Website CMS Routes

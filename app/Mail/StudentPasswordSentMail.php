@@ -44,7 +44,6 @@ class StudentPasswordSentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.support_address'), config('mail.from.name')),
             subject: 'Your Student Account Password - ' . $this->instituteName,
         );
     }
