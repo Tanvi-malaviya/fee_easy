@@ -13,15 +13,33 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class InstituteBatchController extends Controller
 {
     /**
+     * Resolve the authenticated institute.
+     */
+    protected function getInstitute(Request $request)
+    {
+        $user = $request->user();
+        if ($user instanceof Institute) {
+            return $user;
+        }
+
+        if (auth('institute')->check()) {
+            return auth('institute')->user();
+        }
+
+        return null;
+    }
+
+    /**
      * Display a listing of batches belonging to the authenticated institute.
      */
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $query = Batch::where('institute_id', $request->user()->id)
+        $query = Batch::where('institute_id', $institute->id)
             ->withCount('students')
             ->with(['students:id,name,batch_id,profile_image,enrollment_id', 'staff']);
 
@@ -60,11 +78,12 @@ class InstituteBatchController extends Controller
 
     public function show(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)
+        $batch = Batch::where('institute_id', $institute->id)
             ->withCount('students')
             ->with('staff')
             ->find($id);
@@ -99,7 +118,8 @@ class InstituteBatchController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
@@ -112,7 +132,7 @@ class InstituteBatchController extends Controller
             'end_time' => 'required|string',
             'days' => 'required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'required|exists:staff,id,institute_id,' . $institute->id,
         ]);
 
         if ($request->has('days') && is_array($request->days)) {
@@ -125,7 +145,7 @@ class InstituteBatchController extends Controller
         }
 
         $batch = Batch::create([
-            'institute_id' => $request->user()->id,
+            'institute_id' => $institute->id,
             'name' => $request->name,
             'subject' => $request->subject,
             'description' => $request->description,
@@ -149,11 +169,12 @@ class InstituteBatchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -171,7 +192,7 @@ class InstituteBatchController extends Controller
             'end_time' => 'sometimes|required|string',
             'days' => 'sometimes|required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'required|exists:staff,id,institute_id,' . $institute->id,
         ]);
 
         $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
@@ -265,11 +286,12 @@ class InstituteBatchController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -291,11 +313,12 @@ class InstituteBatchController extends Controller
      */
     public function close(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -314,16 +337,16 @@ class InstituteBatchController extends Controller
 
     public function export(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batches = Batch::where('institute_id', $request->user()->id)
+        $batches = Batch::where('institute_id', $institute->id)
             ->withCount('students')
             ->with('staff')
             ->get();
 
-        $institute = $request->user();
         $date = date('d M, Y h:i A');
 
         $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches', 'institute', 'date'));
@@ -332,11 +355,12 @@ class InstituteBatchController extends Controller
 
     public function removeStudent(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -350,7 +374,7 @@ class InstituteBatchController extends Controller
         ]);
 
         $student = \App\Models\Student::where('id', $request->student_id)
-            ->where('institute_id', $request->user()->id)
+            ->where('institute_id', $institute->id)
             ->where('batch_id', $id)
             ->first();
 
@@ -413,11 +437,12 @@ class InstituteBatchController extends Controller
 
     public function assignStudents(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -439,7 +464,7 @@ class InstituteBatchController extends Controller
         foreach ($request->students as $studentData) {
             $student = \App\Models\Student::with('parent')
                 ->where('id', $studentData['id'])
-                ->where('institute_id', $request->user()->id)
+                ->where('institute_id', $institute->id)
                 ->first();
 
             if ($student) {

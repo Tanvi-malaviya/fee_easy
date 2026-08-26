@@ -142,7 +142,7 @@
         </div>
 
         <!-- Quick Access Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-3">
             <!-- Students -->
             <a href="{{ route('institute.batches.students', $id) }}"
                 class="group bg-white p-4 rounded-xl border-t-4 border-t-orange-500 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-orange-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
@@ -156,6 +156,26 @@
                 <h3 class="text-lg font-bold text-slate-900 leading-none">Students</h3>
                 <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-wider">Manage enrollments</p>
                 <div class="absolute top-6 right-8 text-slate-100 group-hover:text-orange-100 transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Exams -->
+            <a href="{{ route('institute.batches.exams', $id) }}"
+                class="group bg-white p-4 rounded-xl border-t-4 border-t-indigo-600 shadow-md shadow-slate-200/40 hover:shadow-xl hover:shadow-indigo-200/40 transition-all hover:-translate-y-1 relative overflow-hidden">
+                <div
+                    class="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-3 group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 leading-none">Exams</h3>
+                <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-wider">Tests & Marks entry</p>
+                <div class="absolute top-6 right-8 text-slate-100 group-hover:text-indigo-100 transition-colors">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                             d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -356,7 +376,8 @@
         const BATCH_ID = "{{ $id }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
         const staffListJs = @json($staffList);
-        const API_BATCH_URL = `/api/v1/institute/batches/${BATCH_ID}`;
+        const initialBatch = @json($batch ?? null);
+        const API_BATCH_URL = `/institute/batches/${BATCH_ID}`;
         const API_STUDENTS_URL = `/api/v1/institute/students?batch_id=${BATCH_ID}`;
         let allStudents = [];
         let selectedStudentIds = new Set();
@@ -365,75 +386,85 @@
         let studentFees = new Map();
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (initialBatch) {
+                renderBatchData(initialBatch);
+            }
             fetchBatchData();
             // fetchStudents();
         });
 
+        function renderBatchData(batch) {
+            if (!batch) return;
+            document.getElementById('batch-name-heading').innerText = batch.name;
+            document.getElementById('batch-id-text').innerText = `BATCH-${batch.id}`;
+
+            const statusBadge = document.getElementById('batch-status-badge');
+            if (statusBadge) {
+                statusBadge.classList.remove('hidden');
+                if (batch.status === 'closed') {
+                    statusBadge.innerText = 'Closed';
+                    statusBadge.className = 'px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
+                } else {
+                    statusBadge.innerText = 'Active';
+                    statusBadge.className = 'px-2.5 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
+                }
+            }
+
+            // Populate Schedule
+            if (batch.days && Array.isArray(batch.days)) {
+                document.getElementById('batch-days').innerText = batch.days.join(', ');
+            }
+            document.getElementById('batch-time').innerText = `${batch.start_time || '--:--'} - ${batch.end_time || '--:--'}`;
+
+            // Populate Stats
+            const count = batch.students_count || 0;
+            const capacity = batch.max_capacity || 30;
+            document.getElementById('current-enrollment').innerText = count;
+            document.getElementById('batch-capacity').innerText = capacity;
+
+            if (batch.classroom) {
+                document.getElementById('batch-classroom').innerText = batch.classroom;
+            }
+
+            // Update Progress Bar
+            const progress = (count / capacity) * 100;
+            document.getElementById('enrollment-progress').style.width = `${Math.min(progress, 100)}%`;
+
+            document.getElementById('stat-monthly-fee').innerText = `₹${batch.total_expected || 0}`;
+            document.getElementById('stat-total-paid').innerText = `₹${batch.total_paid || 0}`;
+
+            // Populate Description
+            if (batch.description) {
+                document.getElementById('batch-description-text').innerText = batch.description;
+            }
+
+            // Load Assigned Staff from batch object
+            if (batch.staff) {
+                const staffObj = batch.staff;
+                document.getElementById('instructor-name').innerText = staffObj.full_name;
+                document.getElementById('instructor-role').innerText = staffObj.department ? staffObj.department.name : 'Staff';
+                document.getElementById('instructor-email').innerText = staffObj.email || 'No email provided';
+                document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staffObj.full_name)}&background=EEF2FF&color=4F46E5&bold=true`;
+            } else {
+                document.getElementById('instructor-name').innerText = 'Not Assigned';
+                document.getElementById('instructor-role').innerText = 'No Instructor';
+                document.getElementById('instructor-email').innerText = 'No email provided';
+                document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=Instructor&background=F1F5F9&color=64748B&bold=true`;
+            }
+        }
+
         async function fetchBatchData() {
             try {
-                const response = await fetch(API_BATCH_URL, { headers: { 'Accept': 'application/json' } });
+                let response = await fetch(API_BATCH_URL, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) {
+                    response = await fetch(`/api/v1/institute/batches/${BATCH_ID}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                }
                 const result = await response.json();
-                if (result.status === 'success') {
-                    const batch = result.data;
-                    document.getElementById('batch-name-heading').innerText = batch.name;
-                    document.getElementById('batch-id-text').innerText = `BATCH-${batch.id}`;
-
-                    const statusBadge = document.getElementById('batch-status-badge');
-                    if (statusBadge) {
-                        statusBadge.classList.remove('hidden');
-                        if (batch.status === 'closed') {
-                            statusBadge.innerText = 'Closed';
-                            statusBadge.className = 'px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
-                        } else {
-                            statusBadge.innerText = 'Active';
-                            statusBadge.className = 'px-2.5 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[9px] font-bold uppercase tracking-widest';
-                        }
-                    }
-
-                    // Populate Schedule
-                    if (batch.days && Array.isArray(batch.days)) {
-                        document.getElementById('batch-days').innerText = batch.days.join(', ');
-                    }
-                    document.getElementById('batch-time').innerText = `${batch.start_time || '--:--'} - ${batch.end_time || '--:--'}`;
-
-                    // Populate Stats
-                    const count = batch.students_count || 0;
-                    const capacity = batch.max_capacity || 30;
-                    document.getElementById('current-enrollment').innerText = count;
-                    document.getElementById('batch-capacity').innerText = capacity;
-
-                    if (batch.classroom) {
-                        document.getElementById('batch-classroom').innerText = batch.classroom;
-                    }
-
-                    // Update Progress Bar
-                    const progress = (count / capacity) * 100;
-                    document.getElementById('enrollment-progress').style.width = `${Math.min(progress, 100)}%`;
-
-                    document.getElementById('stat-monthly-fee').innerText = `₹${batch.total_expected || 0}`;
-                    document.getElementById('stat-total-paid').innerText = `₹${batch.total_paid || 0}`;
-
-                    // Populate Description
-                    if (batch.description) {
-                        document.getElementById('batch-description-text').innerText = batch.description;
-                    }
-
-                    // Load Assigned Staff from batch object
-                    if (batch.staff) {
-                        const staffObj = batch.staff;
-                        document.getElementById('instructor-name').innerText = staffObj.full_name;
-                        document.getElementById('instructor-role').innerText = staffObj.department ? staffObj.department.name : 'Staff';
-                        document.getElementById('instructor-email').innerText = staffObj.email || 'No email provided';
-                        document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staffObj.full_name)}&background=EEF2FF&color=4F46E5&bold=true`;
-                    } else {
-                        document.getElementById('instructor-name').innerText = 'Not Assigned';
-                        document.getElementById('instructor-role').innerText = 'No Instructor';
-                        document.getElementById('instructor-email').innerText = 'No email provided';
-                        document.getElementById('instructor-avatar').src = `https://ui-avatars.com/api/?name=Instructor&background=F1F5F9&color=64748B&bold=true`;
-                    }
+                if (result.status === 'success' && result.data) {
+                    renderBatchData(result.data);
                 }
             } catch (error) {
-                showToast('Failed to load batch info', 'error');
+                console.error('Failed to load batch info:', error);
             }
         }
 

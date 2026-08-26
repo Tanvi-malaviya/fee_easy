@@ -12,7 +12,7 @@
     /* ---------- Left brand panel ---------- */
     .auth-brand {
         position: relative;
-        background: linear-gradient(150deg, #FF7A1A 0%, #FF6B00 45%, #E85D00 100%);
+        background: #FF6B00;
         color: #fff;
         padding: 3rem 3.25rem;
         display: flex;

@@ -275,7 +275,7 @@
     </template>
 
     <script>
-        const API_URL = "/api/v1/institute/batches";
+        const API_URL = "/institute/batches";
         const CSRF_TOKEN = "{{ csrf_token() }}";
         const staffListJs = @json($staffList);
 
@@ -285,18 +285,23 @@
             toggleLoader(true);
             const searchVal = document.getElementById('batch-search').value;
             try {
-                const response = await fetch(`${API_URL}?page=${page}&search=${encodeURIComponent(searchVal)}`, {
-                    headers: { 'Accept': 'application/json' }
+                let response = await fetch(`${API_URL}?page=${page}&search=${encodeURIComponent(searchVal)}`, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 });
+                if (!response.ok) {
+                    response = await fetch(`/api/v1/institute/batches?page=${page}&search=${encodeURIComponent(searchVal)}`, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                }
                 const result = await response.json();
-                if (result.status === 'success') {
-                    renderBatches(result.data.items);
+                if (result.status === 'success' && result.data) {
+                    renderBatches(result.data.items || []);
                     renderPagination(result.data);
                     document.getElementById('stat-total-batches').innerText = result.data.total;
-                    const totalStudents = result.data.items.reduce((acc, b) => acc + (b.students_count || 0), 0);
+                    const totalStudents = (result.data.items || []).reduce((acc, b) => acc + (b.students_count || 0), 0);
                     document.getElementById('stat-total-students').innerText = totalStudents;
                 }
-            } catch (error) { console.error(error); }
+            } catch (error) { console.error('Error fetching batches:', error); }
             finally { toggleLoader(false); }
         }
 

@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tuoora Admin Panel</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}?v={{ file_exists(public_path('images/favicon.png')) ? filemtime(public_path('images/favicon.png')) : 1 }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 1 }}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -123,16 +124,21 @@
 
         .bg-orange-600 { background-color: #FF6B00 !important; }
 
-        /* Source of Truth: Primary Color */
+        /* Source of Truth: Primary Color & Logo Theme */
         :root {
-            --primary-color: #ff6600; /* Your common indigo color */
-            --primary-light: rgba(255, 102, 0, 0.1);
+            --primary-color: #FF6B00;
+            --primary-hover: #E55A00;
+            --primary-light: rgba(255, 107, 0, 0.12);
+            --accent-teal: #00A8B5;
+            --accent-teal-light: rgba(0, 168, 181, 0.12);
+            --brand-gradient: linear-gradient(135deg, #FF7A1A 0%, #FF6B00 50%, #E55A00 100%);
         }
 
         .bg-primary { background-color: var(--primary-color) !important; }
         .text-primary { color: var(--primary-color) !important; }
         .border-primary { border-color: var(--primary-color) !important; }
         .focus\:ring-primary:focus { --tw-ring-color: var(--primary-color) !important; }
+        .bg-brand-gradient { background: var(--brand-gradient) !important; }
 
         /* Global Input Focus Style */
         input:focus, select:focus, textarea:focus, button:focus, button:active {
@@ -220,27 +226,19 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     </template>
                 </div>
-                <!-- Content -->
-                <div class="flex-1 mr-2">
-                    <p class="text-[9px] font-black uppercase tracking-wider text-slate-400" x-text="toast.type === 'success' ? 'Success' : 'Attention'"></p>
-                    <p class="text-xs font-semibold mt-0.5 text-slate-700" x-text="toast.message"></p>
-                </div>
-                <!-- Dismiss button -->
-                <button @click="removeToast(toast.id)" class="text-slate-400 hover:text-slate-600 transition shrink-0 p-1">
+                <div class="text-sm font-semibold tracking-wide flex-1" x-text="toast.message"></div>
+                <button @click="removeToast(toast.id)" class="ml-3 text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
         </template>
     </div>
 
-    <div class="flex h-screen overflow-hidden bg-gray-50" x-data="layout()" x-init="init()" x-cloak>
-
-        <!-- Mobile Overlay -->
-        <div x-show="sidebarOpen" x-transition.opacity @click="closeSidebar()"
-            class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+    <div class="flex h-screen overflow-hidden">
 
         <!-- Sidebar -->
-        <aside id="main-sidebar" :class="{
+        <aside 
+        :class="{
             '-translate-x-full': !sidebarOpen,
             'translate-x-0': sidebarOpen,
             'w-20': sidebarCollapsed,
@@ -252,9 +250,9 @@
         class="fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-100 flex flex-col transform lg:translate-x-0 lg:static shadow-sm">
 
             <!-- Logo -->
-            <div class="h-16 flex items-center border-b border-gray-50 bg-white sticky top-0 z-10 px-6">
+            <div class="h-16 flex items-center border-b border-gray-50 bg-white sticky top-0 z-10 px-5">
                 <a href="{{ route('dashboard') }}" class="flex items-center shrink-0">
-                    <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-8 w-auto object-contain">
+                    <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-9 w-auto object-contain">
                 </a>
             </div>
 
@@ -338,6 +336,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Razorpay Settings</span>
+                </a>
+
+                <a href="{{ route('settings.mail.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('settings.mail.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Mail Settings</span>
                 </a>
                 <a href="{{ route('qr.analytics') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('qr.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
                     <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">

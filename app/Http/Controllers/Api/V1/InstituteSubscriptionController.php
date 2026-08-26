@@ -654,6 +654,32 @@ class InstituteSubscriptionController extends Controller
             'qr_url'           => \App\Models\SystemSetting::getQrUrl(),
         ];
 
+        $currency = \App\Models\SystemSetting::get('currency_symbol', '₹');
+        $whiteLabelPrice = (float) \App\Models\SystemSetting::get('mobile_app_whitelabel_price', 5000);
+        $whiteLabelTitle = \App\Models\SystemSetting::get('mobile_app_whitelabel_title', 'Mobile App White Label');
+        $whiteLabelBillingType = \App\Models\SystemSetting::get('mobile_app_whitelabel_billing_type', 'One Time');
+        $whiteLabelEnabled = (bool) \App\Models\SystemSetting::get('mobile_app_whitelabel_enabled', true);
+        $whiteLabelDesc = \App\Models\SystemSetting::get('mobile_app_whitelabel_description', 'Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.');
+
+        $whiteLabelAddon = [
+            'id' => 'mobile_app_whitelabel',
+            'name' => $whiteLabelTitle,
+            'title' => $whiteLabelTitle,
+            'price' => $whiteLabelPrice,
+            'billing_type' => $whiteLabelBillingType,
+            'type' => 'one_time',
+            'currency' => $currency,
+            'formatted_price' => $currency . number_format($whiteLabelPrice),
+            'description' => $whiteLabelDesc,
+            'features' => [
+                'Institute Name & Logo on Google Play Store & Apple App Store',
+                'Direct Store Download Links & Shareable Marketing QR',
+                'Push Notifications with Institute Branding',
+                'Continuous App Store Maintenance & Support'
+            ],
+            'is_active' => $whiteLabelEnabled,
+        ];
+
         $currentSub = $institute->currentSubscription();
 
         return response()->json([
@@ -677,6 +703,10 @@ class InstituteSubscriptionController extends Controller
                     'students_enrolled' => $enrolledCount,
                 ],
                 'plans' => $plans,
+                'addons' => [
+                    $whiteLabelAddon
+                ],
+                'white_label_addon' => $whiteLabelAddon,
                 'history' => $history,
                 'payment_settings' => $paymentSettings
             ]

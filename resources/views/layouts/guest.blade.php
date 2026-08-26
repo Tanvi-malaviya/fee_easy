@@ -7,7 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tuoora Secure Gateway</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}?v={{ file_exists(public_path('images/favicon.png')) ? filemtime(public_path('images/favicon.png')) : 1 }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 1 }}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,8 +19,11 @@
 
     <style>
         :root {
-            --primary-color: #ff6c00;
-            --primary-light: rgba(255, 108, 0, 0.15);
+            --primary-color: #FF6B00;
+            --primary-hover: #E55A00;
+            --primary-light: rgba(255, 107, 0, 0.15);
+            --accent-teal: #00A8B5;
+            --brand-gradient: linear-gradient(135deg, #FF6B00 0%, #FF8A00 45%, #00A8B5 100%);
         }
 
         body {
@@ -32,8 +36,8 @@
 
         .auth-bg {
             background: 
-                radial-gradient(circle at 0% 0%, rgba(255, 108, 0, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(255, 108, 0, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 0% 0%, rgba(255, 107, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 107, 0, 0.12) 0%, transparent 50%),
                 #f8fafc;
             min-height: 100vh;
             display: flex;
@@ -53,7 +57,7 @@
             border-radius: 1.75rem;
             box-shadow: 
                 0 25px 50px -12px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(255, 108, 0, 0.1);
+                0 0 0 1px rgba(255, 107, 0, 0.1);
             overflow: hidden;
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
@@ -74,14 +78,14 @@
         <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="auth-card p-8 sm:p-12">
-            <!-- Top Gradient Bar -->
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#ff6c00] to-orange-300"></div>
+            <!-- Top Orange Bar -->
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-[#FF6B00]"></div>
 
             <!-- Branding Header -->
             <div class="flex flex-col items-center mb-8 text-center">
                 <a href="/" class="flex flex-col items-center group transition-transform hover:scale-105 active:scale-95">
-                    <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-10 w-auto object-contain mb-3.5" />
-                    <span class="text-[10px] font-black tracking-[0.3em] text-[#ff6c00] uppercase px-3.5 py-1 bg-orange-50 rounded-full border border-orange-100/50 shadow-sm">
+                    <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-10 w-auto object-contain mb-3.5" />
+                    <span class="text-[10px] font-black tracking-[0.3em] text-[#FF6B00] uppercase px-3.5 py-1 bg-orange-50 rounded-full border border-orange-100/50 shadow-sm">
                         Management Portal
                     </span>
                 </a>

@@ -10,7 +10,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tuoora Institute Panel</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}?v={{ file_exists(public_path('images/favicon.png')) ? filemtime(public_path('images/favicon.png')) : 1 }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 1 }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,13 +32,18 @@
                         sans: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#ff6600',
-                        primary2: '#713f1bff',
-                        secondary: '#00A7B5',
+                        primary: '#FF6B00',
+                        primaryHover: '#E55A00',
+                        primary2: '#E55A00',
+                        secondary: '#00A8B5',
+                        secondaryHover: '#0E7490',
                         tertiary: '#2ECC71',
                         neutral: '#F8F9FA',
                         brand: {
-                            900: '#A8440B', // Updated to match primary theme
+                            500: '#FF6B00',
+                            800: '#FF6B00',
+                            900: '#E55A00',
+                            teal: '#00A8B5',
                         }
                     }
                 }
@@ -58,12 +64,12 @@
         .nav-link.active::after {
             content: '';
             position: absolute;
-            bottom: -20px;
+            bottom: 0;
             left: 0;
             right: 0;
             height: 3px;
-            background: #FF6B00;
-            border-radius: 10px;
+            background-color: #FF6B00;
+            border-radius: 9999px;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
@@ -77,6 +83,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #e2e8f0;
             border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -151,7 +161,7 @@
                 </button>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                        <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-8 w-auto object-contain"
                             onerror="this.style.display='none'">
                     </a>
                 </div>
@@ -214,7 +224,7 @@
         <!-- Close & Logo Header -->
         <div class="py-3 px-4 flex items-center justify-between border-b border-slate-100">
             <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-7 w-auto object-contain"
                     onerror="this.style.display='none'">
             </a>
             <button id="close-menu"

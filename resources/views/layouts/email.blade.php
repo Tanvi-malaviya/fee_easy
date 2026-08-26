@@ -34,7 +34,7 @@
     }
 
     .em-header {
-      background: linear-gradient(135deg, #FF8533 0%, #FF6B00 55%, #E05A00 100%);
+      background: #FF6B00;
       padding: 30px 40px;
       text-align: center;
     }

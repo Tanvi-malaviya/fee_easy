@@ -182,6 +182,79 @@
             align-items: center;
             gap: 0.5rem;
         }
+        .demo-card {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.06) 0%, rgba(255, 140, 50, 0.03) 100%);
+            border: 1.5px dashed rgba(255, 107, 0, 0.35);
+            border-radius: 0.85rem;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .demo-card:hover {
+            border-color: #FF6B00;
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.12) 0%, rgba(255, 140, 50, 0.06) 100%);
+            transform: translateY(-1px);
+        }
+
+        .demo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            text-align: left;
+        }
+
+        .demo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #FF6B00;
+        }
+
+        .demo-subtext {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .demo-subtext code {
+            background: #ffffff;
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.35rem;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 0.72rem;
+        }
+
+        .demo-action-btn {
+            background: #FF6B00;
+            color: #ffffff;
+            border: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+        }
+
+        .demo-action-btn:hover {
+            background: #e66000;
+        }
     </style>
 </head>
 
@@ -194,6 +267,21 @@
                 <div class="form-head">
                     <h1>Institute Login</h1>
                     <p>Welcome back! Please sign in to continue to your dashboard.</p>
+                </div>
+
+                <!-- Demo Account Quick Fill Card -->
+                <div class="demo-card" onclick="fillDemoAccount()" title="Click to auto-fill demo credentials">
+                    <div class="demo-info">
+                        <span class="demo-badge">
+                            <i class="fas fa-bolt"></i> Live Demo Showcase
+                        </span>
+                        <span class="demo-subtext">
+                            <code>demo@tuoora.com</code> • <code>password</code>
+                        </span>
+                    </div>
+                    <button type="button" class="demo-action-btn" onclick="event.stopPropagation(); fillDemoAccount();">
+                        <i class="fas fa-wand-magic-sparkles"></i> Auto Fill
+                    </button>
                 </div>
 
                 @if ($errors->any())
@@ -234,7 +322,7 @@
                         <a href="{{ route('institute.password.request') }}" class="forgot-link">Forgot Password?</a>
                     </div>
 
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" class="submit-btn" id="submit-btn">
                         Log In
                     </button>
                 </form>
@@ -254,6 +342,34 @@
             input.type = showing ? 'password' : 'text';
             el.classList.toggle('fa-eye', showing);
             el.classList.toggle('fa-eye-slash', !showing);
+        }
+
+        function fillDemoAccount() {
+            const emailField = document.querySelector('input[name="email"]');
+            const passField = document.getElementById('login-password');
+            const rememberCheckbox = document.querySelector('input[name="remember"]');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (emailField && passField) {
+                emailField.value = 'demo@tuoora.com';
+                passField.value = 'password';
+                if (rememberCheckbox) rememberCheckbox.checked = true;
+
+                // Visual flash feedback
+                emailField.style.borderColor = '#FF6B00';
+                passField.style.borderColor = '#FF6B00';
+                if (submitBtn) {
+                    submitBtn.style.transform = 'scale(1.02)';
+                }
+
+                setTimeout(() => {
+                    emailField.style.borderColor = '#f1f5f9';
+                    passField.style.borderColor = '#f1f5f9';
+                    if (submitBtn) {
+                        submitBtn.style.transform = 'none';
+                    }
+                }, 1000);
+            }
         }
     </script>
 </body>

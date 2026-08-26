@@ -24,7 +24,7 @@ class StudentController extends Controller
 
         // If it's an AJAX request, return the JSON data
         if ($request->expectsJson()) {
-            $students = $institute->students()->with('batch')->orderBy('created_at', 'desc')->paginate(10);
+            $students = $institute->students()->with('batch')->orderBy('created_at', 'desc')->paginate(15);
             return response()->json($students);
         }
 
@@ -94,22 +94,68 @@ class StudentController extends Controller
             session(['student_back_url' => $referer]);
         }
 
-        $student->load(['batch', 'fees.payments', 'attendance', 'homeworkSubmissions']);
+        $student->load([
+            'batch',
+            'parent',
+            'fees.payments',
+            'attendance.batch',
+            'homeworkSubmissions.homework',
+            'examMarks.exam'
+        ]);
 
         // Calculate balance (Monthly Fee - Total Payments)
         $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
         $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
 
-        // Attendance stats
+        // Attendance stats & records
         $totalDays = $student->attendance()->count();
         $presentDays = $student->attendance()->where('status', 'Present')->count();
+        $absentDays = $student->attendance()->where('status', 'Absent')->count();
+        $lateDays = $student->attendance()->where('status', 'Late')->count();
         $attendancePercentage = $totalDays > 0 ? round(($presentDays / $totalDays) * 100) : 0;
+        $attendanceRecords = $student->attendance()->with('batch')->orderBy('date', 'desc')->get();
 
-        // Homework stats (Average Score)
-        $averageGrade = $student->homeworkSubmissions()->whereNotNull('score')->avg('score');
+        // Homework stats & submissions
+        $homeworkSubmissions = $student->homeworkSubmissions()->with('homework')->latest()->get();
+        $averageGrade = $homeworkSubmissions->whereNotNull('score')->avg('score');
         $averageGrade = $averageGrade ? round($averageGrade, 1) : 0;
+        $submittedHomeworkCount = $homeworkSubmissions->whereIn('status', ['Submitted', 'Reviewed'])->count();
 
-        return view('institute.students.show', compact('student', 'balance', 'attendancePercentage', 'averageGrade'));
+        // Exams & Marks stats
+        $examMarks = $student->examMarks()->with('exam')->get()->sortByDesc(function ($mark) {
+            return $mark->exam->date ?? $mark->created_at;
+        });
+        $totalExams = $examMarks->count();
+        $passedExams = $examMarks->filter(function ($mark) {
+            return !$mark->is_absent && $mark->exam && $mark->marks_obtained >= ($mark->exam->passing_marks ?? 0);
+        })->count();
+        $failedExams = $examMarks->filter(function ($mark) {
+            return !$mark->is_absent && $mark->exam && $mark->marks_obtained < ($mark->exam->passing_marks ?? 0);
+        })->count();
+        $absentExams = $examMarks->where('is_absent', true)->count();
+        $averageExamMarks = $examMarks->where('is_absent', false)->count() > 0 
+            ? round($examMarks->where('is_absent', false)->avg('marks_obtained'), 1) 
+            : 0;
+
+        return view('institute.students.show', compact(
+            'student',
+            'balance',
+            'attendancePercentage',
+            'averageGrade',
+            'totalDays',
+            'presentDays',
+            'absentDays',
+            'lateDays',
+            'attendanceRecords',
+            'homeworkSubmissions',
+            'submittedHomeworkCount',
+            'examMarks',
+            'totalExams',
+            'passedExams',
+            'failedExams',
+            'absentExams',
+            'averageExamMarks'
+        ));
     }
 
     /**
@@ -459,7 +505,8 @@ class StudentController extends Controller
             return;
         }
 
-        // Removed from a batch
+        /*
+        // Removed from a batch (Notification commented out per requirement)
         $oldBatch = \App\Models\Batch::find($oldBatchId);
         if (!$oldBatch) {
             return;
@@ -497,6 +544,7 @@ class StudentController extends Controller
                 $fcm->send($student->parent->fcm_token, $title, $parentBody, $pushData);
             }
         }
+        */
     }
 
     /**
@@ -629,5 +677,62 @@ class StudentController extends Controller
             'message' => $result['message'],
             'errors' => $result['errors'] ?? []
         ], 422);
+    }
+
+    /**
+     * Bulk move / transfer selected students from one batch/branch to another.
+     */
+    public function bulkTransfer(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'student_ids'     => 'required|array|min:1',
+            'student_ids.*'   => 'integer|exists:students,id',
+            'target_batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
+            'notify_students' => 'nullable|boolean',
+        ]);
+
+        $studentIds = $request->input('student_ids', []);
+        $targetBatchId = $request->input('target_batch_id');
+        $notify = $request->boolean('notify_students', true);
+
+        $targetBatch = $targetBatchId ? \App\Models\Batch::where('id', $targetBatchId)->where('institute_id', $institute->id)->first() : null;
+
+        $students = Student::where('institute_id', $institute->id)
+            ->whereIn('id', $studentIds)
+            ->get();
+
+        if ($students->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No valid students found for transfer.'
+            ], 422);
+        }
+
+        $transferredCount = 0;
+        foreach ($students as $student) {
+            $oldBatchId = $student->batch_id;
+            if ($oldBatchId == $targetBatchId) {
+                continue;
+            }
+
+            $student->update(['batch_id' => $targetBatchId]);
+            $transferredCount++;
+
+            if ($notify) {
+                $this->notifyBatchChange($student->fresh(), $oldBatchId, $targetBatchId);
+            }
+        }
+
+        $targetName = $targetBatch ? $targetBatch->name : 'Unassigned (No Batch)';
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Successfully moved {$transferredCount} student(s) to {$targetName}.",
+            'data'    => [
+                'transferred_count' => $transferredCount,
+                'target_batch'      => $targetBatch,
+            ]
+        ]);
     }
 }

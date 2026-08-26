@@ -101,7 +101,8 @@ class InstituteAuthController extends Controller
             ]);
         }
 
-        // Enforce 5 device limit
+        // Enforce 5 device limit (Temporarily commented out)
+        /*
         $detection = \App\Models\DeviceSession::detect($request);
         $device = $detection['device'];
         $os = $detection['os'];
@@ -120,6 +121,7 @@ class InstituteAuthController extends Controller
                 'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
             ], 422);
         }
+        */
 
         $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
         $accessToken = $accessTokenResult->plainTextToken;
@@ -290,7 +292,8 @@ class InstituteAuthController extends Controller
         // Prune any sessions whose access token has expired (ghost-session cleanup)
         \App\Models\DeviceSession::pruneExpired($institute->id);
 
-        // Enforce 5 device limit
+        // Enforce 5 device limit (Temporarily commented out)
+        /*
         $detection = \App\Models\DeviceSession::detect($request);
         $device = $detection['device'];
         $os = $detection['os'];
@@ -320,6 +323,7 @@ class InstituteAuthController extends Controller
                 'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
             ], 422);
         }
+        */
 
         $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
         $accessToken = $accessTokenResult->plainTextToken;
