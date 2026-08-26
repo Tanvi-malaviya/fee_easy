@@ -54,7 +54,6 @@ class StudentAddedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.support_address'), config('mail.from.name')),
             subject: 'Student Account Credentials - Tuoora',
         );
     }

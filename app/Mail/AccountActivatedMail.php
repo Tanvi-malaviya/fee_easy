@@ -32,7 +32,6 @@ class AccountActivatedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.support_address'), config('mail.from.name')),
             subject: 'Account Activated successfully - Tuoora',
         );
     }

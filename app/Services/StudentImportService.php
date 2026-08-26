@@ -224,13 +224,17 @@ class StudentImportService
 
                 // Send email
                 try {
-                    Mail::to($student->email)->send(new \App\Mail\StudentAddedMail(
-                        $student->name,
+                    \App\Services\InstituteMailService::send(
+                        $institute,
                         $student->email,
-                        $password,
-                        $institute->institute_name,
-                        $institute->logo
-                    ));
+                        new \App\Mail\StudentAddedMail(
+                            $student->name,
+                            $student->email,
+                            $password,
+                            $institute->institute_name,
+                            $institute->logo
+                        )
+                    );
                 } catch (\Exception $e) {
                     \Log::error("Failed to send welcome email during bulk import for: " . $student->email . " - " . $e->getMessage());
                 }

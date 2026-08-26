@@ -103,6 +103,67 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the institute's custom SMTP configuration.
+     */
+    public function updateSmtp(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'is_custom_smtp_enabled' => ['nullable', 'boolean'],
+            'mail_host' => ['nullable', 'string', 'max:255'],
+            'mail_port' => ['nullable', 'string', 'max:10'],
+            'mail_username' => ['nullable', 'string', 'max:255'],
+            'mail_password' => ['nullable', 'string', 'max:255'],
+            'mail_encryption' => ['nullable', 'string', 'max:20'],
+            'mail_from_address' => ['nullable', 'email', 'max:255'],
+            'mail_from_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $validated['is_custom_smtp_enabled'] = $request->boolean('is_custom_smtp_enabled');
+
+        if ($request->has('mail_password') && empty($request->mail_password)) {
+            unset($validated['mail_password']);
+        }
+
+        $institute->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Email SMTP configuration saved successfully.'
+        ]);
+    }
+
+    /**
+     * Test SMTP connection for current institute.
+     */
+    public function testSmtp(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'test_email' => ['required', 'email'],
+        ]);
+
+        if ($request->filled('mail_host')) {
+            $institute->mail_host = $request->mail_host;
+            $institute->mail_port = $request->mail_port;
+            $institute->mail_username = $request->mail_username;
+            if ($request->filled('mail_password')) {
+                $institute->mail_password = $request->mail_password;
+            }
+            $institute->mail_encryption = $request->mail_encryption ?: 'tls';
+            $institute->mail_from_address = $request->mail_from_address;
+            $institute->mail_from_name = $request->mail_from_name;
+            $institute->is_custom_smtp_enabled = true;
+        }
+
+        $result = \App\Services\InstituteMailService::testConnection($institute, $request->test_email);
+
+        return response()->json($result);
+    }
+
+    /**
      * Terminate / log out a specific device session.
      */
     public function logoutDeviceSession($id)

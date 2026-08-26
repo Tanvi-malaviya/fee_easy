@@ -115,6 +115,14 @@ class InstituteProfileController extends Controller
             'pincode' => 'nullable|string|max:20',
             'logo' => 'nullable',
             'logo_url' => 'nullable',
+            'is_custom_smtp_enabled' => 'nullable|boolean',
+            'mail_host' => 'nullable|string|max:255',
+            'mail_port' => 'nullable|string|max:10',
+            'mail_username' => 'nullable|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|string|max:20',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name' => 'nullable|string|max:255',
         ]);
 
         $data = $request->only([
@@ -128,8 +136,22 @@ class InstituteProfileController extends Controller
             'city',
             'state',
             'country',
-            'pincode'
+            'pincode',
+            'mail_host',
+            'mail_port',
+            'mail_username',
+            'mail_encryption',
+            'mail_from_address',
+            'mail_from_name',
         ]);
+
+        if ($request->has('is_custom_smtp_enabled')) {
+            $data['is_custom_smtp_enabled'] = $request->boolean('is_custom_smtp_enabled');
+        }
+
+        if ($request->filled('mail_password')) {
+            $data['mail_password'] = $request->mail_password;
+        }
 
         if ($request->hasFile('logo') || $request->hasFile('logo_url')) {
             // Delete old logo if exists

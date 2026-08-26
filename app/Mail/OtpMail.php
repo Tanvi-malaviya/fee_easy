@@ -32,7 +32,6 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.noreply_address'), config('mail.from.name')),
             subject: 'Your Verification Code - Tuoora',
         );
     }

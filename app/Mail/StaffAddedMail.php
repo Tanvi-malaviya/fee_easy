@@ -51,7 +51,6 @@ class StaffAddedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(config('mail.support_address'), config('mail.from.name')),
             subject: "Welcome to {$this->instituteName} - Staff Profile Created",
         );
     }

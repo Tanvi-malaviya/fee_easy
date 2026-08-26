@@ -166,23 +166,27 @@ class InstituteFeeController extends Controller
                     $dueDate = \Carbon\Carbon::parse($fee->date)->addDays(10)->format('d M, Y');
                     $paymentUrl = url("/institute/fees/receipts/" . $fee->id);
 
-                    \Illuminate\Support\Facades\Mail::to($student->email)->send(new \App\Mail\FeeInvoiceMail(
-                        $student->name,
+                    \App\Services\InstituteMailService::send(
+                        $institute,
                         $student->email,
-                        $invoiceNo,
-                        $invoiceDate,
-                        $dueDate,
-                        $fee->status,
-                        "Monthly Academic Fee",
-                        $fee->total_amount,
-                        "",
-                        0,
-                        0,
-                        $fee->total_amount,
-                        $paymentUrl,
-                        $institute->institute_name,
-                        $institute->logo
-                    ));
+                        new \App\Mail\FeeInvoiceMail(
+                            $student->name,
+                            $student->email,
+                            $invoiceNo,
+                            $invoiceDate,
+                            $dueDate,
+                            $fee->status,
+                            "Monthly Academic Fee",
+                            $fee->total_amount,
+                            "",
+                            0,
+                            0,
+                            $fee->total_amount,
+                            $paymentUrl,
+                            $institute->institute_name,
+                            $institute->logo
+                        )
+                    );
                 }
             } catch (\Exception $e) {
                 \Log::error("Failed to send Fee Invoice email: " . $e->getMessage());

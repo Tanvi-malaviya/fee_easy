@@ -40,6 +40,15 @@ class Institute extends Authenticatable
         'template_id',
         'register_source',
         'razorpay_order_id',
+        'mail_mailer',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'mail_from_address',
+        'mail_from_name',
+        'is_custom_smtp_enabled',
     ];
 
     protected $hidden = [
@@ -51,9 +60,18 @@ class Institute extends Authenticatable
         'password' => 'hashed',
         'otp_expires_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'is_custom_smtp_enabled' => 'boolean',
     ];
 
     protected $appends = ['logo_url', 'upi_qr_code_url'];
+
+    public function hasCustomSmtp(): bool
+    {
+        return (bool) $this->is_custom_smtp_enabled
+            && !empty($this->mail_host)
+            && !empty($this->mail_username)
+            && !empty($this->mail_password);
+    }
 
     public function isProfileComplete()
     {

@@ -269,21 +269,6 @@
                     <p>Welcome back! Please sign in to continue to your dashboard.</p>
                 </div>
 
-                <!-- Demo Account Quick Fill Card -->
-                <div class="demo-card" onclick="fillDemoAccount()" title="Click to auto-fill demo credentials">
-                    <div class="demo-info">
-                        <span class="demo-badge">
-                            <i class="fas fa-bolt"></i> Live Demo Showcase
-                        </span>
-                        <span class="demo-subtext">
-                            <code>demo@tuoora.com</code> • <code>password</code>
-                        </span>
-                    </div>
-                    <button type="button" class="demo-action-btn" onclick="event.stopPropagation(); fillDemoAccount();">
-                        <i class="fas fa-wand-magic-sparkles"></i> Auto Fill
-                    </button>
-                </div>
-
                 @if ($errors->any())
                     <div class="error-box">
                         @foreach ($errors->all() as $error)

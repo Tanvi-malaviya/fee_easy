@@ -112,7 +112,9 @@ class StaffController extends Controller
                 $roleName = $staff->role ? $staff->role->name : 'Staff';
                 $departmentName = $staff->department ? $staff->department->name : 'N/A';
 
-                \Illuminate\Support\Facades\Mail::to($staff->email)->send(
+                \App\Services\InstituteMailService::send(
+                    $institute,
+                    $staff->email,
                     new \App\Mail\StaffAddedMail(
                         $staff->full_name,
                         $staff->email,

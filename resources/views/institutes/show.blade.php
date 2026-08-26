@@ -76,6 +76,19 @@
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pincode</span>
                         <p class="text-sm font-bold text-gray-700 mt-1">{{ $institute->pincode ?? 'N/A' }}</p>
                     </div>
+                    <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email Gateway</span>
+                        <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                            @if($institute->hasCustomSmtp())
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100" title="{{ $institute->mail_from_address }} via {{ $institute->mail_host }}">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Custom SMTP
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-slate-50 text-slate-600 border border-slate-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Default Tuoora
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

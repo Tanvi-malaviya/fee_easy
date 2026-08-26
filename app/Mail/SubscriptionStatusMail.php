@@ -45,7 +45,6 @@ class SubscriptionStatusMail extends Mailable
         ];
 
         return new Envelope(
-            from: new Address(config('mail.support_address'), config('mail.from.name')),
             subject: $subjects[$this->type] ?? 'Subscription Status Update - Tuoora',
         );
     }
