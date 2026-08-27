@@ -188,11 +188,13 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/batches/{batch}/exams', [App\Http\Controllers\Web\Institute\BatchController::class, 'exams'])->name('batches.exams');
                 Route::get('/batches/{batch}/attendance', [App\Http\Controllers\Web\Institute\BatchController::class, 'attendance'])->name('batches.attendance');
                 Route::get('/batches/{batch}/resources', [App\Http\Controllers\Web\Institute\BatchController::class, 'resources'])->name('batches.resources');
+                Route::get('/batches/{batch}/timetable', [App\Http\Controllers\Web\Institute\BatchController::class, 'timetable'])->name('batches.timetable');
                 Route::get('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'show'])->name('batches.show');
                 Route::get('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'index'])->name('batches.index');
                 Route::post('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'store'])->name('batches.store');
                 Route::put('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'update'])->name('batches.update');
                 Route::post('/batches/{batch}/close', [App\Http\Controllers\Web\Institute\BatchController::class, 'close'])->name('batches.close');
+                Route::post('/batches/{batch}/fee-reminders', [App\Http\Controllers\Web\Institute\BatchController::class, 'sendFeeReminders'])->name('batches.fee_reminders');
                 Route::delete('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'destroy'])->name('batches.destroy');
 
                 // Attendance Management
@@ -219,6 +221,12 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/reports/student', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'studentReport'])->name('reports.student');
                 Route::get('/reports/student/export', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'exportStudentReport'])->name('reports.student.export');
                 Route::post('/reports/student/email', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'emailStudentReport'])->name('reports.student.email');
+
+                // TimeTable & Daily Schedule Management
+                Route::get('/timetable', [App\Http\Controllers\Web\Institute\TimetableController::class, 'index'])->name('timetable.index');
+                Route::post('/timetable', [App\Http\Controllers\Web\Institute\TimetableController::class, 'store'])->name('timetable.store');
+                Route::put('/timetable/{timetable}', [App\Http\Controllers\Web\Institute\TimetableController::class, 'update'])->name('timetable.update');
+                Route::delete('/timetable/{timetable}', [App\Http\Controllers\Web\Institute\TimetableController::class, 'destroy'])->name('timetable.destroy');
 
                 // Subscription Plans
                 Route::get('/plans', [App\Http\Controllers\Web\Institute\PlanController::class, 'index'])->name('plans.index');

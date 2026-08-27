@@ -31,19 +31,33 @@ class StaffController extends Controller
             'email' => 'required|email:rfc|unique:staff,email',
             'phone' => 'nullable|digits:10',
             'staff_role_id' => 'nullable|exists:staff_roles,id',
-            'staff_department_id' => 'required|exists:staff_departments,id',
+            'staff_department_id' => 'nullable',
+            'staff_department_ids' => 'nullable',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric|min:1|max:999999',
             'profile_image' => 'nullable|image|max:2048',
-        ], [
-            'staff_department_id.required' => 'staff department is required',
-        ], [
-            'staff_department_id' => 'staff department',
         ]);
 
+        // Parse department IDs
+        $deptIds = [];
+        if ($request->has('staff_department_ids')) {
+            $deptIds = is_array($request->staff_department_ids) ? $request->staff_department_ids : explode(',', $request->staff_department_ids);
+        } elseif ($request->filled('staff_department_id')) {
+            $deptIds = is_array($request->staff_department_id) ? $request->staff_department_id : [$request->staff_department_id];
+        }
+        $deptIds = array_values(array_filter(array_unique(array_map('intval', $deptIds))));
+
+        if (empty($deptIds)) {
+            return back()->withErrors(['staff_department_id' => 'Please select at least one department'])->withInput();
+        }
+
+        unset($validated['staff_department_ids']);
+        $plainPassword = \Illuminate\Support\Str::random(8);
+        $validated['password'] = \Illuminate\Support\Facades\Hash::make($plainPassword);
         $validated['institute_id'] = $institute->id;
         $validated['status'] = 1; // Active by default
-        $validated['employee_id'] = 'STF-' . strtoupper(substr(uniqid(), -5));
+        $validated['employee_id'] = Staff::generateEmployeeId($institute->id);
+        $validated['staff_department_id'] = $deptIds[0];
 
         if ($request->hasFile('profile_image')) {
             $path = $request->file('profile_image')->store('staff_profiles', 'public');
@@ -51,11 +65,12 @@ class StaffController extends Controller
         }
 
         $staff = Staff::create($validated);
+        $staff->departments()->sync($deptIds);
 
-        // Send welcome email to staff member
+        // Send welcome email to staff member with login credentials
         try {
             $roleName = $staff->role ? $staff->role->name : 'Staff';
-            $departmentName = $staff->department ? $staff->department->name : 'N/A';
+            $departmentNames = $staff->departments->pluck('name')->implode(', ') ?: ($staff->department ? $staff->department->name : 'N/A');
 
             \App\Services\InstituteMailService::send(
                 $institute,
@@ -65,9 +80,10 @@ class StaffController extends Controller
                     $staff->email,
                     $staff->employee_id,
                     $roleName,
-                    $departmentName,
+                    $departmentNames,
                     $institute->institute_name,
-                    $institute->logo
+                    $institute->logo,
+                    $plainPassword
                 )
             );
         } catch (\Exception $e) {
@@ -78,7 +94,7 @@ class StaffController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Staff member added successfully',
-                'data' => $staff
+                'data' => $staff->load(['role', 'department', 'departments'])
             ]);
         }
 
@@ -109,7 +125,7 @@ class StaffController extends Controller
     public function show($id)
     {
         $institute = Auth::guard('institute')->user();
-        $staff = Staff::with(['role', 'department', 'attendances', 'salaries'])
+        $staff = Staff::with(['role', 'department', 'departments', 'attendances', 'salaries'])
             ->where('institute_id', $institute->id)
             ->findOrFail($id);
         $departments = StaffDepartment::orderBy('name')->get();
@@ -120,7 +136,7 @@ class StaffController extends Controller
     public function edit($id)
     {
         $institute = Auth::guard('institute')->user();
-        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+        $staff = Staff::with('departments')->where('institute_id', $institute->id)->findOrFail($id);
         $roles = StaffRole::where('institute_id', $institute->id)->get();
         $departments = StaffDepartment::orderBy('name')->get();
 
@@ -137,15 +153,29 @@ class StaffController extends Controller
             'email' => 'required|email:rfc|unique:staff,email,' . $id,
             'phone' => 'nullable|digits:10',
             'staff_role_id' => 'nullable|exists:staff_roles,id',
-            'staff_department_id' => 'required|exists:staff_departments,id',
+            'staff_department_id' => 'nullable',
+            'staff_department_ids' => 'nullable',
             'employment_type' => 'required|in:Salary,Hourly',
             'base_salary' => 'required|numeric|min:1|max:999999',
             'profile_image' => 'nullable|image|max:2048',
-        ], [
-            'staff_department_id.required' => 'staff department is required',
-        ], [
-            'staff_department_id' => 'staff department',
         ]);
+
+        // Handle departments if provided
+        if ($request->has('staff_department_ids') || $request->has('staff_department_id')) {
+            $deptIds = [];
+            if ($request->has('staff_department_ids')) {
+                $deptIds = is_array($request->staff_department_ids) ? $request->staff_department_ids : explode(',', $request->staff_department_ids);
+            } elseif ($request->filled('staff_department_id')) {
+                $deptIds = is_array($request->staff_department_id) ? $request->staff_department_id : [$request->staff_department_id];
+            }
+            $deptIds = array_values(array_filter(array_unique(array_map('intval', $deptIds))));
+
+            if (!empty($deptIds)) {
+                $validated['staff_department_id'] = $deptIds[0];
+                $staff->departments()->sync($deptIds);
+            }
+        }
+        unset($validated['staff_department_ids']);
 
         if ($request->hasFile('profile_image')) {
             if ($staff->profile_image) {
@@ -160,8 +190,8 @@ class StaffController extends Controller
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Staff updated successfully',
-                'data' => $staff
+                'message' => 'Staff member updated successfully',
+                'data' => $staff->load(['role', 'department', 'departments'])
             ]);
         }
 

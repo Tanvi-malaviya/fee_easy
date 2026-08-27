@@ -105,13 +105,17 @@ class StudentAuthController extends Controller
         ]);
 
         try {
-            Mail::to($student->email)->send(new \App\Mail\StudentPasswordSentMail(
-                $student->name,
+            \App\Services\InstituteMailService::send(
+                $institute,
                 $student->email,
-                $password,
-                $institute ? $institute->institute_name : 'Fee Easy',
-                $institute ? $institute->logo : null
-            ));
+                new \App\Mail\StudentPasswordSentMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute ? $institute->institute_name : 'Tuoora',
+                    $institute ? $institute->logo : null
+                )
+            );
         } catch (\Exception $e) {
             \Log::error("Failed to send student forgot password email: " . $e->getMessage());
         }

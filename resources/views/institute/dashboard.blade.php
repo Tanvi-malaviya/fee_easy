@@ -132,6 +132,28 @@
                 </div>
             </a>
 
+            <!-- TimeTable & Schedule -->
+            <a href="{{ route('institute.timetable.index') }}"
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-amber-500">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="h-9 w-9 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-200 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-1">TimeTable</h3>
+                    <p class="text-xs text-slate-400 font-medium">Daily & weekly class schedule</p>
+                </div>
+            </a>
+
             <!-- Fees -->
             <a href="{{ route('institute.fees.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-rose-500">

@@ -88,24 +88,63 @@ class StaffSalaryController extends Controller
         $data = $request->all();
         $data['institute_id'] = $instituteId;
         
+        // Ensure numeric defaults for deductions and bonus
+        $data['bonus'] = !empty($request->bonus) ? (float) $request->bonus : 0;
+        $data['deductions'] = !empty($request->deductions) ? (float) $request->deductions : 0;
+        $data['base_salary'] = (float) $request->base_salary;
+        $data['payment_method'] = $request->payment_method ?: 'Cash';
+        $data['status'] = $request->status ?: 'Paid';
+        
         // Extract month and year from payment_date
         $date = \Carbon\Carbon::parse($request->payment_date);
-        $month = $date->month;
-        $year = $date->year;
-        
-        $data['month'] = $month;
-        $data['year'] = $year;
-        $data['net_salary'] = $data['base_salary'] + ($data['bonus'] ?? 0) - ($data['deductions'] ?? 0);
+        $data['month'] = (int) $date->month;
+        $data['year'] = (int) $date->year;
+        $data['net_salary'] = (float) ($data['base_salary'] + $data['bonus'] - $data['deductions']);
 
-        if ($request->filled('salary_id')) {
-            $salary = StaffSalary::where('institute_id', $instituteId)->find($request->salary_id);
-            if ($salary) {
-                $salary->update($data);
+        try {
+            if ($request->filled('salary_id')) {
+                $salary = StaffSalary::where('institute_id', $instituteId)->find($request->salary_id);
+                if ($salary) {
+                    $salary->update($data);
+                } else {
+                    return response()->json(['message' => 'Salary record not found'], 404);
+                }
             } else {
-                return response()->json(['message' => 'Salary record not found'], 404);
+                $salary = StaffSalary::create($data);
             }
-        } else {
-            $salary = StaffSalary::create($data);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Salary save error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to save salary record: ' . $e->getMessage()
+            ], 500);
+        }
+
+        // Send Salary Slip Email to Staff
+        try {
+            $staff = Staff::where('institute_id', $instituteId)->with(['role', 'department', 'departments'])->find($salary->staff_id);
+            $institute = $request->user() ?: \App\Models\Institute::find($instituteId);
+
+            if ($staff && !empty($staff->email) && $institute) {
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.salary_slip_single', [
+                    'salary' => $salary,
+                    'staff' => $staff,
+                    'institute' => $institute
+                ]);
+                $pdfContent = $pdf->output();
+
+                \App\Services\InstituteMailService::send(
+                    $institute,
+                    $staff->email,
+                    new \App\Mail\SalarySlipMail(
+                        $salary,
+                        $staff,
+                        $institute,
+                        $pdfContent
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send salary slip email: ' . $e->getMessage());
         }
 
         return response()->json([

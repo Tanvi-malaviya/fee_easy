@@ -31,7 +31,7 @@
 
                     <!-- Create New Department Button -->
                     <div class="flex items-center w-full md:w-auto md:ml-auto shrink-0">
-                        <button type="button" @click="openCreateModal()"
+                        <button type="button" onclick="openCreateModal()"
                             class="relative w-full md:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-primary hover:opacity-90 focus:outline-none transition shadow-primary/20 whitespace-nowrap min-w-[170px]">
                             <span class="flex items-center">
                                 <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,11 +79,19 @@
                                     
                                     <!-- Department Info -->
                                     <td class="px-5 py-3 whitespace-nowrap">
-                                        <div>
-                                            <div class="text-sm font-bold text-gray-900 leading-tight">{{ $dept->name }}</div>
-                                            <div class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-0.5">
-                                                ID: #DEPT-{{ $dept->id }}
+                                        <div class="flex items-center gap-2">
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900 leading-tight">{{ $dept->name }}</div>
+                                                <div class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-0.5">
+                                                    ID: #DEPT-{{ $dept->id }}
+                                                </div>
                                             </div>
+                                            @if($dept->isProtected())
+                                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/60 inline-flex items-center gap-1">
+                                                    <svg class="w-3 h-3 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                    Permanent
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
 
@@ -97,29 +105,39 @@
                                     <!-- Actions -->
                                     <td class="px-5 py-3 whitespace-nowrap text-right text-xs">
                                         <div class="flex justify-end gap-2 text-sm font-medium">
-                                            
-                                            <!-- Edit button -->
-                                            <button type="button" @click="openEditModal('{{ route('departments.update', $dept->id) }}', '{{ addslashes($dept->name) }}')"
-                                                class="text-indigo-600 hover:text-indigo-900 transition-colors p-1.5 bg-indigo-50 hover:bg-indigo-100 rounded-lg cursor-pointer"
-                                                title="Edit Department">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                    </path>
-                                                </svg>
-                                            </button>
+                                            @if($dept->isProtected())
+                                                <!-- Locked Indicator for Permanent System Department -->
+                                                <span class="text-amber-700 px-2 py-1 bg-amber-50 border border-amber-200/80 rounded-lg text-[10px] font-bold inline-flex items-center gap-1.5 cursor-not-allowed select-none"
+                                                    title="System Default Department (Cannot be edited or deleted)">
+                                                    <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Locked
+                                                </span>
+                                            @else
+                                                <!-- Edit button -->
+                                                <button type="button" onclick="openEditModal('{{ route('departments.update', $dept->id) }}', '{{ addslashes($dept->name) }}')"
+                                                    class="text-indigo-600 hover:text-indigo-900 transition-colors p-1.5 bg-indigo-50 hover:bg-indigo-100 rounded-lg cursor-pointer"
+                                                    title="Edit Department">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
 
-                                            <!-- Delete button -->
-                                            <button type="button"
-                                                onclick="confirmDeleteDepartment('{{ route('departments.destroy', $dept->id) }}', '{{ addslashes($dept->name) }}')"
-                                                class="text-red-600 hover:text-red-900 transition-colors p-1.5 bg-red-50 hover:bg-red-100 rounded-lg no-loader"
-                                                title="Delete Department">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                    </path>
-                                                </svg>
-                                            </button>
+                                                <!-- Delete button -->
+                                                <button type="button"
+                                                    onclick="confirmDeleteDepartment('{{ route('departments.destroy', $dept->id) }}', '{{ addslashes($dept->name) }}')"
+                                                    class="text-red-600 hover:text-red-900 transition-colors p-1.5 bg-red-50 hover:bg-red-100 rounded-lg no-loader"
+                                                    title="Delete Department">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

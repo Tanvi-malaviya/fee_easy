@@ -259,6 +259,11 @@ class Institute extends Authenticatable
         return $this->hasMany(Exam::class);
     }
 
+    public function timetables()
+    {
+        return $this->hasMany(Timetable::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

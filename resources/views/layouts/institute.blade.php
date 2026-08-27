@@ -272,6 +272,54 @@
                 </span>
                 <span>Dashboard Home</span>
             </a>
+
+            <a href="{{ route('institute.students.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.students.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.students.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </span>
+                <span>Students</span>
+            </a>
+
+            <a href="{{ route('institute.batches.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.batches.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.batches.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </span>
+                <span>Batches</span>
+            </a>
+
+            <a href="{{ route('institute.timetable.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.timetable.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.timetable.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+                <span>TimeTable & Schedule</span>
+            </a>
+
+            <a href="{{ route('institute.fees.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.fees.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.fees.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </span>
+                <span>Fees</span>
+            </a>
+
+            <a href="{{ route('institute.staff.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.staff.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.staff.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </span>
+                <span>Staff Management</span>
+            </a>
+
+            <a href="{{ route('institute.reports.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.reports.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.reports.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </span>
+                <span>Reports</span>
+            </a>
         </div>
 
         <!-- Logout Section in Mobile Menu -->

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\Institute;
@@ -25,6 +26,7 @@ use App\Models\Receipt;
 use App\Models\Exam;
 use App\Models\ExamMark;
 use App\Models\Homework;
+use App\Models\HomeworkSubmission;
 use App\Models\DailyUpdate;
 use App\Models\Resource;
 use App\Models\Lead;
@@ -136,6 +138,8 @@ class DemoAccountSeeder extends Seeder
         $oldStaffIds   = DB::table('staff')->where('institute_id', $instituteId)->pluck('id')->toArray();
         $oldExamIds    = DB::table('exams')->where('institute_id', $instituteId)->pluck('id')->toArray();
 
+        DB::table('timetables')->where('institute_id', $instituteId)->delete();
+
         if (!empty($oldExamIds)) {
             DB::table('exam_marks')->whereIn('exam_id', $oldExamIds)->delete();
             DB::table('exams')->whereIn('id', $oldExamIds)->delete();
@@ -169,6 +173,9 @@ class DemoAccountSeeder extends Seeder
         }
 
         if (!empty($oldStaffIds)) {
+            if (Schema::hasTable('department_staff')) {
+                DB::table('department_staff')->whereIn('staff_id', $oldStaffIds)->delete();
+            }
             DB::table('staff_attendances')->whereIn('staff_id', $oldStaffIds)->delete();
             DB::table('staff_salaries')->whereIn('staff_id', $oldStaffIds)->delete();
             DB::table('staff')->whereIn('id', $oldStaffIds)->delete();
@@ -275,12 +282,14 @@ class DemoAccountSeeder extends Seeder
         ];
 
         $staffModels = [];
+        $staffDatePrefix = Carbon::now()->subMonths(10)->format('Ymd');
         foreach ($staffData as $idx => $s) {
-            $staffModels[] = Staff::create([
+            $createdStaffMember = Staff::create([
                 'institute_id' => $instituteId,
-                'employee_id' => 'APEX-EMP' . str_pad($idx + 1, 3, '0', STR_PAD_LEFT),
+                'employee_id' => $staffDatePrefix . str_pad($idx + 1, 2, '0', STR_PAD_LEFT),
                 'full_name' => $s['name'],
                 'email' => $s['email'],
+                'password' => Hash::make(self::DEMO_PASSWORD),
                 'phone' => $s['phone'],
                 'staff_role_id' => $roles[$s['role']]->id,
                 'staff_department_id' => $depts[$s['dept']]->id,
@@ -289,6 +298,16 @@ class DemoAccountSeeder extends Seeder
                 'status' => 'active',
                 'created_at' => Carbon::now()->subMonths(10),
             ]);
+            $staffModels[] = $createdStaffMember;
+
+            if (Schema::hasTable('department_staff')) {
+                DB::table('department_staff')->insert([
+                    'staff_id' => $createdStaffMember->id,
+                    'staff_department_id' => $depts[$s['dept']]->id,
+                    'created_at' => Carbon::now()->subMonths(10),
+                    'updated_at' => Carbon::now()->subMonths(10),
+                ]);
+            }
         }
 
         // Staff Attendance (Past 30 days)
@@ -638,6 +657,17 @@ class DemoAccountSeeder extends Seeder
                 'status' => 'completed',
             ],
             [
+                'batch' => $batches[2],
+                'title' => 'Organic Reactions & Mechanism Test',
+                'subject' => 'Chemistry',
+                'exam_date' => Carbon::now()->subDays(8)->toDateString(),
+                'start_time' => '11:30:00',
+                'end_time' => '13:00:00',
+                'total_marks' => 50.00,
+                'passing_marks' => 20.00,
+                'status' => 'completed',
+            ],
+            [
                 'batch' => $batches[3],
                 'title' => 'NEET Biology Mock Test Series 1',
                 'subject' => 'Biology',
@@ -658,6 +688,39 @@ class DemoAccountSeeder extends Seeder
                 'total_marks' => 50.00,
                 'passing_marks' => 20.00,
                 'status' => 'scheduled',
+            ],
+            [
+                'batch' => $batches[5],
+                'title' => 'Financial Accounting Mid-Term Exam',
+                'subject' => 'Commerce',
+                'exam_date' => Carbon::now()->subDays(6)->toDateString(),
+                'start_time' => '08:30:00',
+                'end_time' => '10:30:00',
+                'total_marks' => 80.00,
+                'passing_marks' => 32.00,
+                'status' => 'completed',
+            ],
+            [
+                'batch' => $batches[6],
+                'title' => 'Microeconomics & Market Structures Test',
+                'subject' => 'Economics',
+                'exam_date' => Carbon::now()->addDays(3)->toDateString(),
+                'start_time' => '10:15:00',
+                'end_time' => '11:45:00',
+                'total_marks' => 50.00,
+                'passing_marks' => 20.00,
+                'status' => 'scheduled',
+            ],
+            [
+                'batch' => $batches[7],
+                'title' => 'Spoken English & Presentation Evaluation',
+                'subject' => 'English',
+                'exam_date' => Carbon::now()->subDays(2)->toDateString(),
+                'start_time' => '17:45:00',
+                'end_time' => '19:00:00',
+                'total_marks' => 50.00,
+                'passing_marks' => 20.00,
+                'status' => 'completed',
             ],
         ];
 
@@ -695,20 +758,24 @@ class DemoAccountSeeder extends Seeder
         }
 
         // ── 11. HOMEWORKS & ASSIGNMENTS ─────────────────────────────────────
-        $this->command->info('Creating Homeworks & Assignments...');
+        $this->command->info('Creating Homeworks & Assignments with Submissions...');
 
         $hwList = [
             ['batch' => $batches[0], 'title' => 'Quadratic Equations Exercise 4.2', 'desc' => 'Solve Q1 to Q10 with step-by-step factorization working.', 'due' => Carbon::now()->addDays(2)],
             ['batch' => $batches[0], 'title' => 'Arithmetic Progression Worksheet', 'desc' => 'Complete the nth-term worksheet distributed in class.', 'due' => Carbon::now()->subDays(3)],
             ['batch' => $batches[1], 'title' => 'Ray Optics: Lens Maker Formula', 'desc' => 'Derive lens formula and solve 5 sample numericals.', 'due' => Carbon::now()->addDays(3)],
+            ['batch' => $batches[1], 'title' => 'Electromagnetism Practice Questions', 'desc' => 'Complete Faraday laws numerical assignment.', 'due' => Carbon::now()->subDays(4)],
             ['batch' => $batches[2], 'title' => 'Alkyl Halides Reaction Mechanisms', 'desc' => 'Draw SN1 vs SN2 reaction pathways and comparison table.', 'due' => Carbon::now()->addDays(1)],
             ['batch' => $batches[3], 'title' => 'Cell Division & Mitosis Diagrams', 'desc' => 'Draw neat labeled diagrams of all phases of mitosis.', 'due' => Carbon::now()->subDays(5)],
             ['batch' => $batches[4], 'title' => 'Python Dictionary & List Comprehensions', 'desc' => 'Implement 4 coding exercises in Google Colab / Jupyter.', 'due' => Carbon::now()->addDays(4)],
+            ['batch' => $batches[4], 'title' => 'Object Oriented Class System Project', 'desc' => 'Create a Student Management class model with methods.', 'due' => Carbon::now()->subDays(2)],
             ['batch' => $batches[5], 'title' => 'Bank Reconciliation Statement Problems', 'desc' => 'Solve illustration problems 7 to 12 from textbook.', 'due' => Carbon::now()->subDays(2)],
+            ['batch' => $batches[6], 'title' => 'Elasticity of Demand Calculation Sheet', 'desc' => 'Solve numerical questions on price and income elasticity.', 'due' => Carbon::now()->subDays(3)],
+            ['batch' => $batches[7], 'title' => 'Prepared Speech on AI in Education', 'desc' => 'Write a 300-word persuasive speech for upcoming debate session.', 'due' => Carbon::now()->subDays(1)],
         ];
 
         foreach ($hwList as $hw) {
-            Homework::create([
+            $createdHw = Homework::create([
                 'institute_id' => $instituteId,
                 'batch_id' => $hw['batch']->id,
                 'title' => $hw['title'],
@@ -716,6 +783,25 @@ class DemoAccountSeeder extends Seeder
                 'due_date' => $hw['due']->toDateString(),
                 'created_at' => $hw['due']->copy()->subDays(4),
             ]);
+
+            if ($hw['due'] < Carbon::now()) {
+                $bStudents = Student::where('batch_id', $hw['batch']->id)->get();
+                foreach ($bStudents as $sIdx => $st) {
+                    $isSubmitted = ($sIdx !== 0 || rand(0, 1));
+                    if ($isSubmitted) {
+                        $subDate = $hw['due']->copy()->subDays(rand(0, 2));
+                        HomeworkSubmission::create([
+                            'homework_id' => $createdHw->id,
+                            'student_id' => $st->id,
+                            'submission_date' => $subDate,
+                            'file_path' => 'homework_submissions/sample_assignment_' . $st->id . '.pdf',
+                            'notes' => 'Submitted assignment solutions for review.',
+                            'score' => rand(8, 10),
+                            'created_at' => $subDate,
+                        ]);
+                    }
+                }
+            }
         }
 
         // ── 12. DAILY UPDATES / LECTURE LOGS ────────────────────────────────
@@ -728,15 +814,17 @@ class DemoAccountSeeder extends Seeder
             ['batch' => $batches[3], 'topic' => 'Mendelian Genetics & Dihybrid Cross', 'desc' => 'Discussed law of independent assortment with Punnett square examples.'],
             ['batch' => $batches[4], 'topic' => 'Object Oriented Programming in Python', 'desc' => 'Classes, Objects, __init__ constructor, and inheritance with practical code.'],
             ['batch' => $batches[5], 'topic' => 'Depreciation - Straight Line vs WDV Method', 'desc' => 'Comparative calculation of asset valuation over 5 year lifespan.'],
+            ['batch' => $batches[6], 'topic' => 'National Income & Circular Flow of Money', 'desc' => 'Two-sector and three-sector macroeconomic circular flow models.'],
+            ['batch' => $batches[7], 'topic' => 'Effective Body Language & Public Speaking', 'desc' => 'Interactive speech workshop with individual feedback.'],
         ];
 
         foreach ($updateTopics as $uIdx => $up) {
-            for ($d = 0; $d < 2; $d++) {
+            for ($d = 0; $d < 3; $d++) {
                 $uDate = Carbon::now()->subDays($uIdx * 2 + $d);
                 DailyUpdate::create([
                     'institute_id' => $instituteId,
                     'batch_id' => $up['batch']->id,
-                    'topic' => $up['topic'] . ($d == 1 ? ' (Part II)' : ''),
+                    'topic' => $up['topic'] . ($d > 0 ? ' (Session ' . ($d + 1) . ')' : ''),
                     'description' => $up['desc'],
                     'date' => $uDate->toDateString(),
                     'created_at' => $uDate->copy()->setTime(15, 30),
@@ -755,6 +843,8 @@ class DemoAccountSeeder extends Seeder
             ['batch' => $batches[3], 'title' => 'Human Physiology NEET High-Yield Notes', 'type' => 'document', 'ext' => 'pdf', 'size' => '4.8 MB'],
             ['batch' => $batches[4], 'title' => 'Python Cheat Sheet & Common Algorithm Snippets', 'type' => 'document', 'ext' => 'pdf', 'size' => '1.1 MB'],
             ['batch' => $batches[5], 'title' => 'Financial Accounting Formats & Golden Rules Guide', 'type' => 'document', 'ext' => 'pdf', 'size' => '1.8 MB'],
+            ['batch' => $batches[6], 'title' => 'Macroeconomics Key Graphs & Definition Booklet', 'type' => 'document', 'ext' => 'pdf', 'size' => '2.2 MB'],
+            ['batch' => $batches[7], 'title' => 'Idioms, Phrases & Vocabulary Mastery Guide', 'type' => 'document', 'ext' => 'pdf', 'size' => '1.5 MB'],
         ];
 
         foreach ($resources as $res) {
@@ -963,6 +1053,35 @@ class DemoAccountSeeder extends Seeder
                     'created_at' => $msgTime,
                     'updated_at' => $msgTime,
                 ]);
+            }
+        }
+
+        // ── 19. TIMETABLE & DAILY CLASS SCHEDULE ───────────────────────────
+        $this->command->info('Creating Timetable & Daily Schedule...');
+
+        foreach ($batches as $bIdx => $batch) {
+            $assignedStaff = $batch->staff_id ? Staff::find($batch->staff_id) : (!empty($staffModels) ? $staffModels[$bIdx % count($staffModels)] : null);
+            $batchDays = !empty($batch->days) ? $batch->days : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            $startTime = $batch->getRawOriginal('start_time') ?: '09:00:00';
+            $endTime = $batch->getRawOriginal('end_time') ?: '10:30:00';
+
+            foreach ($batchDays as $day) {
+                \App\Models\Timetable::updateOrCreate(
+                    [
+                        'institute_id' => $instituteId,
+                        'batch_id' => $batch->id,
+                        'day_of_week' => strtolower($day),
+                        'start_time' => $startTime,
+                    ],
+                    [
+                        'staff_id' => $assignedStaff ? $assignedStaff->id : null,
+                        'subject' => $batch->subject ?: 'General Session',
+                        'end_time' => $endTime,
+                        'room_no' => $batch->classroom ?: 'Room ' . (101 + $bIdx),
+                        'description' => 'Regular lecture for ' . $batch->name,
+                        'status' => 'active',
+                    ]
+                );
             }
         }
 

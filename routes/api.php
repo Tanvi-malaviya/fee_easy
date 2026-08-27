@@ -242,6 +242,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/{id}/remove-student', [InstituteBatchController::class, 'removeStudent']);
                 Route::post('/{id}/assign-students', [InstituteBatchController::class, 'assignStudents']);
                 Route::post('/{id}/close', [InstituteBatchController::class, 'close']);
+                Route::post('/{id}/fee-reminders', [InstituteBatchController::class, 'sendFeeReminders']);
                 Route::delete('/{id}', [InstituteBatchController::class, 'destroy']);
             });
 
@@ -313,6 +314,12 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'showByStaff']);
             });
 
+            // Timetable Management
+            Route::prefix('timetable')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'store']);
+            });
+
             Route::prefix('leads')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\LeadController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\LeadController::class, 'store']);
@@ -361,6 +368,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/feedback', [StudentFeedbackController::class, 'store']);
             Route::get('/resources', [StudentResourceController::class, 'index']);
             Route::get('/resources/{id}/download', [StudentResourceController::class, 'download']);
+            Route::get('/timetable', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'studentSchedule']);
             Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
         });

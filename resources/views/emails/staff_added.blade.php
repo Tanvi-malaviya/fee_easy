@@ -29,13 +29,22 @@
       
       <table class="em-cred" role="presentation">
         <!-- <tr><td class="k">Employee ID</td><td><strong>{{ $employeeId }}</strong></td></tr> -->
-        <tr><td class="k">Email</td><td>{{ $staffEmail }}</td></tr>
+        <tr><td class="k">Login Email</td><td><strong>{{ $staffEmail }}</strong></td></tr>
+        @if(!empty($password))
+          <tr><td class="k">Temporary Password</td><td><strong style="display:inline-block;background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:6px;font-family:monospace;letter-spacing:1.5px;font-size:14px;border:1px dashed #f59e0b;">{{ $password }}</strong></td></tr>
+        @endif
         <tr><td class="k">Role</td><td>{{ $roleName }}</td></tr>
         <tr><td class="k">Department</td><td>{{ $departmentName }}</td></tr>
         <tr><td class="k">Institute</td><td>{{ $instituteName }}</td></tr>
       </table>
       
-      <p style="margin-top: 24px; color: #64748b; font-size: 13px; line-height: 1.6;">
+      @if(!empty($password))
+        <p style="margin-top: 16px; padding: 10px 14px; background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 4px; font-size: 12px; color: #166534; line-height: 1.5;">
+          <strong>Security Note:</strong> Please use the credentials above to log in to your staff portal. We strongly advise updating your password upon your first sign-in.
+        </p>
+      @endif
+
+      <p style="margin-top: 20px; color: #64748b; font-size: 13px; line-height: 1.6;">
         If you have any questions or require modifications to your profile details, please get in touch with the administration department.
       </p>
     </td></tr>
