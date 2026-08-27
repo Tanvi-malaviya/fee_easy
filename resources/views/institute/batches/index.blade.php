@@ -55,113 +55,74 @@
 
             <div id="batch-grid"
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 relative items-start">
-                <div id="loading-spinner"
-                    class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-[1rem]">
-                    <div class="h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
+                    <div id="loading-spinner"
+                        class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] hidden flex items-center justify-center rounded-[1rem]">
+                        <div class="h-10 w-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                </div>
+
+                <div id="pagination-container"
+                    class="bg-white p-4 rounded-[1rem] border border-slate-100 shadow-sm flex items-center justify-between">
                 </div>
             </div>
 
-            <div id="pagination-container"
-                class="bg-white p-4 rounded-[1rem] border border-slate-100 shadow-sm flex items-center justify-between">
-            </div>
-        </div>
+            <!-- MANAGE BATCH MODAL -->
+            <div id="form-modal" class="fixed inset-0 z-[100] hidden">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                    onclick="toggleFormView(false)"></div>
 
-        <!-- MANAGE BATCH MODAL -->
-        <div id="form-modal" class="fixed inset-0 z-[100] hidden">
-            <!-- Backdrop -->
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                onclick="toggleFormView(false)"></div>
-
-            <!-- Modal Content -->
-            <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] max-h-[95vh] overflow-y-auto scrollbar-hide">
-                <style>
-                    .scrollbar-hide::-webkit-scrollbar {
-                        display: none;
-                    }
-
-                    .scrollbar-hide {
-                        -ms-overflow-style: none;
-                        scrollbar-width: none;
-                    }
-                </style>
+                <!-- Modal Content -->
                 <div
-                    class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-                    <!-- Header -->
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] max-h-[95vh] overflow-y-auto scrollbar-hide">
+                    <style>
+                        .scrollbar-hide::-webkit-scrollbar {
+                            display: none;
+                        }
+
+                        .scrollbar-hide {
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+                    </style>
                     <div
-                        class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
-                        <div>
-                            <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
-                        </div>
-                        <button type="button" onclick="toggleFormView(false)"
-                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <form id="batch-form" class="px-6 py-4 space-y-2">
-                        <input type="hidden" id="batch-id" name="id">
-
-                        <!-- General Information -->
-                        <div class="space-y-2">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch
-                                        Name</label>
-                                    <input type="text" name="name" id="field-name" required placeholder="e.g. Maths 2024-A"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                                    <input type="text" name="subject" id="field-subject" required
-                                        placeholder="Select Subject"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
+                        class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                        <!-- Header -->
+                        <div
+                            class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
+                            <div>
+                                <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
-                                        (₹)</label>
-                                    <input type="text" name="fees" id="field-fees" required placeholder="0"
-                                        inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Description</label>
-                                    <input type="text" name="description" id="field-description"
-                                        placeholder="Brief details..."
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                            </div>
+                            <button type="button" onclick="toggleFormView(false)"
+                                class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
 
-                        <!-- Schedule Section -->
-                        <div class="space-y-2 pt-1">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
-                                        Time</label>
-                                    <input type="time" name="start_time" id="field-start" required
-                                        onclick="this.showPicker()"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer">
+                        <form id="batch-form" class="px-6 py-4 space-y-3">
+                            <input type="hidden" id="batch-id" name="id">
+
+                            <!-- General Information -->
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Name <span class="text-rose-500">*</span></label>
+                                        <input type="text" name="name" id="field-name" required placeholder="e.g. 12th Science - A"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monthly Fees (₹) <span class="text-rose-500">*</span></label>
+                                        <input type="text" name="fees" id="field-fees" required placeholder="0"
+                                            inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
                                 </div>
+
                                 <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
-                                        Time</label>
-                                    <input type="time" name="end_time" id="field-end" required
-                                        onclick="this.showPicker()"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-3">
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Running Days <span class="text-rose-500">*</span></label>
                                     <div class="flex flex-wrap gap-1.5">
                                         @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
                                             <label class="relative cursor-pointer group">
@@ -175,644 +136,625 @@
                                         @endforeach
                                     </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
+
                                 <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom
-                                        / Venue</label>
-                                    <input type="text" name="classroom" id="field-classroom"
-                                        placeholder="e.g. Room 101, Main Hall"
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Description (Optional)</label>
+                                    <input type="text" name="description" id="field-description"
+                                        placeholder="Brief batch details or notes..."
                                         class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                 </div>
-                                <div class="space-y-1 relative">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned
-                                        Staff</label>
-                                    <button type="button" onclick="toggleBatchModalDropdown('staff')"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold text-left flex items-center justify-between hover:border-brand-800 transition-all">
-                                        <span id="modal-staff-label" class="text-slate-400">Select Staff</span>
-                                        <svg id="modal-staff-chevron"
-                                            class="w-3.5 h-3.5 text-slate-400 transition-transform" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-staff-menu"
-                                        class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            @foreach($staffList as $staff)
-                                                <button type="button"
-                                                    onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
-                                                    class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $staff->full_name }}
-                                                </button>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="staff_id" id="field-staff" value="">
+
+                                <!-- Timetable Hint -->
+                                <div class="p-2.5 rounded-lg bg-orange-50/60 border border-orange-100/70 text-[10px] text-slate-600 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span>Subject lectures, timings, classrooms, and faculty are configured dynamically in <strong>TimeTable</strong>.</span>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Footer Actions -->
-                        <div
-                            class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
-                            <button type="button" onclick="toggleFormView(false)" class="btn-white btn-md">Cancel</button>
-                            <button type="submit" id="submit-btn" class="btn-brand btn-md bg-primary hover:bg-primary">
-                                <span id="btn-text ">Save Batch</span>
-                                <span id="btn-loader"
-                                    class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- DELETE CONFIRMATION MODAL -->
-        <div id="delete-modal" class="fixed inset-0 z-[120] hidden">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                onclick="toggleDeleteModal(false)"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
-                <div
-                    class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-                    <div class="p-8">
-                        <div class="flex gap-4">
+                            <!-- Footer Actions -->
                             <div
-                                class="h-12 w-12 bg-primary-50 text-primary rounded-full flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
+                                <button type="button" onclick="toggleFormView(false)" class="btn-white btn-md">Cancel</button>
+                                <button type="submit" id="submit-btn" class="btn-brand btn-md bg-primary hover:bg-primary">
+                                    <span id="btn-text ">Save Batch</span>
+                                    <span id="btn-loader"
+                                        class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                </button>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Batch?</h3>
-                                <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want
-                                    to permanently remove <span id="delete-batch-name"
-                                        class="font-bold text-slate-800"></span>? This action cannot be undone and will
-                                    erase all academic and financial history.</p>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="toggleDeleteModal(false)"
-                                        class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
-                                    <button type="button" id="confirm-delete-btn"
-                                        class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-900/10 hover:bg-primary transition-all">Yes,
-                                        Delete Batch</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELETE CONFIRMATION MODAL -->
+            <div id="delete-modal" class="fixed inset-0 z-[120] hidden">
+                <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                    onclick="toggleDeleteModal(false)"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
+                    <div
+                        class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                        <div class="p-8">
+                            <div class="flex gap-4">
+                                <div
+                                    class="h-12 w-12 bg-primary-50 text-primary rounded-full flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Batch?</h3>
+                                    <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want
+                                        to permanently remove <span id="delete-batch-name"
+                                            class="font-bold text-slate-800"></span>? This action cannot be undone and will
+                                        erase all academic and financial history.</p>
+                                    <div class="flex items-center gap-3">
+                                        <button type="button" onclick="toggleDeleteModal(false)"
+                                            class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
+                                        <button type="button" id="confirm-delete-btn"
+                                            class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-rose-900/10 hover:bg-primary transition-all">Yes,
+                                            Delete Batch</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Empty State Template -->
-    <template id="batches-empty-state">
-        <x-empty-state title="No batches found" subtitle="Try adjusting your filters or add a new batch." icon="batches" />
-    </template>
+        <!-- Empty State Template -->
+        <template id="batches-empty-state">
+            <x-empty-state title="No batches found" subtitle="Try adjusting your filters or add a new batch." icon="batches" />
+        </template>
 
-    <script>
-        const API_URL = "/institute/batches";
-        const CSRF_TOKEN = "{{ csrf_token() }}";
-        const staffListJs = @json($staffList);
+        <script>
+            const API_URL = "/institute/batches";
+            const CSRF_TOKEN = "{{ csrf_token() }}";
+            const staffListJs = @json($staffList);
 
-        document.addEventListener('DOMContentLoaded', () => fetchBatches());
+            document.addEventListener('DOMContentLoaded', () => fetchBatches());
 
-        async function fetchBatches(page = 1) {
-            toggleLoader(true);
-            const searchVal = document.getElementById('batch-search').value;
-            try {
-                let response = await fetch(`${API_URL}?page=${page}&search=${encodeURIComponent(searchVal)}`, {
-                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                if (!response.ok) {
-                    response = await fetch(`/api/v1/institute/batches?page=${page}&search=${encodeURIComponent(searchVal)}`, {
+            async function fetchBatches(page = 1) {
+                toggleLoader(true);
+                const searchVal = document.getElementById('batch-search').value;
+                try {
+                    let response = await fetch(`${API_URL}?page=${page}&search=${encodeURIComponent(searchVal)}`, {
                         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                     });
-                }
-                const result = await response.json();
-                if (result.status === 'success' && result.data) {
-                    renderBatches(result.data.items || []);
-                    renderPagination(result.data);
-                    document.getElementById('stat-total-batches').innerText = result.data.total;
-                    const totalStudents = (result.data.items || []).reduce((acc, b) => acc + (b.students_count || 0), 0);
-                    document.getElementById('stat-total-students').innerText = totalStudents;
-                }
-            } catch (error) { console.error('Error fetching batches:', error); }
-            finally { toggleLoader(false); }
-        }
-
-        function executeSearch() {
-            fetchBatches(1);
-        }
-
-        function exportBatches() {
-            window.location.href = `${API_URL}/export?api_token=${CSRF_TOKEN}`; // If using token in URL or just a simple GET
-            // For Sanctum, a simple window.open might work if cookies are used, 
-            // or we might need to handle it via fetch if custom headers are needed.
-            // Since it's a GET request to a stream, window.open is easiest.
-            window.open(`${API_URL}/export`, '_blank');
-        }
-
-        function formatTime12Hour(timeStr) {
-            if (!timeStr) return '--:--';
-            if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr;
-            const parts = timeStr.split(':');
-            if (parts.length < 2) return timeStr;
-            let hours = parseInt(parts[0], 10);
-            const minutes = parts[1];
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            return `${hours}:${minutes} ${ampm}`;
-        }
-
-        function convert12To24(time12h) {
-            if (!time12h) return '';
-            if (!time12h.includes('AM') && !time12h.includes('PM')) return time12h;
-            const [time, modifier] = time12h.split(' ');
-            let [hours, minutes] = time.split(':');
-            hours = parseInt(hours, 10);
-            if (modifier === 'PM' && hours < 12) hours = hours + 12;
-            if (modifier === 'AM' && hours === 12) hours = 0;
-            return `${String(hours).padStart(2, '0')}:${minutes}`;
-        }
-
-        function renderBatches(items) {
-            const container = document.getElementById('batch-grid');
-            if (items.length === 0) {
-                container.innerHTML = document.getElementById('batches-empty-state').innerHTML;
-                return;
+                    if (!response.ok) {
+                        response = await fetch(`/api/v1/institute/batches?page=${page}&search=${encodeURIComponent(searchVal)}`, {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                    }
+                    const result = await response.json();
+                    if (result.status === 'success' && result.data) {
+                        renderBatches(result.data.items || []);
+                        renderPagination(result.data);
+                        document.getElementById('stat-total-batches').innerText = result.data.total;
+                        const totalStudents = (result.data.items || []).reduce((acc, b) => acc + (b.students_count || 0), 0);
+                        document.getElementById('stat-total-students').innerText = totalStudents;
+                    }
+                } catch (error) { console.error('Error fetching batches:', error); }
+                finally { toggleLoader(false); }
             }
 
-            const icons = ['💻', '🎨', '🧪', '📈', '🏛️', '🛡️', '📱', '🧠'];
-            container.innerHTML = items.map((batch, idx) => {
-                const icon = icons[idx % icons.length];
+            function executeSearch() {
+                fetchBatches(1);
+            }
+
+            function exportBatches() {
+                window.location.href = `${API_URL}/export?api_token=${CSRF_TOKEN}`; // If using token in URL or just a simple GET
+                // For Sanctum, a simple window.open might work if cookies are used, 
+                // or we might need to handle it via fetch if custom headers are needed.
+                // Since it's a GET request to a stream, window.open is easiest.
+                window.open(`${API_URL}/export`, '_blank');
+            }
+
+            function formatTime12Hour(timeStr) {
+                if (!timeStr) return '--:--';
+                if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr;
+                const parts = timeStr.split(':');
+                if (parts.length < 2) return timeStr;
+                let hours = parseInt(parts[0], 10);
+                const minutes = parts[1];
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                return `${hours}:${minutes} ${ampm}`;
+            }
+
+            function convert12To24(time12h) {
+                if (!time12h) return '';
+                if (!time12h.includes('AM') && !time12h.includes('PM')) return time12h;
+                const [time, modifier] = time12h.split(' ');
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours, 10);
+                if (modifier === 'PM' && hours < 12) hours = hours + 12;
+                if (modifier === 'AM' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}`;
+            }
+
+            function renderBatches(items) {
+                const container = document.getElementById('batch-grid');
+                if (items.length === 0) {
+                    container.innerHTML = document.getElementById('batches-empty-state').innerHTML;
+                    return;
+                }
+
+              const icons = [
+                {
+                    bg: 'bg-orange-50 text-orange-600 border border-orange-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v7"/></svg>`
+                },
+                {
+                    bg: 'bg-blue-50 text-blue-600 border border-blue-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>`
+                },
+                {
+                    bg: 'bg-emerald-50 text-emerald-600 border border-emerald-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`
+                },
+                {
+                    bg: 'bg-purple-50 text-purple-600 border border-purple-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`
+                },
+                {
+                    bg: 'bg-amber-50 text-amber-600 border border-amber-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`
+                },
+                {
+                    bg: 'bg-indigo-50 text-indigo-600 border border-indigo-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>`
+                },
+                {
+                    bg: 'bg-teal-50 text-teal-600 border border-teal-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`
+                },
+                {
+                    bg: 'bg-rose-50 text-rose-600 border border-rose-100',
+                    svg: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`
+                }
+            ];            container.innerHTML = items.map((batch, idx) => {
+                const iconObj = icons[idx % icons.length];
                 const studentsCount = batch.students_count || 0;
                 const isClosed = batch.status === 'closed';
                 const statusBadge = isClosed
                     ? '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Closed</span>'
                     : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded-lg text-[7px] font-bold uppercase tracking-widest">Active</span>';
 
-                let staffHtml = '';
-                if (batch.staff) {
-                    staffHtml = `<div class="flex items-center gap-2 text-slate-500"><svg class="w-3 h-3 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px] font-bold">Faculty: ${batch.staff.full_name}</span></div>`;
-                }
+                const daysList = Array.isArray(batch.days) ? batch.days : [];
 
                 return `
-                                                <div class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md  transition-all group flex flex-col cursor-pointer" onclick="window.location.href='/institute/batches/${batch.id}'">
-                                                    <!-- Card Body -->
-                                                    <div class="p-4 flex-1">
-                                                        <div class="flex items-start justify-between mb-3">
-                                                            <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg">${icon}</div>
-                                                            ${statusBadge}
-                                                        </div>
-                                                        <div class="space-y-1 mb-1">
-                                                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${batch.name}</h4>
-                                                            <div class="flex items-center gap-2">
-                                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${batch.subject}</span>
-                                                                <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold uppercase">₹${batch.fees || '0'}</span>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-[10px] font-bold text-slate-400 line-clamp-2 mb-4 leading-relaxed">${batch.description || 'No description provided.'}</p>
-                                                        <div class="space-y-2 text-slate-500">
-                                                            <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-[10px] font-bold">${formatTime12Hour(batch.start_time)} - ${formatTime12Hour(batch.end_time)}</span></div>
-                                                            <div class="flex items-center gap-2"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><div class="flex flex-wrap gap-1">${(batch.days || []).map(day => `<span class="text-[8px] font-bold text-slate-700">${day}</span>`).join('')}</div></div>
-                                                            ${staffHtml}
-                                                        </div>
-                                                    </div>
-                                                    <!-- Footer Actions -->
-                                                    <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                                        <a href="/institute/batches/${batch.id}" class="action-btn flex items-center text-[#006b74]  font-bold text-[12px]  transition-all">
-                                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                            View
-                                                        </a>
-                                                        <div class="flex items-center gap-3">
-                                                            <button type="button" data-batch="${encodeURIComponent(JSON.stringify(batch))}" onclick="event.stopPropagation(); handleEditClick(this)" class="action-btn text-blue-500 transition-all" title="Edit">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                                            </button>
-                                                            <button type="button" data-id="${batch.id}" data-name="${encodeURIComponent(batch.name)}" onclick="event.stopPropagation(); handleDeleteClick(this)" class="action-btn text-rose-500 transition-all" title="Delete">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            `;
+                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col cursor-pointer" onclick="window.location.href='/institute/batches/${batch.id}'">
+                        <!-- Card Body -->
+                        <div class="p-4 flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="h-10 w-10 ${iconObj.bg} rounded-xl flex items-center justify-center">${iconObj.svg}</div>
+                                ${statusBadge}
+                            </div>
+                            <div class="space-y-1 mb-2">
+                                <h4 class="text-sm font-bold text-slate-800 leading-tight">${batch.name}</h4>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-bold uppercase">₹${batch.fees || '0'} / mo</span>
+                                    <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[8px] font-bold">${studentsCount} Students</span>
+                                </div>
+                            </div>
+                            <p class="text-[10px] font-medium text-slate-400 line-clamp-2 mb-3 leading-relaxed">${batch.description || 'No description provided.'}</p>
+                            <div class="pt-2 border-t border-slate-50">
+                                <div class="flex items-center gap-1.5 text-slate-500">
+                                    <svg class="w-3 h-3 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <div class="flex flex-wrap gap-1">
+                                        ${daysList.length > 0 ? daysList.map(day => `<span class="text-[8px] font-bold text-slate-700 bg-slate-100 px-1 py-0.2 rounded">${day}</span>`).join('') : '<span class="text-[9px] text-slate-300 font-medium">No days set</span>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Footer Actions -->
+                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                            <a href="/institute/batches/${batch.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] transition-all">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                View
+                            </a>
+                            <div class="flex items-center gap-3">
+                                <button type="button" data-batch="${encodeURIComponent(JSON.stringify(batch))}" onclick="event.stopPropagation(); handleEditClick(this)" class="action-btn text-blue-500 transition-all" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                </button>
+                                <button type="button" data-id="${batch.id}" data-name="${encodeURIComponent(batch.name)}" onclick="event.stopPropagation(); handleDeleteClick(this)" class="action-btn text-rose-500 transition-all" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }).join('');
         }
 
-        function renderPagination(data) {
-            const container = document.getElementById('pagination-container');
-            if (!data || data.last_page <= 1) {
-                container.classList.add('hidden');
-                return;
+            function renderPagination(data) {
+                const container = document.getElementById('pagination-container');
+                if (!data || data.last_page <= 1) {
+                    container.classList.add('hidden');
+                    return;
+                }
+                container.classList.remove('hidden');
+
+                let html = `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Showing ${data.from || 0} to ${data.to || 0} of ${data.total} entries</span>`;
+                html += `<div class="flex items-center gap-1">`;
+
+                // Previous Button
+                html += `<button onclick="fetchBatches(${data.current_page - 1})" ${data.current_page === 1 ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                                            </button>`;
+
+                // Smart Page Numbers
+                const maxVisible = 5;
+                let startPage = Math.max(1, data.current_page - 2);
+                let endPage = Math.min(data.last_page, startPage + maxVisible - 1);
+
+                if (endPage - startPage < maxVisible - 1) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                }
+
+                if (startPage > 1) {
+                    html += `<button onclick="fetchBatches(1)" class="h-8 w-8 text-[10px] font-bold rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all">1</button>`;
+                    if (startPage > 2) html += `<span class="px-1 text-slate-300 text-[10px] font-bold">...</span>`;
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === data.current_page;
+                    const activeClass = isActive ? 'bg-primary text-white shadow-md shadow-orange-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100';
+                    html += `<button onclick="fetchBatches(${i})" class="h-8 w-8 text-[10px] font-bold rounded-lg transition-all ${activeClass}">${i}</button>`;
+                }
+
+                if (endPage < data.last_page) {
+                    if (endPage < data.last_page - 1) html += `<span class="px-1 text-slate-300 text-[10px] font-bold">...</span>`;
+                    html += `<button onclick="fetchBatches(${data.last_page})" class="h-8 w-8 text-[10px] font-bold rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all">${data.last_page}</button>`;
+                }
+
+                // Next Button
+                html += `<button onclick="fetchBatches(${data.current_page + 1})" ${data.current_page === data.last_page ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                                            </button>`;
+
+                html += `</div>`;
+                container.innerHTML = html;
             }
-            container.classList.remove('hidden');
 
-            let html = `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Showing ${data.from || 0} to ${data.to || 0} of ${data.total} entries</span>`;
-            html += `<div class="flex items-center gap-1">`;
+            function toggleFormView(show, isEdit = false) {
+                const modal = document.getElementById('form-modal');
+                if (show) {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // Prevent scroll
+                    if (!isEdit) {
+                        document.getElementById('batch-form').reset();
+                        document.getElementById('batch-id').value = '';
+                        document.getElementById('field-fees').value = '';
+                        document.getElementById('field-description').value = '';
+                        document.getElementById('form-title').innerText = 'Manage Batch';
+                        document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
 
-            // Previous Button
-            html += `<button onclick="fetchBatches(${data.current_page - 1})" ${data.current_page === 1 ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                                        </button>`;
-
-            // Smart Page Numbers
-            const maxVisible = 5;
-            let startPage = Math.max(1, data.current_page - 2);
-            let endPage = Math.min(data.last_page, startPage + maxVisible - 1);
-
-            if (endPage - startPage < maxVisible - 1) {
-                startPage = Math.max(1, endPage - maxVisible + 1);
+                        // Reset custom staff select dropdown
+                        document.getElementById('field-staff').value = '';
+                        const labelEl = document.getElementById('modal-staff-label');
+                        labelEl.innerText = 'Select Staff';
+                        labelEl.classList.add('text-slate-400');
+                        labelEl.classList.remove('text-slate-800');
+                    }
+                } else {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = ''; // Restore scroll
+                    // Hide custom menu if open
+                    document.getElementById('modal-staff-menu').classList.add('hidden');
+                    document.getElementById('modal-staff-chevron').classList.remove('rotate-180');
+                }
             }
 
-            if (startPage > 1) {
-                html += `<button onclick="fetchBatches(1)" class="h-8 w-8 text-[10px] font-bold rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all">1</button>`;
-                if (startPage > 2) html += `<span class="px-1 text-slate-300 text-[10px] font-bold">...</span>`;
-            }
+            window.toggleBatchModalDropdown = (type) => {
+                const menu = document.getElementById(`modal-${type}-menu`);
+                const chevron = document.getElementById(`modal-${type}-chevron`);
 
-            for (let i = startPage; i <= endPage; i++) {
-                const isActive = i === data.current_page;
-                const activeClass = isActive ? 'bg-primary text-white shadow-md shadow-orange-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100';
-                html += `<button onclick="fetchBatches(${i})" class="h-8 w-8 text-[10px] font-bold rounded-lg transition-all ${activeClass}">${i}</button>`;
-            }
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    chevron.classList.add('rotate-180');
+                } else {
+                    menu.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                }
+            };
 
-            if (endPage < data.last_page) {
-                if (endPage < data.last_page - 1) html += `<span class="px-1 text-slate-300 text-[10px] font-bold">...</span>`;
-                html += `<button onclick="fetchBatches(${data.last_page})" class="h-8 w-8 text-[10px] font-bold rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all">${data.last_page}</button>`;
-            }
-
-            // Next Button
-            html += `<button onclick="fetchBatches(${data.current_page + 1})" ${data.current_page === data.last_page ? 'disabled' : ''} class="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                                        </button>`;
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        function toggleFormView(show, isEdit = false) {
-            const modal = document.getElementById('form-modal');
-            if (show) {
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent scroll
-                if (!isEdit) {
-                    document.getElementById('batch-form').reset();
-                    document.getElementById('batch-id').value = '';
-                    document.getElementById('field-fees').value = '';
-                    document.getElementById('field-description').value = '';
-                    document.getElementById('form-title').innerText = 'Manage Batch';
-                    document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
-
-                    // Reset custom staff select dropdown
-                    document.getElementById('field-staff').value = '';
-                    const labelEl = document.getElementById('modal-staff-label');
-                    labelEl.innerText = 'Select Staff';
+            window.selectBatchModalOption = (type, value, label) => {
+                document.getElementById(`field-${type}`).value = value;
+                const labelEl = document.getElementById(`modal-${type}-label`);
+                labelEl.innerText = label;
+                if (value === '') {
                     labelEl.classList.add('text-slate-400');
                     labelEl.classList.remove('text-slate-800');
-                }
-            } else {
-                modal.classList.add('hidden');
-                document.body.style.overflow = ''; // Restore scroll
-                // Hide custom menu if open
-                document.getElementById('modal-staff-menu').classList.add('hidden');
-                document.getElementById('modal-staff-chevron').classList.remove('rotate-180');
-            }
-        }
-
-        window.toggleBatchModalDropdown = (type) => {
-            const menu = document.getElementById(`modal-${type}-menu`);
-            const chevron = document.getElementById(`modal-${type}-chevron`);
-
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-                chevron.classList.add('rotate-180');
-            } else {
-                menu.classList.add('hidden');
-                chevron.classList.remove('rotate-180');
-            }
-        };
-
-        window.selectBatchModalOption = (type, value, label) => {
-            document.getElementById(`field-${type}`).value = value;
-            const labelEl = document.getElementById(`modal-${type}-label`);
-            labelEl.innerText = label;
-            if (value === '') {
-                labelEl.classList.add('text-slate-400');
-                labelEl.classList.remove('text-slate-800');
-            } else {
-                labelEl.classList.remove('text-slate-400');
-                labelEl.classList.add('text-slate-800');
-            }
-            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
-            document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
-        };
-
-        function openEditForm(batch) {
-            toggleFormView(true, true);
-            document.getElementById('form-title').innerText = 'Manage Batch';
-            document.getElementById('batch-id').value = batch.id;
-            document.getElementById('field-name').value = batch.name;
-            document.getElementById('field-subject').value = batch.subject;
-            document.getElementById('field-fees').value = batch.fees || '';
-            document.getElementById('field-description').value = batch.description || '';
-            document.getElementById('field-start').value = convert12To24(batch.start_time) || '';
-            document.getElementById('field-end').value = convert12To24(batch.end_time) || '';
-
-            document.getElementById('field-classroom').value = batch.classroom || '';
-            const days = batch.days || [];
-            document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
-
-            // Load and pre-select staff from batch object
-            const batchStaffId = batch.staff_id || '';
-            document.getElementById('field-staff').value = batchStaffId;
-            const staffObj = staffListJs.find(s => s.id == batchStaffId);
-            const labelEl = document.getElementById('modal-staff-label');
-            if (staffObj) {
-                labelEl.innerText = staffObj.full_name;
-                labelEl.classList.remove('text-slate-400');
-                labelEl.classList.add('text-slate-800');
-            } else {
-                labelEl.innerText = 'Select Staff';
-                labelEl.classList.add('text-slate-400');
-                labelEl.classList.remove('text-slate-800');
-            }
-        }
-
-        document.getElementById('batch-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            const id = formData.get('id');
-            const days = Array.from(form.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
-
-            if (days.length === 0) {
-                showToast('Please select at least one day.', 'error');
-                return;
-            }
-
-            const staffId = document.getElementById('field-staff').value;
-            if (!staffId) {
-                showToast('Please select an assigned staff member.', 'error');
-                return;
-            }
-
-            // Clean payload: remove days[] and ensure days is an array
-            const payload = Object.fromEntries(formData.entries());
-            delete payload['days[]'];
-            payload.days = days;
-
-            toggleSubmitLoading(true);
-            try {
-                // Use method spoofing for PUT if ID exists
-                const method = id ? 'PUT' : 'POST';
-                const url = id ? `${API_URL}/${id}` : API_URL;
-
-                const resp = await fetch(url, {
-                    method: 'POST', // Always use POST for spoofing
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ...payload,
-                        _method: method // Laravel method spoofing
-                    })
-                });
-
-                const result = await resp.json();
-
-                if (resp.ok && result.status === 'success') {
-                    showToast(result.message || 'Batch saved successfully');
-                    toggleFormView(false);
-                    fetchBatches();
                 } else {
-                    // Handle validation errors or server errors
-                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat()[0] : 'Error saving batch');
-                    showToast(errorMsg, 'error');
+                    labelEl.classList.remove('text-slate-400');
+                    labelEl.classList.add('text-slate-800');
                 }
-            } catch (error) {
-                console.error('Save Error:', error);
-                showToast('Network error or server unavailable', 'error');
+                document.getElementById(`modal-${type}-menu`).classList.add('hidden');
+                document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
+            };
+
+            function openEditForm(batch) {
+                toggleFormView(true, true);
+                document.getElementById('form-title').innerText = 'Manage Batch';
+                document.getElementById('batch-id').value = batch.id;
+                document.getElementById('field-name').value = batch.name;
+                document.getElementById('field-fees').value = batch.fees || '';
+                document.getElementById('field-description').value = batch.description || '';
+
+                const days = batch.days || [];
+                document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = days.includes(cb.value));
             }
-            finally { toggleSubmitLoading(false); }
-        });
 
-        function deleteBatch(id, name) {
-            showConfirmModal(
-                'Delete Batch?',
-                `Are you sure you want to delete <span class="font-bold text-slate-800">${name}</span>? This will archive the batch and tag it as 'Closed'. It will not be permanently deleted.`,
-                async function () {
-                    toggleLoader(true);
-                    try {
-                        const resp = await fetch(`${API_URL}/${id}`, {
-                            method: 'DELETE',
-                            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
-                        });
-                        const result = await resp.json();
-                        if (result.status === 'success') {
-                            showToast('Batch deleted successfully');
-                            fetchBatches();
-                        } else {
-                            showToast(result.message || 'Delete failed', 'error');
+            document.getElementById('batch-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const id = formData.get('id');
+                const days = Array.from(form.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+
+                if (days.length === 0) {
+                    showToast('Please select at least one day.', 'error');
+                    return;
+                }
+
+                // Clean payload: remove days[] and ensure days is an array
+                const payload = Object.fromEntries(formData.entries());
+                delete payload['days[]'];
+                payload.days = days;
+
+                toggleSubmitLoading(true);
+                try {
+                    // Use method spoofing for PUT if ID exists
+                    const method = id ? 'PUT' : 'POST';
+                    const url = id ? `${API_URL}/${id}` : API_URL;
+
+                    const resp = await fetch(url, {
+                        method: 'POST', // Always use POST for spoofing
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ...payload,
+                            _method: method // Laravel method spoofing
+                        })
+                    });
+
+                    const result = await resp.json();
+
+                    if (resp.ok && result.status === 'success') {
+                        showToast(result.message || 'Batch saved successfully');
+                        toggleFormView(false);
+                        fetchBatches();
+                    } else {
+                        // Handle validation errors or server errors
+                        const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat()[0] : 'Error saving batch');
+                        showToast(errorMsg, 'error');
+                    }
+                } catch (error) {
+                    console.error('Save Error:', error);
+                    showToast('Network error or server unavailable', 'error');
+                }
+                finally { toggleSubmitLoading(false); }
+            });
+
+            function deleteBatch(id, name) {
+                showConfirmModal(
+                    'Delete Batch?',
+                    `Are you sure you want to delete <span class="font-bold text-slate-800">${name}</span>? This will archive the batch and tag it as 'Closed'. It will not be permanently deleted.`,
+                    async function () {
+                        toggleLoader(true);
+                        try {
+                            const resp = await fetch(`${API_URL}/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
+                            });
+                            const result = await resp.json();
+                            if (result.status === 'success') {
+                                showToast('Batch deleted successfully');
+                                fetchBatches();
+                            } else {
+                                showToast(result.message || 'Delete failed', 'error');
+                            }
+                        } catch (error) {
+                            showToast('Delete failed', 'error');
+                        } finally {
+                            toggleLoader(false);
                         }
-                    } catch (error) {
-                        showToast('Delete failed', 'error');
-                    } finally {
-                        toggleLoader(false);
-                    }
-                },
-                'Yes, Delete Batch',
-                'bg-primary shadow-orange-950/10'
-            );
-        }
+                    },
+                    'Yes, Delete Batch',
+                    'bg-primary shadow-orange-950/10'
+                );
+            }
 
-        function handleEditClick(btn) {
-            const batchDataStr = btn.getAttribute('data-batch');
-            const batch = JSON.parse(decodeURIComponent(batchDataStr));
-            openEditForm(batch);
-        }
+            function handleEditClick(btn) {
+                const batchDataStr = btn.getAttribute('data-batch');
+                const batch = JSON.parse(decodeURIComponent(batchDataStr));
+                openEditForm(batch);
+            }
 
-        function handleDeleteClick(btn) {
-            const id = btn.getAttribute('data-id');
-            const name = decodeURIComponent(btn.getAttribute('data-name'));
-            deleteBatch(id, name);
-        }
+            function handleDeleteClick(btn) {
+                const id = btn.getAttribute('data-id');
+                const name = decodeURIComponent(btn.getAttribute('data-name'));
+                deleteBatch(id, name);
+            }
 
-        function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
-        function toggleSubmitLoading(show) {
-            document.getElementById('btn-loader').classList.toggle('hidden', !show);
-            document.getElementById('submit-btn').disabled = show;
-        }
-    </script>
+            function toggleLoader(show) { document.getElementById('loading-spinner').classList.toggle('hidden', !show); }
+            function toggleSubmitLoading(show) {
+                document.getElementById('btn-loader').classList.toggle('hidden', !show);
+                document.getElementById('submit-btn').disabled = show;
+            }
+        </script>
 
-    @push('modals')
-        <!-- MANAGE BATCH MODAL -->
-        <div id="form-modal" class="fixed inset-0 z-[100] hidden">
-            <!-- Backdrop -->
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="toggleFormView(false)">
-            </div>
+        @push('modals')
+            <!-- MANAGE BATCH MODAL -->
+            <div id="form-modal" class="fixed inset-0 z-[100] hidden">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="toggleFormView(false)">
+                </div>
 
-            <!-- Modal Content -->
-            <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] max-h-[95vh] overflow-y-auto scrollbar-hide">
-                <style>
-                    .scrollbar-hide::-webkit-scrollbar {
-                        display: none;
-                    }
-
-                    .scrollbar-hide {
-                        -ms-overflow-style: none;
-                        scrollbar-width: none;
-                    }
-                </style>
+                <!-- Modal Content -->
                 <div
-                    class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-                    <!-- Header -->
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[650px] max-h-[95vh] overflow-y-auto scrollbar-hide">
+                    <style>
+                        .scrollbar-hide::-webkit-scrollbar {
+                            display: none;
+                        }
+
+                        .scrollbar-hide {
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+                    </style>
                     <div
-                        class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
-                        <div>
-                            <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
-                        </div>
-                        <button type="button" onclick="toggleFormView(false)"
-                            class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <form id="batch-form" class="px-6 py-4 space-y-2">
-                        <input type="hidden" id="batch-id" name="id">
-
-                        <!-- General Information -->
-                        <div class="space-y-2">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch
-                                        Name</label>
-                                    <input type="text" name="name" id="field-name" required placeholder="e.g. Maths 2024-A"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                                    <input type="text" name="subject" id="field-subject" required placeholder="Select Subject"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
+                        class="bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                        <!-- Header -->
+                        <div
+                            class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between sticky top-0 z-10">
+                            <div>
+                                <h1 id="form-title" class="text-lg font-bold text-white tracking-tight">Manage Batch</h1>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
-                                        (₹)</label>
-                                    <input type="text" name="fees" id="field-fees" required placeholder="0" inputmode="numeric"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Description</label>
-                                    <input type="text" name="description" id="field-description" placeholder="Brief details..."
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                            </div>
+                            <button type="button" onclick="toggleFormView(false)"
+                                class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
 
-                        <!-- Schedule Section -->
-                        <div class="space-y-2 pt-1">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
-                                        Time</label>
-                                    <input type="time" name="start_time" id="field-start" required
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                        <form id="batch-form" class="px-6 py-4 space-y-2">
+                            <input type="hidden" id="batch-id" name="id">
+
+                            <!-- General Information -->
+                            <div class="space-y-2">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch
+                                            Name</label>
+                                        <input type="text" name="name" id="field-name" required placeholder="e.g. Maths 2024-A"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
+                                        <input type="text" name="subject" id="field-subject" required placeholder="Select Subject"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
                                 </div>
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
-                                        Time</label>
-                                    <input type="time" name="end_time" id="field-end" required
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-3">
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
-                                            <label class="relative cursor-pointer group">
-                                                <input type="checkbox" name="days[]" value="{{ $day }}"
-                                                    class="peer sr-only day-checkbox">
-                                                <div
-                                                    class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
-                                                    {{ $day }}
-                                                </div>
-                                            </label>
-                                        @endforeach
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees
+                                            (₹)</label>
+                                        <input type="text" name="fees" id="field-fees" required placeholder="0" inputmode="numeric"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Description</label>
+                                        <input type="text" name="description" id="field-description" placeholder="Brief details..."
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
                                     </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom
-                                        / Venue</label>
-                                    <input type="text" name="classroom" id="field-classroom"
-                                        placeholder="e.g. Room 101, Main Hall"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+
+                            <!-- Schedule Section -->
+                            <div class="space-y-2 pt-1">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Start
+                                            Time</label>
+                                        <input type="time" name="start_time" id="field-start" required
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">End
+                                            Time</label>
+                                        <input type="time" name="end_time" id="field-end" required
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
                                 </div>
-                                <div class="space-y-1 relative">
-                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned
-                                        Staff</label>
-                                    <button type="button" onclick="toggleBatchModalDropdown('staff')"
-                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold text-left flex items-center justify-between hover:border-brand-800 transition-all">
-                                        <span id="modal-staff-label" class="text-slate-400">Select Staff</span>
-                                        <svg id="modal-staff-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    <div id="modal-staff-menu"
-                                        class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
-                                        <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                            <button type="button" onclick="selectBatchModalOption('staff', '', 'None')"
-                                                class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                None
-                                            </button>
-                                            @foreach($staffList as $staff)
-                                                <button type="button"
-                                                    onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
-                                                    class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                    {{ $staff->full_name }}
-                                                </button>
+                                <div class="grid grid-cols-1 gap-3">
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Days</label>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
+                                                <label class="relative cursor-pointer group">
+                                                    <input type="checkbox" name="days[]" value="{{ $day }}"
+                                                        class="peer sr-only day-checkbox">
+                                                    <div
+                                                        class="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-bold text-slate-400 transition-all peer-checked:bg-secondary/10 peer-checked:text-secondary peer-checked:border-secondary group-hover:bg-slate-50">
+                                                        {{ $day }}
+                                                    </div>
+                                                </label>
                                             @endforeach
                                         </div>
                                     </div>
-                                    <input type="hidden" name="staff_id" id="field-staff" value="">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Classroom
+                                            / Venue</label>
+                                        <input type="text" name="classroom" id="field-classroom"
+                                            placeholder="e.g. Room 101, Main Hall"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    </div>
+                                    <div class="space-y-1 relative">
+                                        <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned
+                                            Staff</label>
+                                        <button type="button" onclick="toggleBatchModalDropdown('staff')"
+                                            class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold text-left flex items-center justify-between hover:border-brand-800 transition-all">
+                                            <span id="modal-staff-label" class="text-slate-400">Select Staff</span>
+                                            <svg id="modal-staff-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <div id="modal-staff-menu"
+                                            class="absolute bottom-full mb-1 z-[110] w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-bottom transition-all">
+                                            <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
+                                                <button type="button" onclick="selectBatchModalOption('staff', '', 'None')"
+                                                    class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                    None
+                                                </button>
+                                                @foreach($staffList as $staff)
+                                                    <button type="button"
+                                                        onclick="selectBatchModalOption('staff', '{{ $staff->id }}', '{{ $staff->full_name }}')"
+                                                        class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
+                                                        {{ $staff->full_name }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="staff_id" id="field-staff" value="">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Footer Actions -->
-                        <div
-                            class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
-                            <button type="button" onclick="toggleFormView(false)" class="btn-white btn-md">Cancel</button>
-                            <button type="submit" id="submit-btn" class="btn-brand btn-md bg-primary hover:bg-primary">
-                                <span id="btn-text ">Save Batch</span>
-                                <span id="btn-loader"
-                                    class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                            </button>
-                        </div>
-                    </form>
+                            <!-- Footer Actions -->
+                            <div
+                                class="pt-4 border-t border-slate-50 flex items-center justify-end gap-2 bg-white sticky bottom-0 pb-1">
+                                <button type="button" onclick="toggleFormView(false)" class="btn-white btn-md">Cancel</button>
+                                <button type="submit" id="submit-btn" class="btn-brand btn-md bg-primary hover:bg-primary">
+                                    <span id="btn-text ">Save Batch</span>
+                                    <span id="btn-loader"
+                                        class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
 
 
-    @endpush
+        @endpush
 @endsection

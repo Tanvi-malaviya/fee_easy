@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Staff Salary Report</title>
     <style>
-        body { font-family: sans-serif; font-size: 11px; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 11px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
         th { background-color: #f2 f2 f2; }

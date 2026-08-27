@@ -29,8 +29,16 @@
                 <!-- Info -->
                 <div class="space-y-1">
                     <h2 class="text-xl font-bold text-slate-800 tracking-tight leading-tight">{{ $staff->full_name }}</h2>
-                    <p class="text-xs font-bold text-brand-800 uppercase tracking-widest">
-                        {{ $staff->role->name ?? 'Staff Member' }}</p>
+                    <div class="flex items-center gap-2 flex-wrap pt-0.5">
+                        <span class="text-xs font-bold text-brand-800 uppercase tracking-widest">{{ $staff->role->name ?? 'Staff Member' }}</span>
+                        @if($staff->departments && $staff->departments->count() > 0)
+                            @foreach($staff->departments as $dept)
+                                <span class="px-2 py-0.5 bg-orange-50 text-[#ff6600] text-[9px] font-black rounded-md uppercase tracking-tight">{{ $dept->name }}</span>
+                            @endforeach
+                        @elseif($staff->department)
+                            <span class="px-2 py-0.5 bg-orange-50 text-[#ff6600] text-[9px] font-black rounded-md uppercase tracking-tight">{{ $staff->department->name }}</span>
+                        @endif
+                    </div>
                     <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 pt-1">
                         <div class="flex items-center gap-1.5 text-slate-400">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,30 +142,48 @@
                             <span id="error-full_name" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
-                        <div class="relative">
-                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Department</label>
-                            <button type="button" onclick="toggleModalDropdown('dept')"
-                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-left flex items-center justify-between hover:border-brand-800 transition-all">
-                                <span id="modal-dept-label" class="text-slate-400">Select Department</span>
-                                <svg id="modal-dept-chevron" class="w-4 h-4 text-slate-400 transition-transform"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M19 9l-7 7-7-7" />
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5 uppercase tracking-widest">Department(s) <span class="text-rose-500">*</span></label>
+                            <div class="relative group" id="modal-dept-dropdown">
+                                <button type="button" onclick="toggleModalDropdown('dept')" id="modal-dept-btn"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between hover:border-brand-800 transition-all outline-none">
+                                    <span id="modal-dept-label" class="truncate text-slate-400">Select Department(s)</span>
+                                    <svg id="modal-dept-chevron" class="w-4 h-4 text-slate-400 transition-transform shrink-0 ml-2"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M19 9l-7 7-7-7" />
                                     </svg>
-                            </button>
-                            <div id="modal-dept-menu"
-                                class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                    @foreach($departments as $dept)
-                                        <button type="button"
-                                            onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
-                                            class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                            {{ $dept->name }}
+                                </button>
+                                <div id="modal-dept-menu"
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden hidden transform origin-top transition-all p-2.5">
+                                    <div class="flex items-center justify-between pb-2 mb-1.5 border-b border-slate-100 px-1">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Choose Departments</span>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" onclick="clearModalDepartments()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 cursor-pointer">Clear</button>
+                                            <button type="button" onclick="closeModalDeptDropdown()" class="px-2.5 py-0.5 bg-[#FF6B00] text-white text-[11px] font-bold rounded-md hover:bg-orange-600 transition shadow-sm cursor-pointer flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                Done
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="modal-dept-list" class="py-1 max-h-48 overflow-y-auto custom-scrollbar space-y-1">
+                                        @foreach($departments as $dept)
+                                            <label class="flex items-center gap-2.5 px-3 py-1.5 rounded-md hover:bg-orange-50/60 cursor-pointer transition text-xs font-medium text-slate-700">
+                                                <input type="checkbox" name="staff_department_ids[]" value="{{ $dept->id }}"
+                                                    onchange="updateModalDeptSelection()"
+                                                    class="modal-dept-checkbox rounded border-slate-300 text-[#FF6B00] focus:ring-[#FF6B00] h-4 w-4">
+                                                <span class="dept-name-label">{{ $dept->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <!-- <div class="pt-2 mt-1.5 border-t border-slate-100">
+                                        <button type="button" onclick="closeModalDeptDropdown()" class="w-full py-1.5 bg-[#FF6B00] text-white text-xs font-bold rounded-lg shadow-sm hover:bg-orange-600 transition flex items-center justify-center gap-1 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Done / Close
                                         </button>
-                                    @endforeach
+                                    </div> -->
                                 </div>
                             </div>
-                            <input type="hidden" name="staff_department_id" id="field-dept-id" required>
                             <span id="error-staff_department_id" class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
                         </div>
 
@@ -360,6 +386,45 @@
             );
         }
 
+        let selectedModalDeptIds = [];
+
+        function updateModalDeptSelection() {
+            const checkboxes = document.querySelectorAll('.modal-dept-checkbox:checked');
+            selectedModalDeptIds = Array.from(checkboxes).map(cb => cb.value);
+            const names = Array.from(checkboxes).map(cb => cb.closest('label').querySelector('.dept-name-label')?.innerText?.trim()).filter(Boolean);
+            
+            const labelEl = document.getElementById('modal-dept-label');
+            if (!labelEl) return;
+
+            if (names.length === 0) {
+                labelEl.innerText = 'Select Department(s)';
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-700');
+            } else if (names.length === 1) {
+                labelEl.innerText = names[0];
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-700');
+            } else {
+                labelEl.innerText = `${names[0]}, ${names[1]}${names.length > 2 ? ` (+${names.length - 2} more)` : ''}`;
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-700');
+            }
+        }
+
+        function clearModalDepartments() {
+            document.querySelectorAll('.modal-dept-checkbox').forEach(cb => cb.checked = false);
+            updateModalDeptSelection();
+        }
+
+        function setModalDepartments(deptIds) {
+            const ids = (deptIds || []).map(String);
+            selectedModalDeptIds = ids;
+            document.querySelectorAll('.modal-dept-checkbox').forEach(cb => {
+                cb.checked = ids.includes(String(cb.value));
+            });
+            updateModalDeptSelection();
+        }
+
         function openEditModal() {
             const staff = currentStaff;
             document.getElementById('modal-title').innerText = 'Edit Staff Member';
@@ -368,10 +433,14 @@
             document.getElementById('staff_id').value = staff.id;
             document.getElementById('field-name').value = staff.full_name;
             
-            // Set custom dropdown values
-            if (staff.department) {
-                selectModalOption('dept', staff.staff_department_id, staff.department.name);
+            // Set department multi-select
+            let deptIds = [];
+            if (staff.departments && staff.departments.length > 0) {
+                deptIds = staff.departments.map(d => d.id);
+            } else if (staff.staff_department_id) {
+                deptIds = [staff.staff_department_id];
             }
+            setModalDepartments(deptIds);
 
             document.getElementById('field-email').value = staff.email;
             document.getElementById('field-phone').value = staff.phone || '';
@@ -423,38 +492,35 @@
         function toggleModalDropdown(type) {
             const menu = document.getElementById(`modal-${type}-menu`);
             const chevron = document.getElementById(`modal-${type}-chevron`);
-
-            // Close other menus
-            ['role', 'dept'].forEach(t => {
-                if (t !== type) {
-                    document.getElementById(`modal-${t}-menu`).classList.add('hidden');
-                    document.getElementById(`modal-${t}-chevron`).classList.remove('rotate-180');
-                }
-            });
+            if (!menu) return;
 
             menu.classList.toggle('hidden');
-            chevron.classList.toggle('rotate-180');
+            if (chevron) chevron.classList.toggle('rotate-180');
         }
 
-        function selectModalOption(type, id, name) {
-            document.getElementById(`field-${type}-id`).value = id;
-            document.getElementById(`modal-${type}-label`).textContent = name;
-            document.getElementById(`modal-${type}-label`).classList.remove('text-slate-400');
-            document.getElementById(`modal-${type}-label`).classList.add('text-slate-700');
-            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
-            document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
-        }
+        window.closeModalDeptDropdown = function() {
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
+            document.getElementById('modal-dept-chevron')?.classList.remove('rotate-180');
+        };
 
         // Close menus when clicking outside
         document.addEventListener('click', (e) => {
-            ['role', 'dept'].forEach(type => {
-                const button = document.getElementById(`modal-${type}-label`)?.parentElement;
-                const menu = document.getElementById(`modal-${type}-menu`);
-                if (button && !button.contains(e.target) && !menu.contains(e.target)) {
-                    menu.classList.add('hidden');
-                    document.getElementById(`modal-${type}-chevron`).classList.remove('rotate-180');
-                }
-            });
+            if (!e.target.closest('#modal-dept-dropdown')) {
+                document.getElementById('modal-dept-menu')?.classList.add('hidden');
+                document.getElementById('modal-dept-chevron')?.classList.remove('rotate-180');
+            }
+        });
+
+        // Close modal dropdown when focusing other form fields
+        document.addEventListener('DOMContentLoaded', () => {
+            const addForm = document.getElementById('add-staff-form');
+            if (addForm) {
+                addForm.querySelectorAll('input:not(.modal-dept-checkbox), select, textarea').forEach(el => {
+                    el.addEventListener('focus', () => {
+                        closeModalDeptDropdown();
+                    });
+                });
+            }
         });
 
         // Form Submission

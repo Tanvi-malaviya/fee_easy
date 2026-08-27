@@ -57,6 +57,11 @@ class DepartmentController extends Controller
     public function edit($id)
     {
         $department = StaffDepartment::findOrFail($id);
+
+        if ($department->isProtected()) {
+            return redirect()->route('departments.index')->with('error', 'The "' . $department->name . '" department is system protected and cannot be edited.');
+        }
+
         return view('departments.edit', compact('department'));
     }
 
@@ -66,6 +71,10 @@ class DepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $department = StaffDepartment::findOrFail($id);
+
+        if ($department->isProtected()) {
+            return redirect()->route('departments.index')->with('error', 'The "' . $department->name . '" department is system protected and cannot be edited.');
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -84,8 +93,12 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         $department = StaffDepartment::findOrFail($id);
-        $name = $department->name;
 
+        if ($department->isProtected()) {
+            return redirect()->route('departments.index')->with('error', 'The "' . $department->name . '" department is system protected and cannot be deleted.');
+        }
+
+        $name = $department->name;
         $department->delete();
 
         Activity::log("Deleted global department '{$name}'");
