@@ -266,7 +266,10 @@ class DemoAccountSeeder extends Seeder
         $roleNames = ['Department Head', 'Senior Faculty', 'Associate Lecturer', 'Lab Instructor', 'Academic Counselor', 'Office Manager'];
         $roles = [];
         foreach ($roleNames as $rName) {
-            $roles[$rName] = StaffRole::firstOrCreate(['name' => $rName]);
+            $roles[$rName] = StaffRole::firstOrCreate([
+                'institute_id' => $instituteId,
+                'name' => $rName,
+            ]);
         }
 
         // 8 Staff Members
