@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('batches', function (Blueprint $table) {
-            $table->json('days')->nullable()->after('end_time');
+            if (!Schema::hasColumn('batches', 'days')) {
+                $table->json('days')->nullable()->after('end_time');
+            }
         });
     }
 

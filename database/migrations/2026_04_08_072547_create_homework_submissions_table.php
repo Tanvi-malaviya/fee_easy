@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('homework_submissions', function (Blueprint $table) {
+        if (!Schema::hasTable('homework_submissions')) {
+            Schema::create('homework_submissions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('homework_id')->constrained('homeworks')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
@@ -14,6 +15,7 @@ return new class extends Migration {
             $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('homework_submissions'); }
 };

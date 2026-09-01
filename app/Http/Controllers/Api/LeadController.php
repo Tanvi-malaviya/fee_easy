@@ -67,8 +67,8 @@ class LeadController extends Controller
 
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:10',
-            'email' => 'required|email:rfc,dns|max:255',
+            'phone' => 'required|digits:10',
+            'email' => 'required|email:rfc|max:255',
             'address' => 'nullable|string',
             'course_selection' => 'nullable|string',
             'reference' => 'nullable|string',
@@ -173,8 +173,8 @@ class LeadController extends Controller
 
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:10',
-            'email' => 'required|email:rfc,dns|max:255',
+            'phone' => 'required|digits:10',
+            'email' => 'required|email:rfc|max:255',
             'address' => 'nullable|string',
             'course_selection' => 'nullable|string',
             'reference' => 'nullable|string',

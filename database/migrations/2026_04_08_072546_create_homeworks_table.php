@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('homeworks', function (Blueprint $table) {
+        if (!Schema::hasTable('homeworks')) {
+            Schema::create('homeworks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('batch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
@@ -15,6 +16,7 @@ return new class extends Migration {
             $table->date('due_date');
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('homeworks'); }
 };

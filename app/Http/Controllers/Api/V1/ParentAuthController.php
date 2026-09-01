@@ -18,7 +18,7 @@ class ParentAuthController extends Controller
 
         $parent = StudentParent::where('email', $request->email)->first();
 
-        if (! $parent || ! Hash::check($request->password, $parent->password)) {
+        if (!$parent || !Hash::check($request->password, $parent->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials.',
@@ -44,11 +44,18 @@ class ParentAuthController extends Controller
 
     public function logout(Request $request)
     {
-        if (!$request->user()) {
+        $user = $request->user();
+        \Log::info('API Parent logout called', [
+            'user_id' => $user ? $user->id : null,
+            'user_class' => $user ? get_class($user) : null,
+        ]);
+        if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $request->user()->currentAccessToken()->delete();
+        $user->fcm_token = null;
+        $user->save();
+        $user->currentAccessToken()->delete();
 
         return response()->json([
             'status' => 'success',

@@ -108,8 +108,8 @@
                         <label for="phone"
                             class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Phone
                             Number <span class="text-red-500">*</span></label>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone', $institute->phone) }}" required
-                            oninput="clearError(this)"
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone', $institute->phone) }}" required maxlength="10" pattern="[0-9]{10}"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10); clearError(this)"
                             class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-4 py-1.5 border text-sm font-bold text-gray-900 bg-gray-50 focus:bg-white @error('phone') border-red-500 @enderror">
                         @error('phone')
                             <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
@@ -271,6 +271,103 @@
                             @enderror
                         </div>
                     </div>
+
+                    <!-- Custom Email & SMTP Configuration Section -->
+                    <div class="col-span-full mt-4 pt-4 border-t border-gray-100">
+                        <div class="bg-gradient-to-r from-orange-50/40 via-amber-50/20 to-transparent p-4 rounded-2xl border border-orange-100/80 mb-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <h3 class="text-sm font-bold text-gray-900">Custom Email & SMTP Gateway</h3>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500 mt-1">
+                                        Configure a dedicated SMTP server for this institute. If disabled or left blank, all outgoing emails automatically default to <strong>Tuoora System (noreply@tuoora.com)</strong>.
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="is_custom_smtp_enabled" id="is_custom_smtp_enabled" value="1"
+                                            {{ old('is_custom_smtp_enabled', $institute->is_custom_smtp_enabled) ? 'checked' : '' }}
+                                            onchange="toggleSmtpFields()"
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        <span class="ml-2 text-xs font-bold text-gray-700">Enable Custom SMTP</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SMTP Input Fields Grid -->
+                        <div id="smtp-fields-container" class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gray-50/70 rounded-2xl border border-gray-200/80 {{ old('is_custom_smtp_enabled', $institute->is_custom_smtp_enabled) ? '' : 'opacity-60 pointer-events-none' }}">
+                            <div>
+                                <label for="mail_host" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">SMTP Host</label>
+                                <input type="text" name="mail_host" id="mail_host"
+                                    value="{{ old('mail_host', $institute->mail_host) }}"
+                                    placeholder="e.g. smtp.gmail.com or mail.domain.com"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div>
+                                <label for="mail_port" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">SMTP Port</label>
+                                <input type="text" name="mail_port" id="mail_port"
+                                    value="{{ old('mail_port', $institute->mail_port) }}"
+                                    placeholder="587 or 465"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div>
+                                <label for="mail_encryption" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Encryption</label>
+                                <select name="mail_encryption" id="mail_encryption"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                                    <option value="tls" {{ old('mail_encryption', $institute->mail_encryption) == 'tls' ? 'selected' : '' }}>TLS / STARTTLS (Port 587)</option>
+                                    <option value="ssl" {{ old('mail_encryption', $institute->mail_encryption) == 'ssl' ? 'selected' : '' }}>SSL (Port 465)</option>
+                                    <option value="null" {{ old('mail_encryption', $institute->mail_encryption) == 'null' ? 'selected' : '' }}>None (Port 25)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="mail_username" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">SMTP Username</label>
+                                <input type="text" name="mail_username" id="mail_username"
+                                    value="{{ old('mail_username', $institute->mail_username) }}"
+                                    placeholder="e.g. info@domain.com or username"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div>
+                                <label for="mail_password" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">SMTP Password</label>
+                                <input type="password" name="mail_password" id="mail_password"
+                                    placeholder="{{ $institute->mail_password ? '•••••••• (Leave blank to keep current)' : 'Enter SMTP password' }}"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div>
+                                <label for="mail_from_address" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">From Email Address</label>
+                                <input type="email" name="mail_from_address" id="mail_from_address"
+                                    value="{{ old('mail_from_address', $institute->mail_from_address) }}"
+                                    placeholder="e.g. notifications@domain.com"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="mail_from_name" class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Sender Name</label>
+                                <input type="text" name="mail_from_name" id="mail_from_name"
+                                    value="{{ old('mail_from_name', $institute->mail_from_name) }}"
+                                    placeholder="e.g. {{ $institute->institute_name }}"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3.5 py-1.5 border text-xs font-semibold text-gray-900 bg-white">
+                            </div>
+
+                            <div class="flex items-end">
+                                <button type="button" onclick="testInstituteSmtp()" id="btn-test-smtp"
+                                    class="w-full px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <span>Test SMTP Connection</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-gray-50 px-8 py-5 border-t border-gray-200 flex justify-end gap-3 rounded-b-3xl">
@@ -429,8 +526,73 @@
             btn.querySelector('.btn-loader').classList.remove('hidden');
             btn.querySelector('.btn-loader').classList.add('absolute', 'flex', 'inset-0', 'items-center', 'justify-center');
             btn.classList.add('opacity-90', 'cursor-not-allowed');
-            // For links, pointer-events: none is enough. For buttons, it helps too.
             btn.style.pointerEvents = 'none';
+        }
+
+        function toggleSmtpFields() {
+            const isEnabled = document.getElementById('is_custom_smtp_enabled').checked;
+            const container = document.getElementById('smtp-fields-container');
+            if (isEnabled) {
+                container.classList.remove('opacity-60', 'pointer-events-none');
+            } else {
+                container.classList.add('opacity-60', 'pointer-events-none');
+            }
+        }
+
+        async function testInstituteSmtp() {
+            const host = document.getElementById('mail_host').value.trim();
+            const username = document.getElementById('mail_username').value.trim();
+            const password = document.getElementById('mail_password').value;
+
+            if (!host || !username) {
+                alert('Please enter at least SMTP Host and Username to test.');
+                return;
+            }
+
+            const testEmail = prompt('Enter recipient email address to send test verification email:', '{{ $institute->email }}');
+            if (!testEmail) return;
+
+            const btn = document.getElementById('btn-test-smtp');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `
+                <div class="h-4 w-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+                <span>Testing Connection...</span>
+            `;
+
+            try {
+                const response = await fetch("{{ route('institutes.test_smtp', $institute) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        test_email: testEmail,
+                        mail_host: host,
+                        mail_port: document.getElementById('mail_port').value,
+                        mail_username: username,
+                        mail_password: password,
+                        mail_encryption: document.getElementById('mail_encryption').value,
+                        mail_from_address: document.getElementById('mail_from_address').value,
+                        mail_from_name: document.getElementById('mail_from_name').value
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert('✓ ' + result.message);
+                } else {
+                    alert('✗ ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to send test email: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         }
     </script>
 </x-admin-layout>

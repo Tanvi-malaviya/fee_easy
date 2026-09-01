@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leads', function (Blueprint $table) {
+        if (!Schema::hasTable('leads')) {
+            Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->string('name');
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->foreignId('assigned_to')->nullable()->constrained('teachers')->onDelete('set null');
             $table->timestamps();
         });
+        }
     }
 
     /**

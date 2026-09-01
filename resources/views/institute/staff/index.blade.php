@@ -416,16 +416,16 @@
             <div
                 class="relative w-full max-w-[600px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
             <!-- Modal Header -->
-            <div class="px-5 py-3.5 flex items-center justify-between shrink-0">
-                <h1 id="modal-title" class="text-base font-bold text-slate-800 tracking-tight">Add Staff Member</h1>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0">
+                <h1 id="modal-title" class="text-base font-bold text-white tracking-tight">Add Staff Member</h1>
+                <button type="button" onclick="closeAddModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="overflow-y-auto px-5 pb-5 custom-scrollbar">
+            <div class="overflow-y-auto px-6 pb-6 pt-4 custom-scrollbar">
                 <form id="add-staff-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="staff_id" id="staff_id">
@@ -467,30 +467,46 @@
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department</label>
+                            <label class="block text-[11px] font-bold text-slate-800 mb-1.5">Department(s) <span class="text-rose-500">*</span></label>
                             <div class="relative group" id="modal-dept-dropdown">
                                 <button type="button" onclick="toggleModalSelect('dept')" id="modal-dept-btn"
                                     class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-between focus:border-brand-800 focus:ring-4 focus:ring-brand-800/10 transition-all outline-none">
-                                    <span id="modal-dept-label">Select Department</span>
-                                    <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors"
+                                    <span id="modal-dept-label" class="truncate text-slate-400">Select Department(s)</span>
+                                    <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-800 transition-colors shrink-0 ml-2"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
                                 <div id="modal-dept-menu"
-                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden hidden transform origin-top transition-all">
-                                    <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar">
-                                        @foreach($departments as $dept)
-                                            <button type="button"
-                                                onclick="selectModalOption('dept', '{{ $dept->id }}', '{{ $dept->name }}')"
-                                                class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                                                {{ $dept->name }}
+                                    class="absolute z-[110] mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden hidden transform origin-top transition-all p-2.5">
+                                    <div class="flex items-center justify-between pb-2 mb-1.5 border-b border-slate-100 px-1">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Choose Departments</span>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" onclick="clearModalDepartments()" class="text-[11px] font-semibold text-rose-500 hover:text-rose-600 cursor-pointer">Clear</button>
+                                            <button type="button" onclick="closeModalDeptDropdown()" class="px-2.5 py-0.5 bg-[#FF6B00] text-white text-[11px] font-bold rounded-md hover:bg-orange-600 transition shadow-sm cursor-pointer flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                Done
                                             </button>
+                                        </div>
+                                    </div>
+                                    <div id="modal-dept-list" class="py-1 max-h-48 overflow-y-auto custom-scrollbar space-y-1">
+                                        @foreach($departments as $dept)
+                                            <label class="flex items-center gap-2.5 px-3 py-1.5 rounded-md hover:bg-orange-50/60 cursor-pointer transition text-xs font-medium text-slate-700">
+                                                <input type="checkbox" name="staff_department_ids[]" value="{{ $dept->id }}"
+                                                    onchange="updateModalDeptSelection()"
+                                                    class="modal-dept-checkbox rounded border-slate-300 text-[#FF6B00] focus:ring-[#FF6B00] h-4 w-4">
+                                                <span class="dept-name-label">{{ $dept->name }}</span>
+                                            </label>
                                         @endforeach
                                     </div>
+                                    <!-- <div class="pt-2 mt-1.5 border-t border-slate-100">
+                                        <button type="button" onclick="closeModalDeptDropdown()" class="w-full py-1.5 bg-[#FF6B00] text-white text-xs font-bold rounded-lg shadow-sm hover:bg-orange-600 transition flex items-center justify-center gap-1 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Done / Close
+                                        </button>
+                                    </div> -->
                                 </div>
-                                <input type="hidden" name="staff_department_id" id="field-dept" required>
                             </div>
                             <span id="error-staff_department_id"
                                 class="text-[10px] text-rose-500 font-bold mt-1 block"></span>
@@ -542,7 +558,7 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="field-salary" required placeholder="Enter Salary"
+                                    <input type="number" name="base_salary" id="field-salary" required min="1" max="999999" oninput="limitIntegerDigits(this, 6)" placeholder="Enter Salary"
                                         class="w-full pl-8 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:border-brand-800 outline-none transition-all">
                                 </div>
                             </div>
@@ -570,16 +586,16 @@
             <div
                 class="relative w-full max-w-[380px] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
             <!-- Modal Header -->
-            <div class="px-5 pt-3 pb-1 flex items-center justify-between border-b border-slate-50">
-                <h1 class="text-base font-bold text-slate-800 tracking-tight">Log Attendance</h1>
-                <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 transition-all">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0">
+                <h1 class="text-base font-bold text-white tracking-tight">Log Attendance</h1>
+                <button type="button" onclick="closeAttendanceModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="px-5 pb-5">
+            <div class="px-6 pb-6 pt-4">
                 <form id="log-attendance-form" class="space-y-4">
                     @csrf
                     <input type="hidden" name="id" id="attendance-id-input">
@@ -615,8 +631,7 @@
 
                     <!-- Select Date -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Select
-                            Date</label>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Date</label>
                         <div class="relative">
                             <input type="date" name="date" id="attendance-date" required value="{{ date('Y-m-d') }}"
                                 max="{{ date('Y-m-d') }}"
@@ -650,10 +665,10 @@
                         </div>
                     </div>
 
-                    <!-- Additional Notes -->
-                    <div>
-                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Additional
-                            Notes</label>
+                    <!-- Absent Reason -->
+                    <div id="attendance-note-container" class="hidden">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Absent
+                            Reason</label>
                         <textarea name="note" id="attendance-note" placeholder="Any comments or reasons for absence..."
                             class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:border-[#FF6B00] outline-none transition-all placeholder:text-slate-300 min-h-[80px] resize-none text-slate-700"></textarea>
                     </div>
@@ -683,24 +698,25 @@
     <div id="salary-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeSalaryModal()"></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row transition-all scale-95 opacity-0 duration-300"
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col transition-all scale-95 opacity-0 duration-300"
                 id="salary-modal-content">
-
-                <!-- Left Section: Form -->
-                <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-slate-100">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-800" id="salary-modal-title">Add Salary</h3>
-                            <p class="text-slate-400 text-xs mt-1">Record a new salary payment for your staff.</p>
-                        </div>
-                        <button onclick="closeSalaryModal()"
-                            class="text-slate-400 hover:text-slate-600 transition-all p-2 hover:bg-slate-50 rounded-lg md:hidden">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                <!-- Modal Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-white tracking-tight" id="salary-modal-title">Add Salary</h3>
+                        <p class="text-white/80 text-xs mt-0.5">Record a new salary payment for your staff.</p>
                     </div>
+                    <button type="button" onclick="closeSalaryModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex flex-col md:flex-row">
+                    <!-- Left Section: Form -->
+                    <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-slate-100">
+
 
                     <form id="salary-form" class="space-y-4">
                         @csrf
@@ -752,8 +768,8 @@
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Salary Amount</label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-2.5 text-slate-400 text-xs">₹</span>
-                                    <input type="number" name="base_salary" id="salary_base_amount"
-                                        oninput="updateSalaryPreview()" placeholder="0.00"
+                                    <input type="number" name="base_salary" id="salary_base_amount" min="1" max="999999"
+                                        oninput="limitIntegerDigits(this, 6); updateSalaryPreview()" placeholder="0.00"
                                         class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-[#FF6B00] transition-all">
                                 </div>
                             </div>
@@ -763,14 +779,14 @@
                                 <label class="block text-[11px] font-bold text-slate-800 uppercase tracking-wider">Leaves & Deduction</label>
                                 <div class="flex rounded-xl overflow-hidden border border-slate-200 bg-slate-50 focus-within:border-[#FF6B00] focus-within:ring-1 focus-within:ring-[#FF6B00]/20 transition-all">
                                     <div class="relative w-1/3 border-r border-slate-200">
-                                        <input type="number" name="leaves" id="salary_leaves" placeholder="Leaves" min="0" step="0.5"
+                                        <input type="number" name="leaves" id="salary_leaves" placeholder="Leaves" min="0" max="31" step="0.5"
                                             oninput="updateSalaryPreview()"
                                             class="w-full px-3 py-2.5 bg-transparent border-none text-xs font-bold outline-none text-center"
                                             title="Number of absent days">
                                     </div>
                                     <div class="relative w-2/3">
                                         <span class="absolute left-3 top-2.5 text-slate-400 text-xs">₹</span>
-                                        <input type="number" name="deductions" id="salary_leave_deduction_amount" placeholder="Deduction Amt" min="0"
+                                        <input type="number" name="deductions" id="salary_leave_deduction_amount" placeholder="Deduction Amt" min="0" max="999999"
                                             oninput="updateSalaryPreview()"
                                             class="w-full pl-7 pr-3 py-2.5 bg-transparent border-none text-xs font-bold outline-none"
                                             title="Total deduction amount for leaves">
@@ -815,15 +831,8 @@
 
                 <!-- Right Section: Summary -->
                 <div class="w-full md:w-[320px] bg-slate-50 p-5 flex flex-col">
-                    <div class="flex items-center justify-between mb-5">
+                    <div class="mb-5">
                         <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Review Summary</h4>
-                        <button onclick="closeSalaryModal()"
-                            class="text-slate-400 hover:text-slate-600 transition-all hidden md:block">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
                     </div>
 
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
@@ -894,6 +903,17 @@
         const PRIMARY_COLOR = '#FF6B00';
         const PRIMARY_HOVER = '#e66000';
 
+        // Restrict a numeric input's integer part to a maximum number of digits
+        function limitIntegerDigits(el, maxDigits) {
+            let val = el.value;
+            if (!val) return;
+            const parts = val.split('.');
+            if (parts[0].length > maxDigits) {
+                parts[0] = parts[0].slice(0, maxDigits);
+                el.value = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0, 2) : parts[0];
+            }
+        }
+
         let staffListData = [];
         let departmentsListData = [];
 
@@ -931,18 +951,23 @@
                 filterMenu.innerHTML = html;
             }
 
-            // 2. Populate the modal select dropdown:
-            const modalMenu = document.querySelector('#modal-dept-menu .py-1');
-            if (modalMenu) {
+            // 2. Populate the modal multi-select checkboxes:
+            const modalList = document.getElementById('modal-dept-list');
+            if (modalList) {
                 let html = '';
                 departments.forEach(dept => {
-                    html += `<button type="button"
-                        onclick="selectModalOption('dept', '${dept.id}', '${dept.name.replace(/'/g, "\\'")}')"
-                        class="w-full text-left px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-800 transition-colors">
-                        ${dept.name}
-                    </button>`;
+                    const isChecked = selectedModalDeptIds.includes(String(dept.id));
+                    html += `
+                        <label class="flex items-center gap-2.5 px-3 py-1.5 rounded-md hover:bg-orange-50/60 cursor-pointer transition text-xs font-medium text-slate-700">
+                            <input type="checkbox" name="staff_department_ids[]" value="${dept.id}" ${isChecked ? 'checked' : ''}
+                                onchange="updateModalDeptSelection()"
+                                class="modal-dept-checkbox rounded border-slate-300 text-[#FF6B00] focus:ring-[#FF6B00] h-4 w-4">
+                            <span class="dept-name-label">${dept.name}</span>
+                        </label>
+                    `;
                 });
-                modalMenu.innerHTML = html;
+                modalList.innerHTML = html;
+                updateModalDeptSelection();
             }
         }
 
@@ -1095,6 +1120,68 @@
             }
         }
 
+        let selectedModalDeptIds = [];
+
+        window.updateModalDeptSelection = () => {
+            const checkboxes = document.querySelectorAll('.modal-dept-checkbox:checked');
+            selectedModalDeptIds = Array.from(checkboxes).map(cb => cb.value);
+            const names = Array.from(checkboxes).map(cb => cb.closest('label').querySelector('.dept-name-label')?.innerText?.trim()).filter(Boolean);
+            
+            const labelEl = document.getElementById('modal-dept-label');
+            if (!labelEl) return;
+
+            if (names.length === 0) {
+                labelEl.innerText = 'Select Department(s)';
+                labelEl.classList.add('text-slate-400');
+                labelEl.classList.remove('text-slate-800');
+            } else if (names.length === 1) {
+                labelEl.innerText = names[0];
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            } else {
+                labelEl.innerText = `${names[0]}, ${names[1]}${names.length > 2 ? ` (+${names.length - 2} more)` : ''}`;
+                labelEl.classList.remove('text-slate-400');
+                labelEl.classList.add('text-slate-800');
+            }
+        };
+
+        window.clearModalDepartments = () => {
+            document.querySelectorAll('.modal-dept-checkbox').forEach(cb => cb.checked = false);
+            updateModalDeptSelection();
+        };
+
+        window.setModalDepartments = (deptIds) => {
+            const ids = (deptIds || []).map(String);
+            selectedModalDeptIds = ids;
+            document.querySelectorAll('.modal-dept-checkbox').forEach(cb => {
+                cb.checked = ids.includes(String(cb.value));
+            });
+            updateModalDeptSelection();
+        };
+
+        window.closeModalDeptDropdown = () => {
+            document.getElementById('modal-dept-menu')?.classList.add('hidden');
+        };
+
+        // Close modal dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#modal-dept-dropdown')) {
+                document.getElementById('modal-dept-menu')?.classList.add('hidden');
+            }
+        });
+
+        // Close modal dropdown when focusing other form fields
+        document.addEventListener('DOMContentLoaded', () => {
+            const addForm = document.getElementById('add-staff-form');
+            if (addForm) {
+                addForm.querySelectorAll('input:not(.modal-dept-checkbox), select, textarea').forEach(el => {
+                    el.addEventListener('focus', () => {
+                        document.getElementById('modal-dept-menu')?.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
         function renderStaff(staffMembers) {
             const grid = document.getElementById('staff-grid');
             if (!grid) return;
@@ -1108,6 +1195,15 @@
                 const profileImg = staff.profile_url ? staff.profile_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name)}&background=F1F5F9&color=64748B&bold=true`;
                 const statusColor = staff.status === 'active' || staff.status === 1 ? 'emerald' : 'slate';
                 const statusText = staff.status === 'active' || staff.status === 1 ? 'Active' : 'Inactive';
+
+                let deptBadges = '';
+                if (staff.departments && staff.departments.length > 0) {
+                    deptBadges = staff.departments.map(d => `<span class="px-1.5 py-0.5 bg-orange-50 text-[#ff6600] text-[8px] font-black rounded-md uppercase tracking-tight">${d.name}</span>`).join(' ');
+                } else if (staff.department) {
+                    deptBadges = `<span class="px-1.5 py-0.5 bg-orange-50 text-[#ff6600] text-[8px] font-black rounded-md uppercase tracking-tight">${staff.department.name}</span>`;
+                } else {
+                    deptBadges = `<span class="px-1.5 py-0.5 bg-slate-50 text-slate-400 text-[8px] font-black rounded-md uppercase tracking-tight">No Dept</span>`;
+                }
 
                 return `
                     <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-orange-900/5 transition-all duration-300 flex flex-col cursor-pointer relative animate-in fade-in slide-in-from-bottom-2"
@@ -1135,11 +1231,11 @@
 
                             <!-- Metrics Section -->
                             <div class="space-y-2 mt-auto">
-                                <div class="flex items-center justify-between border-slate-50">
-                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Department</span>
-                                    <span class="px-1.5 py-0.5 bg-orange-50 text-[#ff6600] text-[8px] font-black rounded-md uppercase tracking-tight">
-                                        ${staff.department ? staff.department.name.substring(0, 15) : 'No Dept'}
-                                    </span>
+                                <div class="flex items-center justify-between border-slate-50 gap-1.5">
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider shrink-0">Department</span>
+                                    <div class="flex flex-wrap gap-1 justify-end max-w-[70%]">
+                                        ${deptBadges}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1177,19 +1273,19 @@
             const to = Math.min(pagination.current_page * pagination.per_page, pagination.total);
 
             let html = `
-                                                    <p class="text-xs font-medium text-slate-400">
-                                                        Showing ${from} to ${to} of ${pagination.total} staff members
-                                                    </p>
-                                                    <div class="flex items-center gap-2">
-                                                `;
+                <p class="text-xs font-medium text-slate-400">
+                    Showing ${from} to ${to} of ${pagination.total} staff members
+                </p>
+                <div class="flex items-center gap-2">
+            `;
 
             // Previous Button
             html += `
-                                                    <button onclick="fetchStaff(${pagination.current_page - 1})" ${pagination.current_page === 1 ? 'disabled' : ''} 
-                                                        class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                                                        Previous
-                                                    </button>
-                                                `;
+                <button onclick="fetchStaff(${pagination.current_page - 1})" ${pagination.current_page === 1 ? 'disabled' : ''} 
+                    class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    Previous
+                </button>
+            `;
 
             // Page Numbers (Simplified)
             for (let i = 1; i <= pagination.last_page; i++) {
@@ -1204,11 +1300,11 @@
 
             // Next Button
             html += `
-                                                    <button onclick="fetchStaff(${pagination.current_page + 1})" ${pagination.current_page === pagination.last_page ? 'disabled' : ''} 
-                                                        class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                                                        Next
-                                                    </button>
-                                                `;
+                <button onclick="fetchStaff(${pagination.current_page + 1})" ${pagination.current_page === pagination.last_page ? 'disabled' : ''} 
+                    class="px-4 py-2 bg-white border border-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    Next
+                </button>
+            `;
 
             html += `</div>`;
             container.innerHTML = html;
@@ -1238,23 +1334,14 @@
 
         window.toggleModalSelect = (type) => {
             const menu = document.getElementById(`modal-${type}-menu`);
+            if (!menu) return;
             const isHidden = menu.classList.contains('hidden');
-
-            // Close all other modal selects first
-            ['role', 'dept'].forEach(t => {
-                const m = document.getElementById(`modal-${t}-menu`);
-                if (m) m.classList.add('hidden');
-            });
 
             if (isHidden) {
                 menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
             }
-        };
-
-        window.selectModalOption = (type, value, label) => {
-            document.getElementById(`field-${type}`).value = value;
-            document.getElementById(`modal-${type}-label`).innerText = label;
-            document.getElementById(`modal-${type}-menu`).classList.add('hidden');
         };
 
         window.openAddModal = () => {
@@ -1264,8 +1351,7 @@
             document.getElementById('image-preview').src = 'https://ui-avatars.com/api/?name=Staff&background=F1F5F9&color=64748B&bold=true';
 
             // Reset custom selects
-            document.getElementById('field-dept').value = '';
-            document.getElementById('modal-dept-label').innerText = 'Select Department';
+            setModalDepartments([]);
             document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             document.getElementById('add-staff-modal').classList.remove('hidden');
@@ -1286,9 +1372,14 @@
             document.getElementById('field-email').value = staff.email;
             document.getElementById('field-phone').value = staff.phone || '';
 
-            // Set custom select values
-            document.getElementById('field-dept').value = staff.staff_department_id;
-            document.getElementById('modal-dept-label').innerText = staff.department ? staff.department.name : 'Select Department';
+            // Set custom select values (departments)
+            let deptIds = [];
+            if (staff.departments && staff.departments.length > 0) {
+                deptIds = staff.departments.map(d => d.id);
+            } else if (staff.staff_department_id) {
+                deptIds = [staff.staff_department_id];
+            }
+            setModalDepartments(deptIds);
             document.getElementById('modal-dept-menu')?.classList.add('hidden');
 
             if (staff.employment_type === 'Hourly') {
@@ -1458,17 +1549,22 @@
             document.getElementById('attendance-status-input').value = status;
             const presentBtn = document.getElementById('status-present-btn');
             const absentBtn = document.getElementById('status-absent-btn');
+            const noteContainer = document.getElementById('attendance-note-container');
 
             if (status === 'Present') {
                 presentBtn.classList.add('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 presentBtn.classList.remove('border-slate-100', 'text-slate-400');
                 absentBtn.classList.remove('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 absentBtn.classList.add('border-slate-100', 'text-slate-400');
+                if (noteContainer) noteContainer.classList.add('hidden');
+                const noteInput = document.getElementById('attendance-note');
+                if (noteInput) noteInput.value = '';
             } else {
                 absentBtn.classList.add('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 absentBtn.classList.remove('border-slate-100', 'text-slate-400');
                 presentBtn.classList.remove('border-[#FF6B00]', 'bg-orange-50', 'text-[#FF6B00]');
                 presentBtn.classList.add('border-slate-100', 'text-slate-400');
+                if (noteContainer) noteContainer.classList.remove('hidden');
             }
         };
 
@@ -1901,7 +1997,7 @@
                                                             <div class="font-bold text-slate-700 text-xs">${staff.full_name || 'Unknown'}</div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-4 py-3 text-xs font-bold text-slate-500">${staff.employee_id || 'STF-' + staff.id}</td>
+                                                    <td class="px-4 py-3 text-xs font-bold text-slate-700">${staff.employee_id || (staff.created_at ? new Date(staff.created_at).toISOString().slice(0,10).replace(/-/g,'') + String(staff.id % 100).padStart(2, '0') : staff.id)}</td>
                                                     <td class="px-4 py-3 text-xs text-slate-500">${new Date(item.payment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                                                     <td class="px-4 py-3">
                                                         <span class="flex items-center gap-1.5 text-[10px] font-bold ${item.payment_method === 'Online' ? 'text-blue-600' : 'text-amber-600'}">
@@ -2119,8 +2215,15 @@
             const payload = new FormData();
             for (let [key, value] of formData.entries()) {
                 if (key !== '_token' && key !== 'leaves') {
-                    payload.append(key, value);
+                    if (key === 'deductions' || key === 'bonus') {
+                        payload.append(key, value ? parseFloat(value) || 0 : 0);
+                    } else {
+                        payload.append(key, value);
+                    }
                 }
+            }
+            if (!payload.has('deductions')) {
+                payload.append('deductions', 0);
             }
 
             try {
@@ -2132,10 +2235,16 @@
 
                 const result = await response.json();
                 if (response.ok) {
+                    showToast('Salary record saved successfully!', 'success');
                     closeSalaryModal();
                     fetchSalaries();
                 } else {
-                    showToast(result.message || 'Error saving salary record', 'error');
+                    let errMsg = result.message || 'Error saving salary record';
+                    if (result.errors) {
+                        const errList = Object.values(result.errors).flat();
+                        if (errList.length > 0) errMsg = errList[0];
+                    }
+                    showToast(errMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);

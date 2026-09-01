@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('subscription_payments', function (Blueprint $table) {
-            $table->string('payment_source')->default('admin')->after('payment_gateway');
+            if (!Schema::hasColumn('subscription_payments', 'payment_source')) {
+                $table->string('payment_source')->default('admin')->after('payment_gateway');
+            }
         });
     }
 

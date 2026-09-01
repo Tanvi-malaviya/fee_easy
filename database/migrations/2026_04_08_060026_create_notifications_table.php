@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('notifications', function (Blueprint $table) {
+        if (!Schema::hasTable('notifications')) {
+            Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('user_type');
             $table->unsignedBigInteger('user_id');
@@ -17,6 +18,7 @@ return new class extends Migration {
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('notifications'); }
 };

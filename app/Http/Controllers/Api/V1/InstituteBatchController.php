@@ -13,17 +13,35 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class InstituteBatchController extends Controller
 {
     /**
+     * Resolve the authenticated institute.
+     */
+    protected function getInstitute(Request $request)
+    {
+        $user = $request->user();
+        if ($user instanceof Institute) {
+            return $user;
+        }
+
+        if (auth('institute')->check()) {
+            return auth('institute')->user();
+        }
+
+        return null;
+    }
+
+    /**
      * Display a listing of batches belonging to the authenticated institute.
      */
     public function index(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $query = Batch::where('institute_id', $request->user()->id)
+        $query = Batch::where('institute_id', $institute->id)
             ->withCount('students')
-            ->with(['students:id,name,batch_id,profile_image', 'staff']);
+            ->with(['students:id,name,batch_id,profile_image,enrollment_id', 'staff']);
 
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
@@ -60,11 +78,12 @@ class InstituteBatchController extends Controller
 
     public function show(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)
+        $batch = Batch::where('institute_id', $institute->id)
             ->withCount('students')
             ->with('staff')
             ->find($id);
@@ -99,20 +118,21 @@ class InstituteBatchController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
+            'subject' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'fees' => 'required|numeric|min:0',
-            'start_time' => 'required|string',
-            'end_time' => 'required|string',
+            'start_time' => 'nullable|string',
+            'end_time' => 'nullable|string',
             'days' => 'required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $institute->id,
         ]);
 
         if ($request->has('days') && is_array($request->days)) {
@@ -125,7 +145,7 @@ class InstituteBatchController extends Controller
         }
 
         $batch = Batch::create([
-            'institute_id' => $request->user()->id,
+            'institute_id' => $institute->id,
             'name' => $request->name,
             'subject' => $request->subject,
             'description' => $request->description,
@@ -149,11 +169,12 @@ class InstituteBatchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -164,14 +185,14 @@ class InstituteBatchController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'subject' => 'sometimes|required|string|max:255',
+            'subject' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'fees' => 'sometimes|required|numeric|min:0',
-            'start_time' => 'sometimes|required|string',
-            'end_time' => 'sometimes|required|string',
+            'start_time' => 'nullable|string',
+            'end_time' => 'nullable|string',
             'days' => 'sometimes|required|array|min:1',
             'classroom' => 'nullable|string|max:255',
-            'staff_id' => 'required|exists:staff,id,institute_id,' . $request->user()->id,
+            'staff_id' => 'nullable|exists:staff,id,institute_id,' . $institute->id,
         ]);
 
         $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
@@ -265,11 +286,12 @@ class InstituteBatchController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -291,11 +313,12 @@ class InstituteBatchController extends Controller
      */
     public function close(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -314,16 +337,16 @@ class InstituteBatchController extends Controller
 
     public function export(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batches = Batch::where('institute_id', $request->user()->id)
+        $batches = Batch::where('institute_id', $institute->id)
             ->withCount('students')
             ->with('staff')
             ->get();
 
-        $institute = $request->user();
         $date = date('d M, Y h:i A');
 
         $pdf = Pdf::loadView('institute.export.batches_pdf', compact('batches', 'institute', 'date'));
@@ -332,11 +355,12 @@ class InstituteBatchController extends Controller
 
     public function removeStudent(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -350,7 +374,7 @@ class InstituteBatchController extends Controller
         ]);
 
         $student = \App\Models\Student::where('id', $request->student_id)
-            ->where('institute_id', $request->user()->id)
+            ->where('institute_id', $institute->id)
             ->where('batch_id', $id)
             ->first();
 
@@ -413,11 +437,12 @@ class InstituteBatchController extends Controller
 
     public function assignStudents(Request $request, $id)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $batch = Batch::where('institute_id', $request->user()->id)->find($id);
+        $batch = Batch::where('institute_id', $institute->id)->find($id);
 
         if (!$batch) {
             return response()->json([
@@ -439,7 +464,7 @@ class InstituteBatchController extends Controller
         foreach ($request->students as $studentData) {
             $student = \App\Models\Student::with('parent')
                 ->where('id', $studentData['id'])
-                ->where('institute_id', $request->user()->id)
+                ->where('institute_id', $institute->id)
                 ->first();
 
             if ($student) {
@@ -509,6 +534,103 @@ class InstituteBatchController extends Controller
                 'count' => $count,
                 'students' => $assignedStudents
             ]
+        ]);
+    }
+
+    /**
+     * Send bulk fee reminder notifications to all students in this batch who have pending fee dues (Mobile App API).
+     */
+    public function sendFeeReminders(Request $request, $id)
+    {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $batch = Batch::where('id', $id)
+            ->where('institute_id', $institute->id)
+            ->first();
+
+        if (!$batch) {
+            return response()->json(['status' => 'error', 'message' => 'Batch not found or unauthorized'], 404);
+        }
+
+        $students = $batch->students()->with('parent')->get();
+        $fcm = app(\App\Services\FCMService::class);
+        $sentCount = 0;
+        $title = 'Fee Payment Reminder';
+
+        foreach ($students as $student) {
+            $totalPaid = (float) \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+            if ($totalPaid == 0) {
+                $totalPaid = (float) \App\Models\Fee::where('student_id', $student->id)->sum('paid_amount');
+            }
+            $expectedFee = ($student->monthly_fee && $student->monthly_fee > 0) ? (float) $student->monthly_fee : (float) ($batch->fees ?? 0);
+            $balance = max(0, $expectedFee - $totalPaid);
+
+            if ($balance > 0) {
+                $formattedBal = '₹' . number_format($balance);
+                $studentMsg = "Dear {$student->name}, your pending fee balance of {$formattedBal} for batch {$batch->name} is due. Please clear it soon.";
+                $parentMsg = "Dear Parent, {$student->name}'s pending fee balance of {$formattedBal} for batch {$batch->name} is due. Please clear it soon.";
+
+                // 1. Student DB Notification
+                \App\Models\Notification::create([
+                    'user_type' => 'student',
+                    'user_id'   => $student->id,
+                    'title'     => $title,
+                    'message'   => $studentMsg,
+                    'type'      => 'fee_reminder',
+                    'reference_id' => $batch->id,
+                    'is_read'   => false,
+                ]);
+
+                // 2. Parent DB Notification
+                if ($student->parent_id) {
+                    \App\Models\Notification::create([
+                        'user_type' => 'parent',
+                        'user_id'   => $student->parent_id,
+                        'title'     => $title,
+                        'message'   => $parentMsg,
+                        'type'      => 'fee_reminder',
+                        'reference_id' => $batch->id,
+                        'is_read'   => false,
+                    ]);
+                }
+
+                $fcmData = [
+                    'type' => 'fee_reminder',
+                    'batch_id' => (string) $batch->id,
+                    'amount' => (string) $balance,
+                ];
+
+                // 3. FCM to Student
+                if (!empty($student->fcm_token)) {
+                    try {
+                        $fcm->send($student->fcm_token, $title, $studentMsg, $fcmData);
+                    } catch (\Exception $e) {}
+                }
+
+                // 4. FCM to Parent
+                if ($student->parent && !empty($student->parent->fcm_token)) {
+                    try {
+                        $fcm->send($student->parent->fcm_token, $title, $parentMsg, $fcmData);
+                    } catch (\Exception $e) {}
+                }
+
+                $sentCount++;
+            }
+        }
+
+        if ($sentCount === 0) {
+            return response()->json([
+                'status' => 'info',
+                'message' => 'No students in this batch have pending fee dues.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Fee reminder sent successfully to {$sentCount} student(s) with pending dues."
         ]);
     }
 }

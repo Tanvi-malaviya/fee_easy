@@ -12,13 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Use manual ALTER for broader compatibility
-        DB::statement('ALTER TABLE leads CHANGE name full_name VARCHAR(255) NOT NULL');
-        DB::statement('ALTER TABLE leads CHANGE course_interest course_selection VARCHAR(255) NULL');
-
+        if (Schema::hasColumn('leads', 'name') && !Schema::hasColumn('leads', 'full_name')) {
+            DB::statement('ALTER TABLE leads CHANGE name full_name VARCHAR(255) NOT NULL');
+        }
+        if (Schema::hasColumn('leads', 'course_interest') && !Schema::hasColumn('leads', 'course_selection')) {
+            DB::statement('ALTER TABLE leads CHANGE course_interest course_selection VARCHAR(255) NULL');
+        }
         Schema::table('leads', function (Blueprint $table) {
-            $table->text('address')->nullable()->after('email');
-            $table->string('reference')->nullable()->after('course_selection');
+            if (!Schema::hasColumn('leads', 'address')) {
+                $table->text('address')->nullable()->after('email');
+            }
+            if (!Schema::hasColumn('leads', 'reference')) {
+                $table->string('reference')->nullable()->after('course_selection');
+            }
         });
     }
 

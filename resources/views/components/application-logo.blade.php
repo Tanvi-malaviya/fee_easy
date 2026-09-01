@@ -1,1 +1,1 @@
-<img src="{{ url('assets/images/logo.png') }}" alt="Logo" {{ $attributes }}>
+<img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" {{ $attributes }}>

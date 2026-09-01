@@ -3,6 +3,40 @@
         <div class="max-w-7xl mx-auto">
 
 
+            <!-- Add-On Feature Highlight & Quick Edit Banner -->
+            <div class="mb-4 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent border border-orange-200/80 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+                <div class="flex items-start sm:items-center gap-3.5">
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-[#ff6c00] to-orange-400 text-white flex items-center justify-center shadow-md shadow-orange-500/20 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md bg-[#ff6c00] text-white text-[9px] font-black uppercase tracking-wider">Add-On Feature</span>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ $whiteLabelAddon['billing_type'] ?? 'One Time' }}</span>
+                            @if(!empty($whiteLabelAddon['enabled']))
+                                <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-bold uppercase">Active</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-md bg-gray-100 text-gray-500 text-[9px] font-bold uppercase">Inactive</span>
+                            @endif
+                        </div>
+                        <h3 class="text-base font-extrabold text-gray-900 tracking-tight mt-0.5">
+                            {{ $whiteLabelAddon['title'] ?? 'Mobile App White Label' }} — <span class="text-[#ff6c00]">{{ $currency }}{{ number_format($whiteLabelAddon['price'] ?? 5000) }}</span>
+                        </h3>
+                        <p class="text-xs text-gray-500 font-medium max-w-2xl leading-relaxed mt-0.5">
+                            {{ $whiteLabelAddon['description'] ?? 'Custom branded Android & iOS Mobile Application published with your institute branding on Play Store & App Store.' }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 self-end md:self-auto flex-shrink-0">
+                    <button type="button" onclick="openEditAddonModal()"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-orange-50 border border-orange-200 text-[#ff6c00] text-xs font-bold rounded-xl shadow-xs hover:border-orange-300 transition-all cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        Edit Add-On Price
+                    </button>
+                </div>
+            </div>
+
             <!-- Filters & Search -->
             <div class=" mb-3">
                 <form id="search-form" action="{{ route('plans.index') }}" method="GET"
@@ -57,7 +91,7 @@
                             @endif -->
 
                     <div class="flex items-center ml-auto">
-                        <button type="button" @click="$dispatch('open-modal', 'create-plan')"
+                        <button type="button" @click="$dispatch('open-modal', 'create-plan')" onclick="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'create-plan' }))"
                             class="relative inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-primary hover:opacity-90 focus:outline-none transition shadow-primary/20 whitespace-nowrap min-w-[150px]">
                             <span class="flex items-center btn-content">
                                 <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +248,7 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <x-input-label for="create_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
-                        <x-text-input id="create_price" name="price" type="number" step="1" min="0"
+                        <x-text-input id="create_price" name="price" type="number" step="1" min="0" max="999999"
                             class="mt-0.5 block w-full bg-gray-50 p-2 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="100" required />
                     </div>
 
@@ -236,12 +270,75 @@
                 </div>
             </div>
 
-            <input type="hidden" name="trial_days" value="0">
-
             <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
                 <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
                 <x-primary-button class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Save
                     Plan</x-primary-button>
+            </div>
+        </form>
+    </x-modal>
+
+    <!-- Edit White Label Add-On Modal -->
+    <x-modal name="edit-whitelabel-addon" maxWidth="lg" focusable>
+        <form method="POST" action="{{ route('plans.addon.update') }}" class="p-6">
+            @csrf
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-8 w-8 rounded-xl bg-orange-100 text-primary flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-900 leading-tight">Edit Mobile App White Label Add-On</h2>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Global Add-On Configuration</p>
+                    </div>
+                </div>
+                <button type="button" x-on:click="$dispatch('close')" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <x-input-label for="addon_title" value="Add-on Display Title" class="text-xs font-semibold" />
+                    <x-text-input id="addon_title" name="title" type="text"
+                        value="{{ $whiteLabelAddon['title'] ?? 'Mobile App White Label' }}"
+                        class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm" required />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="addon_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
+                        <x-text-input id="addon_price" name="price" type="number" step="1" min="0" max="999999"
+                            value="{{ $whiteLabelAddon['price'] ?? 5000 }}"
+                            class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm font-bold text-gray-800" required />
+                    </div>
+                    <div>
+                        <x-input-label for="addon_billing_type" value="Billing Frequency" class="text-xs font-semibold" />
+                        <x-text-input id="addon_billing_type" name="billing_type" type="text"
+                            value="{{ $whiteLabelAddon['billing_type'] ?? 'One Time' }}"
+                            class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm" required />
+                    </div>
+                </div>
+
+                <div>
+                    <x-input-label for="addon_status" value="Status" class="text-xs font-semibold" />
+                    <select name="enabled" id="addon_status"
+                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3 py-2 border text-sm text-gray-900 bg-gray-50 focus:bg-white cursor-pointer outline-none">
+                        <option value="1" {{ ($whiteLabelAddon['enabled'] ?? true) ? 'selected' : '' }}>Active (Visible on Web & Mobile)</option>
+                        <option value="0" {{ !($whiteLabelAddon['enabled'] ?? true) ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+
+                <div>
+                    <x-input-label for="addon_description" value="Description" class="text-xs font-semibold" />
+                    <textarea id="addon_description" name="description" rows="3"
+                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition p-3 border text-xs text-gray-900 bg-gray-50 focus:bg-white outline-none">{{ $whiteLabelAddon['description'] ?? '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-4">
+                <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
+                <x-primary-button class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Update Add-On</x-primary-button>
             </div>
         </form>
     </x-modal>
@@ -263,7 +360,7 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <x-input-label for="edit_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
-                        <x-text-input id="edit_price" name="price" type="number" step="1" min="0"
+                        <x-text-input id="edit_price" name="price" type="number" step="1" min="0" max="999999"
                             class="mt-0.5 block w-full bg-gray-50 focus:bg-white focus:ring-primary focus:border-primary text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
                     </div>
 
@@ -284,8 +381,6 @@
                     </div>
                 </div>
             </div>
-
-            <input type="hidden" name="trial_days" id="edit_trial" value="0">
 
             <div class="mt-5 flex justify-end gap-3 border-t border-gray-100 pt-3">
                 <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
@@ -407,6 +502,10 @@
             menu.style.top = (spaceBelow < menuHeight ? (rect.top + window.scrollY - menuHeight - 8) : (rect.bottom + window.scrollY + 8)) + 'px';
             menu.style.left = (rect.left + window.scrollX) + 'px';
             menu.classList.remove('hidden');
+        }
+
+        function openEditAddonModal() {
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-whitelabel-addon' }));
         }
 
         function openEditPlanModal(plan) {

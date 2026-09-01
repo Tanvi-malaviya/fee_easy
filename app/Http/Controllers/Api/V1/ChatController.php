@@ -92,9 +92,24 @@ class ChatController extends Controller
 
         $message->load('sender', 'receiver');
 
+        $receiver = $message->receiver;
+        $hasFcm = false;
+        if ($receiver) {
+            if ($receiver instanceof Institute) {
+                $hasFcm = \App\Models\DeviceSession::where('institute_id', $receiver->id)
+                    ->whereNotNull('fcm_token')
+                    ->where('fcm_token', '!=', '')
+                    ->exists();
+            } else {
+                $hasFcm = !empty($receiver->fcm_token);
+            }
+        }
+
         // Trigger real-time FCM push notification to receiver mobile phone
-        if ($message->receiver && !empty($message->receiver->fcm_token)) {
-            $senderName = $user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone';
+        if ($hasFcm) {
+            $senderName = $user instanceof Institute
+                ? ($user->institute_name ?: ($user->name ?? 'Someone'))
+                : ($user->name ?? $user->full_name ?? $user->institute_name ?? 'Someone');
 
             // Set descriptive body for non-text messages
             $body = $message->message;
@@ -137,7 +152,9 @@ class ChatController extends Controller
             'updated_at' => $message->updated_at,
             'sender' => $message->sender ? [
                 'id' => $message->sender->id,
-                'name' => $message->sender->name ?? $message->sender->full_name ?? $message->sender->institute_name ?? 'Unknown',
+                'name' => $message->sender instanceof Institute
+                    ? ($message->sender->institute_name ?: ($message->sender->name ?? 'Unknown'))
+                    : ($message->sender->name ?? $message->sender->full_name ?? $message->sender->institute_name ?? 'Unknown'),
                 'logo' => $message->sender->logo ?? $message->sender->profile_image ?? null,
                 'type' => class_basename($message->sender_type)
             ] : null,

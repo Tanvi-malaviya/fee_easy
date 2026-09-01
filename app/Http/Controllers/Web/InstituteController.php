@@ -57,7 +57,7 @@ class InstituteController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email|max:255',
+            'email' => 'required|email:rfc|unique:institutes,email|max:255',
             'phone' => 'required|string|regex:/^[0-9]{10}$/',
             'address' => 'required|string',
             'city' => 'required|string|max:100',
@@ -116,7 +116,7 @@ class InstituteController extends Controller
                 $q->with('staff.role', 'staff.department')->latest('payment_date');
             },
             'batches' => function ($q) {
-                $q->latest();
+                $q->withCount('students')->latest();
             },
             'expenses' => function ($q) {
                 $q->latest();
@@ -146,7 +146,7 @@ class InstituteController extends Controller
             'total_expenses' => $institute->expenses()->sum('amount'),
             'leads_count' => $institute->leads()->count(),
             'notes_count' => $institute->notes()->count(),
-            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first() ?? $institute->subscriptions()->where('status', 'trial')->first(),
+            'active_subscription' => $institute->subscriptions()->where('status', 'active')->first(),
         ];
 
         return view('institutes.show', compact('institute', 'stats'));
@@ -168,7 +168,7 @@ class InstituteController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email,' . $institute->id . '|max:255',
+            'email' => 'required|email:rfc|unique:institutes,email,' . $institute->id . '|max:255',
             'phone' => 'required|string|regex:/^[0-9]{10}$/',
             'address' => 'required|string',
             'city' => 'required|string|max:100',
@@ -180,10 +180,25 @@ class InstituteController extends Controller
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
+            'is_custom_smtp_enabled' => 'nullable|boolean',
+            'mail_mailer' => 'nullable|string|max:50',
+            'mail_host' => 'nullable|string|max:255',
+            'mail_port' => 'nullable|string|max:10',
+            'mail_username' => 'nullable|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|string|max:20',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name' => 'nullable|string|max:255',
         ], [
             'phone.regex' => 'The phone number must be exactly 10 digits.',
             'pincode.regex' => 'The pincode must be exactly 6 digits.',
         ]);
+
+        $validated['is_custom_smtp_enabled'] = $request->boolean('is_custom_smtp_enabled');
+
+        if ($request->has('mail_password') && empty($request->mail_password)) {
+            unset($validated['mail_password']);
+        }
 
         $newLogo = $this->handleLogo($request, $institute->logo);
         if ($newLogo) {
@@ -205,6 +220,34 @@ class InstituteController extends Controller
             : route('institutes.show', $institute);
 
         return redirect($redirectTo)->with('success', 'Institute updated successfully.');
+    }
+
+    /**
+     * Test SMTP Connection for an institute.
+     */
+    public function testSmtp(Request $request, Institute $institute)
+    {
+        $request->validate([
+            'test_email' => 'required|email',
+        ]);
+
+        // If form fields were posted, temporarily use them on the instance to test before saving
+        if ($request->filled('mail_host')) {
+            $institute->mail_host = $request->mail_host;
+            $institute->mail_port = $request->mail_port;
+            $institute->mail_username = $request->mail_username;
+            if ($request->filled('mail_password')) {
+                $institute->mail_password = $request->mail_password;
+            }
+            $institute->mail_encryption = $request->mail_encryption ?: 'tls';
+            $institute->mail_from_address = $request->mail_from_address;
+            $institute->mail_from_name = $request->mail_from_name;
+            $institute->is_custom_smtp_enabled = true;
+        }
+
+        $result = \App\Services\InstituteMailService::testConnection($institute, $request->test_email);
+
+        return response()->json($result);
     }
 
     public function destroy(Institute $institute)

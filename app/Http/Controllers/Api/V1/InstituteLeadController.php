@@ -44,8 +44,8 @@ class InstituteLeadController extends Controller
 
         $request->validate([
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:10',
-            'email' => 'required|email:rfc,dns|max:255',
+            'phone' => 'required|digits:10',
+            'email' => 'required|email:rfc|max:255',
             'course_selection' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'reference' => 'nullable|string|max:255',
@@ -73,8 +73,8 @@ class InstituteLeadController extends Controller
 
         $request->validate([
             'full_name' => 'sometimes|required|string|max:255',
-            'phone' => 'sometimes|required|string|max:10',
-            'email' => 'sometimes|required|email:rfc,dns|max:255',
+            'phone' => 'sometimes|required|digits:10',
+            'email' => 'sometimes|required|email:rfc|max:255',
             'course_selection' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'reference' => 'nullable|string|max:255',

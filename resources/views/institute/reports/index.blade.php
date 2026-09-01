@@ -1,9 +1,5 @@
 @extends('layouts.institute')
 
-@php
-    $batches = \App\Models\Batch::where('institute_id', auth()->id())->get();
-@endphp
-
 @section('content')
     <div class="space-y-1 max-w-[1600px] mx-auto pb-5 px-4 animate-in fade-in duration-500">
         <!-- Page Header -->
@@ -43,10 +39,10 @@
 
             <!-- Section: Hub -->
             <div id="section-hub" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     <!-- Attendance Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-7 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-orange-50 rounded-xl flex items-center justify-center text-[#ff6c00] mb-3 shadow-sm">
@@ -55,20 +51,20 @@
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-medium text-slate-900 tracking-tight mb-2">Attendance Report
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-2">Attendance Report
                             </h3>
-                            <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-3">Comprehensive
+                            <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed mb-4">Comprehensive
                                 analysis of daily, weekly, and monthly student presence across all active batches.</p>
                         </div>
                         <button onclick="switchTab('attendance')"
-                            class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                            class="w-full py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
                             View Report
                         </button>
                     </div>
 
                     <!-- Fees Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-7 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-500 mb-3 shadow-sm">
@@ -77,21 +73,21 @@
                                         d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-medium text-slate-900 tracking-tight mb-2">Fee Collection
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-2">Fee Collection
                                 Report</h3>
-                            <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-3">Track
+                            <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed mb-4">Track
                                 incoming revenue, pending dues, and scholarship distributions with granular filtering
                                 options.</p>
                         </div>
                         <button onclick="switchTab('fees')"
-                            class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                            class="w-full py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
                             View Report
                         </button>
                     </div>
 
                     <!-- Performance Card -->
                     <div
-                        class="bg-white p-6 md:p-8 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        class="bg-white p-6 md:p-7 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
                         <div>
                             <div
                                 class="h-12 w-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 mb-3 shadow-sm">
@@ -100,18 +96,41 @@
                                         d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                 </svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-medium text-slate-900 tracking-tight mb-2">Student
-                                Performance Report</h3>
-                            <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium leading-relaxed mb-3">Deep dive
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-2">Student
+                                Performance</h3>
+                            <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed mb-4">Deep dive
                                 into examination results, assignment completion rates, and individual student growth curves.
                             </p>
                         </div>
                         <button onclick="switchTab('performance')"
-                            class="w-full py-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                            class="w-full py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                            View Report
+                        </button>
+                    </div>
+
+                    <!-- Student Wise Report Card -->
+                    <div
+                        class="bg-white p-6 md:p-7 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        <div>
+                            <div
+                                class="h-12 w-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-3 shadow-sm">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-2">Student Wise
+                                Report</h3>
+                            <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed mb-4">Granular student
+                                profile breakdown with academic records, exams, attendance logs, homework, and fee history.</p>
+                        </div>
+                        <button onclick="switchTab('student')"
+                            class="w-full py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
                             View Report
                         </button>
                     </div>
                 </div>
+            </div>
 
                 <!-- Recently Generated Reports -->
                 <!-- <div class="space-y-2 mt-6">
@@ -768,9 +787,477 @@
                         class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-100 disabled:opacity-50 flex items-center justify-center">Next</button>
                 </div>
             </div>
+        </div>
     </div>
-</div>
-</div>
+
+    <!-- Section: Student Wise Report -->
+    <div id="section-student" class="tab-section space-y-4 hidden">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-xl font-[580] text-slate-800 tracking-tight">Student Wise Report</h2>
+                    <p class="text-xs font-medium text-slate-400 mt-0.5">Comprehensive individual student analytics, exams, attendance, and fee history.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="exportStudentReport()" id="btn-export-student-report"
+                        class="px-3.5 py-2 bg-white border border-slate-100 text-slate-600 rounded-xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export PDF
+                    </button>
+                    <!-- <button type="button" onclick="emailStudentReportFromReports()" id="btn-email-student-report"
+                        class="px-3.5 py-2 bg-white border border-emerald-200 text-emerald-600 rounded-xl font-bold text-xs shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Send Email Report
+                    </button> -->
+                    <!-- <div id="student-report-top-actions"></div> -->
+                </div>
+            </div>
+
+            <!-- Batch & Student Selectors Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                    <!-- Searchable Batch Selector -->
+                    <div class="sm:w-72 relative" id="batch-dropdown-container">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            Select Batch (Default: Last Batch)
+                        </label>
+                        
+                        <!-- Hidden native select for fallback/form compatibility -->
+                        <select id="student-report-batch-select" class="hidden">
+                            @forelse($batches as $b)
+                                <option value="{{ $b->id }}" {{ $loop->last ? 'selected' : '' }}>{{ $b->name }} ({{ $b->students_count ?? $b->students()->count() }} Students)</option>
+                            @empty
+                                <option value="">No batches found</option>
+                            @endforelse
+                        </select>
+
+                        <!-- Custom Searchable Trigger Button -->
+                        <button type="button" id="batch-dropdown-btn" onclick="toggleBatchDropdown(event)"
+                            class="w-full text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200 focus:border-[#f97316] rounded-xl py-2 px-3 flex items-center justify-between gap-2 transition-all shadow-xs group">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <div class="h-6 w-6 rounded-lg bg-orange-100/80 text-[#f97316] flex items-center justify-center flex-shrink-0 text-xs font-black">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                </div>
+                                <span id="batch-dropdown-label" class="text-xs font-bold text-slate-800 truncate">Select Batch</span>
+                            </div>
+                            <svg id="batch-dropdown-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Custom Dropdown Panel -->
+                        <div id="batch-dropdown-menu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/60">
+                                <div class="relative">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input type="text" id="batch-search-input" oninput="filterBatchOptions()" placeholder="Search batch name..." autocomplete="off"
+                                        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-[#f97316] focus:ring-2 focus:ring-orange-500/10 transition-all">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div id="batch-options-list" class="max-h-56 overflow-y-auto p-1.5 space-y-0.5 custom-scrollbar">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Searchable Student Selector -->
+                    <div class="flex-1 sm:max-w-md relative" id="student-dropdown-container">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Select Student
+                        </label>
+
+                        <!-- Hidden native select for fallback/form compatibility -->
+                        <select id="student-report-student-select" class="hidden">
+                            <option value="">Loading students...</option>
+                        </select>
+
+                        <!-- Custom Searchable Trigger Button -->
+                        <button type="button" id="student-dropdown-btn" onclick="toggleStudentDropdown(event)"
+                            class="w-full text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200 focus:border-indigo-500 rounded-xl py-2 px-3 flex items-center justify-between gap-2 transition-all shadow-xs group">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <div id="student-dropdown-avatar" class="h-6 w-6 rounded-lg bg-indigo-100/80 text-indigo-600 flex items-center justify-center flex-shrink-0 text-xs font-black">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div class="truncate flex-1">
+                                    <span id="student-dropdown-label" class="text-xs font-bold text-slate-800 truncate block">Loading students...</span>
+                                </div>
+                            </div>
+                            <svg id="student-dropdown-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Custom Dropdown Panel -->
+                        <div id="student-dropdown-menu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-100 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/60">
+                                <div class="relative">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input type="text" id="student-search-input" oninput="filterStudentOptions()" placeholder="Search by student name or ID..." autocomplete="off"
+                                        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div id="student-options-list" class="max-h-56 overflow-y-auto p-1.5 space-y-0.5 custom-scrollbar">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 self-end md:self-auto text-xs font-semibold text-slate-400">
+                    <span id="student-batch-badge" class="px-3 py-1.5 bg-orange-50 text-[#f97316] rounded-xl text-[11px] font-bold border border-orange-100 hidden"></span>
+                </div>
+            </div>
+
+            <!-- Empty State (No Students in Batch) -->
+            <div id="student-report-empty" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center hidden">
+                <div class="h-16 w-16 bg-orange-50 text-[#f97316] rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">No Students in this Batch</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Please select another batch or add students to this batch to view detailed student wise reports.</p>
+            </div>
+
+            <!-- Detailed Student Profile & Tabs Section (Identical to Student Details Page) -->
+            <div id="student-report-container" class="space-y-4 hidden">
+                <!-- Profile Header & Fee Balance Grid (2/3 + 1/3) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Profile Card (2/3) -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-center relative">
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <div class="relative">
+                                <div id="stu-report-avatar-container" class="h-20 w-20 rounded-2xl bg-slate-50 overflow-hidden border-2 border-white shadow-md">
+                                    <img id="stu-report-img" src="" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <div class="flex-1 text-center sm:text-left">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div>
+                                        <h1 id="stu-report-name" class="text-xl font-bold text-slate-800 tracking-tight">Student Name</h1>
+                                        <p class="text-[10px] text-slate-400 mt-0.5 font-semibold uppercase tracking-widest">
+                                            Enrollment ID: <span id="stu-report-enrollment" class="text-slate-600 font-bold">STU-0000</span>
+                                        </p>
+                                    </div>
+                                    <div id="stu-report-profile-link-wrap"></div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-4">
+                                    <div class="bg-slate-50 rounded-xl px-3 py-2 border border-slate-100 min-w-[90px]">
+                                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Avg Grade</p>
+                                        <p id="stu-report-avg-grade" class="text-sm font-bold text-slate-700">0/10</p>
+                                    </div>
+                                    <div id="stu-report-payment-badge" class="rounded-xl px-3 py-2 border min-w-[90px] bg-emerald-50/30 border-emerald-100">
+                                        <p class="text-[8px] font-bold uppercase tracking-widest mb-0.5 text-emerald-600/50">Payment Status</p>
+                                        <p id="stu-report-payment-status" class="text-sm font-bold text-emerald-700">Full Paid</p>
+                                    </div>
+                                    <div class="bg-blue-50/30 rounded-xl px-3 py-2 border border-blue-100 min-w-[90px]">
+                                        <p class="text-[8px] font-bold text-blue-600/50 uppercase tracking-widest mb-0.5">Attendance</p>
+                                        <p id="stu-report-attendance-pct" class="text-sm font-bold text-blue-600">0%</p>
+                                    </div>
+                                    <div class="bg-indigo-50/30 rounded-xl px-3 py-2 border border-indigo-100 min-w-[90px]">
+                                        <p class="text-[8px] font-bold text-indigo-600/50 uppercase tracking-widest mb-0.5">Exams</p>
+                                        <p id="stu-report-exams-count" class="text-sm font-bold text-indigo-600">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fee Balance Card (1/3) -->
+                    <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -mr-8 -mt-8"></div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <h2 class="text-xs font-bold text-slate-700 tracking-tight uppercase">Fee Balance</h2>
+                            </div>
+
+                            <div class="mb-3 bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pending Amount</p>
+                                <div class="flex items-baseline gap-1.5">
+                                    <span id="stu-report-balance" class="text-2xl font-black text-slate-800 tracking-tighter">₹0</span>
+                                    <span id="stu-report-monthly-total" class="text-[9px] font-bold text-slate-400">/ ₹0 Total</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-50 pt-2.5">
+                            <div class="flex justify-between text-[10px]">
+                                <span class="font-bold text-slate-400 uppercase">Standard</span>
+                                <span id="stu-report-standard" class="font-bold text-slate-600">—</span>
+                            </div>
+                            <div class="flex justify-between text-[10px]">
+                                <span class="font-bold text-slate-400 uppercase">Batch</span>
+                                <span id="stu-report-batch-name" class="font-bold text-slate-600">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs Bar (Like Student Details Page) -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 flex flex-wrap items-center gap-1.5">
+                    <button type="button" onclick="switchStuReportSubTab('academic')" id="stu-report-tab-btn-academic"
+                        class="stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-[#ff6c00] text-white shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span>Academic & Info</span>
+                    </button>
+
+                    <button type="button" onclick="switchStuReportSubTab('exams')" id="stu-report-tab-btn-exams"
+                        class="stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Exams & Marks</span>
+                        <span id="stu-report-badge-exams-count" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600">0</span>
+                    </button>
+
+                    <button type="button" onclick="switchStuReportSubTab('attendance')" id="stu-report-tab-btn-attendance"
+                        class="stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Attendance</span>
+                        <span id="stu-report-badge-att-pct" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-600">0%</span>
+                    </button>
+
+                    <button type="button" onclick="switchStuReportSubTab('homework')" id="stu-report-tab-btn-homework"
+                        class="stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <span>Homework</span>
+                        <span id="stu-report-badge-hw-count" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600">0</span>
+                    </button>
+
+                    <button type="button" onclick="switchStuReportSubTab('fees')" id="stu-report-tab-btn-fees"
+                        class="stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>Fee History</span>
+                        <span id="stu-report-badge-fees-count" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600">0</span>
+                    </button>
+                </div>
+
+                <!-- TAB 1: Academic & Contact Information -->
+                <div id="stu-report-pane-academic" class="stu-report-tab-pane">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-1.5 h-4 bg-blue-600 rounded-full"></div>
+                            <h2 class="text-sm font-bold text-slate-800 tracking-tight">Academic & Contact Information</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-8">
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Batch Name</p>
+                                <p id="stu-report-info-batch" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Date of Admission</p>
+                                <p id="stu-report-info-admission" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Parent / Guardian</p>
+                                <p id="stu-report-info-guardian" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Phone Number</p>
+                                <p id="stu-report-info-phone" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
+                                <p id="stu-report-info-email" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Date of Birth</p>
+                                <p id="stu-report-info-dob" class="text-sm font-semibold text-slate-700 leading-tight">—</p>
+                            </div>
+                            <div class="lg:col-span-4 pt-3 border-t border-slate-50">
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Residential Address</p>
+                                <p id="stu-report-info-address" class="text-sm font-medium text-slate-600 leading-relaxed max-w-3xl">—</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Examinations & Test Performance -->
+                <div id="stu-report-pane-exams" class="stu-report-tab-pane hidden">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-4 bg-indigo-600 rounded-full"></div>
+                                <h2 class="text-sm font-bold text-slate-800 tracking-tight">Examinations & Test Performance</h2>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                                <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
+                                    Total: <strong id="stu-report-exam-total">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[11px]">
+                                    Passed: <strong id="stu-report-exam-passed">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg border border-rose-100 text-[11px]">
+                                    Failed: <strong id="stu-report-exam-failed">0</strong>
+                                </span>
+                                <span id="stu-report-exam-absent-badge" class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100 text-[11px]">
+                                    Absent: <strong id="stu-report-exam-absent">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100 text-[11px]">
+                                    Avg Score: <strong id="stu-report-exam-avg">0</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <th class="pb-3 pl-2">Exam Title</th>
+                                        <th class="pb-3">Subject</th>
+                                        <th class="pb-3">Date</th>
+                                        <th class="pb-3">Marks Scored</th>
+                                        <th class="pb-3">Passing Marks</th>
+                                        <th class="pb-3">Result</th>
+                                        <th class="pb-3 text-right pr-2">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stu-report-exams-tbody" class="divide-y divide-slate-50 font-medium text-xs">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: Attendance Breakdown & History -->
+                <div id="stu-report-pane-attendance" class="stu-report-tab-pane hidden">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-4 bg-blue-600 rounded-full"></div>
+                                <h2 class="text-sm font-bold text-slate-800 tracking-tight">Attendance Breakdown & Logs</h2>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                                <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
+                                    Total Days: <strong id="stu-report-att-total">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[11px]">
+                                    Present: <strong id="stu-report-att-present">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg border border-rose-100 text-[11px]">
+                                    Absent: <strong id="stu-report-att-absent">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100 text-[11px]">
+                                    Late: <strong id="stu-report-att-late">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 text-[11px]">
+                                    Rate: <strong id="stu-report-att-rate">0%</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 bg-white shadow-xs">
+                                    <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <th class="pb-3 pl-2">Date</th>
+                                        <th class="pb-3">Day</th>
+                                        <th class="pb-3">Batch Name</th>
+                                        <th class="pb-3 text-right pr-2">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stu-report-attendance-tbody" class="divide-y divide-slate-50 font-medium text-xs">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: Homework & Submissions -->
+                <div id="stu-report-pane-homework" class="stu-report-tab-pane hidden">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-4 bg-orange-500 rounded-full"></div>
+                                <h2 class="text-sm font-bold text-slate-800 tracking-tight">Homework & Assignment Submissions</h2>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                                <span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-100 text-[11px]">
+                                    Total Submissions: <strong id="stu-report-hw-total">0</strong>
+                                </span>
+                                <span class="px-2.5 py-1 bg-orange-50 text-orange-700 rounded-lg border border-orange-100 text-[11px]">
+                                    Avg Grade: <strong id="stu-report-hw-avg">0/10</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <th class="pb-3 pl-2">Homework Title</th>
+                                        <th class="pb-3">Subject</th>
+                                        <th class="pb-3">Due Date</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3">Grade / Score</th>
+                                        <th class="pb-3 text-right pr-2">Feedback</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stu-report-homework-tbody" class="divide-y divide-slate-50 font-medium text-xs">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: Fee Payment History -->
+                <div id="stu-report-pane-fees" class="stu-report-tab-pane hidden">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-4 bg-emerald-600 rounded-full"></div>
+                                <h2 class="text-sm font-bold text-slate-800 tracking-tight">Fee Payment History</h2>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <th class="pb-3 pl-2">Date / Month</th>
+                                        <th class="pb-3">Total Fee</th>
+                                        <th class="pb-3">Paid Amount</th>
+                                        <th class="pb-3">Remaining</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3 text-right pr-2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stu-report-fees-tbody" class="divide-y divide-slate-50 font-medium text-xs">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     <script>
@@ -1429,6 +1916,615 @@
             }
         }
 
+        let currentStudentReport = null;
+        let batchStudentsMap = {};
+        let activeStudentList = [];
+
+        // ─────────────────────────────────────────────────────────────
+        // Searchable Batch Dropdown Logic
+        // ─────────────────────────────────────────────────────────────
+        function toggleBatchDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('batch-dropdown-menu');
+            const chevron = document.getElementById('batch-dropdown-chevron');
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close other dropdowns
+            closeStudentDropdown();
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                const searchInput = document.getElementById('batch-search-input');
+                searchInput.value = '';
+                renderBatchDropdownOptions(globalBatches);
+                setTimeout(() => searchInput.focus(), 50);
+            } else {
+                closeBatchDropdown();
+            }
+        }
+
+        function closeBatchDropdown() {
+            const menu = document.getElementById('batch-dropdown-menu');
+            const chevron = document.getElementById('batch-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+
+        function filterBatchOptions() {
+            const query = (document.getElementById('batch-search-input').value || '').toLowerCase().trim();
+            const filtered = (globalBatches || []).filter(b => {
+                const name = (b.name || '').toLowerCase();
+                const subject = (b.subject || '').toLowerCase();
+                return name.includes(query) || subject.includes(query);
+            });
+            renderBatchDropdownOptions(filtered, query);
+        }
+
+        function renderBatchDropdownOptions(batches, query = '') {
+            const list = document.getElementById('batch-options-list');
+            const currentVal = document.getElementById('student-report-batch-select').value;
+
+            if (!batches || batches.length === 0) {
+                list.innerHTML = `
+                    <div class="py-6 text-center text-slate-400 font-bold text-xs">
+                        <svg class="w-6 h-6 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        No batches matching "${query}"
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = batches.map(b => {
+                const isSelected = b.id == currentVal;
+                const count = b.students_count ?? (b.students ? b.students.length : 0);
+                return `
+                    <div onclick="selectBatchOption(${b.id})"
+                        class="px-3 py-2 rounded-xl flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                            isSelected 
+                                ? 'bg-orange-50 text-[#f97316] font-extrabold shadow-xs' 
+                                : 'hover:bg-slate-50 text-slate-700 font-bold'
+                        }">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <div class="h-6 w-6 rounded-lg ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center text-[10px] flex-shrink-0 font-black">
+                                ${b.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span class="truncate text-xs">${b.name}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${isSelected ? 'bg-orange-100/70 text-[#f97316]' : 'bg-slate-100 text-slate-500'}">${count} Students</span>
+                            ${isSelected ? '<svg class="w-4 h-4 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectBatchOption(batchId) {
+            const batchSelect = document.getElementById('student-report-batch-select');
+            batchSelect.value = batchId;
+            closeBatchDropdown();
+            await onStudentReportBatchChange();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Searchable Student Dropdown Logic
+        // ─────────────────────────────────────────────────────────────
+        function toggleStudentDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('student-dropdown-menu');
+            const chevron = document.getElementById('student-dropdown-chevron');
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close other dropdowns
+            closeBatchDropdown();
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                const searchInput = document.getElementById('student-search-input');
+                searchInput.value = '';
+                renderStudentDropdownOptions(activeStudentList);
+                setTimeout(() => searchInput.focus(), 50);
+            } else {
+                closeStudentDropdown();
+            }
+        }
+
+        function closeStudentDropdown() {
+            const menu = document.getElementById('student-dropdown-menu');
+            const chevron = document.getElementById('student-dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+
+        function filterStudentOptions() {
+            const query = (document.getElementById('student-search-input').value || '').toLowerCase().trim();
+            const filtered = (activeStudentList || []).filter(s => {
+                const name = (s.name || '').toLowerCase();
+                const enrollment = (s.enrollment_id || ('#ST-' + s.id)).toLowerCase();
+                const phone = (s.phone || '').toLowerCase();
+                return name.includes(query) || enrollment.includes(query) || phone.includes(query);
+            });
+            renderStudentDropdownOptions(filtered, query);
+        }
+
+        function renderStudentDropdownOptions(students, query = '') {
+            const list = document.getElementById('student-options-list');
+            const currentVal = document.getElementById('student-report-student-select').value;
+
+            if (!students || students.length === 0) {
+                list.innerHTML = `
+                    <div class="py-6 text-center text-slate-400 font-bold text-xs">
+                        <svg class="w-6 h-6 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        ${query ? `No students matching "${query}"` : 'No students found in this batch'}
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = students.map(s => {
+                const isSelected = s.id == currentVal;
+                const enrollText = s.enrollment_id || ('#ST-' + s.id);
+                return `
+                    <div onclick="selectStudentOption(${s.id})"
+                        class="px-3 py-2 rounded-xl flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                            isSelected 
+                                ? 'bg-indigo-50 text-indigo-700 font-extrabold shadow-xs' 
+                                : 'hover:bg-slate-50 text-slate-700 font-bold'
+                        }">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div class="h-7 w-7 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center text-xs flex-shrink-0 font-bold">
+                                ${s.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="truncate min-w-0">
+                                <p class="truncate text-xs leading-tight">${s.name}</p>
+                                <p class="text-[10px] ${isSelected ? 'text-indigo-400' : 'text-slate-400'} font-semibold truncate mt-0.5">${enrollText}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            ${isSelected ? '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectStudentOption(studentId) {
+            const studentSelect = document.getElementById('student-report-student-select');
+            studentSelect.value = studentId;
+            closeStudentDropdown();
+            
+            const selectedStudent = activeStudentList.find(s => s.id == studentId);
+            if (selectedStudent) {
+                const enrollText = selectedStudent.enrollment_id || ('#ST-' + selectedStudent.id);
+                document.getElementById('student-dropdown-label').innerText = `${selectedStudent.name} (${enrollText})`;
+            }
+
+            await onStudentReportStudentChange();
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            const batchContainer = document.getElementById('batch-dropdown-container');
+            const studentContainer = document.getElementById('student-dropdown-container');
+            if (batchContainer && !batchContainer.contains(e.target)) {
+                closeBatchDropdown();
+            }
+            if (studentContainer && !studentContainer.contains(e.target)) {
+                closeStudentDropdown();
+            }
+        });
+
+        // Close dropdowns on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeBatchDropdown();
+                closeStudentDropdown();
+            }
+        });
+
+        async function initStudentReport() {
+            const batchSelect = document.getElementById('student-report-batch-select');
+            if (batchSelect && batchSelect.value) {
+                await onStudentReportBatchChange();
+            } else if (globalBatches && globalBatches.length > 0) {
+                const lastBatch = globalBatches[globalBatches.length - 1];
+                if (batchSelect) {
+                    batchSelect.value = lastBatch.id;
+                    await onStudentReportBatchChange();
+                }
+            } else {
+                document.getElementById('student-report-empty').classList.remove('hidden');
+                document.getElementById('student-report-container').classList.add('hidden');
+            }
+        }
+
+        async function onStudentReportBatchChange() {
+            const batchSelect = document.getElementById('student-report-batch-select');
+            const studentSelect = document.getElementById('student-report-student-select');
+            const batchId = batchSelect.value;
+
+            if (!batchId) {
+                studentSelect.innerHTML = '<option value="">Select a batch first</option>';
+                document.getElementById('batch-dropdown-label').innerText = 'Select Batch';
+                document.getElementById('student-dropdown-label').innerText = 'Select a batch first';
+                document.getElementById('student-report-empty').classList.remove('hidden');
+                document.getElementById('student-report-container').classList.add('hidden');
+                return;
+            }
+
+            const selectedBatch = globalBatches.find(b => b.id == batchId);
+            if (selectedBatch) {
+                const count = selectedBatch.students_count ?? (selectedBatch.students ? selectedBatch.students.length : 0);
+                document.getElementById('batch-dropdown-label').innerText = `${selectedBatch.name} (${count} Students)`;
+            }
+
+            let students = selectedBatch && selectedBatch.students ? selectedBatch.students : [];
+
+            if (!students || students.length === 0) {
+                toggleLoader(true);
+                try {
+                    let res = await fetch(`/institute/reports/student?batch_id=${batchId}`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) {
+                        res = await fetch(`${API_STUDENTS_URL}?batch_id=${batchId}`, { headers: { 'Accept': 'application/json' } });
+                    }
+                    const result = await res.json();
+
+                    if (result.status === 'success' && result.data) {
+                        students = result.data.items || result.data.data || [];
+                    }
+                } catch (err) {
+                    console.error('Failed to load batch students:', err);
+                } finally {
+                    toggleLoader(false);
+                }
+            }
+
+            batchStudentsMap[batchId] = students;
+            activeStudentList = students || [];
+
+            if (!students || students.length === 0) {
+                studentSelect.innerHTML = '<option value="">No students in this batch</option>';
+                document.getElementById('student-dropdown-label').innerText = 'No students in this batch';
+                document.getElementById('student-report-empty').classList.remove('hidden');
+                document.getElementById('student-report-container').classList.add('hidden');
+                document.getElementById('student-batch-badge').classList.add('hidden');
+            } else {
+                studentSelect.innerHTML = students.map((s, idx) => `
+                    <option value="${s.id}" ${idx === 0 ? 'selected' : ''}>${s.name} (${s.enrollment_id || ('#ST-' + s.id)})</option>
+                `).join('');
+
+                const firstStudent = students[0];
+                const enrollText = firstStudent.enrollment_id || ('#ST-' + firstStudent.id);
+                document.getElementById('student-dropdown-label').innerText = `${firstStudent.name} (${enrollText})`;
+
+                document.getElementById('student-report-empty').classList.add('hidden');
+                document.getElementById('student-report-container').classList.remove('hidden');
+
+                const badge = document.getElementById('student-batch-badge');
+                if (selectedBatch) {
+                    badge.innerText = `${selectedBatch.name} (${students.length} students)`;
+                    badge.classList.remove('hidden');
+                }
+
+                await fetchStudentReport(students[0].id);
+            }
+        }
+
+        async function onStudentReportStudentChange() {
+            const studentSelect = document.getElementById('student-report-student-select');
+            const studentId = studentSelect.value;
+            if (studentId) {
+                await fetchStudentReport(studentId);
+            }
+        }
+
+        async function fetchStudentReport(studentId) {
+            toggleLoader(true);
+            try {
+                let res = await fetch(`/institute/reports/student?student_id=${studentId}`, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) {
+                    res = await fetch(`${API_REPORTS_URL}/student?student_id=${studentId}`, { headers: { 'Accept': 'application/json' } });
+                }
+                const result = await res.json();
+                if (result.status === 'success' && result.data) {
+                    currentStudentReport = result.data;
+                    renderStudentWiseReport(result.data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch student report:', err);
+            } finally {
+                toggleLoader(false);
+            }
+        }
+
+        function renderStudentWiseReport(data) {
+            const stu = data.student || {};
+            const fin = data.financial || {};
+            const att = data.attendance || {};
+            const exm = data.exams || {};
+            const hw = data.homework || {};
+
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = (val !== null && val !== undefined && val !== '') ? val : '—';
+            };
+
+            // Header profile data
+            setTxt('stu-report-name', stu.name || 'N/A');
+            setTxt('stu-report-enrollment', stu.enrollment_id || ('#ST-' + stu.id));
+            const imgEl = document.getElementById('stu-report-img');
+            if (imgEl) {
+                imgEl.src = stu.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(stu.name || 'Student')}&color=7F9CF5&background=EBF4FF`;
+            }
+            setTxt('stu-report-standard', stu.standard || 'N/A');
+            setTxt('stu-report-batch-name', stu.batch_name || 'N/A');
+
+            // Top action button / Direct profile link
+            const profileLink = `
+                <a href="${stu.profile_url}" target="_blank"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-sm transition-all">
+                    <svg class="w-3.5 h-3.5 text-[#ff6c00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Full Profile
+                </a>
+            `;
+            const profileLinkWrap = document.getElementById('stu-report-profile-link-wrap');
+            if (profileLinkWrap) profileLinkWrap.innerHTML = profileLink;
+            const topActionsWrap = document.getElementById('student-report-top-actions');
+            if (topActionsWrap) topActionsWrap.innerHTML = profileLink;
+
+            // Summary metrics
+            setTxt('stu-report-avg-grade', (hw.average_grade || 0) + '/10');
+            setTxt('stu-report-attendance-pct', (att.percentage || 0) + '%');
+            setTxt('stu-report-exams-count', exm.total_exams || 0);
+
+            // Payment Status styling
+            const feeStatusEl = document.getElementById('stu-report-payment-status');
+            const feeBadgeEl = document.getElementById('stu-report-payment-badge');
+            if (feeStatusEl) feeStatusEl.innerText = fin.fee_status || 'Full Paid';
+
+            if (feeBadgeEl) {
+                feeBadgeEl.className = 'rounded-xl px-3 py-2 border min-w-[90px]';
+                if (fin.fee_status === 'Pending') {
+                    feeBadgeEl.classList.add('bg-rose-50/30', 'border-rose-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-rose-700';
+                } else if (fin.fee_status === 'Partial Dues') {
+                    feeBadgeEl.classList.add('bg-amber-50/30', 'border-amber-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-amber-700';
+                } else if (fin.fee_status === 'No Fee') {
+                    feeBadgeEl.classList.add('bg-slate-50', 'border-slate-200');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-slate-500';
+                } else {
+                    feeBadgeEl.classList.add('bg-emerald-50/30', 'border-emerald-100');
+                    if (feeStatusEl) feeStatusEl.className = 'text-sm font-bold text-emerald-700';
+                }
+            }
+
+            // Fee balance box
+            setTxt('stu-report-balance', '₹' + (fin.balance || 0).toLocaleString());
+            setTxt('stu-report-monthly-total', '/ ₹' + (stu.monthly_fee || 0).toLocaleString() + ' Total');
+
+            // Sub-tab badges
+            setTxt('stu-report-badge-exams-count', exm.total_exams || 0);
+            setTxt('stu-report-badge-att-pct', (att.percentage || 0) + '%');
+            setTxt('stu-report-badge-hw-count', hw.total_submissions || 0);
+            setTxt('stu-report-badge-fees-count', (fin.fees_history ? fin.fees_history.length : 0));
+
+            // Tab 1: Academic & Contact Info
+            setTxt('stu-report-info-batch', stu.batch_name || 'Unassigned');
+            setTxt('stu-report-info-admission', stu.admission_date || '—');
+            setTxt('stu-report-info-guardian', stu.guardian_name || 'N/A');
+            setTxt('stu-report-info-phone', stu.phone ? `+91 ${stu.phone}` : '—');
+            setTxt('stu-report-info-email', stu.email || '—');
+            setTxt('stu-report-info-dob', stu.dob || 'N/A');
+            setTxt('stu-report-info-address', stu.address || 'N/A');
+
+            // Tab 2: Exams & Marks
+            setTxt('stu-report-exam-total', exm.total_exams || 0);
+            setTxt('stu-report-exam-passed', exm.passed_exams || 0);
+            setTxt('stu-report-exam-failed', exm.failed_exams || 0);
+            setTxt('stu-report-exam-absent', exm.absent_exams || 0);
+            setTxt('stu-report-exam-avg', exm.average_score || 0);
+
+            const examAbsentBadge = document.getElementById('stu-report-exam-absent-badge');
+            if (examAbsentBadge) {
+                if (exm.absent_exams > 0) {
+                    examAbsentBadge.classList.remove('hidden');
+                } else {
+                    examAbsentBadge.classList.add('hidden');
+                }
+            }
+
+            const examsTbody = document.getElementById('stu-report-exams-tbody');
+            if (exm.list && exm.list.length > 0) {
+                examsTbody.innerHTML = exm.list.map(m => {
+                    const resultBadge = m.is_absent
+                        ? `<span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">Absent</span>`
+                        : (m.is_passed
+                            ? `<span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Passed</span>`
+                            : `<span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-100">Failed</span>`);
+
+                    const scoreDisplay = m.is_absent
+                        ? `<span class="text-slate-400">Absent (0)</span>`
+                        : `<span class="${m.is_passed ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">${m.marks_scored}</span>
+                           <span class="text-slate-400 text-[10px] font-normal">/ ${m.total_marks} (${m.percentage}%)</span>`;
+
+                    return `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="py-3 pl-2 font-bold text-slate-800">${m.title}</td>
+                            <td class="py-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-600 border border-slate-100">${m.subject}</span>
+                            </td>
+                            <td class="py-3 text-slate-500 font-medium">${m.date}</td>
+                            <td class="py-3">${scoreDisplay}</td>
+                            <td class="py-3 text-slate-500 font-medium">${m.passing_marks}</td>
+                            <td class="py-3">${resultBadge}</td>
+                            <td class="py-3 text-right pr-2 text-slate-400 text-[11px] font-medium">${m.remarks}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                examsTbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400">
+                            <div class="h-10 w-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-2 border border-indigo-100">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500">No Exam Records Found</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">This student has not participated in any batch examinations yet.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Tab 3: Attendance Breakdown
+            setTxt('stu-report-att-total', att.total_days || 0);
+            setTxt('stu-report-att-present', att.present_days || 0);
+            setTxt('stu-report-att-absent', att.absent_days || 0);
+            setTxt('stu-report-att-late', att.late_days || 0);
+            setTxt('stu-report-att-rate', (att.percentage || 0) + '%');
+
+            const attTbody = document.getElementById('stu-report-attendance-tbody');
+            if (attTbody) {
+                if (att.records && att.records.length > 0) {
+                    attTbody.innerHTML = att.records.map(r => {
+                        let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                        if (r.status === 'Absent') badgeStyle = 'bg-rose-50 text-rose-700 border-rose-100';
+                        else if (r.status === 'Late') badgeStyle = 'bg-amber-50 text-amber-700 border-amber-100';
+
+                        return `
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="py-2.5 pl-2 font-bold text-slate-800">${r.formatted_date}</td>
+                                <td class="py-2.5 text-slate-400 font-medium">${r.day}</td>
+                                <td class="py-2.5 font-medium text-slate-600">${r.batch_name}</td>
+                                <td class="py-2.5 text-right pr-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${badgeStyle}">${r.status}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    attTbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-slate-400">
+                                <div class="h-10 w-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2 border border-blue-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-500">No Attendance Logs</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">No attendance sessions recorded for this student yet.</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Tab 4: Homework Submissions
+            setTxt('stu-report-hw-total', hw.total_submissions || 0);
+            setTxt('stu-report-hw-avg', (hw.average_grade || 0) + '/10');
+
+            const hwTbody = document.getElementById('stu-report-homework-tbody');
+            if (hw.list && hw.list.length > 0) {
+                hwTbody.innerHTML = hw.list.map(h => {
+                    let statusBadge = 'bg-blue-50 text-blue-700 border-blue-100';
+                    if (h.status === 'Reviewed') statusBadge = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                    else if (h.status === 'Pending') statusBadge = 'bg-amber-50 text-amber-700 border-amber-100';
+
+                    const scoreDisplay = h.score !== null
+                        ? `<span class="text-emerald-600 font-bold">${h.score}</span> <span class="text-slate-400 text-[10px] font-normal">/ 10</span>`
+                        : `<span class="text-slate-400 text-[11px] font-medium">Not Graded</span>`;
+
+                    return `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="py-3 pl-2 font-bold text-slate-800">${h.title}</td>
+                            <td class="py-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-600 border border-slate-100">${h.subject}</span>
+                            </td>
+                            <td class="py-3 text-slate-500 font-medium">${h.due_date}</td>
+                            <td class="py-3">
+                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${statusBadge}">${h.status}</span>
+                            </td>
+                            <td class="py-3">${scoreDisplay}</td>
+                            <td class="py-3 text-right pr-2 text-slate-500 text-[11px] font-medium">${h.feedback}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                hwTbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-400">
+                            <div class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center mx-auto mb-2 border border-orange-100">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500">No Homework Records</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">No homework submissions recorded for this student yet.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Tab 5: Fee Payment History
+            const feesTbody = document.getElementById('stu-report-fees-tbody');
+            if (fin.fees_history && fin.fees_history.length > 0) {
+                feesTbody.innerHTML = fin.fees_history.map(f => {
+                    let statusBg = 'bg-rose-50 text-rose-600 border-rose-100';
+                    if (f.status === 'Paid' || f.remaining == 0) {
+                        statusBg = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                    } else if (f.paid_amount > 0) {
+                        statusBg = 'bg-amber-50 text-amber-600 border-amber-100';
+                    }
+
+                    return `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="py-3 pl-2 font-bold text-slate-700">${f.month_year}</td>
+                            <td class="py-3 font-bold text-slate-800">₹${f.total_amount.toLocaleString()}</td>
+                            <td class="py-3 font-bold text-emerald-600">₹${f.paid_amount.toLocaleString()}</td>
+                            <td class="py-3 font-bold text-rose-500">₹${f.remaining.toLocaleString()}</td>
+                            <td class="py-3">
+                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${statusBg}">${f.status}</span>
+                            </td>
+                            <td class="py-3 text-right pr-2">
+                                <a href="${f.receipt_url}" target="_blank"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-[10px] font-bold transition-all shadow-xs">
+                                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    View Receipt
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                feesTbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-400">
+                            <div class="h-10 w-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center mx-auto mb-2 border border-slate-100">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500">No Fee Records Found</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">This student has no registered monthly fee cycles yet.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function switchStuReportSubTab(tabName) {
+            document.querySelectorAll('.stu-report-tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.stu-report-tab-btn').forEach(btn => {
+                btn.className = 'stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50';
+            });
+
+            const targetPane = document.getElementById('stu-report-pane-' + tabName);
+            if (targetPane) targetPane.classList.remove('hidden');
+
+            const activeBtn = document.getElementById('stu-report-tab-btn-' + tabName);
+            if (activeBtn) {
+                activeBtn.className = 'stu-report-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-[#ff6c00] text-white shadow-sm';
+            }
+        }
+
         function switchTab(tabId) {
             currentTab = tabId;
             document.getElementById('section-hub').classList.add('hidden');
@@ -1445,6 +2541,8 @@
                 fetchFeeData();
             } else if (tabId === 'performance') {
                 fetchPerformanceData();
+            } else if (tabId === 'student') {
+                initStudentReport();
             }
         }
 
@@ -1472,6 +2570,69 @@
             let url = `/api/v1/institute/reports/performance/export`;
             if (batchId) url += `?batch_id=${batchId}`;
             window.location.href = url;
+        }
+
+        function exportStudentReport() {
+            const studentSelect = document.getElementById('student-report-student-select');
+            const studentId = studentSelect ? studentSelect.value : null;
+            if (!studentId) {
+                alert('Please select a student to export their report.');
+                return;
+            }
+            window.location.href = `/institute/reports/student/export?student_id=${studentId}`;
+        }
+
+        async function emailStudentReportFromReports() {
+            const studentSelect = document.getElementById('student-report-student-select');
+            const studentId = studentSelect ? studentSelect.value : null;
+            if (!studentId) {
+                alert('Please select a student first.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-email-student-report');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<div class="h-3.5 w-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mr-1.5"></div> Sending...`;
+
+            try {
+                const response = await fetch(`{{ route('institute.reports.student.email') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ student_id: studentId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') {
+                        showToast(data.message, 'success');
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    const msg = data.message || 'Failed to email report.';
+                    if (typeof showToast === 'function') {
+                        showToast(msg, 'error');
+                    } else {
+                        alert(msg);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (typeof showToast === 'function') {
+                    showToast('Network error while emailing report.', 'error');
+                } else {
+                    alert('Network error.');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         }
     </script>
 @endsection

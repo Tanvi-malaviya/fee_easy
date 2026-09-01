@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff_salaries', function (Blueprint $table) {
+        if (!Schema::hasTable('staff_salaries')) {
+            Schema::create('staff_salaries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('staff_id')->constrained('staff')->onDelete('cascade');
             $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
@@ -30,6 +31,7 @@ return new class extends Migration
             // Prevent duplicate salary for same staff in same month/year
             $table->unique(['staff_id', 'month', 'year']);
         });
+        }
     }
 
     /**

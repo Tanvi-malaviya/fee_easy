@@ -168,9 +168,11 @@
                             <tr class="bg-gray-50/50">
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date / Time</th>
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Institute</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Plan Name</th>
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Source</th>
                                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Amount</th>
                                 <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
@@ -185,9 +187,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900 leading-tight">
-                                            {{ $payment->subscription->institute->institute_name ?? 'N/A' }}</div>
+                                          {{ $payment->subscription?->institute?->institute_name ?? 'N/A' }}</div>
                                         <div class="text-xs text-gray-500">
-                                            {{ $payment->subscription->institute->name ?? 'Deleted' }}</div>
+                                            {{ $payment->subscription?->institute?->name ?? 'Deleted' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-bold text-gray-900 leading-tight">
+                                            {{ $payment->subscription?->plan_name ?? 'N/A' }}
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-col gap-1">
@@ -207,6 +214,16 @@
                                                     Via {{ $payment->payment_gateway }}
                                                 </span>
                                             @endif
+                                            @if($payment->transaction_id)
+                                                <span class="text-[9px] text-slate-500 font-mono mt-1">
+                                                    Ref: {{ $payment->transaction_id }}
+                                                </span>
+                                            @endif
+                                            @if($payment->subscription && $payment->subscription->razorpay_order_id)
+                                                <span class="text-[9px] text-slate-400 font-mono">
+                                                    Order: {{ $payment->subscription->razorpay_order_id }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
@@ -216,10 +233,22 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <span class="px-2.5 py-1 inline-flex text-[10px] font-bold rounded uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Success</span>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($payment->payment_gateway === 'razorpay' && $payment->transaction_id)
+                                            <a href="https://dashboard.razorpay.com/app/payments/{{ $payment->transaction_id }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition-all group no-loader">
+                                                <span>View</span>
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <span class="text-xs text-gray-400 font-medium">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-0">
+                                    <td colspan="7" class="p-0">
                                         <x-empty-state 
                                             title="No transactions found" 
                                             subtitle="No transaction records match your search or filter criteria." 
@@ -270,7 +299,7 @@
                     <div>
                         <x-input-label for="amount" value="Amount Paid ({{ $currency }})"
                             class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                        <x-text-input id="amount" name="amount" type="number" step="0.01" value="{{ old('amount') }}"
+                        <x-text-input id="amount" name="amount" type="number" step="0.01" min="1" max="999999" value="{{ old('amount') }}"
                             oninput="clearError(this)"
                             class="mt-1 block w-full bg-gray-50 border-gray-200 rounded-xl py-2 px-3 text-sm @error('amount') border-red-500 @enderror"
                             placeholder="e.g. 5000" required />

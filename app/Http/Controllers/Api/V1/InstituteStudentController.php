@@ -14,16 +14,33 @@ use Carbon\Carbon;
 class InstituteStudentController extends Controller
 {
     /**
+     * Resolve the authenticated institute.
+     */
+    protected function getInstitute(Request $request)
+    {
+        $user = $request->user();
+        if ($user instanceof Institute) {
+            return $user;
+        }
+
+        if (auth('institute')->check()) {
+            return auth('institute')->user();
+        }
+
+        return null;
+    }
+
+    /**
      * Display a listing of students belonging to the authenticated institute.
      */
     public function index(Request $request)
     {
-        \Log::debug('API Request User:', ['user' => $request->user(), 'guards' => config('sanctum.guard')]);
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $query = Student::where('institute_id', $request->user()->id)
+        $query = Student::where('institute_id', $institute->id)
             ->with(['batch', 'fees'])
             ->withAvg('homeworkSubmissions', 'score');
 
@@ -67,14 +84,9 @@ class InstituteStudentController extends Controller
 
         $query->orderBy('created_at', 'desc');
 
-        // If batch_id/filters are provided but no page, we might want all for some views,
-        // but for the Student Registry we usually want pagination.
-        // We'll keep the existing logic for attendance compatibility but prioritize pagination.
-
         if ($request->has('batch_id') && !$request->has('page') && !$request->has('search')) {
             $students = $query->get();
 
-            // Append totals for reports
             foreach ($students as $student) {
                 $student->total_paid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
                 $student->total_due = ($student->monthly_fee ?? 0) - $student->total_paid;
@@ -84,15 +96,20 @@ class InstituteStudentController extends Controller
                 'status' => 'success',
                 'data' => [
                     'items' => $students,
+                    'data' => $students,
                     'total' => $students->count(),
                     'current_page' => 1,
                     'last_page' => 1,
                     'per_page' => $students->count(),
+                    'from' => 1,
+                    'to' => $students->count(),
                 ]
             ]);
         }
 
-        $paginator = $query->paginate(20);
+        $page = (int) $request->input('page', 1);
+        $perPage = (int) $request->input('per_page', 15);
+        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
         $items = collect($paginator->items())->map(function ($student) {
             $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
@@ -101,7 +118,7 @@ class InstituteStudentController extends Controller
         });
 
         // Calculate Stats
-        $graduatingCount = Student::where('institute_id', $request->user()->id)
+        $graduatingCount = Student::where('institute_id', $institute->id)
             ->where(function($q) {
                 $q->where('standard', 'like', '%12%')
                   ->orWhere('standard', 'like', '%Final%')
@@ -109,18 +126,22 @@ class InstituteStudentController extends Controller
             })
             ->count();
 
-        $performanceAvg = \App\Models\HomeworkSubmission::whereHas('student', function($q) use ($request) {
-            $q->where('institute_id', $request->user()->id);
+        $performanceAvg = \App\Models\HomeworkSubmission::whereHas('student', function($q) use ($institute) {
+            $q->where('institute_id', $institute->id);
         })->avg('score') ?? 0;
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'items' => $items,
+                'data' => $items,
                 'total' => $paginator->total(),
                 'current_page' => $paginator->currentPage(),
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+                'links' => $paginator->linkCollection()->toArray(),
                 'stats' => [
                     'graduating' => $graduatingCount,
                     'performance' => round($performanceAvg, 1) . '%'
@@ -147,13 +168,13 @@ class InstituteStudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:students,email',
-            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email:rfc|unique:students,email',
+            'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable|date|before_or_equal:today',
             'guardian_name' => 'nullable|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'profile_image_url' => 'nullable|image|max:2048',
         ]);
 
@@ -191,13 +212,17 @@ class InstituteStudentController extends Controller
         // Send password to student via email
         try {
             $institute = $request->user();
-            Mail::to($student->email)->send(new \App\Mail\StudentAddedMail(
-                $student->name,
+            \App\Services\InstituteMailService::send(
+                $institute,
                 $student->email,
-                $password,
-                $institute->institute_name,
-                $institute->logo
-            ));
+                new \App\Mail\StudentAddedMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
         } catch (\Exception $e) {
             // Log error or handle gracefully if mail fails
             \Log::error("Failed to send welcome email to student via API: " . $e->getMessage());
@@ -279,13 +304,13 @@ class InstituteStudentController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:students,email,' . $id,
-            'phone' => 'nullable|string|max:20',
+            'email' => 'sometimes|required|email:rfc|unique:students,email,' . $id,
+            'phone' => 'nullable|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $request->user()->id,
             'standard' => 'nullable|string',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable|date|before_or_equal:today',
             'guardian_name' => 'nullable|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'status' => 'sometimes|integer',
             'profile_image_url' => 'nullable|image|max:2048',
         ]);
@@ -584,4 +609,237 @@ class InstituteStudentController extends Controller
             'message' => 'Fee reminder sent successfully!'
         ]);
     }
+
+    /**
+     * Generate a new random password and send it to the student via email.
+     */
+    public function sendPasswordEmail(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student = Student::where('institute_id', $request->user()->id)->find($id);
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Student not found or unauthorized'
+            ], 404);
+        }
+
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $special = '@#$%&*';
+        
+        $password = $uppercase[rand(0, strlen($uppercase)-1)] . 
+                    $lowercase[rand(0, strlen($lowercase)-1)] . 
+                    $numbers[rand(0, strlen($numbers)-1)] . 
+                    $special[rand(0, strlen($special)-1)] . 
+                    Str::random(4); // Total 8 characters
+                    
+        $student->update([
+            'password' => Hash::make($password),
+        ]);
+
+        try {
+            $institute = $request->user();
+            \App\Services\InstituteMailService::send(
+                $institute,
+                $student->email,
+                new \App\Mail\StudentPasswordSentMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to send student password email via API: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password was updated in database, but failed to send email. Please check mail settings.'
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password has been generated and sent to student email successfully!'
+        ]);
+    }
+
+    /**
+     * Directly reset/change the student password from the admin panel via API.
+     */
+    public function resetPasswordDirect(Request $request, $id)
+    {
+        if (!$request->user() || !($request->user() instanceof Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student = Student::where('institute_id', $request->user()->id)->find($id);
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Student not found or unauthorized'
+            ], 404);
+        }
+
+        $request->validate([
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
+        ]);
+
+        $student->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student password has been reset successfully!'
+        ]);
+    }
+
+    /**
+     * Import students via API (for mobile app).
+     */
+    public function import(Request $request, \App\Services\StudentImportService $importService)
+    {
+        if (!$request->user() || !($request->user() instanceof \App\Models\Institute)) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $result = $importService->import($request->file('file'), $request->user());
+
+        if ($result['status'] === 'success') {
+            return response()->json([
+                'status' => 'success',
+                'message' => $result['message']
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => $result['message'],
+            'errors' => $result['errors'] ?? []
+        ], 422);
+    }
+
+    /**
+     * Bulk move / transfer selected students from one batch to another (API for Mobile App).
+     */
+    public function bulkTransfer(Request $request)
+    {
+        $institute = $this->getInstitute($request);
+        if (!$institute) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'student_ids'     => 'required|array|min:1',
+            'student_ids.*'   => 'integer|exists:students,id',
+            'target_batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
+            'notify_students' => 'nullable|boolean',
+        ]);
+
+        $studentIds = $request->input('student_ids', []);
+        $targetBatchId = $request->input('target_batch_id');
+        $notify = $request->boolean('notify_students', true);
+
+        $targetBatch = $targetBatchId ? \App\Models\Batch::where('id', $targetBatchId)->where('institute_id', $institute->id)->first() : null;
+
+        $students = Student::where('institute_id', $institute->id)
+            ->whereIn('id', $studentIds)
+            ->get();
+
+        if ($students->isEmpty()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No valid students found for transfer.'
+            ], 422);
+        }
+
+        $fcm = new \App\Services\FCMService();
+        $transferredCount = 0;
+
+        foreach ($students as $student) {
+            $oldBatchId = $student->batch_id;
+            if ($oldBatchId == $targetBatchId) {
+                continue;
+            }
+
+            $student->update(['batch_id' => $targetBatchId]);
+            $transferredCount++;
+
+            // If assigned to a new batch and notifications are enabled
+            if ($notify && $targetBatch) {
+                $notifTitle = "Batch Updated";
+                $notifBody  = "You've been moved to {$targetBatch->name}.";
+                $notifData  = [
+                    'type'     => 'batch_assignment',
+                    'batch_id' => (string) $targetBatch->id,
+                ];
+
+                \App\Models\Notification::create([
+                    'user_type'    => 'student',
+                    'user_id'      => $student->id,
+                    'title'        => $notifTitle,
+                    'message'      => $notifBody,
+                    'type'         => 'batch_assignment',
+                    'reference_id' => $targetBatch->id,
+                    'is_read'      => false,
+                ]);
+
+                if (!empty($student->fcm_token)) {
+                    $fcm->send($student->fcm_token, $notifTitle, $notifBody, $notifData);
+                }
+
+                $student->load('parent');
+                if ($student->parent) {
+                    $parentBody = "{$student->name} has been moved to {$targetBatch->name}.";
+                    \App\Models\Notification::create([
+                        'user_type'    => 'parent',
+                        'user_id'      => $student->parent->id,
+                        'title'        => $notifTitle,
+                        'message'      => $parentBody,
+                        'type'         => 'batch_assignment',
+                        'reference_id' => $targetBatch->id,
+                        'is_read'      => false,
+                    ]);
+
+                    if (!empty($student->parent->fcm_token)) {
+                        $fcm->send($student->parent->fcm_token, $notifTitle, $parentBody, $notifData);
+                    }
+                }
+            }
+        }
+
+        $targetName = $targetBatch ? $targetBatch->name : 'Unassigned (No Batch)';
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Successfully moved {$transferredCount} student(s) to {$targetName}.",
+            'data'    => [
+                'transferred_count' => $transferredCount,
+                'target_batch'      => $targetBatch,
+            ]
+        ], 200);
+    }
 }
+

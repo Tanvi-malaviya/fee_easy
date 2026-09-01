@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('batches', function (Blueprint $table) {
-            $table->text('description')->nullable()->after('subject');
-            $table->decimal('fees', 10, 2)->nullable()->after('description');
+            if (!Schema::hasColumn('batches', 'description')) {
+                $table->text('description')->nullable()->after('subject');
+            }
+            if (!Schema::hasColumn('batches', 'fees')) {
+                $table->decimal('fees', 10, 2)->nullable()->after('description');
+            }
         });
     }
 

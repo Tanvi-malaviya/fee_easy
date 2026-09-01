@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teacher_attendances', function (Blueprint $table) {
+        if (!Schema::hasTable('teacher_attendances')) {
+            Schema::create('teacher_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

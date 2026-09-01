@@ -45,7 +45,7 @@
                     <div>
                         <label for="price" class="block text-sm font-medium text-gray-700">Price ({{ $currency }}) <span
                                 class="text-red-500">*</span></label>
-                        <input type="number" step="1" min="0" name="price" id="price" required
+                        <input type="number" step="1" min="0" max="999999" name="price" id="price" required
                             class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white"
                             placeholder="100">
                     </div>
@@ -56,14 +56,6 @@
                         <input type="number" name="duration_days" id="duration_days" min="1" max="365" required
                             class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white"
                             placeholder="365">
-                    </div>
-
-                    <div>
-                        <label for="trial_days" class="block text-sm font-medium text-gray-700">Trial Period
-                            (Days)</label>
-                        <input type="number" name="trial_days" id="trial_days" value="{{ $default_trial }}"
-                            class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition px-4 py-2 border text-gray-900 bg-gray-50 focus:bg-white"
-                            placeholder="{{ $default_trial }}">
                     </div>
 
                     <div>

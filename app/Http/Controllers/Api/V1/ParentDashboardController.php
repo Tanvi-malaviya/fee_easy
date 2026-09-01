@@ -40,9 +40,11 @@ class ParentDashboardController extends Controller
                     return [
                         'id' => $student->id,
                         'name' => $student->name,
+                        'enrollment_id' => $student->enrollment_id,
                         'batch_id' => $student->batch_id,
                         'batch_name' => $student->batch->name ?? null,
                         'standard' => $student->standard,
+                        'is_birthday_today' => $student->is_birthday_today,
                     ];
                 }),
                 'attendance_rate' => $attendanceRate,

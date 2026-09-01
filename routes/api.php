@@ -20,10 +20,12 @@ use App\Http\Controllers\Api\V1\InstituteReceiptController;
 use App\Http\Controllers\Api\V1\InstituteAttendanceController;
 use App\Http\Controllers\Api\V1\InstituteDailyUpdateController;
 use App\Http\Controllers\Api\V1\InstituteHomeworkController;
+use App\Http\Controllers\Api\V1\InstituteExamController;
 use App\Http\Controllers\Api\V1\InstituteNotificationController;
 use App\Http\Controllers\Api\V1\InstituteWhatsappSettingController;
 use App\Http\Controllers\Api\V1\InstituteReportController;
 use App\Http\Controllers\Api\V1\InstituteSubscriptionController;
+use App\Http\Controllers\Api\V1\StudentExamController;
 use App\Http\Controllers\Api\V1\StudentProfileController;
 use App\Http\Controllers\Api\V1\StudentDashboardController;
 use App\Http\Controllers\Api\V1\StudentFeesController;
@@ -41,7 +43,6 @@ use App\Http\Controllers\Api\V1\ParentFeesController;
 use App\Http\Controllers\Api\V1\ParentPaymentController;
 use App\Http\Controllers\Api\V1\ParentReceiptsController;
 use App\Http\Controllers\Api\V1\ParentAttendanceController;
-use App\Http\Controllers\Api\V1\ParentDailyUpdateController;
 use App\Http\Controllers\Api\V1\ParentHomeworkController;
 use App\Http\Controllers\Api\V1\ParentReportController;
 use App\Http\Controllers\Api\V1\ParentNotificationController;
@@ -67,6 +68,7 @@ use App\Http\Controllers\Api\V1\FCMTokenController;
 */
 
 Route::post('/book-demo', [DemoRequestController::class, 'store']);
+Route::get('/public-plans', [PlanController::class, 'index']);
 
 Route::prefix('v1')->group(function () {
 
@@ -95,6 +97,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [InstituteAuthController::class, 'login']);
         Route::post('/forgot-password', [InstituteAuthController::class, 'sendResetPasswordEmail']);
         Route::post('/reset-password', [InstituteAuthController::class, 'resetPassword']);
+        Route::post('/subscription/webhook', [InstituteSubscriptionController::class, 'handleWebhook']);
 
         Route::middleware(['auth:sanctum,institute', 'active_institute', 'check_subscription'])->group(function () {
             Route::post('/logout', [InstituteAuthController::class, 'logout']);
@@ -102,6 +105,9 @@ Route::prefix('v1')->group(function () {
             Route::post('/profile/update', [InstituteProfileController::class, 'update']);
             Route::post('/profile/payment/update', [InstituteProfileController::class, 'updatePaymentSettings']);
             Route::post('/profile/change-password', [InstituteProfileController::class, 'changePassword']);
+            Route::post('/profile/template/update', [InstituteProfileController::class, 'updateTemplate']);
+            Route::delete('/profile/delete', [InstituteProfileController::class, 'destroy']);
+            Route::delete('/profile/device-sessions/{id}', [InstituteProfileController::class, 'logoutDeviceSession']);
             Route::post('/logo/upload', [InstituteProfileController::class, 'update']); // Alias to update with logo
 
             Route::post('/daily-updates', [InstituteDailyUpdateController::class, 'store']);
@@ -114,6 +120,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks/{id}/grades', [InstituteHomeworkController::class, 'updateGrades']);
             Route::post('/homeworks/{id}/reminder', [InstituteHomeworkController::class, 'sendReminder']);
 
+            // Exam Module Routes (Common for Mobile App & Web Panel)
+            Route::get('/exams', [InstituteExamController::class, 'index']);
+            Route::post('/exams', [InstituteExamController::class, 'store']);
+            Route::get('/exams/{id}', [InstituteExamController::class, 'show']);
+            Route::put('/exams/{id}', [InstituteExamController::class, 'update']);
+            Route::post('/exams/{id}/update', [InstituteExamController::class, 'update']);
+            Route::delete('/exams/{id}', [InstituteExamController::class, 'destroy']);
+            Route::get('/exams/{id}/marks', [InstituteExamController::class, 'getMarks']);
+            Route::post('/exams/{id}/marks', [InstituteExamController::class, 'saveMarks']);
+
             Route::post('/notifications/send', [InstituteNotificationController::class, 'send']);
             Route::post('/notifications/send-push', [InstituteNotificationController::class, 'sendPush']);
             Route::get('/notifications/recipient-stats', [InstituteNotificationController::class, 'recipientStats']);
@@ -123,8 +139,11 @@ Route::prefix('v1')->group(function () {
             // Plan and Subscription routes
             Route::get('/plans', [PlanController::class, 'index']);
             Route::get('/subscriptions/all-data', [InstituteSubscriptionController::class, 'allData']);
-            Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
+            Route::post('/subscription/iap-verify', [InstituteSubscriptionController::class, 'verifyIap']);
             Route::post('/subscriptions/verify-payment', [InstituteSubscriptionController::class, 'verifyPayment']);
+            Route::post('/subscriptions/purchase', [InstituteSubscriptionController::class, 'purchase']);
+            Route::post('/subscription/create-order', [InstituteSubscriptionController::class, 'createOrder']);
+            Route::post('/subscription/verify-payment', [InstituteSubscriptionController::class, 'verifyPaymentAndroid']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
 
             // Clean Rich Notes Module
@@ -192,12 +211,16 @@ Route::prefix('v1')->group(function () {
             Route::get('/reports/attendance/export', [InstituteReportController::class, 'exportAttendanceReport']);
             Route::get('/reports/performance', [InstituteReportController::class, 'performanceReport']);
             Route::get('/reports/performance/export', [InstituteReportController::class, 'exportPerformanceReport']);
+            Route::get('/reports/student', [InstituteReportController::class, 'studentReport']);
+            Route::get('/reports/student/export', [InstituteReportController::class, 'exportStudentReport']);
 
             Route::get('/subscription', [InstituteSubscriptionController::class, 'show']);
             Route::post('/subscription/renew', [InstituteSubscriptionController::class, 'renew']);
 
             // Student Management
             Route::prefix('students')->group(function () {
+                Route::post('/bulk-transfer', [InstituteStudentController::class, 'bulkTransfer']);
+                Route::post('/import', [InstituteStudentController::class, 'import']);
                 Route::get('/', [InstituteStudentController::class, 'index']);
                 Route::post('/', [InstituteStudentController::class, 'store']);
                 Route::get('/{id}', [InstituteStudentController::class, 'show']);
@@ -205,6 +228,8 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [InstituteStudentController::class, 'destroy']);
                 Route::get('/{id}/id-card', [InstituteStudentController::class, 'idCard']);
                 Route::post('/{id}/fee-reminder', [InstituteStudentController::class, 'sendFeeReminder']);
+                Route::post('/{id}/send-password', [InstituteStudentController::class, 'sendPasswordEmail']);
+                Route::post('/{id}/reset-password', [InstituteStudentController::class, 'resetPasswordDirect']);
             });
 
             // Batch Management
@@ -217,6 +242,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/{id}/remove-student', [InstituteBatchController::class, 'removeStudent']);
                 Route::post('/{id}/assign-students', [InstituteBatchController::class, 'assignStudents']);
                 Route::post('/{id}/close', [InstituteBatchController::class, 'close']);
+                Route::post('/{id}/fee-reminders', [InstituteBatchController::class, 'sendFeeReminders']);
                 Route::delete('/{id}', [InstituteBatchController::class, 'destroy']);
             });
 
@@ -288,6 +314,12 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{staff_id}', [\App\Http\Controllers\Api\StaffSalaryController::class, 'showByStaff']);
             });
 
+            // Timetable Management
+            Route::prefix('timetable')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'store']);
+            });
+
             Route::prefix('leads')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\LeadController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\LeadController::class, 'store']);
@@ -303,10 +335,13 @@ Route::prefix('v1')->group(function () {
     // Student Auth Routes
     Route::prefix('student')->group(function () {
         Route::post('/login', [StudentAuthController::class, 'login']);
+        Route::post('/forgot-password', [StudentAuthController::class, 'sendResetPasswordEmail']);
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [StudentAuthController::class, 'logout']);
             Route::get('/profile', [StudentProfileController::class, 'show']);
             Route::post('/profile/avatar', [StudentProfileController::class, 'updateAvatar']);
+            Route::post('/profile/change-password', [StudentProfileController::class, 'changePassword']);
+            Route::delete('/profile/delete', [StudentProfileController::class, 'destroy']);
             Route::get('/dashboard', [StudentDashboardController::class, 'index']);
             Route::get('/fees', [StudentFeesController::class, 'index']);
             Route::get('/fees/{id}', [StudentFeesController::class, 'show']);
@@ -321,6 +356,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/homeworks/{id}/submit', [StudentHomeworkController::class, 'submit']);
             Route::get('/homeworks/{id}/attachment', [StudentHomeworkController::class, 'attachmentInfo']);
             Route::get('/homeworks/{id}/attachment/download', [StudentHomeworkController::class, 'attachmentDownload']);
+            Route::get('/exams', [StudentExamController::class, 'index']);
+            Route::get('/exams/{id}', [StudentExamController::class, 'show']);
             Route::get('/report', [StudentReportController::class, 'index']);
             Route::get('/notifications', [StudentNotificationController::class, 'index']);
             Route::get('/notifications/{id}/attachment/download', [StudentNotificationController::class, 'downloadAttachment']);
@@ -331,6 +368,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/feedback', [StudentFeedbackController::class, 'store']);
             Route::get('/resources', [StudentResourceController::class, 'index']);
             Route::get('/resources/{id}/download', [StudentResourceController::class, 'download']);
+            Route::get('/timetable', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'studentSchedule']);
             Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
         });
@@ -347,7 +385,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/pay-fee', [ParentPaymentController::class, 'store']);
             Route::get('/receipts', [ParentReceiptsController::class, 'index']);
             Route::get('/attendance', [ParentAttendanceController::class, 'index']);
-            Route::get('/daily-updates', [ParentDailyUpdateController::class, 'index']);
             Route::get('/homeworks', [ParentHomeworkController::class, 'index']);
             Route::get('/report', [ParentReportController::class, 'index']);
             Route::get('/notifications', [ParentNotificationController::class, 'index']);

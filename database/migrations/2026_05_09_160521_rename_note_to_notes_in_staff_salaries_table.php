@@ -12,8 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Using raw SQL for compatibility with older MariaDB versions
-        DB::statement("ALTER TABLE staff_salaries CHANGE note notes TEXT NULL");
+        if (Schema::hasColumn('staff_salaries', 'note') && !Schema::hasColumn('staff_salaries', 'notes')) {
+            DB::statement("ALTER TABLE staff_salaries CHANGE note notes TEXT NULL");
+        }
     }
 
     /**

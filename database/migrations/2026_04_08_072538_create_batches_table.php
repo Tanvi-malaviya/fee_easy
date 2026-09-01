@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('batches', function (Blueprint $table) {
+        if (!Schema::hasTable('batches')) {
+            Schema::create('batches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
             $table->string('name');
@@ -15,6 +16,7 @@ return new class extends Migration {
             $table->time('end_time')->nullable();
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('batches'); }
 };

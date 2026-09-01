@@ -15,5 +15,7 @@ class VerifyCsrfToken extends Middleware
        'broadcasting/auth',
        'api/book-demo',
        'api/v1/*',
+       'institute/logout',
+       'admin/logout',
     ];
 }

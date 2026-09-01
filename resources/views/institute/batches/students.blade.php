@@ -166,8 +166,7 @@
                     class="px-6 py-2.5 bg-white border border-slate-200 rounded-lg text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">Discard
                     Changes</button>
                 <button id="confirm-enroll-btn" onclick="confirmEnrollment()" disabled
-                    class="px-6 py-2.5 bg-[#ff6600] text-white rounded-lg text-[13px] font-bold shadow-sm hover:bg-[#e65c00] transition-all disabled:opacity-50 disabled:grayscale">Apply
-                    Fee Structure</button>
+                    class="px-6 py-2.5 bg-[#ff6600] text-white rounded-lg text-[13px] font-bold shadow-sm hover:bg-[#e65c00] transition-all disabled:opacity-50 disabled:grayscale">Assign Student</button>
             </div>
         </div>
 
@@ -473,7 +472,7 @@
                                                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tuition Fee</p>
                                                     <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 w-32 focus-within:border-[#ff6600] focus-within:ring-2 focus-within:ring-orange-500/10 transition-all">
                                                         <span class="text-[13px] font-bold text-slate-400 mr-2">₹</span>
-                                                        <input type="number" value="${fees.tuition}" onchange="updateStudentFee(${id}, 'tuition', this.value)"
+                                                        <input type="number" min="0" max="999999" value="${fees.tuition}" oninput="if(this.value.length>6)this.value=this.value.slice(0,6)" onchange="updateStudentFee(${id}, 'tuition', this.value)"
                                                             class="w-full bg-transparent text-[14px] font-bold text-slate-900 outline-none p-0">
                                                     </div>
                                                 </div>
@@ -516,7 +515,7 @@
             } catch (error) {
                 showToast('Enrollment partially failed', 'error');
             } finally {
-                btn.disabled = false; btn.innerText = 'Apply Fee Structure';
+                btn.disabled = false; btn.innerText = 'Assign Student';
             }
         }
 

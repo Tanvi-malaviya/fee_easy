@@ -13,7 +13,6 @@ class Plan extends Model
         'name',
         'price',
         'duration_days',
-        'trial_days',
         'status',
     ];
 

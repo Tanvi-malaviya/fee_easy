@@ -69,7 +69,7 @@
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto lg:ml-auto pr-1">
                 <!-- Search Bar -->
-                <div class="relative w-full sm:w-64 md:w-80">
+                <div class="relative w-full sm:w-60 md:w-72">
                     <div
                         class="relative flex items-center bg-slate-50/50 border border-slate-100 rounded-lg focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-500/10 focus-within:border-orange-500/20 transition-all p-1">
                         <div class="pl-2.5 pr-2 flex items-center pointer-events-none">
@@ -87,8 +87,31 @@
                     </div>
                 </div>
 
-                <!-- Secondary Buttons -->
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                <!-- Secondary Buttons & Selection Controls -->
+                <div class="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                    <!-- Select All Toggle -->
+                    <button type="button" onclick="toggleSelectAllCurrentPage()" id="select-all-btn"
+                        class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        <span id="select-all-btn-text">Select All</span>
+                    </button>
+
+                    <!-- Move to Branch / Batch Bulk Button -->
+                    <button type="button" id="bulk-move-btn" onclick="openBulkTransferModal()"
+                        class="hidden px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 animate-in zoom-in duration-150">
+                        <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <span>Move (<span id="bulk-move-count-top">0</span>)</span>
+                    </button>
+
+                    <button onclick="openImportModal()"
+                        class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
+                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M7 3h7l4 4v14H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M12 12v6m0 0l-3-3m3 3l3-3" />
+                        </svg>
+                        Import
+                    </button>
                     <button onclick="openExportModal()"
                         class="btn-white btn-md flex-1 sm:flex-none flex justify-center items-center">
                         <svg class="w-3.5 h-3.5 mr-2 text-slate-400 group-hover:text-slate-600 transition-colors"
@@ -113,10 +136,6 @@
             </div>
         </div>
 
-       
-
-
-
         <!-- Registry Grid Container -->
         <div id="table-container" class="relative">
             <div id="loading-spinner"
@@ -134,39 +153,39 @@
             <!-- Pagination -->
             <div id="pagination-container"
                 class="mt-2 px-5 py-3 bg-white rounded-xl border border-slate-100 hidden items-center justify-between shadow-sm">
-                <!-- Pagination generated via JS -->
             </div>
         </div>
 
-        @push('modals')
-                <!-- Empty State Template -->
-                <template id="students-empty-state">
-                    <x-empty-state title="No students found" subtitle="Try adjusting your filters or add a new student."
-                        icon="students" />
-                </template>
-                <!-- Export Selection Modal -->
-                <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
-                    <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-                    <div
-                        class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden p-6 animate-in fade-in zoom-in duration-300">
-                        <div class="text-center mb-4">
-                            <div
-                                class="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-extrabold text-slate-800">Export Student List</h3>
-                            <p class="text-[11px] text-slate-400">Select your preferred format.</p>
-                        </div>
+        <!-- Empty State Template -->
+        <template id="students-empty-state">
+            <x-empty-state title="No scholars found" subtitle="Create a new student or import a list to get started."
+                icon="students" />
+        </template>
 
+        @push('modals')
+            <!-- Export Selection Modal -->
+            <div id="export-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+                <div onclick="closeExportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+                <div
+                    class="bg-white w-full max-w-sm rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col">
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                        <h3 class="text-base font-bold text-white tracking-tight">Export Student List</h3>
+                        <button type="button" onclick="closeExportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="p-6">
                         <div class="space-y-2 mb-6">
-                            <label
-                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/30">
-                                <input type="radio" name="export-format" value="pdf" checked class="hidden">
+                            <!-- PDF Format Option -->
+                            <label id="format-option-pdf" onclick="selectExportFormat('pdf')"
+                                class="relative flex items-center p-3 border border-blue-500 bg-blue-50/30 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group">
+                                <input type="radio" id="radio-pdf" name="export-format" value="pdf" checked class="hidden">
                                 <div
-                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3 group-has-[:checked]:border-blue-200">
+                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3">
                                     <svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h10V4H7zm2 4h6v2H9V8zm0 4h6v2H9v-2zm0 4h3v2H9v-2z" />
@@ -176,19 +195,20 @@
                                     <p class="text-xs font-bold text-slate-700">PDF Document</p>
                                     <p class="text-[10px] font-medium text-slate-400">Best for printing & sharing</p>
                                 </div>
-                                <div
-                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center group-has-[:checked]:border-blue-500">
-                                    <div
-                                        class="h-2 w-2 bg-blue-500 rounded-full scale-0 transition-transform group-has-[:checked]:scale-100">
+                                <div id="check-dot-container-pdf"
+                                    class="h-4 w-4 border-2 border-blue-500 rounded-full flex items-center justify-center">
+                                    <div id="check-dot-pdf"
+                                        class="h-2 w-2 bg-blue-500 rounded-full scale-100 transition-transform">
                                     </div>
                                 </div>
                             </label>
 
-                            <label
-                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/30">
-                                <input type="radio" name="export-format" value="csv" class="hidden">
+                            <!-- CSV Format Option -->
+                            <label id="format-option-csv" onclick="selectExportFormat('csv')"
+                                class="relative flex items-center p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all group">
+                                <input type="radio" id="radio-csv" name="export-format" value="csv" class="hidden">
                                 <div
-                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3 group-has-[:checked]:border-emerald-200">
+                                    class="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center mr-3">
                                     <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                     </svg>
@@ -197,10 +217,10 @@
                                     <p class="text-xs font-bold text-slate-700">Excel / CSV</p>
                                     <p class="text-[10px] font-medium text-slate-400">Best for data analysis</p>
                                 </div>
-                                <div
-                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center group-has-[:checked]:border-emerald-500">
-                                    <div
-                                        class="h-2 w-2 bg-emerald-500 rounded-full scale-0 transition-transform group-has-[:checked]:scale-100">
+                                <div id="check-dot-container-csv"
+                                    class="h-4 w-4 border-2 border-slate-200 rounded-full flex items-center justify-center">
+                                    <div id="check-dot-csv"
+                                        class="h-2 w-2 bg-emerald-500 rounded-full scale-0 transition-transform">
                                     </div>
                                 </div>
                             </label>
@@ -208,8 +228,83 @@
 
                         <div class="flex items-center space-x-3">
                             <button onclick="closeExportModal()" class="btn-white btn-sm flex-1">Cancel</button>
-                            <button onclick="runExport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-primary">OK,
-                                Export</button>
+                            <button onclick="runExport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-primary">OK, Export</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Selection Modal -->
+            <div id="import-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+                <div onclick="closeImportModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+                <div
+                    class="bg-white w-full max-w-lg rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col mx-4">
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-between shrink-0 z-10">
+                        <h3 class="text-base font-bold text-white tracking-tight">Bulk Import Students</h3>
+                        <button type="button" onclick="closeImportModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="p-6 overflow-y-auto max-h-[75vh]">
+                        <!-- Instructions -->
+                        <div class="mb-4 p-4 bg-orange-50/50 rounded-xl border border-orange-100/80">
+                            <h4 class="text-xs font-bold text-orange-850 mb-1.5 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Instructions for CSV Upload
+                            </h4>
+                            <ul class="text-[10px] text-orange-700/95 space-y-1 list-disc list-inside leading-relaxed font-medium">
+                                <li>Please download and use the template below to format your data.</li>
+                                <li>Required fields: Name, Email, Phone (10 digits), Standard, Date of Birth (YYYY-MM-DD), Guardian Name.</li>
+                               
+                            </ul>
+                            <div class="mt-3 flex items-center">
+                                <a href="{{ route('institute.students.import.sample') }}" class="inline-flex items-center text-xs font-bold text-primary hover:text-orange-600 underline transition-all">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Download Sample CSV Template
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div id="import-drop-zone" class="border-2 border-dashed border-slate-200 hover:border-primary rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50/50 hover:bg-orange-50/10 group mb-4">
+                            <input type="file" id="import-file-input" accept=".csv" class="hidden">
+                            <div class="h-12 w-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-105 group-hover:border-orange-100 transition-all">
+                                <svg class="w-6 h-6 text-slate-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-700 group-hover:text-primary transition-colors mb-1" id="file-status-text">Click to browse or drag & drop CSV</p>
+                            <p class="text-[10px] text-slate-400 font-medium">Only .csv files up to 5MB are allowed</p>
+                        </div>
+
+                        <!-- Validation Errors Alert Box -->
+                        <div id="import-errors-container" class="hidden mb-4 p-4 bg-rose-50 rounded-xl border border-rose-100 max-h-40 overflow-y-auto">
+                            <h4 class="text-xs font-bold text-rose-800 mb-1.5 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Validation Errors
+                            </h4>
+                            <ul id="import-errors-list" class="text-[10px] text-rose-700 space-y-1 list-disc list-inside leading-relaxed font-semibold">
+                                <!-- Dynamic Error Rows -->
+                            </ul>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center space-x-3">
+                            <button onclick="closeImportModal()" class="btn-white btn-sm flex-1">Cancel</button>
+                            <button id="submit-import-btn" onclick="executeImport()" class="btn-brand btn-sm flex-1 bg-primary hover:bg-orange-600 text-white font-bold rounded-xl flex items-center justify-center" disabled>
+                                <span id="import-btn-text">Import Students</span>
+                                <div id="import-btn-spinner" class="hidden h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -257,11 +352,124 @@
 
                 </div>
             </div>
+
+            <!-- Transfer / Move Students to Batch Modal -->
+            <div id="transfer-students-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden px-4">
+                <div onclick="closeBulkTransferModal()" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+                <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between text-white shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center text-white">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white tracking-tight">Move Students to Batch</h3>
+                                <p class="text-[11px] text-white/80 font-medium">Reassign selected scholars to a new batch</p>
+                            </div>
+                        </div>
+                        <button onclick="closeBulkTransferModal()" class="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="p-6 overflow-y-auto space-y-4">
+                        <!-- Selected Summary Card -->
+                        <div class="bg-orange-50/70 border border-orange-100/80 rounded-2xl p-4 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-xl bg-[#FF6B00] text-white flex items-center justify-center font-extrabold text-sm shadow-xs">
+                                    <span id="transfer-modal-count">0</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 leading-tight">Students Selected for Transfer</h4>
+                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Their enrollment, fees, and marks will move with them.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Students Badges List -->
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Selected Scholars</label>
+                            <div id="transfer-modal-students-list" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-100">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Target Batch Dropdown -->
+                        <div>
+                            <label for="target-batch-select" class="text-xs font-bold text-slate-800 block mb-1.5">
+                                Select Destination Batch <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="target-batch-select" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option value="">-- Choose Target Batch --</option>
+                                <option value="none">⚠️ Unassign (Remove from any batch)</option>
+                                @foreach($batches as $batch)
+                                    <option value="{{ $batch->id }}">
+                                        {{ $batch->name }} ({{ $batch->subject ?: 'General' }}) &bull; {{ $batch->students()->count() }} Scholars
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[11px] text-slate-400 font-medium mt-1">All selected students will be immediately updated to this batch.</p>
+                        </div>
+
+                        {{-- 
+                        <!-- Notification Toggle -->
+                        <div class="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800">Send Mobile Push Notifications</h5>
+                                <p class="text-[10px] text-slate-400 font-medium">Alert students & parents on their app about this transfer</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="transfer-notify-toggle" checked class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                        --}}
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
+                        <button type="button" onclick="closeBulkTransferModal()"
+                            class="px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-all">
+                            Cancel
+                        </button>
+                        <button type="button" id="confirm-transfer-btn" onclick="executeBulkTransfer()"
+                            class="px-6 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-700/20 flex items-center gap-2">
+                            <span id="transfer-btn-text">Confirm & Move Students</span>
+                            <div id="transfer-btn-spinner" class="hidden h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Bottom Selection Bar -->
+            <div id="bulk-selection-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/60 hidden items-center gap-4 transition-all">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-6 w-6 rounded-full bg-primary/20 text-[#FF6B00] flex items-center justify-center font-extrabold text-xs">
+                        <span id="selected-count-badge">0</span>
+                    </div>
+                    <span class="text-xs font-bold text-slate-200"><span id="selected-count-text">0</span> Scholars Selected</span>
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <button type="button" onclick="openBulkTransferModal()" class="px-3.5 py-1.5 bg-primary hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-700/20 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    <span>Move to Batch</span>
+                </button>
+                <button type="button" onclick="clearStudentSelections()" class="text-slate-400 hover:text-white text-xs font-bold transition-colors">
+                    Cancel
+                </button>
+            </div>
         @endpush
 
     <script>
         const INSTITUTE_NAME = "{{ $institute->institute_name }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+
+        const selectedStudentsMap = new Map(); // id -> { id, name, batch_name, image }
+        let currentLoadedStudentsList = [];
 
         // Initial Load
         document.addEventListener('DOMContentLoaded', () => {
@@ -273,7 +481,7 @@
 
         async function fetchDashboardStats() {
             try {
-                const response = await fetch('{{ url('/api/v1/institute/reports/dashboard') }}', {
+                const response = await fetch('/api/v1/institute/reports/dashboard', {
                     headers: { 'Accept': 'application/json' }
                 });
                 const result = await response.json();
@@ -294,23 +502,38 @@
                 // Build Query Parameters
                 const search = document.getElementById('search-input').value;
 
-                let url = `{{ url('/api/v1/institute/students') }}?page=${page}`;
+                let url = `/api/v1/institute/students?page=${page}`;
                 if (search) url += `&search=${encodeURIComponent(search)}`;
 
                 const response = await fetch(url, {
-                    headers: { 'Accept': 'application/json' }
+                    credentials: 'same-origin',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    }
                 });
                 const result = await response.json();
-                if (result.status === 'success') {
-                    renderStudents(result.data.items);
-                    renderPagination(result.data);
+                if (result.status === 'success' || result.data) {
+                    const studentList = (result.data && (result.data.items || result.data.data)) || (Array.isArray(result.data) ? result.data : (Array.isArray(result) ? result : []));
+                    currentLoadedStudentsList = studentList;
+                    renderStudents(studentList);
+                    updateSelectionUI();
+                    
+                    const paginationData = (result.data && result.data.current_page) ? result.data : result;
+                    renderPagination(paginationData);
 
                     // Update Dashboard Stats from Real Data
-                    if (result.data.stats) {
+                    if (result.data && result.data.stats) {
                         document.getElementById('stat-performance').textContent = result.data.stats.performance;
+                    }
+
+                    if (page > 1) {
+                        const gridEl = document.getElementById('table-container');
+                        if (gridEl) gridEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 }
             } catch (error) {
+                console.error('Error loading students:', error);
                 showToast('Error loading students', 'error');
             } finally {
                 toggleLoader(false);
@@ -331,11 +554,59 @@
         function openExportModal() {
             document.getElementById('export-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            selectExportFormat('pdf'); // default selection on open
         }
 
         function closeExportModal() {
             document.getElementById('export-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
+        }
+
+        function selectExportFormat(format) {
+            const pdfOption = document.getElementById('format-option-pdf');
+            const csvOption = document.getElementById('format-option-csv');
+            const pdfRadio = document.getElementById('radio-pdf');
+            const csvRadio = document.getElementById('radio-csv');
+            const pdfDotContainer = document.getElementById('check-dot-container-pdf');
+            const csvDotContainer = document.getElementById('check-dot-container-csv');
+            const pdfDot = document.getElementById('check-dot-pdf');
+            const csvDot = document.getElementById('check-dot-csv');
+
+            if (format === 'pdf') {
+                pdfRadio.checked = true;
+                csvRadio.checked = false;
+                
+                pdfOption.classList.remove('border-slate-100');
+                pdfOption.classList.add('border-blue-500', 'bg-blue-50/30');
+                pdfDotContainer.classList.remove('border-slate-200');
+                pdfDotContainer.classList.add('border-blue-500');
+                pdfDot.classList.remove('scale-0');
+                pdfDot.classList.add('scale-100');
+
+                csvOption.classList.add('border-slate-100');
+                csvOption.classList.remove('border-emerald-500', 'bg-emerald-50/30');
+                csvDotContainer.classList.add('border-slate-200');
+                csvDotContainer.classList.remove('border-emerald-500');
+                csvDot.classList.add('scale-0');
+                csvDot.classList.remove('scale-100');
+            } else {
+                csvRadio.checked = true;
+                pdfRadio.checked = false;
+
+                csvOption.classList.remove('border-slate-100');
+                csvOption.classList.add('border-emerald-500', 'bg-emerald-50/30');
+                csvDotContainer.classList.remove('border-slate-200');
+                csvDotContainer.classList.add('border-emerald-500');
+                csvDot.classList.remove('scale-0');
+                csvDot.classList.add('scale-100');
+
+                pdfOption.classList.add('border-slate-100');
+                pdfOption.classList.remove('border-blue-500', 'bg-blue-50/30');
+                pdfDotContainer.classList.add('border-slate-200');
+                pdfDotContainer.classList.remove('border-blue-500');
+                pdfDot.classList.add('scale-0');
+                pdfDot.classList.remove('scale-100');
+            }
         }
 
         function runExport() {
@@ -347,6 +618,169 @@
 
             closeExportModal();
             window.location.href = url;
+        }
+
+        // --- Import Modal Logic ---
+        let selectedImportFile = null;
+
+        function openImportModal() {
+            document.getElementById('import-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            resetImportState();
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            resetImportState();
+        }
+
+        function resetImportState() {
+            selectedImportFile = null;
+            document.getElementById('import-file-input').value = '';
+            document.getElementById('file-status-text').textContent = 'Click to browse or drag & drop CSV';
+            document.getElementById('import-errors-container').classList.add('hidden');
+            const errorsList = document.getElementById('import-errors-list');
+            if (errorsList) errorsList.innerHTML = '';
+            document.getElementById('submit-import-btn').disabled = true;
+            document.getElementById('import-btn-spinner').classList.add('hidden');
+            document.getElementById('import-btn-text').textContent = 'Import Students';
+
+            const zone = document.getElementById('import-drop-zone');
+            if (zone) {
+                zone.classList.remove('border-emerald-500', 'bg-emerald-50/10');
+                zone.classList.add('border-slate-200', 'bg-slate-50/50');
+            }
+        }
+
+        // Initialize drag and drop events
+        document.addEventListener('DOMContentLoaded', () => {
+            const zone = document.getElementById('import-drop-zone');
+            const fileInput = document.getElementById('import-file-input');
+
+            if (zone && fileInput) {
+                zone.addEventListener('click', () => fileInput.click());
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleSelectedFile(e.target.files[0]);
+                    }
+                });
+
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('border-slate-200', 'bg-slate-50/50');
+                    zone.classList.add('border-emerald-500', 'bg-emerald-50/10');
+                });
+
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    if (!selectedImportFile) {
+                        zone.classList.add('border-slate-200', 'bg-slate-50/50');
+                        zone.classList.remove('border-emerald-500', 'bg-emerald-50/10');
+                    }
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files.length > 0) {
+                        handleSelectedFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+        });
+
+        function handleSelectedFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                showToast('Please select a valid CSV file.', 'error');
+                resetImportState();
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('File size exceeds 5MB limit.', 'error');
+                resetImportState();
+                return;
+            }
+
+            selectedImportFile = file;
+            document.getElementById('file-status-text').innerHTML = `Selected: <span class="text-emerald-600 font-bold">${file.name}</span> (${(file.size / 1024).toFixed(1)} KB)`;
+            
+            const zone = document.getElementById('import-drop-zone');
+            if (zone) {
+                zone.classList.remove('border-slate-200', 'bg-slate-50/50');
+                zone.classList.add('border-emerald-500', 'bg-emerald-50/5');
+            }
+            
+            document.getElementById('submit-import-btn').disabled = false;
+        }
+
+        async function executeImport() {
+            if (!selectedImportFile) return;
+
+            const submitBtn = document.getElementById('submit-import-btn');
+            const btnText = document.getElementById('import-btn-text');
+            const btnSpinner = document.getElementById('import-btn-spinner');
+            const errorsContainer = document.getElementById('import-errors-container');
+            const errorsList = document.getElementById('import-errors-list');
+
+            // Set loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Importing...';
+            btnSpinner.classList.remove('hidden');
+            errorsContainer.classList.add('hidden');
+            errorsList.innerHTML = '';
+
+            const formData = new FormData();
+            formData.append('file', selectedImportFile);
+
+            try {
+                const response = await fetch('/institute/students/import', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast(result.message || 'Students imported successfully!', 'success');
+                    closeImportModal();
+                    fetchStudents();
+                    fetchDashboardStats();
+                } else {
+                    showToast(result.message || 'Import failed due to validation errors.', 'error');
+                    if (result.errors && result.errors.length > 0) {
+                        errorsContainer.classList.remove('hidden');
+                        errorsList.innerHTML = result.errors.map(err => `<li>${escapeHtml(err)}</li>`).join('');
+                    } else if (result.message) {
+                        errorsContainer.classList.remove('hidden');
+                        errorsList.innerHTML = `<li>${escapeHtml(result.message)}</li>`;
+                    }
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Import Students';
+                    btnSpinner.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                resetImportState();
+                showToast('Upload failed. If you modified the file after selecting it, please re-select it and try again.', 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
         let studentToDelete = null;
@@ -407,6 +841,7 @@
             }
 
             container.innerHTML = students.map(student => {
+                const isSelected = selectedStudentsMap.has(student.id);
                 // Real performance based on average homework score (out of 10)
                 const avgScore = student.homework_submissions_avg_score ? parseFloat(student.homework_submissions_avg_score) : 0;
                 const performance = Math.round((avgScore / 10) * 100);
@@ -423,72 +858,278 @@
                 }
 
                 return `
-                                        <div class="group bg-white rounded-xl border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative"
-                                             onclick="if(!event.target.closest('.action-btn')) window.location.href='/institute/students/${student.id}'">
+                    <div id="student-card-${student.id}"
+                         class="group bg-white rounded-xl border ${isSelected ? 'border-primary ring-2 ring-orange-500/30 bg-orange-50/10' : 'border-slate-100'} hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col cursor-pointer relative select-none"
+                         onclick="handleStudentCardClick(event, ${student.id})">
 
-                                            <!-- Top Content Section with Padding -->
-                                            <div class="pt-5 pl-5 pr-5 flex-1 flex flex-col">
-                                                <!-- Batch Badge -->
-                                                <div class="absolute top-4 right-4">
-                                                    <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[9px] font-black rounded-md uppercase tracking-tight">
-                                                        ${student.batch ? student.batch.name.substring(0, 15) : 'Unassigned'}
-                                                    </span>
-                                                </div>
+                        <!-- Top Content Section with Padding -->
+                        <div class="pt-4 px-4 pb-3 flex-1 flex flex-col">
+                            <!-- Card Header: Checkbox & Batch Badge Row -->
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <div onclick="event.stopPropagation()" class="flex items-center">
+                                    <label class="cursor-pointer flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/80 transition-all">
+                                        <input type="checkbox"
+                                            id="student-chk-${student.id}"
+                                            value="${student.id}"
+                                            data-student-name="${escapeHtml(student.name)}"
+                                            data-batch-name="${student.batch ? escapeHtml(student.batch.name) : 'Unassigned'}"
+                                            onchange="onStudentSelectToggle(${student.id}, this.checked)"
+                                            ${isSelected ? 'checked' : ''}
+                                            class="student-card-checkbox h-4 w-4 rounded-md border-slate-300 text-primary focus:ring-primary/20 cursor-pointer accent-[#FF6B00] transition-all">
+                                    </label>
+                                </div>
+                                <span class="px-2 py-0.5 bg-slate-50 text-slate-500 text-[9px] font-black rounded-md uppercase tracking-tight truncate max-w-[130px]" title="${student.batch ? escapeHtml(student.batch.name) : 'Unassigned'}">
+                                    ${student.batch ? student.batch.name.substring(0, 15) : 'Unassigned'}
+                                </span>
+                            </div>
 
-                                                <!-- Profile Section -->
-                                                <div class="flex flex-col items-left mb-4">
-                                                    <div class="h-16 w-16 rounded-full border-2 border-slate-50 overflow-hidden mb-3 shadow-inner">
-                                                        <img src="${student.profile_image_url}" class="w-full h-full object-cover">
-                                                    </div>
-                                                    <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
-                                                    ${student.enrollment_id ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight">${student.enrollment_id}</span></div>` : ''}
-                                                    <p class="text-[10px] font-bold text-slate-400 mt-1">${student.email || 'no-email@tuoora.edu'}</p>
-                                                </div>
+                            <!-- Profile Section -->
+                            <div class="flex flex-col items-left mb-3">
+                                <div class="h-14 w-14 rounded-full border-2 border-slate-50 overflow-hidden mb-2.5 shadow-inner">
+                                    <img src="${student.profile_image_url}" class="w-full h-full object-cover">
+                                </div>
+                                <h4 class="text-base font-black text-slate-800 text-left tracking-tight leading-tight">${student.name}</h4>
+                                ${student.enrollment_id ? `<div class="mt-1"><span class="inline-block bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight">${student.enrollment_id}</span></div>` : ''}
+                                <p class="text-[10px] font-bold text-slate-400 mt-1 truncate">${student.email || 'no-email@tuoora.edu'}</p>
+                            </div>
 
-                                                <!-- Metrics Section -->
-                                                <div class="space-y-4 mb-2 flex-1">
-                                                    <div>
-                                                        <div class="flex items-left justify-between mb-1.5">
-                                                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
-                                                            <span class="text-[9px] font-black text-emerald-500 uppercase tracking-wider">${performance}%</span>
-                                                        </div>
-                                                        <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                                                            <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
-                                                        </div>
-                                                    </div>
+                            <!-- Metrics Section -->
+                            <div class="space-y-4 mb-2 flex-1">
+                                <div>
+                                    <div class="flex items-left justify-between mb-1.5">
+                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Performance</span>
+                                        <span class="text-[9px] font-black text-emerald-500 uppercase tracking-wider">${performance}%</span>
+                                    </div>
+                                    <div class="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${performance}%"></div>
+                                    </div>
+                                </div>
 
-                                                    <div class="flex items-center justify-between border-slate-50">
-                                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
-                                                        <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
-                                                            ${feeStatusText}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <div class="flex items-center justify-between border-slate-50">
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Fee Status</span>
+                                    <span class="px-2 py-0.5 bg-${feeStatusColor}-50 text-${feeStatusColor}-600 text-[8px] font-black rounded-md uppercase tracking-tight">
+                                        ${feeStatusText}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                                            <!-- Footer Actions -->
-                                            <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
-                                                <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px]  transition-all">
-                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                    View
-                                                </a>
-                                                <div class="flex items-center gap-3">
-                                                    <a href="/institute/students/${student.id}/edit" class="action-btn text-blue-500 hover:text-blue-500 transition-all" title="Edit">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                                    </a>
-                                                    <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-rose-500 hover:text-rose-500 transition-all" title="Delete">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
+                        <!-- Footer Actions -->
+                        <div class="flex items-center justify-between p-3 bg-slate-50/80 rounded-b-xl border-t border-slate-100">
+                            <a href="/institute/students/${student.id}" class="action-btn flex items-center text-[#006b74] font-bold text-[12px] transition-all">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                View
+                            </a>
+                            <div class="flex items-center gap-3">
+                                <a href="/institute/students/${student.id}/edit" class="action-btn text-blue-500 hover:text-blue-500 transition-all" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                </a>
+                                <button onclick="event.stopPropagation(); openDeleteModal(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="action-btn text-rose-500 hover:text-rose-500 transition-all" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }).join('');
+        }
+
+        // --- Selection & Transfer Handlers ---
+
+        function handleStudentCardClick(e, studentId) {
+            if (e.target.closest('.action-btn') || e.target.closest('.student-card-checkbox') || e.target.closest('label')) return;
+            if (selectedStudentsMap.size > 0) {
+                const isSelected = selectedStudentsMap.has(studentId);
+                onStudentSelectToggle(studentId, !isSelected);
+            } else {
+                window.location.href = `/institute/students/${studentId}`;
+            }
+        }
+
+        function onStudentSelectToggle(studentId, isChecked) {
+            const studentObj = currentLoadedStudentsList.find(s => s.id === studentId);
+            if (isChecked) {
+                selectedStudentsMap.set(studentId, {
+                    id: studentId,
+                    name: studentObj ? studentObj.name : 'Student #' + studentId,
+                    batch_name: studentObj && studentObj.batch ? studentObj.batch.name : 'Unassigned',
+                    image: studentObj ? studentObj.profile_image_url : ''
+                });
+            } else {
+                selectedStudentsMap.delete(studentId);
+            }
+
+            const card = document.getElementById(`student-card-${studentId}`);
+            const chk = document.getElementById(`student-chk-${studentId}`);
+            if (chk) chk.checked = isChecked;
+
+            if (card) {
+                if (isChecked) {
+                    card.classList.remove('border-slate-100');
+                    card.classList.add('border-primary', 'ring-2', 'ring-orange-500/30', 'bg-orange-50/10');
+                } else {
+                    card.classList.remove('border-primary', 'ring-2', 'ring-orange-500/30', 'bg-orange-50/10');
+                    card.classList.add('border-slate-100');
+                }
+            }
+
+            updateSelectionUI();
+        }
+
+        function toggleSelectAllCurrentPage() {
+            if (!currentLoadedStudentsList || currentLoadedStudentsList.length === 0) return;
+
+            const allSelectedOnPage = currentLoadedStudentsList.every(s => selectedStudentsMap.has(s.id));
+
+            if (allSelectedOnPage) {
+                currentLoadedStudentsList.forEach(s => selectedStudentsMap.delete(s.id));
+            } else {
+                currentLoadedStudentsList.forEach(s => {
+                    selectedStudentsMap.set(s.id, {
+                        id: s.id,
+                        name: s.name,
+                        batch_name: s.batch ? s.batch.name : 'Unassigned',
+                        image: s.profile_image_url
+                    });
+                });
+            }
+
+            renderStudents(currentLoadedStudentsList);
+            updateSelectionUI();
+        }
+
+        function clearStudentSelections() {
+            selectedStudentsMap.clear();
+            renderStudents(currentLoadedStudentsList);
+            updateSelectionUI();
+        }
+
+        function updateSelectionUI() {
+            const count = selectedStudentsMap.size;
+            const badge = document.getElementById('selected-count-badge');
+            const text = document.getElementById('selected-count-text');
+            const topCount = document.getElementById('bulk-move-count-top');
+            const bulkBtn = document.getElementById('bulk-move-btn');
+            const bottomBar = document.getElementById('bulk-selection-bar');
+            const selectAllBtnText = document.getElementById('select-all-btn-text');
+
+            if (badge) badge.textContent = count;
+            if (text) text.textContent = count;
+            if (topCount) topCount.textContent = count;
+
+            if (count > 0) {
+                if (bulkBtn) bulkBtn.classList.remove('hidden');
+                if (bottomBar) {
+                    bottomBar.classList.remove('hidden');
+                    bottomBar.classList.add('flex');
+                }
+            } else {
+                if (bulkBtn) bulkBtn.classList.add('hidden');
+                if (bottomBar) {
+                    bottomBar.classList.add('hidden');
+                    bottomBar.classList.remove('flex');
+                }
+            }
+
+            if (selectAllBtnText) {
+                const allSelected = currentLoadedStudentsList.length > 0 && currentLoadedStudentsList.every(s => selectedStudentsMap.has(s.id));
+                selectAllBtnText.textContent = allSelected ? 'Deselect All' : 'Select All';
+            }
+        }
+
+        function openBulkTransferModal() {
+            if (selectedStudentsMap.size === 0) {
+                showToast('Please select at least one student to move.', 'error');
+                return;
+            }
+
+            document.getElementById('transfer-modal-count').textContent = selectedStudentsMap.size;
+            const listContainer = document.getElementById('transfer-modal-students-list');
+            if (listContainer) {
+                listContainer.innerHTML = Array.from(selectedStudentsMap.values()).map(s => `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[11px] font-bold text-slate-700 shadow-2xs">
+                        <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>
+                        <span class="truncate max-w-[130px]">${escapeHtml(s.name)}</span>
+                        <span class="text-[9px] text-slate-400 font-medium">(${escapeHtml(s.batch_name)})</span>
+                    </span>
+                `).join('');
+            }
+
+            document.getElementById('target-batch-select').value = '';
+            document.getElementById('transfer-students-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBulkTransferModal() {
+            document.getElementById('transfer-students-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function executeBulkTransfer() {
+            const targetBatchVal = document.getElementById('target-batch-select').value;
+            if (!targetBatchVal) {
+                showToast('Please select a destination batch.', 'error');
+                document.getElementById('target-batch-select').focus();
+                return;
+            }
+
+            const studentIds = Array.from(selectedStudentsMap.keys());
+            if (studentIds.length === 0) {
+                showToast('No students selected.', 'error');
+                return;
+            }
+
+            const notifyToggle = document.getElementById('transfer-notify-toggle');
+            const notifyStudents = notifyToggle ? notifyToggle.checked : false;
+            const targetBatchId = targetBatchVal === 'none' ? null : parseInt(targetBatchVal);
+
+            const confirmBtn = document.getElementById('confirm-transfer-btn');
+            const btnText = document.getElementById('transfer-btn-text');
+            const spinner = document.getElementById('transfer-btn-spinner');
+
+            confirmBtn.disabled = true;
+            btnText.textContent = 'Moving Students...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/institute/students/bulk-transfer', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        student_ids: studentIds,
+                        target_batch_id: targetBatchId,
+                        notify_students: notifyStudents
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast(result.message || 'Students moved successfully!', 'success');
+                    closeBulkTransferModal();
+                    clearStudentSelections();
+                    fetchStudents();
+                    fetchDashboardStats();
+                } else {
+                    showToast(result.message || 'Failed to move students.', 'error');
+                }
+            } catch (error) {
+                console.error('Bulk transfer error:', error);
+                showToast('Network error while transferring students.', 'error');
+            } finally {
+                confirmBtn.disabled = false;
+                btnText.textContent = 'Confirm & Move Students';
+                spinner.classList.add('hidden');
+            }
         }
 
         function renderPagination(data) {
             const container = document.getElementById('pagination-container');
-            if (!data.links || data.last_page <= 1) {
+            if (!data || data.total <= data.per_page || data.last_page <= 1) {
                 container.classList.add('hidden');
                 container.classList.remove('flex');
                 return;
@@ -497,38 +1138,48 @@
             container.classList.remove('hidden');
             container.classList.add('flex');
 
-            let html = `<div class="flex items-center gap-2">`;
+            const currentPage = data.current_page || 1;
+            const lastPage = data.last_page || 1;
+            const from = data.from || ((currentPage - 1) * data.per_page + 1);
+            const to = data.to || Math.min(currentPage * data.per_page, data.total);
 
-            // Prev Button
-            const prevLink = data.links[0];
-            html += `<button onclick="${prevLink.url ? `fetchStudents(${new URL(prevLink.url).searchParams.get('page')})` : ''}" 
-                                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!prevLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                                        </button>`;
+            let buttonsHtml = '';
 
-            // Pages
-            data.links.slice(1, -1).forEach(link => {
-                if (link.active) {
-                    html += `<button class="h-10 w-10 flex items-center justify-center rounded-xl bg-[#a85000] text-white text-[13px] font-black shadow-lg shadow-orange-900/10">${link.label}</button>`;
-                } else if (link.label === '...') {
-                    html += `<span class="h-10 w-10 flex items-center justify-center text-slate-300 font-black text-[13px]">...</span>`;
-                } else {
-                    html += `<button onclick="fetchStudents(${link.label})" class="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-100 text-[13px] font-black text-slate-500 hover:bg-slate-50 transition-all shadow-sm">${link.label}</button>`;
+            // Previous Button
+            buttonsHtml += `
+                <button onclick="fetchStudents(${currentPage - 1})" 
+                    ${currentPage <= 1 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-slate-50 text-slate-600"'}
+                    class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white transition-all shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+            `;
+
+            // Numbered Page Buttons
+            for (let i = 1; i <= lastPage; i++) {
+                if (i === 1 || i === lastPage || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    if (i === currentPage) {
+                        buttonsHtml += `<button class="h-10 w-10 flex items-center justify-center rounded-xl bg-primary text-white text-[13px] font-bold shadow-md shadow-orange-900/10">${i}</button>`;
+                    } else {
+                        buttonsHtml += `<button onclick="fetchStudents(${i})" class="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">${i}</button>`;
+                    }
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    buttonsHtml += `<span class="h-10 w-10 flex items-center justify-center text-slate-300 font-bold text-[13px]">...</span>`;
                 }
-            });
+            }
 
             // Next Button
-            const nextLink = data.links[data.links.length - 1];
-            html += `<button onclick="${nextLink.url ? `fetchStudents(${new URL(nextLink.url).searchParams.get('page')})` : ''}" 
-                                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-100 ${!nextLink.url ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-600'} transition-all shadow-sm">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                                        </button>`;
+            buttonsHtml += `
+                <button onclick="fetchStudents(${currentPage + 1})" 
+                    ${currentPage >= lastPage ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-slate-50 text-slate-600"'}
+                    class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white transition-all shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            `;
 
-            html += `</div>`;
             container.innerHTML = `
-                                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:block">Showing ${data.from}-${data.to} of ${data.total} entries</span>
-                                    ${html}
-                                `;
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block">Showing ${from}-${to} of ${data.total} students</span>
+                <div class="flex items-center gap-2">${buttonsHtml}</div>
+            `;
         }
 
         function toggleLoader(show) {

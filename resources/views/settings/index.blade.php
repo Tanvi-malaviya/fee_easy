@@ -35,11 +35,9 @@
                         <div class="lg:col-span-3 border-t border-gray-50 my-2"></div>
 
                         <!-- Billing Section -->
-                        <div class="lg:col-span-1">
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Billing & Localization
-                            </h3>
-                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Manage currency symbols
-                                and default trial periods for all new plans.</p>
+                        <div class="lg:col-span-1"> 
+                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Billing & Localization</h3>
+                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Manage the primary currency symbol and subscription add-on pricing.</p>
                         </div>
                         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -49,12 +47,48 @@
                                     class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
                                     value="{{ $settings['currency_symbol'] ?? '₹' }}" placeholder="₹" />
                             </div>
+                        </div>
+
+                        <div class="lg:col-span-3 border-t border-gray-50 my-2"></div>
+
+                        <!-- Add-Ons: Mobile App White Label Section -->
+                        <div class="lg:col-span-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-md bg-orange-100 text-primary text-[10px] font-black uppercase tracking-wider">Add-On</span>
+                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Mobile App White Label</h3>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Configure the one-time add-on fee for custom-branded mobile applications on Play Store & App Store. Synchronized across web and mobile apps.</p>
+                        </div>
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <x-input-label for="mobile_app_whitelabel_price" value="White Label Price ({{ $settings['currency_symbol'] ?? '₹' }})"
+                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                    <x-text-input id="mobile_app_whitelabel_price" name="settings[mobile_app_whitelabel_price]" type="number" step="1" min="0" max="999999"
+                                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-bold"
+                                        value="{{ $settings['mobile_app_whitelabel_price'] ?? '5000' }}" placeholder="5000" />
+                                </div>
+                                <div>
+                                    <x-input-label for="mobile_app_whitelabel_billing_type" value="Billing Type / Frequency"
+                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                    <x-text-input id="mobile_app_whitelabel_billing_type" name="settings[mobile_app_whitelabel_billing_type]" type="text"
+                                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
+                                        value="{{ $settings['mobile_app_whitelabel_billing_type'] ?? 'One Time' }}" placeholder="One Time" />
+                                </div>
+                            </div>
                             <div>
-                                <x-input-label for="default_trial_days" value="Global Default Trial (Days)"
+                                <x-input-label for="mobile_app_whitelabel_title" value="Add-On Display Title"
                                     class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                <x-text-input id="default_trial_days" name="settings[default_trial_days]" type="number"
+                                <x-text-input id="mobile_app_whitelabel_title" name="settings[mobile_app_whitelabel_title]" type="text"
                                     class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
-                                    value="{{ $settings['default_trial_days'] ?? 14 }}" placeholder="14" />
+                                    value="{{ $settings['mobile_app_whitelabel_title'] ?? 'Mobile App White Label' }}" placeholder="Mobile App White Label" />
+                            </div>
+                            <div>
+                                <x-input-label for="mobile_app_whitelabel_description" value="Add-On Description"
+                                    class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                <textarea id="mobile_app_whitelabel_description" name="settings[mobile_app_whitelabel_description]" rows="2"
+                                    class="w-full bg-gray-50 border-gray-100 rounded-xl p-3 text-xs text-gray-700 outline-none focus:bg-white focus:border-primary transition"
+                                    placeholder="Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.">{{ $settings['mobile_app_whitelabel_description'] ?? 'Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.' }}</textarea>
                             </div>
                         </div>
 
@@ -128,12 +162,18 @@
                                 </div>
                             </div>
                             <div>
+                                <x-input-label for="payment_upi_id" value="UPI ID" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
+                                <x-text-input id="payment_upi_id" name="settings[payment_upi_id]" type="text"
+                                    class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
+                                    value="{{ $settings['payment_upi_id'] ?? '' }}" placeholder="e.g., tuoora@paytm" />
+                            </div>
+                            <div>
                                 <x-input-label for="payment_qr_image" value="QR Code Image" class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
                                 
                                 <div class="flex items-center gap-4">
                                     @if(isset($settings['payment_qr_path']) && $settings['payment_qr_path'] !== '')
                                         <div class="shrink-0">
-                                            <img src="/images/{{ $settings['payment_qr_path'] }}" alt="Current QR" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">
+                                            <img src="{{ \App\Models\SystemSetting::getQrUrl() }}" alt="Current QR" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">
                                         </div>
                                     @endif
                                     

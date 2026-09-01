@@ -92,8 +92,6 @@
         <div id="profile-view-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in duration-300">
             <!-- Account Management -->
             <div class="space-y-3">
-                <h2 class="text-xl font-medium text-slate-800 tracking-tight">Account Management</h2>
-
                 <div
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 overflow-hidden divide-y divide-slate-50">
                     <!-- Password & Security -->
@@ -118,6 +116,38 @@
                         </svg>
                     </button>
 
+                    <!-- UPI Payment Details -->
+                    <button type="button" onclick="openPaymentModal()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">UPI Payment Details</h3>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Configure UPI ID and payment QR code</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
+                                <span class="inline-flex items-center justify-center h-5 w-5 rounded-full bg-emerald-50 text-emerald-500 border border-emerald-100 shadow-sm shrink-0" title="UPI Details Configured">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
+                            @endif
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+
+
                     <!-- Subscription Plan -->
                     <a href="{{ route('institute.plans.index') }}"
                         class="py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
@@ -133,6 +163,29 @@
                                 <h3 class="text-sm font-bold text-slate-800 leading-tight">Subscription Plan</h3>
                                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Manage your active tier and billing
                                 </p>
+                            </div>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    <!-- Manage Website -->
+                    <a href="{{ route('institute.profile.website.index') }}"
+                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Manage Website</h3>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Select template and customize
+                                    landing page</p>
                             </div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
@@ -157,35 +210,23 @@
                                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Automate alerts via Meta API</p>
                             </div>
                         </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span
+                                class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-orange-50 text-[#FF6B00] border border-orange-100 whitespace-nowrap">
+                                <span class="h-1 w-1 rounded-full bg-[#FF6B00] animate-ping"></span>
+                                Coming Soon
+                            </span>
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
                     </button>
 
-                    <!-- UPI Payment Settings -->
-                    <a href="{{ route('institute.profile.payment-settings') }}"
-                        class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left flex">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="h-10 w-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800 leading-tight">UPI Payment Settings</h3>
-                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Manage UPI ID and QR code for fee collection</p>
-                            </div>
-                        </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
 
                     <!-- Terms & Conditions -->
-                    <button
+                    <a href="https://tuoora.com/terms-conditions" target="_blank"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
                         <div class="flex items-center gap-4">
                             <div
@@ -204,10 +245,10 @@
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                    </button>
+                    </a>
 
                     <!-- Privacy Policy -->
-                    <button
+                    <a href="https://tuoora.com/privacy-policy" target="_blank"
                         class="w-full py-2.5 px-5 flex items-center justify-between hover:bg-slate-50 transition-colors group text-left">
                         <div class="flex items-center gap-4">
                             <div
@@ -226,7 +267,7 @@
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                    </button>
+                    </a>
 
                     <!-- Help & Support -->
                     <button
@@ -250,117 +291,158 @@
                         </svg>
                     </button>
 
+                    <!-- Delete Account -->
+                    <button type="button" onclick="confirmInstituteDelete()"
+                        class="w-full py-2.5 px-5 flex items-center justify-between  text-primary transition-colors group text-left rounded-b-[0.85rem] border-t border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">Delete Account</h3>
+                                <p class="text-[10px] text-slate-400  font-medium mt-0.5">Permanently remove your institute
+                                    account and revoke access.</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-primary  font-bold uppercase tracking-widest">Danger</span>
+                    </button>
                 </div>
+
             </div>
 
-            <!-- Subscription Overview -->
+            <!-- Subscription -->
             <div class="space-y-3">
-                <h2 class="text-lg font-[550] text-slate-800 tracking-tight">Subscription Overview</h2>
-
                 <div
                     class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-6 relative overflow-hidden h-fit">
-                    <div class="flex items-start justify-between">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <span id="badge-sub-status"
-                                class="text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100">
-                                Active Plan
-                            </span>
-                            <h3 id="plan-title" class="text-xl font-[550] text-slate-800 tracking-tight mt-2">Active
-                                Subscription</h3>
+                            <h3 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
+                                <span>Subscription Status</span>
+                                <span id="plan-title" class="hidden"></span>
+                            </h3>
                         </div>
 
-                        <div
-                            class="h-10 w-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                            </svg>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('institute.plans.index') }}"
+                                class="inline-flex items-center gap-1.5 py-1.5 px-3 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-sm shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                Renew Plan
+                            </a>
+
+                            <div
+                                class="h-8 w-8 bg-emerald-50 text-emerald-500 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Plan Features -->
-                    <div id="plan-features-container" class=" pt-2 border-t border-slate-50 hidden">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">Included
-                            Features</span>
-                        <ul id="plan-features-list" class="space-y-2 text-[11px] text-slate-600 font-medium">
-                        </ul>
-                    </div>
-
-                    <!-- Dates -->
-                    <div class="mt-3">
-                        <div class="flex items-center gap-2.5 bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <!-- Remaining Days -->
+                    <div id="remaining-days-row" class="mt-3 hidden">
+                        <div class="flex items-center gap-2.5 bg-slate-50 rounded-xl p-3 border border-slate-100">
                             <div
                                 class="h-8 w-8 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Member Since</p>
-                                <p id="sub-created" class="text-[11px] font-bold text-slate-700 mt-0.5">N/A</p>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Remaining</p>
+                                <p id="remaining-days-text" class="text-[11px] font-bold text-slate-700 mt-0.5">—</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- UPI & Payment settings show card -->
-                <div class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit">
+                <!-- Active Devices & Sessions Card -->
+                <div
+                    class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-4 relative overflow-hidden h-fit mt-3">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <div class="w-1 h-3.5 bg-[#ff6c00] rounded-full"></div>
-                            <h2 class="text-sm font-[550] text-slate-800 tracking-tight">UPI Payment Details</h2>
+                            <h2 class="text-sm font-[550] text-slate-800 tracking-tight">Active Devices & Sessions</h2>
                         </div>
-                        @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                            <a href="{{ route('institute.profile.payment-settings') }}" class="text-[10px] font-bold text-[#ff6c00] hover:text-[#e05f00] transition-colors">
-                                Edit Settings
-                            </a>
-                        @endif
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-[#ff6c00] border border-orange-100">
+                            {{ auth()->guard('institute')->user()->deviceSessions->count() }} / 5 Devices
+                        </span>
                     </div>
 
-                    @if(auth()->guard('institute')->user()->upi_id || auth()->guard('institute')->user()->upi_qr_code)
-                        <div class="space-y-3">
-                            @if(auth()->guard('institute')->user()->upi_id)
-                                <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">UPI ID (VPA)</span>
-                                    <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl py-2 px-3">
-                                        <span class="text-xs font-bold text-slate-700 select-all">{{ auth()->guard('institute')->user()->upi_id }}</span>
-                                        <button onclick="navigator.clipboard.writeText('{{ auth()->guard('institute')->user()->upi_id }}'); showToast('UPI ID Copied!');" class="text-slate-400 hover:text-[#ff6c00] transition-colors p-1">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(auth()->guard('institute')->user()->upi_qr_code_url)
-                                <div>
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">QR Code</span>
-                                    <div class="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                                        <div class="h-28 w-28 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm flex items-center justify-center overflow-hidden">
-                                            <img id="profile-upi-qr-preview" src="{{ auth()->guard('institute')->user()->upi_qr_code_url }}" alt="UPI QR Code" class="w-full h-full object-contain">
-                                        </div>
-                                        <p class="text-[9px] text-slate-400 font-medium text-center mt-1.5">
-                                            Scan QR code to pay student fees.
-                                        </p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @else
+                    @if(auth()->guard('institute')->user()->deviceSessions->isEmpty())
                         <div class="text-center py-6">
-                            <div class="h-12 w-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <div class="h-12 w-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-700">No Payment Details Configured</h3>
-                            <p class="text-[10px] text-slate-400 font-medium mt-1 mb-4">Set up your UPI ID and QR code to enable fee payments.</p>
-                            <a href="{{ route('institute.profile.payment-settings') }}" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-[#ff6c00] rounded-xl font-bold text-[10px] transition-all">Configure Now</a>
+                            <h3 class="text-sm font-bold text-slate-700">No Mobile Devices</h3>
+                            <p class="text-[10px] text-slate-400 font-medium mt-1">No mobile app or API login sessions are currently active.</p>
+                        </div>
+                    @else
+                        <div class="space-y-3">
+                            @foreach(auth()->guard('institute')->user()->deviceSessions as $sess)
+                                <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl p-3 relative group" id="device-session-{{ $sess->id }}">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center shrink-0">
+                                            @if(str_contains(strtolower($sess->os ?? ''), 'ios'))
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            @elseif(str_contains(strtolower($sess->os ?? ''), 'android'))
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <h4 class="text-xs font-bold text-slate-700 leading-tight truncate">
+                                                    {{ $sess->device ?: 'Unknown Device' }}
+                                                </h4>
+                                                @if(!empty($sess->token_id))
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                                        App
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-100">
+                                                        Web
+                                                    </span>
+                                                @endif
+                                                @if($sess->session_id === Session::getId())
+                                                    <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                                        Current Session
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <p class="text-[9px] text-slate-400 font-semibold mt-0.5">
+                                                {{ $sess->os ?: 'Unknown OS' }} &bull; Active {{ $sess->last_open ? $sess->last_open->diffForHumans() : 'N/A' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button onclick="terminateSession({{ $sess->id }})"
+                                        class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg font-bold text-[9px] uppercase tracking-wider transition-all duration-200 shrink-0">
+                                        Log Out
+                                    </button>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
                 </div>
+
             </div>
         </div>
 
@@ -373,13 +455,14 @@
         <div
             class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <!-- Header -->
-            <div class="py-1.5 px-4 border-b border-slate-100 flex items-start justify-between relative">
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 leading-tight">Update Password</h3>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Ensure your account stays secure with a strong password.
+                    <h3 class="text-base font-bold text-white leading-tight">Update Password</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Ensure your account stays secure with a strong password.
                     </p>
                 </div>
-                <button onclick="closePasswordModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="closePasswordModal()" class="text-white/80 hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -387,7 +470,7 @@
             </div>
 
             <!-- Form -->
-            <form id="password-form" class="pt-0 pb-4 px-4 space-y-2">
+            <form id="password-form" class="pt-4 pb-4 px-4 space-y-2">
                 @csrf
 
                 <!-- Current Password -->
@@ -401,8 +484,21 @@
                                     d="M15 7a2 2 0 012 2m-2 4a5 5 0 111.707-9.707l3.707 3.707A1 1 0 0121 4v3h-2v2h-2v2h-2.293A5 5 0 0115 13zm-5-4a1 1 0 100-2 1 1 0 000 2z" />
                             </svg>
                         </span>
-                        <input type="password" name="current_password" placeholder="Enter current password" required
-                            class="input-with-icon">
+                        <input type="password" name="current_password" id="pwd-current" placeholder="Enter current password"
+                            required class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -416,8 +512,21 @@
                                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </span>
-                        <input type="password" name="password" placeholder="Enter new password" required
-                            class="input-with-icon">
+                        <input type="password" name="password" id="pwd-new" placeholder="Enter new password" required
+                            class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                        </button>
                     </div>
                     <p class="text-[9px] text-slate-400 flex items-center gap-1 ml-1 mt-0.5">
                         <svg class="w-3 h-3 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,25 +548,34 @@
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </span>
-                        <input type="password" name="password_confirmation" placeholder="Re-enter new password" required
-                            class="input-with-icon">
+                        <input type="password" name="password_confirmation" id="pwd-confirm"
+                            placeholder="Re-enter new password" required class="input-with-icon" style="padding-right:38px">
+                        <button type="button" onclick="togglePasswordVisibility(this)" tabindex="-1"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="eye-open w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg class="eye-closed w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Password Recommendation Alert -->
-                <div class="bg-orange-50/50 rounded-xl p-2.5 border border-orange-100 flex items-start gap-2 mt-1">
-                    <div
-                        class="h-4 w-4 bg-orange-100 text-[#ff6c00] rounded flex items-center justify-center shrink-0 mt-0.5">
-                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 5" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="text-[9px] font-black text-[#ff6c00] uppercase tracking-widest">Password Recommendation
-                        </h4>
-                        <p class="text-[9px] text-slate-500 font-medium leading-relaxed mt-0.5">Use a combination of
-                            uppercase, lowercase, numbers, and special characters for maximum security.</p>
-                    </div>
+
+                <!-- Inline Error Box -->
+                <div id="pwd-error"
+                    class="hidden bg-rose-50 border border-rose-100 rounded-xl p-2.5 flex items-start gap-2">
+                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p id="pwd-error-text" class="text-[10px] font-bold text-rose-600 leading-relaxed"></p>
                 </div>
 
                 <!-- Footer Buttons -->
@@ -477,18 +595,20 @@
         </div>
     </div>
 
-    <!-- WhatsApp Modal -->
-    <div id="whatsapp-modal"
+    <!-- UPI Payment Settings Modal -->
+    <div id="payment-modal"
         class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
         <div
-            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <!-- Header -->
-            <div class="py-2 px-4 border-b border-slate-100 flex items-start justify-between relative">
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative">
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 leading-tight">WhatsApp Integration</h3>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Connect your Meta WhatsApp Cloud API credentials.</p>
+                    <h3 class="text-base font-bold text-white leading-tight">UPI Payment Settings</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Configure UPI ID and QR code to enable direct online fee
+                        payments.</p>
                 </div>
-                <button onclick="closeWhatsAppModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="closePaymentModal()" class="text-white/80 hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -496,61 +616,408 @@
             </div>
 
             <!-- Form -->
-            <form id="whatsapp-modal-form" class="pb-4 px-4 space-y-3">
+            <form id="payment-form" class="pt-4 pb-4 px-4 space-y-4" enctype="multipart/form-data">
                 @csrf
-                <div id="wa-loader" class="py-4 flex flex-col items-center justify-center">
-                    <div class="h-4 w-4 border-2 border-orange-500/20 border-t-[#ff6c00] rounded-full animate-spin"></div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Loading credentials...
-                    </p>
+
+                <!-- UPI ID Input -->
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">UPI ID (VPA)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </span>
+                        <input type="text" name="upi_id" id="field-upi_id" placeholder="merchant@upi or mobile@ybl"
+                            class="input-with-icon">
+                    </div>
+                    <p class="text-[9px] text-slate-400 ml-1">Enter a valid merchant VPA or personal UPI ID (e.g.
+                        name@bank, phone@upi).</p>
                 </div>
 
-                <div id="wa-form-content" class="space-y-2 hidden">
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Phone
-                            Number</label>
-                        <input type="text" name="phone_number" id="wa-phone_number" required class="input-wa"
-                            placeholder="e.g. 919876543210">
-                        <p class="text-[8px] text-slate-400 font-medium ml-1">Include country code without +</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="space-y-1">
-                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number
-                                ID</label>
-                            <input type="text" name="phone_number_id" id="wa-phone_number_id" required class="input-wa"
-                                placeholder="e.g. 1098425...">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Business
-                                ID</label>
-                            <input type="text" name="business_account_id" id="wa-business_account_id" required
-                                class="input-wa" placeholder="e.g. 1530948...">
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Access
-                            Token</label>
-                        <textarea name="access_token" id="wa-access_token" rows="3" required class="textarea-wa"
-                            placeholder="EAAW..."></textarea>
-                    </div>
-
-                    <!-- Footer Buttons -->
-                    <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 mt-2">
-                        <button type="button" onclick="closeWhatsAppModal()"
-                            class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
-                            Discard
-                        </button>
-                        <button type="submit" id="wa-submit-btn"
-                            class="px-4 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5">
-                            <span>Save Integration</span>
-                            <div id="wa-submit-loader"
-                                class="h-3 w-3 border-2 border-white/20 border-t-white rounded-full animate-spin hidden">
+                <!-- QR Code Upload -->
+                <div class="border-t border-slate-100 pt-4">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-2">UPI QR
+                        Code Image</label>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                        <!-- QR Preview Box -->
+                        <div class="relative group cursor-pointer shrink-0"
+                            onclick="document.getElementById('qr-input').click()">
+                            <div
+                                class="h-32 w-32 bg-slate-50 border border-slate-200 rounded-2xl p-2 shadow-inner flex items-center justify-center overflow-hidden">
+                                <img id="qr-preview-img" src="" class="w-full h-full object-contain hidden">
+                                <div id="qr-placeholder" class="text-center p-2 text-slate-400">
+                                    <svg class="w-8 h-8 mx-auto mb-1 text-slate-300" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider block">No QR Uploaded</span>
+                                </div>
                             </div>
-                        </button>
+                            <div
+                                class="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Upload Info -->
+                        <div class="flex-1">
+                            <p class="text-[9px] font-black text-[#ff6c00] uppercase tracking-widest">QR Code
+                                Specifications</p>
+                            <p class="text-[10px] text-slate-400 font-medium mt-0.5 leading-relaxed">
+                                Please upload the QR code generated from your business app (GPay, PhonePe, Paytm, BHIM,
+                                etc.). Max size 2MB. Format: PNG, JPG, JPEG.
+                            </p>
+                            <div class="mt-3 flex items-center gap-2">
+                                <button type="button" onclick="document.getElementById('qr-input').click()"
+                                    class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-[10px] transition-all">
+                                    Choose File
+                                </button>
+                            </div>
+                        </div>
+                        <input type="file" id="qr-input" name="upi_qr_code" class="hidden" accept="image/*"
+                            onchange="previewQR(this)">
                     </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closePaymentModal()"
+                        class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                        Discard Changes
+                    </button>
+                    <button type="submit" id="payment-submit-btn"
+                        class="px-4 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5">
+                        <span>Save Settings</span>
+                        <div id="payment-loader"
+                            class="h-3 w-3 border-2 border-white/20 border-t-white rounded-full animate-spin hidden"></div>
+                    </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Modal -->
+    <div id="whatsapp-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 relative">
+            <!-- Top Gradient Accent -->
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 via-[#ff6c00] to-orange-500">
+            </div>
+
+            <!-- Close -->
+            <button onclick="closeWhatsAppModal()"
+                class="absolute top-4 right-4 text-slate-300 hover:text-slate-500 transition-colors z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="px-6 pt-10 pb-8 text-center flex flex-col items-center">
+                <!-- Icon with Pulse Glow -->
+                <div class="relative mb-5">
+                    <div class="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl animate-pulse"></div>
+                    <div
+                        class="h-16 w-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-inner relative z-10">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Badge -->
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#ff6c00] text-[9px] font-black uppercase tracking-widest mb-3">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#ff6c00] animate-ping"></span>
+                    Coming Soon
+                </span>
+
+                <h3 class="text-lg font-black text-slate-800 tracking-tight mb-2">WhatsApp Integration</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mb-6">
+                    We're building a direct integration with the Meta WhatsApp Cloud API. Soon you'll be able to send
+                    fee reminders, receipts, and daily updates straight to parents' phones.
+                </p>
+
+                <button type="button" onclick="closeWhatsAppModal()"
+                    class="px-5 py-2.5 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md hover:scale-[1.01] transition-all">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Website Modal -->
+    <div id="website-modal"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div
+                class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-start justify-between relative shrink-0">
+                <div>
+                    <h3 class="text-base font-bold text-white leading-tight">Manage Website</h3>
+                    <p class="text-[10px] text-white/80 mt-0.5">Select and activate a website template for your institute
+                        landing page.</p>
+                </div>
+                <button onclick="closeWebsiteModal()" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <!-- Grid of Templates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Template 1 Card -->
+                    <div id="template-card-1"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    1</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Classic Academic</h4>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">Classic</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    A classic, structured academic layout using emerald-600 accents and standard clean
+                                    sections.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/1" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(1)" id="btn-activate-1"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 2 Card -->
+                    <div id="template-card-2"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    2</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Mint Glassmorphic</h4>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">Glass</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Beautiful modern cards with soft mint shadows, subtle glass layers, and interactive
+                                    panels.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/2" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(2)" id="btn-activate-2"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 3 Card -->
+                    <div id="template-card-3"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    3</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Cyber Indigo</h4>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">Interactive</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Sleek theme with a sticky floating navigation bar, sliding indicator, and rich animation
+                                    details.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/3" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(3)" id="btn-activate-3"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 4 Card -->
+                    <div id="template-card-4"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    4</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Royal Corporate</h4>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">Corporate</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    A professional corporate theme focusing on structure, stats displays, and reliable
+                                    authority.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/4" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(4)" id="btn-activate-4"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Template 5 Card -->
+                    <div id="template-card-5"
+                        class="template-card relative border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div
+                                class="h-28 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 relative overflow-hidden flex items-center justify-center shadow-inner">
+                                <span
+                                    class="text-white font-extrabold text-sm uppercase tracking-widest bg-black/25 px-3 py-1 rounded-full backdrop-blur-sm">Template
+                                    5</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800">Futuristic Neon</h4>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100 whitespace-nowrap">Modern</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
+                                    Futuristic timeline theme featuring milestones progress bars and ambient glow
+                                    highlights.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <a href="/templates/5" target="_blank"
+                                class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Live Preview
+                            </a>
+                            <button type="button" onclick="activateTemplate(5)" id="btn-activate-5"
+                                class="btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition">
+                                Activate
+                            </button>
+                        </div>
+                        <div
+                            class="badge-active absolute -top-2 -right-2 bg-[#ff6c00] text-white p-1 rounded-full shadow-md border-2 border-white hidden">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loader Spinner Overlay -->
+            <div id="website-loader-overlay"
+                class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center hidden z-50">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="h-10 w-10 border-4 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-widest">Activating Template...</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="py-3 px-5 border-t border-slate-100 bg-slate-50 shrink-0 flex flex-col gap-2">
+                <!-- Public Website URL Banner (shown only when a template is active) -->
+                <div id="website-public-url-banner"
+                    class="hidden flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                    <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                    <span class="text-[9px] font-bold text-emerald-700 uppercase tracking-widest shrink-0">Your
+                        Website:</span>
+                    <a id="website-public-url-link" href="#" target="_blank"
+                        class="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline truncate transition-colors">
+                        —
+                    </a>
+                    <button onclick="copyWebsiteUrl()"
+                        class="ml-auto shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors" title="Copy URL">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="button" onclick="closeWebsiteModal()"
+                        class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md transition-all">
+                        Done
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -618,6 +1085,10 @@
     </style>
 
     <script>
+        let currentTemplateId = null;
+        // Public website URL components (from server-side)
+        const INSTITUTE_CODE = '{{ auth()->guard("institute")->user()->institute_code ?? "" }}';
+        const INSTITUTE_SLUG = '{{ \Illuminate\Support\Str::slug(auth()->guard("institute")->user()->institute_name ?? "") }}';
         document.addEventListener('DOMContentLoaded', fetchProfile);
 
         async function fetchProfile() {
@@ -630,6 +1101,7 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     const data = result.data;
+                    currentTemplateId = data.template_id || null;
                     const logoPreview = document.getElementById('profile-logo-preview');
                     const logoPlaceholder = document.getElementById('profile-logo-placeholder');
 
@@ -652,11 +1124,11 @@
                     }
 
                     document.getElementById('view-institute_name').innerHTML = `
-                                ${data.institute_name || data.name || 'Institute'}
-                                <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
-                                    ${data.institute_code || ''}
-                                </span>
-                            `;
+                                    ${data.institute_name || data.name || 'Institute'}
+                                    <span id="view-institute_code" class="text-xs bg-orange-50 text-[#ff6c00] px-2.5 py-1 rounded-lg font-black uppercase border border-orange-100/50 ml-2">
+                                        ${data.institute_code || ''}
+                                    </span>
+                                `;
                     document.getElementById('view-city').innerText = data.city || 'Location';
                     document.getElementById('view-email').innerText = data.email || '';
 
@@ -664,40 +1136,41 @@
                     const badgeSub = document.getElementById('badge-sub-status');
                     const planTitle = document.getElementById('plan-title');
                     if (sub) {
-                        badgeSub.innerText = sub.status.toUpperCase();
-                        if (sub.status.toLowerCase() === 'expired' || sub.status.toLowerCase() === 'inactive') {
-                            badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
-                        } else {
-                            badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                        if (badgeSub) {
+                            badgeSub.innerText = sub.status.toUpperCase();
+                            const statusLower = sub.status.toLowerCase();
+                            if (statusLower === 'active' || statusLower === 'expire_soon') {
+                                badgeSub.className = 'text-[8px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-100';
+                            } else if (statusLower === 'pending') {
+                                badgeSub.className = 'text-[8px] bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-amber-100';
+                            } else {
+                                badgeSub.className = 'text-[8px] bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-rose-100';
+                            }
                         }
                         planTitle.innerText = sub.plan_name;
-                        const ren = document.getElementById('sub-renewal');
-                        if (ren) ren.innerText = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : 'N/A';
-                        document.getElementById('sub-created').innerText = sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A';
 
-                        // Populate plan features
-                        const nameLower = (sub.plan_name || '').toLowerCase();
-                        let features = [];
-                        if (nameLower.includes('basic')) {
-                            features = ['Up to 500 Students', 'Standard Reporting', 'Email Support'];
-                        } else if (nameLower.includes('pro')) {
-                            features = ['Up to 5,000 Students', 'Advanced Analytics', 'Priority Support', 'API Access'];
-                        } else {
-                            features = ['Unlimited Students', 'Dedicated Account Manager', 'Custom Integrations', 'SLA Guarantees'];
-                        }
+                        // Show remaining days and expiry warning
+                        const expiry = sub.expires_at || sub.end_date;
+                        if (expiry) {
+                            const expiryDate = new Date(expiry);
+                            const now = new Date();
+                            const diffMs = expiryDate - now;
+                            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                            const formattedDate = expiryDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-                        const featuresCont = document.getElementById('plan-features-container');
-                        const featuresList = document.getElementById('plan-features-list');
-                        if (featuresList && featuresCont) {
-                            featuresList.innerHTML = features.map(f => `
-                                        <li class="flex items-center gap-2">
-                                            <div class="h-4 w-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
-                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                            </div>
-                                            <span class="text-slate-600 font-bold">${f}</span>
-                                        </li>
-                                    `).join('');
-                            featuresCont.classList.remove('hidden');
+                            // Always show remaining days
+                            const remainingRow = document.getElementById('remaining-days-row');
+                            const remainingText = document.getElementById('remaining-days-text');
+                            if (remainingRow && remainingText) {
+                                if (diffDays > 0) {
+                                    remainingText.innerText = `${diffDays} day${diffDays !== 1 ? 's' : ''} remaining — expires ${formattedDate}`;
+                                } else if (diffDays === 0) {
+                                    remainingText.innerText = `Expires today — ${formattedDate}`;
+                                } else {
+                                    remainingText.innerText = `Expired on ${formattedDate}`;
+                                }
+                                remainingRow.classList.remove('hidden');
+                            }
                         }
                     }
 
@@ -715,11 +1188,58 @@
             }
         }
 
-        function openPasswordModal() { document.getElementById('password-modal').classList.replace('hidden', 'flex'); document.body.style.overflow = 'hidden'; }
-        function closePasswordModal() { document.getElementById('password-modal').classList.replace('flex', 'hidden'); document.body.style.overflow = 'auto'; }
+        function openPasswordModal() { hidePwdError(); document.getElementById('password-form').reset(); document.getElementById('password-modal').classList.replace('hidden', 'flex'); document.body.style.overflow = 'hidden'; }
+        function closePasswordModal() { hidePwdError(); document.getElementById('password-modal').classList.replace('flex', 'hidden'); document.body.style.overflow = 'auto'; }
+
+        // Toggle show/hide for any password input that has an eye button sibling
+        function togglePasswordVisibility(btn) {
+            const input = btn.parentElement.querySelector('input');
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.querySelector('.eye-open')?.classList.toggle('hidden', !showing);
+            btn.querySelector('.eye-closed')?.classList.toggle('hidden', showing);
+        }
+
+        function showPwdError(msg) {
+            const box = document.getElementById('pwd-error');
+            document.getElementById('pwd-error-text').textContent = msg;
+            box.classList.remove('hidden');
+        }
+        function hidePwdError() {
+            document.getElementById('pwd-error')?.classList.add('hidden');
+        }
+
+        // Client-side password policy (mirrors server rules)
+        function validatePasswordForm(fd) {
+            const current = (fd.get('current_password') || '').trim();
+            const pwd = fd.get('password') || '';
+            const confirm = fd.get('password_confirmation') || '';
+
+            if (!current) return 'Please enter your current password.';
+            if (pwd.length < 8 || pwd.length > 15) return 'New password must be between 8 and 15 characters.';
+            if (!/[a-z]/.test(pwd)) return 'New password must contain at least 1 lowercase letter.';
+            if (!/[A-Z]/.test(pwd)) return 'New password must contain at least 1 uppercase letter.';
+            if (!/\d/.test(pwd)) return 'New password must contain at least 1 number.';
+            if (!/[\W_]/.test(pwd)) return 'New password must contain at least 1 special character.';
+            if (current === pwd) return 'New password cannot be the same as the current password.';
+            if (pwd !== confirm) return 'New password and confirmation do not match.';
+            return null;
+        }
 
         document.getElementById('password-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            hidePwdError();
+
+            const formData = new FormData(e.target);
+
+            // 1) Run client-side validation BEFORE any API call
+            const validationError = validatePasswordForm(formData);
+            if (validationError) {
+                showPwdError(validationError);
+                return;
+            }
+
             const btn = document.getElementById('submit-btn');
             const loader = document.getElementById('pwd-loader');
             btn.disabled = true;
@@ -728,27 +1248,134 @@
             try {
                 const response = await fetch('{{ route("institute.profile.password.update") }}', {
                     method: 'POST',
-                    body: new FormData(e.target),
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
                 });
+                const data = await response.json().catch(() => ({}));
+
                 if (response.ok) {
                     showToast('Password updated successfully!');
                     closePasswordModal();
                     e.target.reset();
                 } else {
-                    const data = await response.json();
-                    showToast(data.message || 'Error updating password', 'error');
+                    // 2) Surface the specific server error inline above the buttons
+                    //    (e.g. "current password is incorrect")
+                    let msg = data.message || 'Error updating password.';
+                    if (data.errors) {
+                        const first = Object.values(data.errors)[0];
+                        if (Array.isArray(first) && first.length) msg = first[0];
+                    }
+                    showPwdError(msg);
                 }
-            } catch (error) { showToast('Something went wrong.', 'error'); }
-            finally {
+            } catch (error) {
+                showPwdError('Something went wrong. Please try again.');
+            } finally {
                 btn.disabled = false;
                 if (loader) loader.classList.add('hidden');
             }
         });
+        // ── UPI Payment Settings Modal ──────────────────────────────────
+        function openPaymentModal() {
+            document.getElementById('payment-modal').classList.replace('hidden', 'flex');
+            document.body.style.overflow = 'hidden';
+            fetchPaymentSettings();
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.replace('flex', 'hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function fetchPaymentSettings() {
+            try {
+                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+                const token = localStorage.getItem('token');
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const response = await fetch('/api/v1/institute/profile', { headers });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const data = result.data;
+                    document.getElementById('field-upi_id').value = data.upi_id || '';
+
+                    const qrImg = document.getElementById('qr-preview-img');
+                    const qrPlaceholder = document.getElementById('qr-placeholder');
+
+                    if (data.upi_qr_code_url) {
+                        qrImg.src = data.upi_qr_code_url;
+                        qrImg.classList.remove('hidden');
+                        qrPlaceholder.classList.add('hidden');
+                    } else {
+                        qrImg.classList.add('hidden');
+                        qrPlaceholder.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching payment settings:', error);
+            }
+        }
+
+        function previewQR(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const qrImg = document.getElementById('qr-preview-img');
+                    const qrPlaceholder = document.getElementById('qr-placeholder');
+                    qrImg.src = e.target.result;
+                    qrImg.classList.remove('hidden');
+                    qrPlaceholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Front-end VPA verification (standard format check)
+            const upiId = document.getElementById('field-upi_id').value.trim();
+            if (upiId && !/^[\w\.\-]+@[\w\-]+$/.test(upiId)) {
+                showToast('Please enter a valid UPI ID (VPA format: name@bank).', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('payment-submit-btn');
+            const loader = document.getElementById('payment-loader');
+            btn.disabled = true;
+            if (loader) loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/v1/institute/profile/payment/update', {
+                    method: 'POST',
+                    body: new FormData(e.target),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast('Payment settings updated successfully!');
+                    setTimeout(() => window.location.reload(), 900);
+                } else {
+                    showToast(result.message || 'Error updating payment settings', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating settings:', error);
+                showToast('Something went wrong.', 'error');
+            } finally {
+                btn.disabled = false;
+                if (loader) loader.classList.add('hidden');
+            }
+        });
+
         function openWhatsAppModal() {
             document.getElementById('whatsapp-modal').classList.replace('hidden', 'flex');
             document.body.style.overflow = 'hidden';
-            fetchWhatsAppSettings();
         }
 
         function closeWhatsAppModal() {
@@ -756,80 +1383,209 @@
             document.body.style.overflow = 'auto';
         }
 
-        async function fetchWhatsAppSettings() {
-            const loader = document.getElementById('wa-loader');
-            const content = document.getElementById('wa-form-content');
+        // ── Website Template Customizer Modal ──────────────────────────────
+        function openWebsiteModal() {
+            document.getElementById('website-modal').classList.replace('hidden', 'flex');
+            document.body.style.overflow = 'hidden';
+            highlightActiveTemplateCard(currentTemplateId);
+        }
 
-            try {
-                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
-                const token = localStorage.getItem('token');
-                if (token) headers['Authorization'] = `Bearer ${token}`;
+        function closeWebsiteModal() {
+            document.getElementById('website-modal').classList.replace('flex', 'hidden');
+            document.body.style.overflow = 'auto';
+        }
 
-                const response = await fetch('/api/v1/institute/whatsapp-settings', { headers });
-                const result = await response.json();
+        function highlightActiveTemplateCard(templateId) {
+            currentTemplateId = templateId;
+            // Reset all cards styling
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('border-[#ff6c00]', 'bg-orange-50/20');
+                card.classList.add('border-slate-200');
+            });
+            document.querySelectorAll('.badge-active').forEach(badge => {
+                badge.classList.add('hidden');
+            });
+            document.querySelectorAll('.btn-activate').forEach(btn => {
+                btn.disabled = false;
+                btn.innerText = 'Activate';
+                btn.className = 'btn-activate flex-1 py-2 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition';
+            });
 
-                if (result.status === 'success' && result.data) {
-                    const data = result.data;
-                    document.getElementById('wa-phone_number').value = data.phone_number || '';
-                    document.getElementById('wa-phone_number_id').value = data.phone_number_id || '';
-                    document.getElementById('wa-business_account_id').value = data.business_account_id || '';
-                    document.getElementById('wa-access_token').value = data.access_token || '';
-                    document.getElementById('wa-is_active').checked = data.is_active;
+            // Apply active styles to the selected template card
+            const activeCard = document.getElementById(`template-card-${templateId}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-200');
+                activeCard.classList.add('border-[#ff6c00]', 'bg-orange-50/20');
+
+                const activeBadge = activeCard.querySelector('.badge-active');
+                if (activeBadge) activeBadge.classList.remove('hidden');
+
+                const activeBtn = document.getElementById(`btn-activate-${templateId}`);
+                if (activeBtn) {
+                    activeBtn.disabled = true;
+                    activeBtn.innerText = 'Active';
+                    activeBtn.className = 'btn-activate flex-1 py-2 bg-slate-100 text-slate-400 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center cursor-not-allowed';
                 }
-            } catch (error) {
-                console.error('Fetch WA Settings Error:', error);
-            } finally {
-                loader.classList.add('hidden');
-                content.classList.remove('hidden');
+
+                // Keep the Live Preview link on the editable /templates/{id} route
+                // (The public URL is shown separately in the footer banner below)
+            }
+
+            // Show/hide the public website banner in the modal footer
+            const publicBanner = document.getElementById('website-public-url-banner');
+            if (publicBanner) {
+                if (templateId && INSTITUTE_CODE && INSTITUTE_SLUG) {
+                    const publicUrl = `${window.location.origin}/${INSTITUTE_CODE}/${INSTITUTE_SLUG}`;
+                    const urlLink = document.getElementById('website-public-url-link');
+                    if (urlLink) { urlLink.href = publicUrl; urlLink.innerText = publicUrl; }
+                    publicBanner.classList.remove('hidden');
+                } else {
+                    publicBanner.classList.add('hidden');
+                }
             }
         }
 
-        document.getElementById('whatsapp-modal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('wa-submit-btn');
-            const loader = document.getElementById('wa-submit-loader');
-
-            btn.disabled = true;
-            loader.classList.remove('hidden');
+        async function activateTemplate(id) {
+            const loader = document.getElementById('website-loader-overlay');
+            if (loader) loader.classList.remove('hidden');
 
             try {
-                const formData = new FormData(e.target);
-                const data = {
-                    phone_number: formData.get('phone_number'),
-                    phone_number_id: formData.get('phone_number_id'),
-                    business_account_id: formData.get('business_account_id'),
-                    access_token: formData.get('access_token'),
-                    is_active: 1
-                };
-
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                };
-                const token = localStorage.getItem('token');
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-
-                const response = await fetch('/api/v1/institute/whatsapp-settings', {
+                const response = await fetch('{{ route("institute.profile.template.update") }}', {
                     method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(data)
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ template_id: id })
                 });
 
                 const result = await response.json();
-                if (response.ok) {
-                    showToast('WhatsApp integration saved successfully!');
-                    closeWhatsAppModal();
+
+                if (response.ok && result.status === 'success') {
+                    showToast(result.message || 'Website template updated successfully!');
+                    currentTemplateId = id;
+                    highlightActiveTemplateCard(id);
                 } else {
-                    showToast(result.message || 'Error saving settings', 'error');
+                    showToast(result.message || 'Error updating template', 'error');
                 }
             } catch (error) {
-                console.error('Update Request Failed:', error);
+                console.error('Error activating template:', error);
                 showToast('Something went wrong.', 'error');
             } finally {
-                btn.disabled = false;
-                loader.classList.add('hidden');
+                if (loader) loader.classList.add('hidden');
             }
-        });
+        }
+
+        function copyWebsiteUrl() {
+            const urlLink = document.getElementById('website-public-url-link');
+            if (urlLink && urlLink.href !== '#') {
+                navigator.clipboard.writeText(urlLink.href).then(() => {
+                    showToast('Website URL copied to clipboard!');
+                }).catch(() => {
+                    showToast('Could not copy URL.', 'error');
+                });
+            }
+        }
+
+        function confirmInstituteDelete() {
+            const title = 'Delete Account';
+            const message = 'Deleting your institute account is permanent. All data and tokens will be revoked. Do you want to continue?';
+            showConfirmModal(
+                title,
+                message,
+                function () {
+                    deleteInstituteAccount();
+                },
+                'Delete Account',
+                'bg-primary shadow-primary/20 hover:bg-primary/80',
+                null,
+                'Danger Zone',
+                'primary'
+            );
+        }
+
+        async function deleteInstituteAccount() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                };
+
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch('/api/v1/institute/profile/delete', {
+                    method: 'DELETE',
+                    headers,
+                });
+
+                if (response.ok) {
+                    showToast('Your institute account has been deleted. Redirecting...', 'success');
+                    localStorage.removeItem('token');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("institute.login") }}';
+                    }, 900);
+                    return;
+                }
+
+                const result = await response.json().catch(() => ({}));
+                showToast(result.message || 'Unable to delete account at this time.', 'error');
+            } catch (error) {
+                console.error('Delete account error:', error);
+                showToast('Unable to delete account at this time.', 'error');
+            }
+        }
+        function terminateSession(id) {
+            const title = 'Logout Device';
+            const message = 'Are you sure you want to log out and terminate this device session?';
+            showConfirmModal(
+                title,
+                message,
+                function () {
+                    performSessionTermination(id);
+                },
+                'Log Out Device',
+                'bg-primary shadow-primary/20 hover:bg-primary/80',
+                null,
+                'Terminate Session',
+                'primary'
+            );
+        }
+
+        async function performSessionTermination(id) {
+            try {
+                const url = '{{ route("institute.profile.device-sessions.destroy", ":id") }}'.replace(':id', id);
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    showToast(result.message || 'Device session terminated successfully.');
+                    const sessionRow = document.getElementById(`device-session-${id}`);
+                    if (sessionRow) {
+                        sessionRow.remove();
+                    }
+                    if (result.redirect) {
+                        setTimeout(() => window.location.href = result.redirect, 800);
+                    } else {
+                        setTimeout(() => window.location.reload(), 800);
+                    }
+                } else {
+                    showToast(result.message || 'Error terminating session.', 'error');
+                }
+            } catch (error) {
+                console.error('Session termination error:', error);
+                showToast('Something went wrong.', 'error');
+            }
+        }
     </script>
 @endsection

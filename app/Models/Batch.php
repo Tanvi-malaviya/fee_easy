@@ -81,4 +81,14 @@ class Batch extends Model
     {
         return $this->hasMany(Resource::class);
     }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
+
+    public function timetables()
+    {
+        return $this->hasMany(Timetable::class);
+    }
 }

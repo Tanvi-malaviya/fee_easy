@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('expenses', function (Blueprint $table) {
-            $table->string('payment_method')->default('Cash')->after('receipt_image');
+            if (!Schema::hasColumn('expenses', 'payment_method')) {
+                $table->string('payment_method')->default('Cash')->after('receipt_image');
+            }
         });
     }
 

@@ -94,7 +94,7 @@
                             <div class="space-y-1">
                                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Date of
                                     Birth</label>
-                                <input type="date" name="dob" required value="{{ old('dob') }}" onclick="this.showPicker()"
+                                <input type="date" name="dob" required value="{{ old('dob') }}" max="{{ date('Y-m-d') }}" onclick="this.showPicker()"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all cursor-pointer @error('dob') border-rose-500 @enderror">
                                 @error('dob') <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1">{{ $message }}</p>
                                 @enderror
@@ -181,7 +181,7 @@
                         <div class="space-y-1">
                             <label
                                 class="text-[12px] font-medium text-slate-400 uppercase tracking-widest ml-1">Pincode</label>
-                            <input type="text" name="pincode" value="{{ old('pincode') }}" placeholder="Enter Pincode"
+                            <input type="text" name="pincode" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)" value="{{ old('pincode') }}" placeholder="Enter Pincode"
                                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-50 rounded-xl text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all">
                         </div>
                     </div>

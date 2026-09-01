@@ -5,20 +5,19 @@
 
         <div id="lead-modal-content"
             class="relative w-full max-w-xl scale-95 opacity-0 bg-white rounded-xl shadow-2xl transition-all duration-300 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
                 <div>
-                    <h3 id="modal-title" class="text-base font-bold text-slate-800">Add Lead Data</h3>
+                    <h3 id="modal-title" class="text-base font-bold text-white tracking-tight">Add Lead Data</h3>
                 </div>
-                <button onclick="closeLeadModal()"
-                    class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M6 18L18 6M6 6l12 12" />
+                <button type="button" onclick="closeLeadModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <form id="lead-form" onsubmit="saveLead(event)" class="p-6 pt-2 pb-1 space-y-4">
+            <form id="lead-form" onsubmit="saveLead(event)" class="p-6 pt-4 pb-1 space-y-4">
                 <input type="hidden" id="lead-id" name="id">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -118,13 +117,14 @@
 
         <div id="note-modal-content"
             class="relative w-full max-w-md scale-95 opacity-0 bg-white rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden">
-            <div class="px-6 pt-2 pb-1 border-b border-slate-100 flex items-center justify-between">
-                <h3 class="text-base font-bold text-slate-800">Add Interaction Note</h3>
-                <button onclick="closeNoteModal()"
-                    class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                <div>
+                    <h3 class="text-base font-bold text-white tracking-tight">Add Interaction Note</h3>
+                </div>
+                <button type="button" onclick="closeNoteModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -132,15 +132,13 @@
             <form id="note-form" onsubmit="saveNote(event)" class="p-6 space-y-4">
                 <div>
                     <label
-                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Interaction
-                        Type / Title</label>
+                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Title</label>
                     <input type="text" name="title" required placeholder="e.g. Phone Consultation"
                         class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Notes
-                        / Details</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Description</label>
                     <textarea name="note" required rows="4" placeholder="Brief details of the interaction..."
                         class="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none resize-none"></textarea>
                 </div>

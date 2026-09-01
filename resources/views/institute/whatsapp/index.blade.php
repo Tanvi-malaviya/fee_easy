@@ -5,212 +5,74 @@
 @section('content')
 <div class="p-6">
     <div class="mb-8 flex items-center gap-4">
-        <a href="{{ route('institute.profile.index') }}" class="h-10 w-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-600/30 transition-all shadow-sm group">
+        <a href="{{ route('institute.profile.index') }}" class="h-10 w-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-orange-600 hover:border-orange-600/30 transition-all shadow-sm group">
             <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
             <h1 class="text-xl font-semibold text-slate-800 tracking-tight">WhatsApp Integration</h1>
-            <p class="text-xs text-slate-400 mt-0.5 font-medium">Connect your Meta WhatsApp Cloud API for automated notifications</p>
+            <p class="text-xs text-slate-400 mt-0.5 font-medium">Connect and automate notifications through WhatsApp</p>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Help/Status Card -->
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">API Status</h3>
-                        <div id="api-status-badge" class="flex items-center gap-1.5 mt-0.5">
-                            <span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Not Configured</span>
-                        </div>
+    <div class="max-w-3xl mx-auto mt-8">
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden relative">
+            <!-- Top Gradient Accents -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 via-[#FF6B00] to-orange-500"></div>
+
+            <div class="p-8 md:p-12 text-center relative z-10 flex flex-col items-center">
+                <!-- Icon with Pulse Glow -->
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-emerald-500/10 rounded-3xl blur-xl animate-pulse"></div>
+                    <div class="h-20 w-20 bg-emerald-50 rounded-3xl flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-inner relative z-10">
+                        <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <p class="text-xs font-bold text-slate-500 leading-relaxed">
-                        To enable automated fees reminders and updates, you need to integrate your WhatsApp Cloud API credentials.
-                    </p>
-                    <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100/50">
-                        <p class="text-[10px] font-bold text-blue-600/70 uppercase tracking-widest mb-2">Setup Guide</p>
-                        <ul class="space-y-2">
-                            <li class="flex items-center gap-2 text-[11px] font-bold text-blue-800">
-                                <span class="h-1 w-1 bg-blue-400 rounded-full"></span>
-                                Meta Business App
-                            </li>
-                            <li class="flex items-center gap-2 text-[11px] font-bold text-blue-800">
-                                <span class="h-1 w-1 bg-blue-400 rounded-full"></span>
-                                Add WhatsApp Product
-                            </li>
-                            <li class="flex items-center gap-2 text-[11px] font-bold text-blue-800">
-                                <span class="h-1 w-1 bg-blue-400 rounded-full"></span>
-                                Generate System Token
-                            </li>
-                        </ul>
+                <!-- Coming Soon Badge -->
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-100 text-[#FF6B00] text-[10px] font-black uppercase tracking-widest mb-4">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#FF6B00] animate-ping"></span>
+                    Coming Soon
+                </span>
+
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-3">Automate Your Communication</h2>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed max-w-md mb-8">
+                    We are currently building a direct integration with the Meta WhatsApp Cloud API. Soon you'll be able to send reminders, receipts, and daily updates directly to parents' phones.
+                </p>
+
+                <!-- Feature Preview Grid -->
+                <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-slate-50 pt-8 mt-4">
+                    <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 hover:border-emerald-500/20 hover:bg-white transition-all duration-300">
+                        <div class="h-8 w-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-500 mb-3">
+                            <i class="fas fa-indian-rupee-sign text-xs"></i>
+                        </div>
+                        <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Fee Reminders</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-normal">Send automated outstanding fee notifications and digital payment links.</p>
                     </div>
+
+                    <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 hover:border-emerald-500/20 hover:bg-white transition-all duration-300">
+                        <div class="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-500 mb-3">
+                            <i class="fas fa-calendar-check text-xs"></i>
+                        </div>
+                        <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Attendance Logs</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-normal">Alert parents instantly when students are absent or enter/leave class.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 hover:border-emerald-500/20 hover:bg-white transition-all duration-300">
+                        <div class="h-8 w-8 bg-purple-50 rounded-lg flex items-center justify-center text-purple-500 mb-3">
+                            <i class="fas fa-bullhorn text-xs"></i>
+                        </div>
+                        <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Custom Broadcasts</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-normal">Send announcements, exam schedules, and holiday updates to entire batches.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-xs font-bold text-slate-400">
+                    © {{ date('Y') }} Tuoora · A bridge of knowledge for all
                 </div>
             </div>
         </div>
-
-        <!-- Settings Form -->
-        <div class="lg:col-span-2">
-            <form id="whatsapp-form" class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-50 bg-slate-50/50">
-                    <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Credential Settings</h4>
-                </div>
-                <div class="p-8">
-                    <div id="form-loader" class="py-12 flex flex-col items-center justify-center">
-                        <div class="h-8 w-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-4">Loading configurations...</p>
-                    </div>
-
-                    <div id="form-content" class="space-y-6 hidden">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Phone Number</label>
-                            <input type="text" name="phone_number" id="field-phone_number" required class="w-full bg-slate-50 border-slate-100 rounded-xl py-3 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-blue-600/30 transition-all outline-none" placeholder="e.g. 919876543210">
-                            <p class="text-[9px] font-bold text-slate-400 ml-1 mt-1 uppercase">Include country code without + (e.g. 91 for India)</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number ID</label>
-                                <input type="text" name="phone_number_id" id="field-phone_number_id" required class="w-full bg-slate-50 border-slate-100 rounded-xl py-3 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-blue-600/30 transition-all outline-none" placeholder="e.g. 109842512345678">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Account ID</label>
-                                <input type="text" name="business_account_id" id="field-business_account_id" required class="w-full bg-slate-50 border-slate-100 rounded-xl py-3 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-blue-600/30 transition-all outline-none" placeholder="e.g. 153094812345678">
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Permanent Access Token</label>
-                            <textarea name="access_token" id="field-access_token" rows="4" required class="w-full bg-slate-50 border-slate-100 rounded-xl py-3 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-blue-600/30 transition-all outline-none resize-none" placeholder="EAAW..."></textarea>
-                        </div>
-
-                      
-
-                        <div class="pt-4">
-                            @if(Auth::guard('institute')->user()->hasActiveSubscription())
-                            <button type="submit" id="save-btn" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 hover:shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-3">
-                                <span>Save Integration</span>
-                                <div id="save-loader" class="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin hidden"></div>
-                            </button>
-                            @else
-                            <button type="button" onclick="handleExpiredSubscription(event)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 hover:shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-3">
-                                <span>Save Integration</span>
-                            </button>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', fetchSettings);
-
-    async function fetchSettings() {
-        const loader = document.getElementById('form-loader');
-        const content = document.getElementById('form-content');
-        
-        try {
-            const headers = {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            };
-            const token = localStorage.getItem('token');
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const response = await fetch('/api/v1/institute/whatsapp-settings', { headers });
-            const result = await response.json();
-            
-            if (result.status === 'success' && result.data) {
-                const data = result.data;
-                document.getElementById('field-phone_number').value = data.phone_number || '';
-                document.getElementById('field-phone_number_id').value = data.phone_number_id || '';
-                document.getElementById('field-business_account_id').value = data.business_account_id || '';
-                document.getElementById('field-access_token').value = data.access_token || '';
-                document.getElementById('field-is_active').checked = data.is_active;
-                
-                if (data.access_token) {
-                    updateStatusBadge(data.is_active);
-                }
-            }
-        } catch (error) {
-            console.error('Fetch Error:', error);
-        } finally {
-            loader.classList.add('hidden');
-            content.classList.remove('hidden');
-        }
-    }
-
-    function updateStatusBadge(active) {
-        const badge = document.getElementById('api-status-badge');
-        if (active) {
-            badge.innerHTML = `
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Active & Connected</span>
-            `;
-        } else {
-            badge.innerHTML = `
-                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-                <span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Paused / Disabled</span>
-            `;
-        }
-    }
-
-    document.getElementById('whatsapp-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('save-btn');
-        const loader = document.getElementById('save-loader');
-        
-        btn.disabled = true;
-        loader.classList.remove('hidden');
-
-        try {
-            const formData = new FormData(e.target);
-            const data = {
-                phone_number: formData.get('phone_number'),
-                phone_number_id: formData.get('phone_number_id'),
-                business_account_id: formData.get('business_account_id'),
-                access_token: formData.get('access_token'),
-                is_active: formData.get('is_active') === '1' ? 1 : 0
-            };
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            };
-            const token = localStorage.getItem('token');
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const response = await fetch('/api/v1/institute/whatsapp-settings', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert('WhatsApp settings updated successfully!');
-                updateStatusBadge(data.is_active);
-            } else {
-                alert(result.message || 'Error updating settings');
-            }
-        } catch (error) {
-            console.error('Update Request Failed:', error);
-            alert('Something went wrong.');
-        } finally {
-            btn.disabled = false;
-            loader.classList.add('hidden');
-        }
-    });
-</script>
 @endsection

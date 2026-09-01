@@ -30,8 +30,10 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $accessToken = $user->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+        $accessTokenResult = $user->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
+        $refreshToken = $user->createToken("refresh_token_for_{$tokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         return response()->json([
             'status' => 'success',
@@ -50,7 +52,38 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        \Log::info('API General AuthController logout called', [
+            'user_id' => $user ? $user->id : null,
+            'user_class' => $user ? get_class($user) : null,
+        ]);
+        if ($user) {
+            if (!($user instanceof \App\Models\Institute)) {
+                $user->fcm_token = null;
+                $user->save();
+            }
+
+            // Clear device session if the user is an Institute
+            if ($user instanceof \App\Models\Institute) {
+                $currentToken = $user->currentAccessToken();
+                $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+                if (!$session) {
+                    $session = \App\Models\DeviceSession::findSessionForUser($user, $request);
+                }
+
+                if ($session) {
+                    $session->terminate();
+                }
+
+                if ($currentToken) {
+                    $currentToken->delete();
+                }
+            } else {
+                if ($user->currentAccessToken()) {
+                    $user->currentAccessToken()->delete();
+                }
+            }
+        }
 
         return response()->json([
             'status' => 'success',

@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +17,7 @@ class SubscriptionStatusMail extends Mailable
     public $planName;
     public $endDate;
     public $amount;
-    public $type; // 'assigned', 'extended', 'changed', 'converted', 'approved'
+    public $type; // 'assigned', 'extended', 'changed', 'approved'
 
     /**
      * Create a new message instance.
@@ -39,8 +40,8 @@ class SubscriptionStatusMail extends Mailable
             'assigned' => '🎉 New Subscription Plan Assigned! - Tuoora',
             'extended' => '📅 Subscription Validity Extended! - Tuoora',
             'changed' => '🔄 Subscription Plan Upgraded! - Tuoora',
-            'converted' => '✨ Trial Plan Converted to Paid! - Tuoora',
             'approved' => '✅ Subscription Renewal Approved! - Tuoora',
+            'online_paid' => '💳 Payment Successful & Subscription Active! - Tuoora',
         ];
 
         return new Envelope(

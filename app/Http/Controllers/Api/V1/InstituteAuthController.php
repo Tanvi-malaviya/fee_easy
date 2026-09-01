@@ -26,10 +26,10 @@ class InstituteAuthController extends Controller
 
         $request->validate([
             'institute_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:institutes,email',
+            'email' => 'required|email:rfc|unique:institutes,email',
             'password' => 'required|string|min:8|max:15',
             'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|digits:10',
         ]);
 
         $otp = rand(100000, 999999);
@@ -43,6 +43,7 @@ class InstituteAuthController extends Controller
             'otp' => $otp,
             'otp_expires_at' => Carbon::now()->addMinutes(10),
             'status' => 'pending',
+            'register_source' => 'app',
         ]);
 
         try {
@@ -88,7 +89,7 @@ class InstituteAuthController extends Controller
         ]);
 
         // Assign Free Plan subscription (1 month = 30 days)
-        $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active', 'trial'])->exists();
+        $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active'])->exists();
         if (!$hasActiveSub) {
             \App\Models\Subscription::create([
                 'institute_id' => $institute->id,
@@ -100,14 +101,40 @@ class InstituteAuthController extends Controller
             ]);
         }
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
-        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+        // Enforce 5 device limit (Temporarily commented out)
+        /*
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+
+        $existingSession = $institute->deviceSessions()
+            ->withTrashed()
+            ->where('device', $device)
+            ->where('os', $os)
+            ->first();
+
+        $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+
+        if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
+            ], 422);
+        }
+        */
+
+        $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
+        $refreshToken = $institute->createToken("refresh_token_for_{$tokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
 
         try {
             Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name));
         } catch (\Exception $e) {
             // Log or ignore gracefully
         }
+
+        $session = $this->handleDeviceSession($institute, $tokenId, $request);
 
         return response()->json([
             'status' => 'success',
@@ -116,6 +143,11 @@ class InstituteAuthController extends Controller
                 'token' => $accessToken,
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
+                'device' => $session->device,
+                'os' => $session->os,
+                'last_login' => $session->last_login ? $session->last_login->toDateTimeString() : null,
+                'last_open' => $session->last_open ? $session->last_open->toDateTimeString() : null,
+                'fcm_token' => $session->fcm_token,
             ]
         ]);
     }
@@ -257,10 +289,49 @@ class InstituteAuthController extends Controller
                 'message' => "Your institute account is currently marked as blocked. Please contact the administrator or support to activate your account."
             ], 403);
         }
+        // Prune any sessions whose access token has expired (ghost-session cleanup)
+        \App\Models\DeviceSession::pruneExpired($institute->id);
 
-        $accessToken = $institute->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
-        $refreshToken = $institute->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
-        $subscription = $institute->subscriptions()->latest()->first();
+        // Enforce 5 device limit (Temporarily commented out)
+        /*
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+        $sessionId = $detection['session_id'];
+
+        $existingSession = null;
+        if (!empty($sessionId)) {
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('session_id', $sessionId)
+                ->first();
+        } else {
+            if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('device', $device)
+                    ->where('os', $os)
+                    ->whereNull('session_id')
+                    ->first();
+            }
+        }
+
+        $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+        if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Maximum device limit reached (5 devices). Please log out of another device first.'
+            ], 422);
+        }
+        */
+
+        $accessTokenResult = $institute->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $tokenId = $accessTokenResult->accessToken->id;
+        $refreshToken = $institute->createToken("refresh_token_for_{$tokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
+        $subscription = $institute->currentSubscription();
+
+        $session = $this->handleDeviceSession($institute, $tokenId, $request);
 
         return response()->json([
             'status' => 'success',
@@ -272,7 +343,14 @@ class InstituteAuthController extends Controller
                     'refresh_token' => $refreshToken,
                     'is_profile_setup' => $institute->isProfileComplete(),
                 ],
-                $institute->toArray()
+                $institute->toArray(),
+                [
+                    'device' => $session->device,
+                    'os' => $session->os,
+                    'last_login' => $session->last_login ? $session->last_login->toDateTimeString() : null,
+                    'last_open' => $session->last_open ? $session->last_open->toDateTimeString() : null,
+                    'fcm_token' => $session->fcm_token,
+                ]
             ),
             'subscription' => $subscription
         ]);
@@ -280,14 +358,60 @@ class InstituteAuthController extends Controller
 
     public function logout(Request $request)
     {
-        if (!$request->user() || !($request->user() instanceof Institute)) {
+        $user = $request->user();
+
+        \Log::info('[Institute Logout] START', [
+            'user_id'    => $user ? $user->id : null,
+            'user_class' => $user ? get_class($user) : null,
+            'bearer'     => $request->bearerToken() ? substr($request->bearerToken(), 0, 20).'...' : null,
+        ]);
+
+        if (!$user || !($user instanceof Institute)) {
+            \Log::warning('[Institute Logout] Unauthorized');
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
-        $request->user()->currentAccessToken()->delete();
+        $currentToken = $user->currentAccessToken();
+
+        \Log::info('[Institute Logout] Token', [
+            'token_id'    => $currentToken ? $currentToken->id : null,
+            'token_name'  => $currentToken ? $currentToken->name : null,
+            'is_transient' => $currentToken instanceof \Laravel\Sanctum\TransientToken,
+        ]);
+
+        $allSessions = \App\Models\DeviceSession::where('institute_id', $user->id)->get(['id','token_id','device','os']);
+        \Log::info('[Institute Logout] Active sessions in DB', ['sessions' => $allSessions->toArray()]);
+
+        // Find the device session for the user (exactly like web logout does)
+        $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $currentToken);
+        if (!$session) {
+            $session = \App\Models\DeviceSession::findSessionForUser($user, $request);
+        }
+
+        \Log::info('[Institute Logout] Session lookup', [
+            'found'            => $session ? true : false,
+            'session_id'       => $session ? $session->id : null,
+            'session_device'   => $session ? $session->device : null,
+            'session_token_id' => $session ? $session->token_id : null,
+        ]);
+
+        if ($session) {
+            $session->terminate();
+            \Log::info('[Institute Logout] Session terminated', ['session_id' => $session->id]);
+        } else {
+            \Log::warning('[Institute Logout] No session matched for termination');
+        }
+
+        // Always delete the current access token if it exists
+        if ($currentToken) {
+            $currentToken->delete();
+            \Log::info('[Institute Logout] Deleted current access token');
+        }
+
+        \Log::info('[Institute Logout] END');
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Logged out successfully',
         ]);
     }
@@ -298,9 +422,25 @@ class InstituteAuthController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
+        $institute = $request->user();
+        $currentToken = $institute->currentAccessToken();
+        $session = \App\Models\DeviceSession::findSessionForUser($institute, $request, $currentToken);
+        if ($session) {
+            $session->update(['last_open' => now()]);
+        }
+
         return response()->json([
             'status' => 'success',
-            'data' => $request->user()
+            'data' => array_merge(
+                $institute->toArray(),
+                [
+                    'device' => $session ? $session->device : null,
+                    'os' => $session ? $session->os : null,
+                    'last_login' => $session && $session->last_login ? $session->last_login->toDateTimeString() : null,
+                    'last_open' => $session && $session->last_open ? $session->last_open->toDateTimeString() : null,
+                    'fcm_token' => $session ? $session->fcm_token : null,
+                ]
+            )
         ]);
     }
 
@@ -329,6 +469,71 @@ class InstituteAuthController extends Controller
             'status' => 'success',
             'message' => 'Logo uploaded successfully.',
             'data' => ['logo' => $institute->logo],
+        ]);
+    }
+
+    /**
+     * Enforce strict 5-device limit and insert device session.
+     */
+    private function handleDeviceSession(Institute $institute, $tokenId, Request $request)
+    {
+        // 1. Detect device & OS
+        $detection = \App\Models\DeviceSession::detect($request);
+        $device = $detection['device'];
+        $os = $detection['os'];
+        $sessionId = $detection['session_id'];
+        $fcmToken = $request->input('fcm_token') ?: $request->input('fcm-token') ?: $request->input('fcm_device_token');
+
+        // 2. Look up any existing session (including soft-deleted ones)
+        $existingSession = null;
+        if (!empty($sessionId)) {
+            $existingSession = $institute->deviceSessions()
+                ->withTrashed()
+                ->where('session_id', $sessionId)
+                ->first();
+        } else {
+            if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('device', $device)
+                    ->where('os', $os)
+                    ->whereNull('session_id')
+                    ->first();
+            }
+        }
+
+        if ($existingSession) {
+            $oldTokenId = $existingSession->token_id;
+
+            if ($existingSession->trashed()) {
+                $existingSession->restore();
+            }
+
+            $existingSession->update([
+                'token_id' => $tokenId,
+                'session_id' => $sessionId,
+                'last_login' => now(),
+                'last_open' => now(),
+                'fcm_token' => $fcmToken,
+            ]);
+
+            if ($oldTokenId) {
+                \DB::table('personal_access_tokens')->where('id', $oldTokenId)->delete();
+            }
+
+            return $existingSession;
+        }
+
+        // 3. Create the new session
+        return \App\Models\DeviceSession::create([
+            'institute_id' => $institute->id,
+            'token_id' => $tokenId,
+            'session_id' => $sessionId,
+            'device' => $device,
+            'os' => $os,
+            'last_login' => now(),
+            'last_open' => now(),
+            'fcm_token' => $fcmToken,
         ]);
     }
 }

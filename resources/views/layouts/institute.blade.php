@@ -10,7 +10,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tuoora Institute Panel</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}?v={{ file_exists(public_path('images/favicon.png')) ? filemtime(public_path('images/favicon.png')) : 1 }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 1 }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <!-- Brand Styles -->
-    <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
+    <!-- Brand Styles (cache-busted so updated button/utility classes always load) -->
+    <link rel="stylesheet" href="{{ asset('css/brand.css') }}?v={{ filemtime(public_path('css/brand.css')) }}">
 
     <!-- CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,13 +32,18 @@
                         sans: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#ff6600',
-                        primary2: '#713f1bff',
-                        secondary: '#00A7B5',
+                        primary: '#FF6B00',
+                        primaryHover: '#E55A00',
+                        primary2: '#E55A00',
+                        secondary: '#00A8B5',
+                        secondaryHover: '#0E7490',
                         tertiary: '#2ECC71',
                         neutral: '#F8F9FA',
                         brand: {
-                            900: '#A8440B', // Updated to match primary theme
+                            500: '#FF6B00',
+                            800: '#FF6B00',
+                            900: '#E55A00',
+                            teal: '#00A8B5',
                         }
                     }
                 }
@@ -58,12 +64,12 @@
         .nav-link.active::after {
             content: '';
             position: absolute;
-            bottom: -20px;
+            bottom: 0;
             left: 0;
             right: 0;
             height: 3px;
-            background: #FF6B00;
-            border-radius: 10px;
+            background-color: #FF6B00;
+            border-radius: 9999px;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
@@ -77,6 +83,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #e2e8f0;
             border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -119,7 +129,18 @@
             z-index: -1;
             pointer-events: none;
         }
+
+        /* Standardize left and right padding/max-width for all inner page containers */
+        main > div:not(.bg-pattern):not(#toast-container):not(.fixed):not(.absolute) {
+            max-width: 80rem !important; /* equivalent to max-w-7xl */
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
+    <!-- Alpine JS -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="bg-[#F8F9FA] text-slate-900 antialiased overflow-x-hidden">
@@ -127,7 +148,7 @@
 
     <!-- TOP NAVBAR -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-[100] shadow-sm">
-        <div class="max-w-[1600px] mx-auto h-full px-6 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between">
 
             <!-- Logo Section -->
             <div class="flex items-center gap-3">
@@ -140,7 +161,7 @@
                 </button>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                        <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-8 w-auto object-contain"
                             onerror="this.style.display='none'">
                     </a>
                 </div>
@@ -172,10 +193,12 @@
                 <a href="{{ route('institute.profile.index') }}"
                     class="h-9 w-9 rounded-full bg-slate-100 overflow-hidden border border-slate-100 hover:border-orange-500 transition-all shrink-0 hidden sm:block">
                     <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}"
-                        class="h-full w-full object-cover">
+                        class="h-full w-full object-cover"
+                        onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <span class="h-full w-full items-center justify-center bg-slate-100 text-slate-500 text-[8px] font-bold text-center leading-tight px-0.5" style="display:none;">Dashboard</span>
                 </a>
 
-                <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                <button onclick="event.preventDefault(); confirmLogout();"
                     class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group hidden lg:flex"
                     title="Logout">
                     <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
@@ -201,7 +224,7 @@
         <!-- Close & Logo Header -->
         <div class="py-3 px-4 flex items-center justify-between border-b border-slate-100">
             <a href="{{ route('institute.dashboard') }}" class="flex items-center">
-                <img src="{{ asset('images/2.png') }}" alt="Logo" class="h-5 w-auto object-contain"
+                <img src="{{ asset('images/infinity logo transparent.png') }}" alt="Tuoora Logo" class="h-7 w-auto object-contain"
                     onerror="this.style.display='none'">
             </a>
             <button id="close-menu"
@@ -219,7 +242,9 @@
                 <div
                     class="h-10 w-10 rounded-xl bg-white overflow-hidden border border-slate-200 shrink-0 shadow-sm group-hover:border-orange-500 transition-colors">
                     <img src="{{ auth('institute')->user()->logo ? asset('storage/' . auth('institute')->user()->logo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('institute')->user()->institute_name) . '&background=F1F5F9&color=64748B&bold=true' }}"
-                        class="h-full w-full object-cover">
+                        class="h-full w-full object-cover"
+                        onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <span class="h-full w-full items-center justify-center bg-slate-100 text-slate-500 text-[9px] font-bold text-center leading-tight px-0.5" style="display:none;">Dashboard</span>
                 </div>
                 <div class="overflow-hidden text-left">
                     <h4
@@ -247,11 +272,59 @@
                 </span>
                 <span>Dashboard Home</span>
             </a>
+
+            <a href="{{ route('institute.students.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.students.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.students.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </span>
+                <span>Students</span>
+            </a>
+
+            <a href="{{ route('institute.batches.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.batches.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.batches.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </span>
+                <span>Batches</span>
+            </a>
+
+            <a href="{{ route('institute.timetable.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.timetable.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.timetable.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+                <span>TimeTable & Schedule</span>
+            </a>
+
+            <a href="{{ route('institute.fees.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.fees.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.fees.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </span>
+                <span>Fees</span>
+            </a>
+
+            <a href="{{ route('institute.staff.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.staff.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.staff.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </span>
+                <span>Staff Management</span>
+            </a>
+
+            <a href="{{ route('institute.reports.index') }}"
+                class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all {{ request()->routeIs('institute.reports.*') ? 'bg-orange-500/10 text-[#FF6B00]' : 'text-slate-600 hover:bg-slate-50' }}">
+                <span class="{{ request()->routeIs('institute.reports.*') ? 'text-[#FF6B00]' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </span>
+                <span>Reports</span>
+            </a>
         </div>
 
         <!-- Logout Section in Mobile Menu -->
         <div class="p-3.5 border-t border-slate-100 bg-slate-50/50">
-            <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+            <button onclick="event.preventDefault(); confirmLogout();"
                 class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 rounded-lg text-[10px] font-bold transition-all shadow-sm">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -263,7 +336,7 @@
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="mt-16 px-4 md:px-6 pt-2 pb-3 relative">
+    <main class="mt-16 px-4 md:px-6 pt-2 pb-3 relative max-w-7xl mx-auto w-full">
         @yield('content')
     </main>
 
@@ -284,7 +357,7 @@
         <div class="bg-white rounded-[1.2rem] p-5 max-w-[340px] w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100"
             id="confirm-modal-content">
             <div class="flex items-center gap-3 mb-3.5">
-                <div
+                <div id="confirm-modal-icon-container"
                     class="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center text-[#FF6B00] shrink-0 border border-orange-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -295,7 +368,7 @@
                     <h3 id="confirm-modal-title"
                         class="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 uppercase">Confirm
                     </h3>
-                    <p class="text-[9px] font-bold text-[#FF6B00] uppercase tracking-[0.15em]">Irreversible Action</p>
+                    <p id="confirm-modal-subtitle" class="text-[9px] font-bold text-[#FF6B00] uppercase tracking-[0.15em]">Irreversible Action</p>
                 </div>
             </div>
 
@@ -308,8 +381,34 @@
                     class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-[10px] font-bold shadow-lg shadow-amber-900/20 hover:opacity-90 active:scale-95 transition-all">Yes,
                     Proceed</button>
             </div>
+        </div>
+    </div>
 
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden transition-all duration-300">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl scale-95 opacity-0 transition-all duration-300 transform border border-slate-100 flex flex-col items-center text-center"
+            id="logout-modal-content">
+            <!-- Center Icon -->
+            <div class="h-16 w-16 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 border border-orange-100 mb-5">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </div>
+            
+            <h3 class="text-xl font-black text-slate-900 tracking-tight mb-2 uppercase">Sign Out</h3>
+            <p class="text-xs font-bold text-orange-500 uppercase tracking-[0.2em] mb-4">Session End</p>
+            <p class="text-sm font-semibold text-slate-500 mb-8 leading-relaxed">
+                Are you sure you want to log out of your session?<br>You will need to log in again to access your dashboard.
+            </p>
 
+            <div class="flex gap-3 w-full">
+                <button onclick="closeLogoutModal()"
+                    class="flex-1 px-5 py-3 bg-white border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50 active:scale-95 transition-all">Cancel</button>
+                <button onclick="submitLogout()"
+                    class="flex-1 px-5 py-3 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-900/20 hover:bg-orange-700 active:scale-95 transition-all">Sign Out</button>
+            </div>
         </div>
     </div>
 
@@ -390,10 +489,12 @@
             confirmCallback = null;
         }
 
-        function showConfirmModal(title, message, onConfirm, okText = 'Yes, Proceed', okClass = 'bg-primary shadow-amber-900/20') {
+        function showConfirmModal(title, message, onConfirm, okText = 'Yes, Proceed', okClass = 'bg-primary shadow-amber-900/20', iconHtml = null, subtitle = 'Irreversible Action', theme = 'orange') {
             const modal = document.getElementById('confirm-modal');
             const content = document.getElementById('confirm-modal-content');
             const okBtn = document.getElementById('confirm-modal-ok');
+            const iconContainer = document.getElementById('confirm-modal-icon-container');
+            const subTitleEl = document.getElementById('confirm-modal-subtitle');
 
             if (!modal || !content || !okBtn) return;
 
@@ -402,6 +503,31 @@
 
             okBtn.innerText = okText;
             okBtn.className = `flex-1 px-4 py-2.5 ${okClass} text-white rounded-lg text-[10px] font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all`;
+
+            if (iconHtml) {
+                iconContainer.innerHTML = iconHtml;
+            } else {
+                iconContainer.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>`;
+            }
+
+            subTitleEl.innerText = subtitle;
+
+            if (theme === 'rose' || theme === 'red') {
+                iconContainer.className = "h-10 w-10 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 shrink-0 border border-rose-100";
+                subTitleEl.className = "text-[9px] font-bold text-rose-500 uppercase tracking-[0.15em]";
+            } else if (theme === 'blue') {
+                iconContainer.className = "h-10 w-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 shrink-0 border border-blue-100";
+                subTitleEl.className = "text-[9px] font-bold text-blue-600 uppercase tracking-[0.15em]";
+            } else if (theme === 'green') {
+                iconContainer.className = "h-10 w-10 bg-green-50 rounded-full flex items-center justify-center text-green-600 shrink-0 border border-green-100";
+                subTitleEl.className = "text-[9px] font-bold text-green-600 uppercase tracking-[0.15em]";
+            } else {
+                iconContainer.className = "h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center text-[#FF6B00] shrink-0 border border-orange-100";
+                subTitleEl.className = "text-[9px] font-bold text-[#FF6B00] uppercase tracking-[0.15em]";
+            }
 
             okBtn.onclick = () => {
                 if (onConfirm) onConfirm();
@@ -413,6 +539,38 @@
                 content.classList.remove('scale-95', 'opacity-0');
                 content.classList.add('scale-100', 'opacity-100');
             }, 10);
+        }
+
+        function confirmLogout() {
+            openLogoutModal();
+        }
+
+        function openLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            const content = document.getElementById('logout-modal-content');
+            if (!modal || !content) return;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            const content = document.getElementById('logout-modal-content');
+            if (content) {
+                content.classList.add('scale-95', 'opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+            }
+            setTimeout(() => {
+                if (modal) modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function submitLogout() {
+            document.getElementById('logout-form').submit();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -427,7 +585,7 @@
                 'Subscription Expired',
                 'Your subscription has expired. Please renew your subscription to perform this action.',
                 function () {
-                    window.location.href = "{{ route('institute.subscription.renew.show') }}";
+                    window.location.href = "{{ route('institute.plans.index') }}";
                 },
                 'Renew Now',
                 'bg-[#FF6B00] shadow-orange-900/20'

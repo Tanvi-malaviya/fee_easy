@@ -22,10 +22,7 @@
         @else
             <div class="w-full">
             @if(!$institute->hasActiveSubscription())
-                @php
-                    $hasPending = $institute->subscriptionRenewals()->where('status', 'pending')->exists();
-                @endphp
-                @if($hasPending)
+                @if($hasPendingRenewal)
                     <div class="bg-gradient-to-r from-amber-50 to-orange-50/50 border border-amber-200/60 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm relative z-20">
                         <div class="flex items-center gap-3">
                             <div class="h-10 w-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50">
@@ -36,7 +33,7 @@
                                 <p class="text-xs text-amber-600 mt-0.5">We have received your payment proof and transaction reference. Our billing team will verify it shortly.</p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
                             View Details</a>
                     </div>
                 @else
@@ -47,11 +44,44 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-bold text-rose-800 tracking-tight">Your Subscription Has Expired!</h4>
-                                <p class="text-xs text-rose-600 mt-0.5">Primary academic and data management operations are restricted. Renew now to restore full access.</p>
+                                <p class="text-xs text-rose-600 mt-0.5">You can edit and delete existing records, but you cannot add new data. Please renew your plan to restore full access.</p>
                             </div>
                         </div>
-                        <a href="{{ route('institute.subscription.renew.show') }}" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-rose-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-rose-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
                             ? Renew Subscription Now</a>
+                    </div>
+                @endif
+            @else
+                @if($hasPendingRenewal)
+                    <div class="bg-gradient-to-r from-amber-50 to-orange-50/50 border border-amber-200/60 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm relative z-20">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shrink-0 border border-amber-200/50">
+                                <svg class="w-5 h-5 animate-spin" style="animation-duration: 3s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6.5M18 9h-5" /></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-amber-800 tracking-tight">Renewal Request Pending Review</h4>
+                                <p class="text-xs text-amber-600 mt-0.5">We have received your payment proof and transaction reference. Our billing team will verify it shortly.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-600/10 shrink-0">
+                            View Details</a>
+                    </div>
+                @elseif($subscriptionDaysLeft !== null && $subscriptionDaysLeft >= 0 && $subscriptionDaysLeft <= 7)
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50/50 border border-orange-200/60 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md shadow-orange-50/30 relative z-20 animate-scaleUp">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 bg-orange-100 text-orange-700 rounded-xl flex items-center justify-center shrink-0 border border-orange-200/50 animate-pulse">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-orange-800 tracking-tight">Your Plan is Expiring Soon!</h4>
+                                <p class="text-xs text-orange-600 mt-0.5">
+                                    Your subscription has only <span class="font-bold underline text-orange-700">{{ $subscriptionDaysLeft }} {{ $subscriptionDaysLeft == 1 ? 'Day' : 'Days' }} Left</span>. 
+                                    Renew now to prevent any service disruption.
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('institute.plans.index') }}" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-orange-600/20 shrink-0 hover:scale-[1.02] active:scale-95">
+                            ⚡ Renew Subscription Now</a>
                     </div>
                 @endif
             @endif
@@ -102,6 +132,28 @@
                 </div>
             </a>
 
+            <!-- TimeTable & Schedule -->
+            <a href="{{ route('institute.timetable.index') }}"
+                class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-amber-500">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="h-9 w-9 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-200 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-1">TimeTable</h3>
+                    <p class="text-xs text-slate-400 font-medium">Daily & weekly class schedule</p>
+                </div>
+            </a>
+
             <!-- Fees -->
             <a href="{{ route('institute.fees.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-rose-500">
@@ -147,7 +199,7 @@
             </a>
 
             <!-- Chats -->
-            <a href="{{ route('institute.chats.index') }}"
+            <!-- <a href="{{ route('institute.chats.index') }}"
                 class="group bg-white rounded-2xl border border-slate-100 shadow-sm p-4 transition-all hover:shadow-md relative overflow-hidden border-t-4 border-t-orange-700">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
@@ -166,7 +218,7 @@
                     <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-1">Chats</h3>
                     <p class="text-xs text-slate-400 font-medium">Instant messaging</p>
                 </div>
-            </a>
+            </a> -->
 
             <!-- Reports -->
             <a href="{{ route('institute.reports.index') }}"
@@ -361,13 +413,72 @@
                 </div>
             </div>
         </footer>
+
+        <!-- Expiration Alert Modal -->
+        <div x-data="{ showExpiryModal: !{{ $institute->hasActiveSubscription() ? 'true' : 'false' }} }" 
+             x-show="showExpiryModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             style="display: none;">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+            <!-- Modal Wrapper -->
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100"
+                     @click.away="showExpiryModal = false">
+                    
+                    <!-- Close button in top-right -->
+                    <div class="absolute top-4 right-4">
+                        <button @click="showExpiryModal = false" class="text-slate-400 hover:text-slate-600 transition-colors p-1.5 hover:bg-slate-50 rounded-xl">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-8">
+                        <!-- Icon -->
+                        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 border border-rose-100 mb-6">
+                            <svg class="h-7 w-7 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-slate-800 tracking-tight mb-3">Subscription Has Expired!</h3>
+                            <p class="text-sm font-medium text-slate-500 leading-relaxed px-4">
+                                You can edit and delete existing records, but you cannot add new data. Please renew your plan to restore full access.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="bg-slate-50/50 border-t border-slate-100 px-8 py-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                        <button type="button" 
+                                @click="showExpiryModal = false" 
+                                class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors uppercase tracking-wider">
+                            Remind Me Later
+                        </button>
+                        <a href="{{ route('institute.plans.index') }}" 
+                           class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700 transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-wider">
+                            ⚡ Renew Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript & Styling -->
     <script>
-}
-}
-function copyInstituteDetails() {
+        function copyInstituteDetails() {
             const idText = document.getElementById('ref-inst-id').innerText;
             const codeText = document.getElementById('ref-inst-code').innerText;
             const textToCopy = `Institute ID: ${idText} | Code: ${codeText}`;
@@ -378,12 +489,6 @@ function copyInstituteDetails() {
                 console.error('Copy details failed: ', err);
             });
         }
-`;
-                label.classList.remove('text-slate-400');
-                label.classList.add('text-orange-600');
-            }
-        }
-
     </script>
 
     <style>
@@ -417,8 +522,7 @@ function copyInstituteDetails() {
         .bg-pattern {
             position: fixed;
             inset: 0;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(148,163,184,0.12)'/%3E%3C/svg%3E");
             z-index: 1;
             pointer-events: none;
         }

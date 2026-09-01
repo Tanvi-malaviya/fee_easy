@@ -16,6 +16,7 @@ class Institute extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'alternate_email',
         'phone',
         'password',
         'institute_name',
@@ -34,9 +35,20 @@ class Institute extends Authenticatable
         'otp',
         'otp_expires_at',
         'email_verified_at',
-        'fcm_token',
         'upi_id',
         'upi_qr_code',
+        'template_id',
+        'register_source',
+        'razorpay_order_id',
+        'mail_mailer',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'mail_from_address',
+        'mail_from_name',
+        'is_custom_smtp_enabled',
     ];
 
     protected $hidden = [
@@ -48,9 +60,18 @@ class Institute extends Authenticatable
         'password' => 'hashed',
         'otp_expires_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'is_custom_smtp_enabled' => 'boolean',
     ];
 
     protected $appends = ['logo_url', 'upi_qr_code_url'];
+
+    public function hasCustomSmtp(): bool
+    {
+        return (bool) $this->is_custom_smtp_enabled
+            && !empty($this->mail_host)
+            && !empty($this->mail_username)
+            && !empty($this->mail_password);
+    }
 
     public function isProfileComplete()
     {
@@ -72,6 +93,11 @@ class Institute extends Authenticatable
         return $this->upi_qr_code ? url(Storage::url($this->upi_qr_code)) : null;
     }
 
+    public function websiteContent()
+    {
+        return $this->hasOne(InstituteWebsiteContent::class);
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
@@ -82,12 +108,65 @@ class Institute extends Authenticatable
         return $this->hasMany(SubscriptionRenewal::class);
     }
 
-    public function hasActiveSubscription()
+    public function activeSubscription()
     {
         return $this->subscriptions()
-            ->whereIn('status', ['active', 'trial'])
-            ->where('end_date', '>=', now()->startOfDay())
-            ->exists();
+            ->where('status', Subscription::STATUS_ACTIVE)
+            ->where('end_date', '>=', \Carbon\Carbon::today())
+            ->orderByDesc('end_date')
+            ->first();
+    }
+
+    public function currentSubscription()
+    {
+        return $this->activeSubscription() ?? $this->subscriptions()->latest()->first();
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->activeSubscription() !== null;
+    }
+
+    /**
+     * Resolve the institute-level subscription status.
+     *
+     * Combines the latest subscription with the latest renewal request so the
+     * full set of states is surfaced: active, expire_soon, expired, cancelled,
+     * pending (a renewal is awaiting review) and rejected (last renewal was
+     * rejected and there is no active plan).
+     *
+     * @return array{status:string,label:string,days_left:?int,end_date:?string,plan_name:?string}
+     */
+    public function subscriptionStatus(): array
+    {
+        $subscription = $this->currentSubscription();
+        $latestRenewal = $this->subscriptionRenewals()->latest()->first();
+
+        $hasActivePlan = $subscription
+            && $subscription->status === Subscription::STATUS_ACTIVE
+            && $subscription->end_date
+            && \Carbon\Carbon::parse($subscription->end_date)->startOfDay()->gte(\Carbon\Carbon::today());
+
+        // A pending renewal request always takes priority — the institute is
+        // waiting on admin review.
+        if ($latestRenewal && $latestRenewal->status === 'pending') {
+            $status = Subscription::STATUS_PENDING;
+        } elseif ($latestRenewal && $latestRenewal->status === 'rejected' && !$hasActivePlan) {
+            // Last renewal was rejected and there is no active plan to fall back on.
+            $status = Subscription::STATUS_REJECTED;
+        } elseif ($subscription) {
+            $status = $subscription->effective_status;
+        } else {
+            $status = Subscription::STATUS_EXPIRED;
+        }
+
+        return [
+            'status' => $status,
+            'label' => Subscription::labelFor($status),
+            'days_left' => $subscription?->days_left,
+            'end_date' => optional($subscription?->end_date)->toDateString(),
+            'plan_name' => $subscription?->plan_name,
+        ];
     }
 
     public function students()
@@ -168,6 +247,21 @@ class Institute extends Authenticatable
     public function staffSalaries()
     {
         return $this->hasMany(StaffSalary::class);
+    }
+
+    public function deviceSessions()
+    {
+        return $this->hasMany(DeviceSession::class);
+    }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
+
+    public function timetables()
+    {
+        return $this->hasMany(Timetable::class);
     }
 
     protected static function boot()

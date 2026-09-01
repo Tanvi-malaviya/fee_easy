@@ -28,8 +28,47 @@ class PlanController extends Controller
             $query->where('status', $status);
         }
 
-        $plans = $query->latest()->paginate(5);
-        return view('plans.index', compact('plans'));
+        $plans = $query->latest()->paginate(10);
+
+        $whiteLabelAddon = [
+            'price' => (float) \App\Models\SystemSetting::get('mobile_app_whitelabel_price', 5000),
+            'title' => \App\Models\SystemSetting::get('mobile_app_whitelabel_title', 'Mobile App White Label'),
+            'billing_type' => \App\Models\SystemSetting::get('mobile_app_whitelabel_billing_type', 'One Time'),
+            'enabled' => (bool) \App\Models\SystemSetting::get('mobile_app_whitelabel_enabled', true),
+            'description' => \App\Models\SystemSetting::get('mobile_app_whitelabel_description', 'Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.'),
+        ];
+
+        return view('plans.index', compact('plans', 'whiteLabelAddon'));
+    }
+
+    /**
+     * Update the White Label add-on pricing and configuration.
+     */
+    public function updateAddon(Request $request)
+    {
+        $validated = $request->validate([
+            'price' => 'required|numeric|min:0|max:999999',
+            'title' => 'nullable|string|max:255',
+            'billing_type' => 'nullable|string|max:100',
+            'enabled' => 'nullable|boolean',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        \App\Models\SystemSetting::set('mobile_app_whitelabel_price', $validated['price'], 'addons');
+        if (isset($validated['title'])) {
+            \App\Models\SystemSetting::set('mobile_app_whitelabel_title', $validated['title'], 'addons');
+        }
+        if (isset($validated['billing_type'])) {
+            \App\Models\SystemSetting::set('mobile_app_whitelabel_billing_type', $validated['billing_type'], 'addons');
+        }
+        \App\Models\SystemSetting::set('mobile_app_whitelabel_enabled', $request->has('enabled') ? ($request->enabled ? '1' : '0') : '1', 'addons');
+        if (isset($validated['description'])) {
+            \App\Models\SystemSetting::set('mobile_app_whitelabel_description', $validated['description'], 'addons');
+        }
+
+        Activity::log("Mobile App White Label Add-on price updated to ₹{$validated['price']}");
+
+        return redirect()->route('plans.index')->with('success', 'Mobile App White Label Add-on pricing updated successfully.');
     }
 
     /**
@@ -47,9 +86,8 @@ class PlanController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:999999',
             'duration_days' => 'required|integer|min:1',
-            'trial_days' => 'required|integer|min:0',
             'status' => 'required|boolean',
         ]);
 
@@ -81,9 +119,8 @@ class PlanController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:999999',
             'duration_days' => 'required|integer|min:1',
-            'trial_days' => 'required|integer|min:0',
             'status' => 'required|boolean',
         ]);
 

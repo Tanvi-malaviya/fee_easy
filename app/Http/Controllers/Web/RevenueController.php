@@ -69,7 +69,7 @@ class RevenueController extends Controller
     {
         $request->validate([
             'institute_id' => 'required|exists:institutes,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:999999',
             'paid_at' => 'required|date',
             'transaction_id' => 'nullable|string|max:100',
         ]);

@@ -128,12 +128,35 @@ class FCMService
         }
     }
 
-    /**
-     * Send push notification to a user model if they have a registered fcm_token
-     */
     public function sendToUser($user, string $title, string $body, array $data = []): bool
     {
-        if (!$user || empty($user->fcm_token)) {
+        if (!$user) {
+            return false;
+        }
+
+        if ($user instanceof \App\Models\Institute) {
+            // Get all unique active FCM tokens for the institute's device sessions
+            $tokens = \App\Models\DeviceSession::where('institute_id', $user->id)
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->unique()
+                ->toArray();
+
+            if (empty($tokens)) {
+                return false;
+            }
+
+            $success = false;
+            foreach ($tokens as $token) {
+                if ($this->send($token, $title, $body, $data)) {
+                    $success = true;
+                }
+            }
+            return $success;
+        }
+
+        if (empty($user->fcm_token)) {
             return false;
         }
 

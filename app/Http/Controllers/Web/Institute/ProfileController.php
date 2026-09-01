@@ -11,13 +11,43 @@ use Illuminate\Validation\Rules\Password;
 class ProfileController extends Controller
 {
     /**
+     * Show the profile index and prune expired sessions.
+     */
+    public function index(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($institute) {
+            \App\Models\DeviceSession::pruneExpired($institute->id);
+        }
+        return view('institute.profile.index');
+    }
+
+    /**
      * Update the institute's password.
      */
     public function updatePassword(Request $request)
     {
         $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'current_password' => ['required', 'current_password:institute'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'different:current_password',
+                'confirmed',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'current_password.current_password' => 'The current password is incorrect.',
+            'password.different' => 'New password cannot be the same as the current password.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.confirmed' => 'New password and confirmation do not match.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
         ]);
 
         $request->user('institute')->update([
@@ -37,7 +67,9 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'institute_name' => ['required', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['required', 'email', 'max:255', 'unique:institutes,email,' . $institute->id],
+            'alternate_email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'digits:10'],
             'address' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:100'],
             'state' => ['nullable', 'string', 'max:100'],
@@ -47,5 +79,125 @@ class ProfileController extends Controller
         $institute->update($validated);
 
         return response()->json(['message' => 'Profile updated successfully.']);
+    }
+
+    /**
+     * Update the active website template.
+     */
+    public function updateTemplate(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'template_id' => ['required', 'integer', 'between:1,5'],
+        ]);
+
+        $institute->update([
+            'template_id' => $validated['template_id']
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Website template updated successfully.'
+        ]);
+    }
+
+    /**
+     * Update the institute's custom SMTP configuration.
+     */
+    public function updateSmtp(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $validated = $request->validate([
+            'is_custom_smtp_enabled' => ['nullable', 'boolean'],
+            'mail_host' => ['nullable', 'string', 'max:255'],
+            'mail_port' => ['nullable', 'string', 'max:10'],
+            'mail_username' => ['nullable', 'string', 'max:255'],
+            'mail_password' => ['nullable', 'string', 'max:255'],
+            'mail_encryption' => ['nullable', 'string', 'max:20'],
+            'mail_from_address' => ['nullable', 'email', 'max:255'],
+            'mail_from_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $validated['is_custom_smtp_enabled'] = $request->boolean('is_custom_smtp_enabled');
+
+        if ($request->has('mail_password') && empty($request->mail_password)) {
+            unset($validated['mail_password']);
+        }
+
+        $institute->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Email SMTP configuration saved successfully.'
+        ]);
+    }
+
+    /**
+     * Test SMTP connection for current institute.
+     */
+    public function testSmtp(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'test_email' => ['required', 'email'],
+        ]);
+
+        if ($request->filled('mail_host')) {
+            $institute->mail_host = $request->mail_host;
+            $institute->mail_port = $request->mail_port;
+            $institute->mail_username = $request->mail_username;
+            if ($request->filled('mail_password')) {
+                $institute->mail_password = $request->mail_password;
+            }
+            $institute->mail_encryption = $request->mail_encryption ?: 'tls';
+            $institute->mail_from_address = $request->mail_from_address;
+            $institute->mail_from_name = $request->mail_from_name;
+            $institute->is_custom_smtp_enabled = true;
+        }
+
+        $result = \App\Services\InstituteMailService::testConnection($institute, $request->test_email);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Terminate / log out a specific device session.
+     */
+    public function logoutDeviceSession($id)
+    {
+        $institute = Auth::guard('institute')->user();
+        
+        $session = \App\Models\DeviceSession::where('institute_id', $institute->id)
+            ->where('id', $id)
+            ->first();
+
+        if ($session) {
+            $sessionId = $session->session_id;
+            $session->terminate();
+
+            if ($sessionId && $sessionId === session()->getId()) {
+                Auth::guard('institute')->logout();
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Your current session has been terminated.',
+                    'redirect' => route('institute.login')
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Device session terminated successfully.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Session not found.'
+        ], 404);
     }
 }

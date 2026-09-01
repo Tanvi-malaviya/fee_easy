@@ -24,7 +24,7 @@ class StudentController extends Controller
 
         // If it's an AJAX request, return the JSON data
         if ($request->expectsJson()) {
-            $students = $institute->students()->with('batch')->orderBy('created_at', 'desc')->paginate(10);
+            $students = $institute->students()->with('batch')->orderBy('created_at', 'desc')->paginate(15);
             return response()->json($students);
         }
 
@@ -94,22 +94,68 @@ class StudentController extends Controller
             session(['student_back_url' => $referer]);
         }
 
-        $student->load(['batch', 'fees.payments', 'attendance', 'homeworkSubmissions']);
+        $student->load([
+            'batch',
+            'parent',
+            'fees.payments',
+            'attendance.batch',
+            'homeworkSubmissions.homework',
+            'examMarks.exam'
+        ]);
 
         // Calculate balance (Monthly Fee - Total Payments)
         $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
         $balance = max(0, ($student->monthly_fee ?? 0) - $totalPaid);
 
-        // Attendance stats
+        // Attendance stats & records
         $totalDays = $student->attendance()->count();
         $presentDays = $student->attendance()->where('status', 'Present')->count();
+        $absentDays = $student->attendance()->where('status', 'Absent')->count();
+        $lateDays = $student->attendance()->where('status', 'Late')->count();
         $attendancePercentage = $totalDays > 0 ? round(($presentDays / $totalDays) * 100) : 0;
+        $attendanceRecords = $student->attendance()->with('batch')->orderBy('date', 'desc')->get();
 
-        // Homework stats (Average Score)
-        $averageGrade = $student->homeworkSubmissions()->whereNotNull('score')->avg('score');
+        // Homework stats & submissions
+        $homeworkSubmissions = $student->homeworkSubmissions()->with('homework')->latest()->get();
+        $averageGrade = $homeworkSubmissions->whereNotNull('score')->avg('score');
         $averageGrade = $averageGrade ? round($averageGrade, 1) : 0;
+        $submittedHomeworkCount = $homeworkSubmissions->whereIn('status', ['Submitted', 'Reviewed'])->count();
 
-        return view('institute.students.show', compact('student', 'balance', 'attendancePercentage', 'averageGrade'));
+        // Exams & Marks stats
+        $examMarks = $student->examMarks()->with('exam')->get()->sortByDesc(function ($mark) {
+            return $mark->exam->date ?? $mark->created_at;
+        });
+        $totalExams = $examMarks->count();
+        $passedExams = $examMarks->filter(function ($mark) {
+            return !$mark->is_absent && $mark->exam && $mark->marks_obtained >= ($mark->exam->passing_marks ?? 0);
+        })->count();
+        $failedExams = $examMarks->filter(function ($mark) {
+            return !$mark->is_absent && $mark->exam && $mark->marks_obtained < ($mark->exam->passing_marks ?? 0);
+        })->count();
+        $absentExams = $examMarks->where('is_absent', true)->count();
+        $averageExamMarks = $examMarks->where('is_absent', false)->count() > 0 
+            ? round($examMarks->where('is_absent', false)->avg('marks_obtained'), 1) 
+            : 0;
+
+        return view('institute.students.show', compact(
+            'student',
+            'balance',
+            'attendancePercentage',
+            'averageGrade',
+            'totalDays',
+            'presentDays',
+            'absentDays',
+            'lateDays',
+            'attendanceRecords',
+            'homeworkSubmissions',
+            'submittedHomeworkCount',
+            'examMarks',
+            'totalExams',
+            'passedExams',
+            'failedExams',
+            'absentExams',
+            'averageExamMarks'
+        ));
     }
 
     /**
@@ -121,20 +167,20 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|unique:students,email',
+            'email' => 'required|email:rfc|unique:students,email',
             'phone' => 'required|numeric|digits:10',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
-            'dob' => 'required|date',
+            'dob' => 'required|date|before_or_equal:today',
             'guardian_name' => 'required|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'profile_image' => 'nullable|image|max:2048',
             'address_line_1' => 'nullable|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
+            'pincode' => 'nullable|digits:6',
         ]);
 
         // Generate a random password since the field is removed from UI
@@ -169,16 +215,25 @@ class StudentController extends Controller
 
         // Send password to student via email
         try {
-            Mail::to($student->email)->send(new \App\Mail\StudentAddedMail(
-                $student->name,
+            \App\Services\InstituteMailService::send(
+                $institute,
                 $student->email,
-                $password,
-                $institute->institute_name,
-                $institute->logo
-            ));
+                new \App\Mail\StudentAddedMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
         } catch (\Exception $e) {
             // Log error or handle gracefully if mail fails
             \Log::error("Failed to send welcome email to student: " . $e->getMessage());
+        }
+
+        // Notify student & parent if the student was created already assigned to a batch
+        if (!empty($student->batch_id)) {
+            $this->notifyBatchChange($student->fresh(), null, $student->batch_id);
         }
 
         if ($request->expectsJson()) {
@@ -199,14 +254,14 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|unique:students,email,' . $student->id,
+            'email' => 'required|email:rfc|unique:students,email,' . $student->id,
             'phone' => 'required|numeric|digits:10',
             'password' => 'nullable|string|min:6',
             'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
             'standard' => 'required|string',
-            'dob' => 'required|date',
+            'dob' => 'required|date|before_or_equal:today',
             'guardian_name' => 'required|string|max:255',
-            'monthly_fee' => 'nullable|numeric|min:0',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
             'status' => 'nullable|integer',
             'profile_image' => 'nullable|image|max:2048',
             'address_line_1' => 'nullable|string|max:255',
@@ -214,7 +269,7 @@ class StudentController extends Controller
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:10',
+            'pincode' => 'nullable|digits:6',
         ]);
 
         $data = $request->only(['name', 'email', 'phone', 'batch_id', 'standard', 'dob', 'guardian_name', 'monthly_fee', 'status', 'address_line_1', 'address_line_2', 'city', 'state', 'country', 'pincode']);
@@ -230,7 +285,13 @@ class StudentController extends Controller
             $data['profile_image'] = $request->file('profile_image')->store('students', 'public');
         }
 
+        $oldBatchId = $student->batch_id;
         $student->update($data);
+
+        // Notify student & parent if the batch assignment changed
+        if (array_key_exists('batch_id', $data) && $oldBatchId != $data['batch_id']) {
+            $this->notifyBatchChange($student->fresh(), $oldBatchId, $data['batch_id']);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Student details updated successfully!', 'student' => $student]);
@@ -390,6 +451,296 @@ class StudentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Fee reminder sent successfully!'
+        ]);
+    }
+
+    /**
+     * Create DB + push notifications for the student (and their parent) when a
+     * batch is assigned, changed, or removed. Mirrors the API behaviour so the
+     * web institute panel keeps students informed too.
+     */
+    private function notifyBatchChange(Student $student, $oldBatchId, $newBatchId): void
+    {
+        $fcm = app(\App\Services\FCMService::class);
+        $student->loadMissing('parent');
+
+        // Assigned to / moved to a batch
+        if (!empty($newBatchId)) {
+            $batch = \App\Models\Batch::find($newBatchId);
+            if (!$batch) {
+                return;
+            }
+
+            $title = 'Batch Updated';
+            $studentBody = $oldBatchId
+                ? "You've been moved to {$batch->name}."
+                : "You have been assigned to the batch: {$batch->name}";
+            $pushData = ['type' => 'batch_assignment', 'batch_id' => (string) $batch->id];
+
+            \App\Models\Notification::create([
+                'user_type'    => 'student',
+                'user_id'      => $student->id,
+                'title'        => $title,
+                'message'      => $studentBody,
+                'type'         => 'batch_assignment',
+                'reference_id' => $batch->id,
+                'is_read'      => false,
+            ]);
+            if (!empty($student->fcm_token)) {
+                $fcm->send($student->fcm_token, $title, $studentBody, $pushData);
+            }
+
+            if ($student->parent) {
+                $parentBody = "{$student->name} has been assigned to the batch: {$batch->name}";
+                \App\Models\Notification::create([
+                    'user_type'    => 'parent',
+                    'user_id'      => $student->parent->id,
+                    'title'        => "Batch Assigned: {$student->name}",
+                    'message'      => $parentBody,
+                    'type'         => 'batch_assignment',
+                    'reference_id' => $batch->id,
+                    'is_read'      => false,
+                ]);
+                if (!empty($student->parent->fcm_token)) {
+                    $fcm->send($student->parent->fcm_token, "Batch Assigned: {$student->name}", $parentBody, $pushData);
+                }
+            }
+
+            return;
+        }
+
+        /*
+        // Removed from a batch (Notification commented out per requirement)
+        $oldBatch = \App\Models\Batch::find($oldBatchId);
+        if (!$oldBatch) {
+            return;
+        }
+
+        $title = 'Batch Updated';
+        $studentBody = "You've been removed from {$oldBatch->name}.";
+        $pushData = ['type' => 'batch_removal', 'batch_id' => (string) $oldBatch->id];
+
+        \App\Models\Notification::create([
+            'user_type'    => 'student',
+            'user_id'      => $student->id,
+            'title'        => $title,
+            'message'      => $studentBody,
+            'type'         => 'batch_removal',
+            'reference_id' => $oldBatch->id,
+            'is_read'      => false,
+        ]);
+        if (!empty($student->fcm_token)) {
+            $fcm->send($student->fcm_token, $title, $studentBody, $pushData);
+        }
+
+        if ($student->parent) {
+            $parentBody = "{$student->name} has been removed from {$oldBatch->name}.";
+            \App\Models\Notification::create([
+                'user_type'    => 'parent',
+                'user_id'      => $student->parent->id,
+                'title'        => $title,
+                'message'      => $parentBody,
+                'type'         => 'batch_removal',
+                'reference_id' => $oldBatch->id,
+                'is_read'      => false,
+            ]);
+            if (!empty($student->parent->fcm_token)) {
+                $fcm->send($student->parent->fcm_token, $title, $parentBody, $pushData);
+            }
+        }
+        */
+    }
+
+    /**
+     * Generate a new random password and send it to the student via email.
+     */
+    public function sendPasswordEmail(Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $special = '@#$%&*';
+        
+        $password = $uppercase[rand(0, strlen($uppercase)-1)] . 
+                    $lowercase[rand(0, strlen($lowercase)-1)] . 
+                    $numbers[rand(0, strlen($numbers)-1)] . 
+                    $special[rand(0, strlen($special)-1)] . 
+                    Str::random(4); // Total 8 characters
+                    
+        $student->update([
+            'password' => Hash::make($password),
+        ]);
+
+        try {
+            \App\Services\InstituteMailService::send(
+                $institute,
+                $student->email,
+                new \App\Mail\StudentPasswordSentMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to send student password email: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password was updated in database, but failed to send email. Please check mail settings.'
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password has been generated and sent to student email successfully!'
+        ]);
+    }
+
+    /**
+     * Directly reset/change the student password from the admin panel.
+     */
+    public function resetPasswordDirect(Request $request, Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
+        ]);
+
+        $student->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student password has been reset successfully!'
+        ]);
+    }
+
+    /**
+     * Download a sample CSV template for student import.
+     */
+    public function importSample()
+    {
+        $filename = 'student_import_template.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Name', 'Email', 'Phone', 'Standard', 'Date of Birth (YYYY-MM-DD)', 'Guardian Name']);
+            fputcsv($file, ['John Doe', 'john.doe@example.com', '9876543210', '10th', '2010-05-15', 'Robert Doe']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Import students via CSV upload.
+     */
+    public function import(Request $request, \App\Services\StudentImportService $importService)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $result = $importService->import($request->file('file'), $institute);
+
+        if ($result['status'] === 'success') {
+            return response()->json([
+                'status' => 'success',
+                'message' => $result['message']
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => $result['message'],
+            'errors' => $result['errors'] ?? []
+        ], 422);
+    }
+
+    /**
+     * Bulk move / transfer selected students from one batch/branch to another.
+     */
+    public function bulkTransfer(Request $request)
+    {
+        $institute = Auth::guard('institute')->user();
+
+        $request->validate([
+            'student_ids'     => 'required|array|min:1',
+            'student_ids.*'   => 'integer|exists:students,id',
+            'target_batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $institute->id,
+            'notify_students' => 'nullable|boolean',
+        ]);
+
+        $studentIds = $request->input('student_ids', []);
+        $targetBatchId = $request->input('target_batch_id');
+        $notify = $request->boolean('notify_students', true);
+
+        $targetBatch = $targetBatchId ? \App\Models\Batch::where('id', $targetBatchId)->where('institute_id', $institute->id)->first() : null;
+
+        $students = Student::where('institute_id', $institute->id)
+            ->whereIn('id', $studentIds)
+            ->get();
+
+        if ($students->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No valid students found for transfer.'
+            ], 422);
+        }
+
+        $transferredCount = 0;
+        foreach ($students as $student) {
+            $oldBatchId = $student->batch_id;
+            if ($oldBatchId == $targetBatchId) {
+                continue;
+            }
+
+            $student->update(['batch_id' => $targetBatchId]);
+            $transferredCount++;
+
+            if ($notify) {
+                $this->notifyBatchChange($student->fresh(), $oldBatchId, $targetBatchId);
+            }
+        }
+
+        $targetName = $targetBatch ? $targetBatch->name : 'Unassigned (No Batch)';
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Successfully moved {$transferredCount} student(s) to {$targetName}.",
+            'data'    => [
+                'transferred_count' => $transferredCount,
+                'target_batch'      => $targetBatch,
+            ]
         ]);
     }
 }

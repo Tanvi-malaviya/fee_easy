@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('chat_messages', function (Blueprint $table) {
-            $table->boolean('deleted_by_sender')->default(false)->after('received_at');
-            $table->boolean('deleted_by_receiver')->default(false)->after('deleted_by_sender');
+            if (!Schema::hasColumn('chat_messages', 'deleted_by_sender')) {
+                $table->boolean('deleted_by_sender')->default(false)->after('received_at');
+            }
+            if (!Schema::hasColumn('chat_messages', 'deleted_by_receiver')) {
+                $table->boolean('deleted_by_receiver')->default(false)->after('deleted_by_sender');
+            }
         });
     }
 

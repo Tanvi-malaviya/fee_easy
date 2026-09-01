@@ -9,6 +9,7 @@ use App\Models\Homework;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class StudentProfileController extends Controller
 {
@@ -72,6 +73,7 @@ class StudentProfileController extends Controller
 
         $presentCount = 0;
         $absentCount  = 0;
+        $leaveCount   = 0;
 
         for ($i = 1; $i <= $monthDate->daysInMonth; $i++) {
             $currentDate = $monthDate->copy()->day($i);
@@ -85,21 +87,25 @@ class StudentProfileController extends Controller
                     $presentCount++;
                 } elseif ($s === 'absent') {
                     $absentCount++;
+                } elseif ($s === 'leave') {
+                    $leaveCount++;
                 }
             } elseif (!$currentDate->isSunday() && !empty($batchDays)) {
-                // Virtual absent: past batch day with no record
+                // Determine if it was a batch day
                 $dayName = $currentDate->format('l');
-                if (
-                    ($currentDate->isPast() && !$currentDate->isToday()) &&
-                    (in_array($dayName, $batchDays) || in_array(substr($dayName, 0, 3), $batchDays))
-                ) {
-                    $absentCount++;
+                if (in_array($dayName, $batchDays) || in_array(substr($dayName, 0, 3), $batchDays)) {
+                    if ($currentDate->isPast() && !$currentDate->isToday()) {
+                        $assignDate = $student->created_at ? $student->created_at->startOfDay() : null;
+                        if (!$assignDate || $currentDate->greaterThanOrEqualTo($assignDate)) {
+                            $absentCount++;
+                        }
+                    }
                 }
             }
         }
 
-        $monthTotal    = $presentCount + $absentCount;
-        $attendancePct = $monthTotal > 0 ? round(($presentCount / $monthTotal) * 100) : 0;
+        $monthTotal    = $presentCount + $absentCount + $leaveCount;
+        $attendancePct = $monthTotal > 0 ? round(($presentCount / $monthTotal) * 100) : 100;
 
         // Assignments completed %
         $batchId        = $student->batch_id;
@@ -111,11 +117,24 @@ class StudentProfileController extends Controller
             : 0;
         $assignmentsPct = $totalHomeworks > 0 ? min(100, round(($completedHw / $totalHomeworks) * 100)) : 0;
 
+        // Performance score (homework submissions average score)
+        $homeworkIds = $batchId ? Homework::where('batch_id', $batchId)->pluck('id') : [];
+        $submissions = HomeworkSubmission::where('student_id', $student->id)
+            ->whereIn('homework_id', $homeworkIds)
+            ->whereNotNull('score')
+            ->get();
+        $stuAvg = $submissions->avg('score');
+        if ($stuAvg > 0 && $stuAvg <= 10) {
+            $stuAvg = $stuAvg * 10;
+        }
+        $performanceScore = $stuAvg ? (int) round($stuAvg) : 0;
+
         $stats = [
-            'attendance_pct'    => $attendancePct,
+            'attendance_pct'    => (int) $attendancePct,
             'attendance_label'  => 'this month',
-            'assignments_pct'   => $assignmentsPct,
+            'assignments_pct'   => (int) $assignmentsPct,
             'assignments_label' => 'of assignments',
+            'performance_score' =>  (int) $performanceScore,
         ];
 
         // ── Student QR ─────────────────────────────────────────────────────────
@@ -152,6 +171,28 @@ class StudentProfileController extends Controller
     }
 
     /**
+     * Delete the authenticated student's account and revoke all tokens.
+     */
+    public function destroy(Request $request)
+    {
+        $student = $request->user();
+
+        if (!$student) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $student->tokens()->delete();
+        $student->fcm_token = null;
+        $student->save();
+        $student->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student account deleted successfully.'
+        ]);
+    }
+
+    /**
      * POST /api/v1/student/profile/avatar
      *
      * Upload / replace the student's profile photo.
@@ -183,6 +224,76 @@ class StudentProfileController extends Controller
             'status'     => 'success',
             'message'    => 'Profile photo updated successfully.',
             'avatar_url' => $student->profile_image_url,
+        ]);
+    }
+
+    /**
+     * Change password for student.
+     */
+    public function changePassword(Request $request)
+    {
+        /** @var Student $student */
+        $student = $request->user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string',
+        ]);
+
+        if (!Hash::check($request->current_password, $student->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Current password does not match.'
+            ], 400);
+        }
+
+        if ($request->current_password === $request->new_password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'New password cannot be the same as current password.',
+            ], 422);
+        }
+
+        $newPassword = $request->new_password;
+        $errors = [];
+
+        if (strlen($newPassword) < 8 || strlen($newPassword) > 15) {
+            $errors[] = 'Password must be between 8 and 15 characters long.';
+        }
+        if (!preg_match('/[a-z]/i', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 standard letter.';
+        }
+        if (!preg_match('/[A-Z]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 capital letter.';
+        }
+        if (!preg_match('/\d/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 number.';
+        }
+        if (!preg_match('/[\W_]/', $newPassword)) {
+            $errors[] = 'Password must contain at least 1 special character.';
+        }
+
+        // Evaluate confirmation only if all strength criteria have passed successfully
+        if (empty($errors) && $request->new_password !== $request->new_password_confirmation) {
+            $errors[] = 'The new password field confirmation does not match.';
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'new_password' => $errors
+                ]
+            ], 422);
+        }
+
+        $student->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password changed successfully.'
         ]);
     }
 }

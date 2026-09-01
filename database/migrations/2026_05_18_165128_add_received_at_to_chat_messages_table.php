@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('chat_messages', function (Blueprint $table) {
-            $table->timestamp('received_at')->nullable()->after('read_at');
+            if (!Schema::hasColumn('chat_messages', 'received_at')) {
+                $table->timestamp('received_at')->nullable()->after('read_at');
+            }
         });
     }
 

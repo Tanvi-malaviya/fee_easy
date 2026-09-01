@@ -13,19 +13,19 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('staff_departments', 'institute_id')) {
             Schema::table('staff_departments', function (Blueprint $table) {
-                $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
+                $table->foreignId('institute_id')->nullable()->constrained('institutes')->onDelete('cascade');
             });
         }
 
         if (!Schema::hasColumn('staff_roles', 'institute_id')) {
             Schema::table('staff_roles', function (Blueprint $table) {
-                $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
+                $table->foreignId('institute_id')->nullable()->constrained('institutes')->onDelete('cascade');
             });
         }
 
         if (!Schema::hasColumn('staff', 'institute_id')) {
             Schema::table('staff', function (Blueprint $table) {
-                $table->foreignId('institute_id')->constrained('institutes')->onDelete('cascade');
+                $table->foreignId('institute_id')->nullable()->constrained('institutes')->onDelete('cascade');
             });
         }
     }

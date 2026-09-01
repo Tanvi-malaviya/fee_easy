@@ -91,21 +91,22 @@
 <div id="fee-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
     <div onclick="closeFeeModal()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
     <div class="bg-white w-[92%] sm:w-full max-w-md rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-5 sm:p-6">
-            <div class="flex items-center justify-between mb-3">
-                <div>
-                    <h2 class="text-lg font-extrabold text-slate-800 tracking-tight">Add Transaction</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Generate a new fee invoice for the student.</p>
-                </div>
-                <button onclick="closeFeeModal()" class="h-8 w-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+        <!-- Header -->
+        <div class="py-3.5 px-5 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between">
+            <div>
+                <h2 class="text-base font-bold text-white tracking-tight">Add Transaction</h2>
+                <p class="text-[10px] text-white/80 mt-0.5">Generate a new fee invoice for the student.</p>
             </div>
+            <button onclick="closeFeeModal()" class="h-8 w-8 text-white/80 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
 
+        <div class="p-5 sm:p-6">
             <form id="fee-form" class="space-y-3">
                 <!-- Searchable Student Selection -->
                 <div class="space-y-1 relative">
-                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Select Scholar</label>
+                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Select Student</label>
                     <div class="relative group" id="student-search-container">
                         <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -135,12 +136,13 @@
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
-                    <input type="date" name="date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
+                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Amount</label>
+                    <input type="number" name="total_amount" id="fee-amount-input" required min="1" step="0.01" disabled placeholder="Select a student first" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                    <p id="fee-amount-hint" class="hidden text-[10px] font-bold text-slate-400 ml-1 mt-1"></p>
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Amount</label>
-                    <input type="number" name="total_amount" required placeholder="e.g. 5000" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
+                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Fee Date</label>
+                    <input type="date" name="date" id="modal-fee-date" required value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">Payment Method</label>
@@ -309,15 +311,35 @@
 
         // Show pending fee
         const student = allStudents.find(s => s.id == id);
+        const amountInput = document.getElementById('fee-amount-input');
+        const amountHint = document.getElementById('fee-amount-hint');
         if (student) {
             const pendingFeeDiv = document.getElementById('selected-student-pending-fee');
             const pendingAmountSpan = document.getElementById('pending-fee-amount');
-            const pending = student.total_due !== undefined ? student.total_due : 0;
-            pendingAmountSpan.innerText = `₹${Number(pending).toLocaleString()}`;
+            const pending = Number(student.total_due !== undefined ? student.total_due : 0);
+            pendingAmountSpan.innerText = `₹${pending.toLocaleString('en-IN')}`;
             if (pending > 0) {
                 pendingFeeDiv.classList.remove('hidden');
             } else {
                 pendingFeeDiv.classList.add('hidden');
+            }
+
+            // Enable the amount field and cap it at the pending amount
+            if (pending > 0) {
+                amountInput.disabled = false;
+                amountInput.max = pending;
+                amountInput.value = '';
+                amountInput.placeholder = `Max ₹${pending.toLocaleString('en-IN')}`;
+                amountHint.innerText = `Cannot exceed pending fees of ₹${pending.toLocaleString('en-IN')}`;
+                amountHint.classList.remove('hidden');
+            } else {
+                // Nothing pending — keep the amount locked
+                amountInput.disabled = true;
+                amountInput.removeAttribute('max');
+                amountInput.value = '';
+                amountInput.placeholder = 'No pending fees';
+                amountHint.innerText = 'This student has no pending fees.';
+                amountHint.classList.remove('hidden');
             }
         }
     }
@@ -328,6 +350,15 @@
         document.getElementById('student-search-input').readOnly = false;
         document.getElementById('clear-student-btn').classList.add('hidden');
         document.getElementById('selected-student-pending-fee').classList.add('hidden');
+
+        // Lock the amount field again until a student is chosen
+        const amountInput = document.getElementById('fee-amount-input');
+        amountInput.disabled = true;
+        amountInput.removeAttribute('max');
+        amountInput.value = '';
+        amountInput.placeholder = 'Select a student first';
+        document.getElementById('fee-amount-hint').classList.add('hidden');
+
         document.getElementById('student-search-input').focus();
     }
 
@@ -485,7 +516,27 @@
 
     document.getElementById('fee-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
+        // Guard: a student must be selected before collecting fees
+        const studentId = document.getElementById('selected-student-id').value;
+        if (!studentId) {
+            showToast('Please select a student first.', 'error');
+            return;
+        }
+
+        // Guard: amount must be positive and within the pending fees
+        const amountInput = document.getElementById('fee-amount-input');
+        const amount = parseFloat(amountInput.value);
+        const maxPending = amountInput.max ? parseFloat(amountInput.max) : null;
+        if (isNaN(amount) || amount <= 0) {
+            showToast('Please enter a valid amount.', 'error');
+            return;
+        }
+        if (maxPending !== null && amount > maxPending) {
+            showToast(`Amount cannot be greater than pending fees of ₹${maxPending.toLocaleString('en-IN')}.`, 'error');
+            return;
+        }
+
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalBtnHtml = submitBtn.innerHTML;
         
@@ -578,11 +629,11 @@
                 card.style.border = 'none';
                 
                 content.innerHTML = `
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-20">
-                        <span class="text-sm font-black text-slate-800 tracking-tight">Receipt Details</span>
+                    <div class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] sticky top-0 z-20">
+                        <span class="text-sm font-black text-white tracking-tight">Receipt Details</span>
                         <div class="flex items-center gap-2">
-                            <button onclick="closeReceiptModal()" class="px-3.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg font-bold text-[11px] shadow-sm hover:bg-slate-50 transition-all">Close</button>
-                            <button onclick="downloadReceiptFromModal(${feeId})" class="px-3.5 py-1.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg font-bold text-[11px] shadow-sm transition-all flex items-center gap-1">
+                            <button onclick="closeReceiptModal()" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg font-bold text-[11px] shadow-sm transition-all">Close</button>
+                            <button onclick="downloadReceiptFromModal(${feeId})" class="px-3.5 py-1.5 bg-white text-[#ff6c00] hover:bg-slate-50 rounded-lg font-bold text-[11px] shadow-sm transition-all flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                 Download Receipt
                             </button>

@@ -40,11 +40,11 @@ class PaginationTestSeeder extends Seeder
 
         echo "Seeding Plans...\n";
         $plans = [
-            ['name' => 'Basic Monthly', 'price' => 499, 'duration_days' => 30, 'trial_days' => 7, 'status' => true],
-            ['name' => 'Standard Quarterly', 'price' => 1299, 'duration_days' => 90, 'trial_days' => 7, 'status' => true],
-            ['name' => 'Premium Yearly', 'price' => 4500, 'duration_days' => 365, 'trial_days' => 14, 'status' => true],
-            ['name' => 'Professional Plus', 'price' => 9999, 'duration_days' => 730, 'trial_days' => 30, 'status' => true],
-            ['name' => 'Lifetime Growth', 'price' => 25000, 'duration_days' => 3650, 'trial_days' => 0, 'status' => true],
+            ['name' => 'Basic Monthly', 'price' => 499, 'duration_days' => 30, 'status' => true],
+            ['name' => 'Standard Quarterly', 'price' => 1299, 'duration_days' => 90, 'status' => true],
+            ['name' => 'Premium Yearly', 'price' => 4500, 'duration_days' => 365, 'status' => true],
+            ['name' => 'Professional Plus', 'price' => 9999, 'duration_days' => 730, 'status' => true],
+            ['name' => 'Lifetime Growth', 'price' => 25000, 'duration_days' => 3650, 'status' => true],
         ];
 
         foreach ($plans as $p) {

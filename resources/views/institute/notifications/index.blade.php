@@ -1,7 +1,7 @@
 @extends('layouts.institute')
 
 @section('content')
-<div class="space-y-6 max-w-[1000px] mx-auto pb-12 pt-4">
+<div class="space-y-6 max-w-[1250px] mx-auto pb-12 pt-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -12,7 +12,7 @@
     </div>
 
     <!-- Notifications List -->
-    <div id="notifications-list" class="space-y-4">
+    <div id="notifications-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Data populated via AJAX -->
         <div class="col-span-full py-20 text-center text-slate-300 italic text-xs">Loading notifications...</div>
     </div>
@@ -68,7 +68,7 @@
         const container = document.getElementById('notifications-list');
         if (!notifs || notifs.length === 0) {
             container.innerHTML = `
-                <div class="p-20 text-center text-slate-400 italic bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                <div class="col-span-full p-20 text-center text-slate-400 italic bg-white rounded-[2rem] border border-slate-100 shadow-sm">
                     No notifications yet.
                 </div>`;
             return;
@@ -95,31 +95,72 @@
             }
 
             const colorClasses = {
-                'orange': { bg: 'bg-orange-50', text: 'text-orange-500', border: 'border-orange-500' },
-                'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-500', border: 'border-emerald-500' },
-                'sky': { bg: 'bg-sky-50', text: 'text-sky-500', border: 'border-sky-500' },
-                'rose': { bg: 'bg-rose-50', text: 'text-rose-500', border: 'border-rose-500' },
-                'slate': { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-500' }
-            }[color] || { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-100' };
+                'orange': {
+                    gradient: 'bg-gradient-to-tr from-orange-50 to-orange-100/50 border border-orange-200/40 text-orange-600',
+                    borderTop: 'border-t-orange-500',
+                    dot: 'bg-orange-500',
+                    badge: 'bg-orange-50 text-orange-600 border-orange-100'
+                },
+                'emerald': {
+                    gradient: 'bg-gradient-to-tr from-emerald-50 to-emerald-100/50 border border-emerald-200/40 text-emerald-600',
+                    borderTop: 'border-t-emerald-500',
+                    dot: 'bg-emerald-500',
+                    badge: 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                },
+                'sky': {
+                    gradient: 'bg-gradient-to-tr from-sky-50 to-sky-100/50 border border-sky-200/40 text-sky-600',
+                    borderTop: 'border-t-sky-500',
+                    dot: 'bg-sky-500',
+                    badge: 'bg-sky-50 text-sky-600 border-sky-100'
+                },
+                'rose': {
+                    gradient: 'bg-gradient-to-tr from-rose-50 to-rose-100/50 border border-rose-200/40 text-rose-600',
+                    borderTop: 'border-t-rose-500',
+                    dot: 'bg-rose-500',
+                    badge: 'bg-rose-50 text-rose-600 border-rose-100'
+                },
+                'slate': {
+                    gradient: 'bg-gradient-to-tr from-slate-50 to-slate-100/50 border border-slate-200/40 text-slate-600',
+                    borderTop: 'border-t-slate-400',
+                    dot: 'bg-slate-400',
+                    badge: 'bg-slate-50 text-slate-500 border-slate-100'
+                }
+            }[color] || {
+                gradient: 'bg-gradient-to-tr from-slate-50 to-slate-100/50 border border-slate-200/40 text-slate-600',
+                borderTop: 'border-t-slate-400',
+                dot: 'bg-slate-400',
+                badge: 'bg-slate-50 text-slate-500 border-slate-100'
+            };
 
             const timeString = formatTime(n.created_at);
 
             return `
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-4 transition-all hover:shadow-md ${!n.is_read ? 'border-l-[5px] ' + colorClasses.border : ''}">
-                <div class="h-10 w-10 ${colorClasses.bg} ${colorClasses.text} rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                    ${icon}
-                </div>
+            <div class="group bg-gradient-to-b from-white to-slate-50/10 p-5 rounded-2xl border border-slate-100/90 shadow-sm flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.05)] relative ${!n.is_read ? 'border-t-4 ' + colorClasses.borderTop : ''}">
                 <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h3>
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider bg-slate-50 px-2 py-1 rounded-md border border-slate-100">${timeString}</span>
+                    <!-- Card Top Info -->
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="h-9 w-9 ${colorClasses.gradient} rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105">
+                            ${icon}
+                        </div>
+                        <span class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border shrink-0 ${colorClasses.badge}">${timeString}</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1 leading-relaxed font-medium">${n.message}</p>
-                    
+
+                    <!-- Title & Unread Indicator -->
+                    <div class="flex items-center gap-1.5 min-w-0">
+                        <h3 class="text-[13px] font-bold text-slate-800 leading-snug truncate" title="${n.title}">${n.title}</h3>
+                        ${!n.is_read ? `<span class="h-1.5 w-1.5 rounded-full ${colorClasses.dot} animate-pulse shrink-0"></span>` : ''}
+                    </div>
+
+                    <!-- Message Body (Line clamped for grid alignment) -->
+                    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed font-medium line-clamp-3" title="${n.message}">${n.message}</p>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-4 shrink-0">
                     ${n.image ? `
-                        <div class="mt-3">
-                            <a href="{{ asset('storage') }}/${n.image}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 rounded-lg text-[10px] font-bold transition-all border border-slate-200/40">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="mt-2">
+                            <a href="{{ asset('storage') }}/${n.image}" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 w-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 rounded-lg text-[9px] font-bold transition-all border border-slate-200/50 shadow-xs">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
@@ -129,11 +170,11 @@
                     ` : ''}
                     
                     ${titleLower.includes('expire') ? `
-                        <div class="mt-4 flex items-center gap-3">
-                            <button class="px-4 py-1.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] shadow-md shadow-orange-500/10 hover:scale-[1.02] transition-all">
+                        <div class="mt-3 flex flex-col gap-1 w-full">
+                            <button class="w-full py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg font-bold text-[9.5px] tracking-wide shadow-sm hover:scale-[1.01] transition-all">
                                 Renew Now
                             </button>
-                            <button class="px-3 py-1.5 text-slate-400 hover:text-slate-600 font-bold text-[10px] transition-colors">
+                            <button class="w-full py-1 text-slate-400 hover:text-slate-500 font-bold text-[9px] tracking-wide transition-colors">
                                 Dismiss
                             </button>
                         </div>

@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('attendance', function (Blueprint $table) {
+        if (!Schema::hasTable('attendance')) {
+            Schema::create('attendance', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->foreignId('batch_id')->constrained()->cascadeOnDelete();
@@ -15,6 +16,7 @@ return new class extends Migration {
             $table->string('marked_by')->nullable();
             $table->timestamps();
         });
+        }
     }
     public function down(): void { Schema::dropIfExists('attendance'); }
 };

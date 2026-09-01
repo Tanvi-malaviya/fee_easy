@@ -50,12 +50,29 @@ class TokenRefreshController extends Controller
 
         $user = $tokenModel->tokenable;
 
+        // Find the active device session using the refresh token before revoking it
+        $session = null;
+        if ($user instanceof \App\Models\Institute) {
+            $session = \App\Models\DeviceSession::findSessionForUser($user, $request, $tokenModel);
+        }
+
         // Revoke the used refresh token
         $tokenModel->delete();
 
         // Generate new access token (1 hour) and refresh token (24 hours)
-        $accessToken = $user->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
+        $accessTokenResult = $user->createToken('access_token', ['access-api'], now()->addHour());
+        $accessToken = $accessTokenResult->plainTextToken;
+        $newTokenId = $accessTokenResult->accessToken->id;
+
+        $refreshToken = $user->createToken("refresh_token_for_{$newTokenId}", ['refresh-token'], now()->addHours(24))->plainTextToken;
+
+        // Update the active device session with the new access token ID
+        if ($session) {
+            $session->update([
+                'token_id' => $newTokenId,
+                'last_open' => now(),
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',

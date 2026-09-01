@@ -107,8 +107,13 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact
+                            Email (Login)</label>
+                        <input type="email" name="email" id="field-email" placeholder="email@example.com" class="input" readonly>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Institute
                             Email</label>
-                        <input type="email" name="email" id="field-email" placeholder="email@example.com" class="input">
+                        <input type="email" name="alternate_email" id="field-alternate_email" placeholder="institute@example.com" class="input">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone
@@ -242,6 +247,7 @@
                         document.getElementById('field-institute_code').value = data.institute_code || '';
                         document.getElementById('field-name').value = data.name || '';
                         document.getElementById('field-email').value = data.email || '';
+                        document.getElementById('field-alternate_email').value = data.alternate_email || '';
                         document.getElementById('field-phone').value = data.phone || '';
                         document.getElementById('field-address').value = data.address || '';
                         document.getElementById('field-address_line_2').value = data.address_line_2 || '';

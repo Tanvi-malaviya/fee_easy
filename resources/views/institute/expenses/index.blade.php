@@ -180,9 +180,10 @@
 
             <div id="expense-modal-content"
                 class="relative w-full max-w-md scale-95 opacity-0 bg-white rounded-3xl shadow-2xl transition-all duration-300 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-slate-800">Add Transaction</h3>
-                    <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-slate-600">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                    <h3 class="text-base font-bold text-white tracking-tight">Add Expense</h3>
+                    <button type="button" onclick="closeExpenseModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -195,7 +196,8 @@
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Amount</p>
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-2xl font-black text-primary">₹</span>
-                            <input type="number" name="amount" required step="0.01" placeholder="0.00"
+                            <input type="number" name="amount" required min="1" max="999999" step="0.01" placeholder="0.00"
+                                oninput="limitIntegerDigits(this, 6)"
                                 class="w-40 text-4xl font-black text-primary border-none focus:ring-0 p-0 placeholder-primary/20 bg-transparent text-center">
                         </div>
                     </div>
@@ -295,7 +297,7 @@
                             class="flex-1 py-3 bg-slate-50 text-slate-400 rounded-xl text-xs font-bold hover:bg-slate-100 transition-all uppercase tracking-widest">Cancel</button>
                         <button type="submit" id="save-expense-btn"
                             class="flex-1 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:translate-y-[-1px] active:scale-95 transition-all uppercase tracking-widest">
-                            Save Transaction
+                            Save Expense
                         </button>
                     </div>
                 </form>
@@ -312,6 +314,17 @@
         <script>
             const API_BASE = '/api/v1/institute/expenses';
             const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Restrict a numeric input's integer part to a maximum number of digits
+            function limitIntegerDigits(el, maxDigits) {
+                let val = el.value;
+                if (!val) return;
+                const parts = val.split('.');
+                if (parts[0].length > maxDigits) {
+                    parts[0] = parts[0].slice(0, maxDigits);
+                    el.value = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0, 2) : parts[0];
+                }
+            }
 
             let trendsChart = null;
             let categoryChart = null;

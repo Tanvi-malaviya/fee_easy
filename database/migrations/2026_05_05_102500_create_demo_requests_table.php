@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('demo_requests', function (Blueprint $table) {
+        if (!Schema::hasTable('demo_requests')) {
+            Schema::create('demo_requests', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
             $table->string('phone');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('status')->default('Pending');
             $table->timestamps();
         });
+        }
     }
 
     /**

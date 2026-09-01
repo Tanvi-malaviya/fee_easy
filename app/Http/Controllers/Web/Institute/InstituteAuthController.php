@@ -89,8 +89,21 @@ class InstituteAuthController extends Controller
             $request->validate([
                 'institute_name' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:institutes'],
-                'password' => ['required', 'string', 'min:8'],
+                'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:institutes'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'max:15',
+                    'regex:/[a-z]/',      // at least one lowercase
+                    'regex:/[A-Z]/',      // at least one uppercase
+                    'regex:/[0-9]/',      // at least one number
+                    'regex:/[\W_]/',      // at least one special character
+                ],
+            ], [
+                'password.min' => 'Password must be at least 8 characters.',
+                'password.max' => 'Password must not exceed 15 characters.',
+                'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
             ]);
 
             $otp = rand(100000, 999999);
@@ -175,6 +188,7 @@ class InstituteAuthController extends Controller
                 $institute->update([
                     'email_verified_at' => now(),
                     'status' => 'active',
+                    'register_source' => 'web',
                 ]);
             } else {
                 $institute = Institute::create([
@@ -185,11 +199,12 @@ class InstituteAuthController extends Controller
                     'password' => $data['password'],
                     'email_verified_at' => now(),
                     'status' => 'active',
+                    'register_source' => 'web',
                 ]);
             }
 
             // Assign Free Plan subscription (1 month = 30 days)
-            $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active', 'trial'])->exists();
+            $hasActiveSub = $institute->subscriptions()->whereIn('status', ['active'])->exists();
             if (!$hasActiveSub) {
                 \App\Models\Subscription::create([
                     'institute_id' => $institute->id,
@@ -206,7 +221,50 @@ class InstituteAuthController extends Controller
             Session::save();
 
             Auth::guard('institute')->login($institute);
+            // Register/reactivate web session in device_sessions
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
+            $sessionId = $detection['session_id'];
 
+            $existingSession = null;
+            if (!empty($sessionId)) {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $existingSession = $institute->deviceSessions()
+                        ->withTrashed()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
+
+            if ($existingSession) {
+                if ($existingSession->trashed()) {
+                    $existingSession->restore();
+                }
+                $existingSession->update([
+                    'token_id' => null,
+                    'session_id' => $sessionId,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            } else {
+                \App\Models\DeviceSession::create([
+                    'institute_id' => $institute->id,
+                    'token_id' => null,
+                    'session_id' => $sessionId,
+                    'device' => $device,
+                    'os' => $os,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            }
             try {
                 Mail::to($institute->email)->send(new \App\Mail\AccountActivatedMail($institute->name, route('institute.login')));
             } catch (\Exception $e) {
@@ -260,7 +318,7 @@ class InstituteAuthController extends Controller
     {
         try {
             $request->validate([
-                'phone' => 'required|string|max:15',
+                'phone' => 'required|digits:10',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|string|max:10',
@@ -288,6 +346,11 @@ class InstituteAuthController extends Controller
                 'status' => 'success',
                 'redirect' => route('institute.dashboard'),
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Profile Setup Error: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Something went wrong.'], 500);
@@ -311,6 +374,70 @@ class InstituteAuthController extends Controller
         if (Auth::guard('institute')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            $institute = Auth::guard('institute')->user();
+
+            // Detect device & OS
+            $detection = \App\Models\DeviceSession::detect($request);
+            $device = $detection['device'];
+            $os = $detection['os'];
+            $sessionId = $detection['session_id'];
+
+            // Look up existing session (including soft-deleted ones)
+            $existingSession = null;
+            if (!empty($sessionId)) {
+                $existingSession = $institute->deviceSessions()
+                    ->withTrashed()
+                    ->where('session_id', $sessionId)
+                    ->first();
+            } else {
+                if ($device !== 'Unknown Device' && $os !== 'Unknown OS') {
+                    $existingSession = $institute->deviceSessions()
+                        ->withTrashed()
+                        ->where('device', $device)
+                        ->where('os', $os)
+                        ->whereNull('session_id')
+                        ->first();
+                }
+            }
+
+            $isNewOrLoggedOutDevice = !$existingSession || $existingSession->trashed();
+
+            // Enforce 5 device limit (Temporarily commented out)
+            /*
+            if ($isNewOrLoggedOutDevice && $institute->deviceSessions()->count() >= 5) {
+                Auth::guard('institute')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Maximum device limit reached (5 devices). Please log out of another device first.',
+                ])->onlyInput('email');
+            }
+            */
+
+            // Create or reactivate session (token_id is null for web panel)
+            if ($existingSession) {
+                if ($existingSession->trashed()) {
+                    $existingSession->restore();
+                }
+                $existingSession->update([
+                    'token_id' => null,
+                    'session_id' => $sessionId,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            } else {
+                \App\Models\DeviceSession::create([
+                    'institute_id' => $institute->id,
+                    'token_id' => null,
+                    'session_id' => $sessionId,
+                    'device' => $device,
+                    'os' => $os,
+                    'last_login' => now(),
+                    'last_open' => now(),
+                ]);
+            }
+
             if ($remember) {
                 \Illuminate\Support\Facades\Cookie::queue('institute_email', $request->email, 43200);
                 \Illuminate\Support\Facades\Cookie::queue('institute_password', $request->password, 43200);
@@ -332,6 +459,15 @@ class InstituteAuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $institute = Auth::guard('institute')->user();
+        if ($institute) {
+            $session = \App\Models\DeviceSession::findSessionForUser($institute, $request);
+
+            if ($session) {
+                $session->terminate();
+            }
+        }
+
         Auth::guard('institute')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -385,7 +521,22 @@ class InstituteAuthController extends Controller
     {
         $request->validate([
             'otp' => 'required|string|size:6',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'confirmed',
+                'regex:/[a-z]/',      // at least one lowercase
+                'regex:/[A-Z]/',      // at least one uppercase
+                'regex:/[0-9]/',      // at least one number
+                'regex:/[\W_]/',      // at least one special character
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.confirmed' => 'New password and confirmation do not match.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
         ]);
 
         if (!Session::has('reset_email') || !Session::has('reset_otp')) {

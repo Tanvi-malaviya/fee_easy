@@ -12,12 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notes', function (Blueprint $table) {
-            $table->string('title')->after('id')->nullable();
-            $table->string('category')->after('title')->nullable();
-            $table->string('image')->after('content')->nullable();
-            $table->boolean('is_archived')->default(false)->after('image');
-            
-            // Make notable polymorphic fields nullable for general workspace notes
+            if (!Schema::hasColumn('notes', 'title')) {
+                $table->string('title')->after('id')->nullable();
+            }
+            if (!Schema::hasColumn('notes', 'category')) {
+                $table->string('category')->after('title')->nullable();
+            }
+            if (!Schema::hasColumn('notes', 'image')) {
+                $table->string('image')->after('content')->nullable();
+            }
+            if (!Schema::hasColumn('notes', 'is_archived')) {
+                $table->boolean('is_archived')->default(false)->after('image');
+            }
             $table->unsignedBigInteger('notable_id')->nullable()->change();
             $table->string('notable_type')->nullable()->change();
         });

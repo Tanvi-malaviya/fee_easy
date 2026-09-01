@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff', function (Blueprint $table) {
+        if (!Schema::hasTable('staff')) {
+            Schema::create('staff', function (Blueprint $table) {
             $table->id();
             $table->string('employee_id')->unique();
             $table->string('full_name');
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

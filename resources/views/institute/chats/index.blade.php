@@ -284,13 +284,13 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Latitude</label>
-                        <input type="number" step="any" id="loc-lat" placeholder="21.1702" required
+                        <input type="number" step="any" min="-90" max="90" id="loc-lat" placeholder="21.1702" required
                             class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                     </div>
                     <div>
                         <label
                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Longitude</label>
-                        <input type="number" step="any" id="loc-lng" placeholder="72.8311" required
+                        <input type="number" step="any" min="-180" max="180" id="loc-lng" placeholder="72.8311" required
                             class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none text-slate-600">
                     </div>
                 </div>

@@ -8,13 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('activities', function (Blueprint $table) {
+        if (!Schema::hasTable('activities')) {
+            Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('activity');
             $table->ipAddress('ip_address')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void

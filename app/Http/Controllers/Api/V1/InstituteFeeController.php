@@ -84,7 +84,7 @@ class InstituteFeeController extends Controller
 
         $request->validate([
             'student_id' => 'required|exists:students,id',
-            'total_amount' => 'required|numeric|min:0',
+            'total_amount' => 'required|numeric|min:1',
             'date' => 'required|date',
             'status' => 'nullable|string|in:Paid,Partial,Unpaid',
             'payment_method' => 'nullable|string|in:Cash,Online',
@@ -93,9 +93,39 @@ class InstituteFeeController extends Controller
             'student_id.exists'   => 'The selected student does not exist.',
             'total_amount.required' => 'Please enter the fee amount.',
             'total_amount.numeric'  => 'Amount must be a valid number.',
+            'total_amount.min'      => 'Amount must be greater than zero.',
             'date.required' => 'Please select a fee date.',
             'date.date'     => 'Please enter a valid date.',
         ]);
+
+        // Ensure the student belongs to this institute and the amount does not exceed pending fees
+        $student = \App\Models\Student::where('id', $request->student_id)
+            ->where('institute_id', $request->user()->id)
+            ->first();
+
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The selected student does not belong to your institute.',
+            ], 422);
+        }
+
+        $totalPaid = \App\Models\Payment::where('student_id', $student->id)->sum('amount');
+        $pending   = ($student->monthly_fee ?? 0) - $totalPaid;
+
+        if ($pending <= 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This student has no pending fees.',
+            ], 422);
+        }
+
+        if ($request->total_amount > $pending) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Amount cannot be greater than the pending fees of ₹' . number_format($pending) . '.',
+            ], 422);
+        }
 
         \Illuminate\Support\Facades\DB::beginTransaction();
         try {
@@ -136,30 +166,34 @@ class InstituteFeeController extends Controller
                     $dueDate = \Carbon\Carbon::parse($fee->date)->addDays(10)->format('d M, Y');
                     $paymentUrl = url("/institute/fees/receipts/" . $fee->id);
 
-                    \Illuminate\Support\Facades\Mail::to($student->email)->send(new \App\Mail\FeeInvoiceMail(
-                        $student->name,
+                    \App\Services\InstituteMailService::send(
+                        $institute,
                         $student->email,
-                        $invoiceNo,
-                        $invoiceDate,
-                        $dueDate,
-                        $fee->status,
-                        "Monthly Academic Fee",
-                        $fee->total_amount,
-                        "",
-                        0,
-                        0,
-                        $fee->total_amount,
-                        $paymentUrl,
-                        $institute->institute_name,
-                        $institute->logo
-                    ));
+                        new \App\Mail\FeeInvoiceMail(
+                            $student->name,
+                            $student->email,
+                            $invoiceNo,
+                            $invoiceDate,
+                            $dueDate,
+                            $fee->status,
+                            "Monthly Academic Fee",
+                            $fee->total_amount,
+                            "",
+                            0,
+                            0,
+                            $fee->total_amount,
+                            $paymentUrl,
+                            $institute->institute_name,
+                            $institute->logo
+                        )
+                    );
                 }
             } catch (\Exception $e) {
                 \Log::error("Failed to send Fee Invoice email: " . $e->getMessage());
             }
             
             // Load student and payments relations for the frontend
-            $fee->load(['student:id,name,profile_image', 'payments']);
+            $fee->load(['student:id,name,profile_image,enrollment_id', 'payments']);
 
             return response()->json([
                 'status' => 'success',

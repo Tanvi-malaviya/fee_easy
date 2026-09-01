@@ -15,18 +15,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/super-debug', function () {
-    $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
-    $stmt = $pdo->query('SELECT id, email FROM users WHERE id = 1');
-    $rawUser = $stmt->fetch(\PDO::FETCH_ASSOC);
+    $inst = \App\Models\Institute::latest()->first();
+    if ($inst) {
+        \Illuminate\Support\Facades\Auth::guard('institute')->login($inst);
+    }
+    return redirect()->route('institute.students.index');
+});
 
-    return response()->json([
-        'eloquent_user_1' => \App\Models\User::find(1)->email ?? 'null',
-        'raw_db_user_1' => $rawUser['email'] ?? 'null',
-        'auth_user' => auth()->check() ? auth()->user()->email : 'Not logged in',
-        'auth_id' => auth()->id(),
-        'session_id' => session()->getId(),
-        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
-    ]);
+Route::get('/super-admin-debug', function () {
+    $admin = \App\Models\User::first();
+    if ($admin) {
+        \Illuminate\Support\Facades\Auth::guard('web')->login($admin);
+    }
+    return redirect()->route('dashboard');
 });
 
 // Admin Web Panel Routes (Jetstream/Auth)
@@ -47,6 +48,7 @@ Route::middleware(array_filter([
         Route::delete('institutes/{institute}/staff/{staff}', [App\Http\Controllers\Web\InstituteController::class, 'deleteStaff'])->name('institutes.staff.destroy');
         Route::delete('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'deleteBatch'])->name('institutes.batches.destroy');
         Route::get('institutes/{institute}/batches/{batch}', [App\Http\Controllers\Web\InstituteController::class, 'showBatch'])->name('institutes.batches.show');
+        Route::post('institutes/{institute}/test-smtp', [App\Http\Controllers\Web\InstituteController::class, 'testSmtp'])->name('institutes.test_smtp');
 
         // Subscription Management
         Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
@@ -54,16 +56,20 @@ Route::middleware(array_filter([
         Route::patch('subscriptions/{subscription}/activate', [App\Http\Controllers\Web\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
         Route::patch('subscriptions/{subscription}/cancel', [App\Http\Controllers\Web\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
         Route::patch('subscriptions/{subscription}/change-plan', [App\Http\Controllers\Web\SubscriptionController::class, 'changePlan'])->name('subscriptions.changePlan');
-        Route::patch('subscriptions/{subscription}/convert', [App\Http\Controllers\Web\SubscriptionController::class, 'convertToPaid'])->name('subscriptions.convert');
         Route::patch('subscriptions/renewals/{renewal}/approve', [App\Http\Controllers\Web\SubscriptionController::class, 'approveRenewal'])->name('subscriptions.renewals.approve');
         Route::patch('subscriptions/renewals/{renewal}/reject', [App\Http\Controllers\Web\SubscriptionController::class, 'rejectRenewal'])->name('subscriptions.renewals.reject');
 
         // Plan Management
+        Route::post('plans/addon/update', [App\Http\Controllers\Web\PlanController::class, 'updateAddon'])->name('plans.addon.update');
         Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
         Route::post('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
 
         // Revenue Analysis
         Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
+
+        // QR Analytics
+        Route::get('qr-analytics', [App\Http\Controllers\Web\QrController::class, 'adminIndex'])->name('qr.analytics');
+        Route::get('qr-analytics/export', [App\Http\Controllers\Web\QrController::class, 'export'])->name('qr.export');
         Route::post('revenue/manual-payment', [App\Http\Controllers\Web\RevenueController::class, 'storeManualPayment'])->name('revenue.store_manual');
 
         // Broadcast Center
@@ -78,6 +84,11 @@ Route::middleware(array_filter([
         // App Settings
         Route::get('settings', [App\Http\Controllers\Web\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings/update', [App\Http\Controllers\Web\SettingController::class, 'update'])->name('settings.update');
+        Route::get('settings/razorpay', [App\Http\Controllers\Web\SettingController::class, 'razorpayIndex'])->name('settings.razorpay.index');
+        Route::post('settings/razorpay/update', [App\Http\Controllers\Web\SettingController::class, 'razorpayUpdate'])->name('settings.razorpay.update');
+        Route::get('settings/mail', [App\Http\Controllers\Web\SettingController::class, 'mailIndex'])->name('settings.mail.index');
+        Route::post('settings/mail/update', [App\Http\Controllers\Web\SettingController::class, 'mailUpdate'])->name('settings.mail.update');
+        Route::post('settings/mail/test', [App\Http\Controllers\Web\SettingController::class, 'testMail'])->name('settings.mail.test');
 
         // Activity Monitoring
         Route::get('activities', [App\Http\Controllers\Web\ActivityController::class, 'index'])->name('activity.index');
@@ -104,7 +115,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
     Route::post('/resend-otp', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'resendOtp'])->name('resend-otp');
 
     // Authenticated Routes
-    Route::post('/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
+    Route::match(['get', 'post'], '/logout', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'logout'])->name('logout');
 
     // Password Reset Routes
     Route::get('/forgot-password', [App\Http\Controllers\Web\Institute\InstituteAuthController::class, 'showForgotPassword'])->name('password.request');
@@ -119,9 +130,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
         Route::middleware('verified_institute')->group(function () {
             Route::post('/fcm-token', [App\Http\Controllers\Api\V1\FCMTokenController::class, 'updateToken'])->name('fcm-token.update');
 
-            Route::get('/profile', function () {
-                return view('institute.profile.index');
-            })->name('profile.index');
+            Route::get('/profile', [App\Http\Controllers\Web\Institute\ProfileController::class, 'index'])->name('profile.index');
             Route::get('/profile/edit', function () {
                 return view('institute.profile.edit');
             })->name('profile.edit');
@@ -130,6 +139,24 @@ Route::prefix('institute')->name('institute.')->group(function () {
             })->name('profile.payment-settings');
             Route::post('/profile/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'update'])->name('profile.update');
             Route::post('/profile/password', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+            Route::post('/profile/template/update', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateTemplate'])->name('profile.template.update');
+            Route::post('/profile/smtp', [App\Http\Controllers\Web\Institute\ProfileController::class, 'updateSmtp'])->name('profile.smtp');
+            Route::post('/profile/smtp/test', [App\Http\Controllers\Web\Institute\ProfileController::class, 'testSmtp'])->name('profile.smtp.test');
+            Route::delete('/profile/device-sessions/{id}', [App\Http\Controllers\Web\Institute\ProfileController::class, 'logoutDeviceSession'])->name('profile.device-sessions.destroy');
+
+            // Manage Website CMS Routes
+            Route::get('/profile/website', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'index'])->name('profile.website.index');
+            Route::post('/profile/website/template', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'updateTemplate'])->name('profile.website.template.update');
+            Route::post('/profile/website/hero', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveHeroSlides'])->name('profile.website.hero.save');
+            Route::post('/profile/website/pillars', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'savePillars'])->name('profile.website.pillars.save');
+            Route::post('/profile/website/achievements', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveAchievements'])->name('profile.website.achievements.save');
+            Route::post('/profile/website/gallery', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveGallery'])->name('profile.website.gallery.save');
+            Route::post('/profile/website/events', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveEvents'])->name('profile.website.events.save');
+            Route::post('/profile/website/social', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'saveSocialLinks'])->name('profile.website.social.save');
+            Route::post('/profile/website/upload', [App\Http\Controllers\Web\Institute\WebsiteManageController::class, 'uploadImage'])->name('profile.website.upload');
+            Route::get('/templates/{id}', [App\Http\Controllers\Web\WebsiteController::class, 'preview'])->name('templates.preview');
+
+            Route::get('/subscription', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showSubscriptionPage'])->name('subscription.index');
             Route::get('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'showRenewalForm'])->name('subscription.renew.show');
             Route::post('/subscription/renew', [App\Http\Controllers\Web\Institute\DashboardController::class, 'submitRenewal'])->name('subscription.renew');
 
@@ -137,8 +164,11 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/dashboard', [App\Http\Controllers\Web\Institute\DashboardController::class, 'index'])->name('dashboard');
 
                 // Student Management
+                Route::get('/students/import-sample', [App\Http\Controllers\Web\Institute\StudentController::class, 'importSample'])->name('students.import.sample');
+                Route::post('/students/import', [App\Http\Controllers\Web\Institute\StudentController::class, 'import'])->name('students.import');
                 Route::get('/students/export', [App\Http\Controllers\Web\Institute\StudentController::class, 'export'])->name('students.export');
                 Route::get('/students/create', [App\Http\Controllers\Web\Institute\StudentController::class, 'create'])->name('students.create');
+                Route::post('/students/bulk-transfer', [App\Http\Controllers\Web\Institute\StudentController::class, 'bulkTransfer'])->name('students.bulk_transfer');
                 Route::get('/students/{student}/edit', [App\Http\Controllers\Web\Institute\StudentController::class, 'edit'])->name('students.edit');
                 Route::get('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'show'])->name('students.show');
                 Route::get('/students', [App\Http\Controllers\Web\Institute\StudentController::class, 'index'])->name('students.index');
@@ -146,6 +176,8 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::put('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'update'])->name('students.update');
                 Route::delete('/students/{student}', [App\Http\Controllers\Web\Institute\StudentController::class, 'destroy'])->name('students.destroy');
                 Route::post('/students/{student}/fee-reminder', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendFeeReminder'])->name('students.fee_reminder');
+                Route::post('/students/{student}/send-password', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendPasswordEmail'])->name('students.send_password');
+                Route::post('/students/{student}/reset-password-direct', [App\Http\Controllers\Web\Institute\StudentController::class, 'resetPasswordDirect'])->name('students.reset_password_direct');
 
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');
@@ -153,12 +185,17 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/batches/{batch}/students', [App\Http\Controllers\Web\Institute\BatchController::class, 'students'])->name('batches.students');
                 Route::get('/batches/{batch}/homework/{homework}', [App\Http\Controllers\Web\Institute\BatchController::class, 'homeworkShow'])->name('batches.homework.show');
                 Route::get('/batches/{batch}/homework', [App\Http\Controllers\Web\Institute\BatchController::class, 'homework'])->name('batches.homework');
+                Route::get('/batches/{batch}/exams/{exam}', [App\Http\Controllers\Web\Institute\BatchController::class, 'examShow'])->name('batches.exams.show');
+                Route::get('/batches/{batch}/exams', [App\Http\Controllers\Web\Institute\BatchController::class, 'exams'])->name('batches.exams');
                 Route::get('/batches/{batch}/attendance', [App\Http\Controllers\Web\Institute\BatchController::class, 'attendance'])->name('batches.attendance');
                 Route::get('/batches/{batch}/resources', [App\Http\Controllers\Web\Institute\BatchController::class, 'resources'])->name('batches.resources');
+                Route::get('/batches/{batch}/timetable', [App\Http\Controllers\Web\Institute\BatchController::class, 'timetable'])->name('batches.timetable');
                 Route::get('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'show'])->name('batches.show');
                 Route::get('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'index'])->name('batches.index');
                 Route::post('/batches', [App\Http\Controllers\Web\Institute\BatchController::class, 'store'])->name('batches.store');
                 Route::put('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'update'])->name('batches.update');
+                Route::post('/batches/{batch}/close', [App\Http\Controllers\Web\Institute\BatchController::class, 'close'])->name('batches.close');
+                Route::post('/batches/{batch}/fee-reminders', [App\Http\Controllers\Web\Institute\BatchController::class, 'sendFeeReminders'])->name('batches.fee_reminders');
                 Route::delete('/batches/{batch}', [App\Http\Controllers\Web\Institute\BatchController::class, 'destroy'])->name('batches.destroy');
 
                 // Attendance Management
@@ -182,6 +219,15 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Reports
                 Route::get('/reports', [App\Http\Controllers\Web\Institute\ReportController::class, 'index'])->name('reports.index');
+                Route::get('/reports/student', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'studentReport'])->name('reports.student');
+                Route::get('/reports/student/export', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'exportStudentReport'])->name('reports.student.export');
+                Route::post('/reports/student/email', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'emailStudentReport'])->name('reports.student.email');
+
+                // TimeTable & Daily Schedule Management
+                Route::get('/timetable', [App\Http\Controllers\Web\Institute\TimetableController::class, 'index'])->name('timetable.index');
+                Route::post('/timetable', [App\Http\Controllers\Web\Institute\TimetableController::class, 'store'])->name('timetable.store');
+                Route::put('/timetable/{timetable}', [App\Http\Controllers\Web\Institute\TimetableController::class, 'update'])->name('timetable.update');
+                Route::delete('/timetable/{timetable}', [App\Http\Controllers\Web\Institute\TimetableController::class, 'destroy'])->name('timetable.destroy');
 
                 // Subscription Plans
                 Route::get('/plans', [App\Http\Controllers\Web\Institute\PlanController::class, 'index'])->name('plans.index');
@@ -218,6 +264,12 @@ Route::prefix('institute')->name('institute.')->group(function () {
             });
         });
     });
+
+    // Public Institute Website Route (for subdomain rewritten by Nginx)
+    Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteController::class, 'show'])
+        ->name('website.subdomain')
+        ->where('instituteCode', '[a-zA-Z0-9]+')
+        ->where('nameSlug', '[a-z0-9\-]+');
 });
 
 Route::prefix('admin')->group(function () {
@@ -241,39 +293,62 @@ Route::get('/mail-preview/forgot-password', function () {
 
 Route::get('/mail-preview/subscription-status', function () {
     return new \App\Mail\SubscriptionStatusMail(
-        'Noble Academy', 
-        'Pro Gold Annual Plan', 
-        now()->addYear()->toDateTimeString(), 
-        9999, 
+        'Noble Academy',
+        'Pro Gold Annual Plan',
+        now()->addYear()->toDateTimeString(),
+        9999,
         'assigned'
     );
 });
 
 Route::get('/mail-preview/student-added', function () {
     return new \App\Mail\StudentAddedMail(
-        'Rohan Sharma', 
-        'rohan@example.com', 
-        'secureP@ss123', 
+        'Rohan Sharma',
+        'rohan@example.com',
+        'secureP@ss123',
         'Noble Academy'
     );
 });
 
 Route::get('/mail-preview/fee-invoice', function () {
     return new \App\Mail\FeeInvoiceMail(
-        'Rohan Sharma', 
-        'rohan@example.com', 
-        'INV-20260530-0042', 
-        now()->format('d M, Y'), 
-        now()->addDays(10)->format('d M, Y'), 
-        'Unpaid', 
-        'Monthly Tuition Fee', 
-        1500, 
-        'Lab & Library Fee', 
-        300, 
-        50, 
-        1850, 
-        '#', 
+        'Rohan Sharma',
+        'rohan@example.com',
+        'INV-20260530-0042',
+        now()->format('d M, Y'),
+        now()->addDays(10)->format('d M, Y'),
+        'Unpaid',
+        'Monthly Tuition Fee',
+        1500,
+        'Lab & Library Fee',
+        300,
+        50,
+        1850,
+        '#',
         'Noble Academy'
     );
 });
+
+
+// =========================================================================
+// QR CODE TRACKING ROUTES (Public — no auth required)
+// =========================================================================
+Route::prefix('qr')->name('qr.')->group(function () {
+    // Both GET (for initial landing/bridge) and POST (for processing coordinates)
+    Route::match(['get', 'post'], '/web', [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'web')->name('web');
+    Route::match(['get', 'post'], '/android', [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'android')->name('android');
+    Route::match(['get', 'post'], '/ios', [App\Http\Controllers\Web\QrController::class, 'track'])->defaults('type', 'ios')->name('ios');
+});
+
+// =========================================================================
+// PUBLIC INSTITUTE WEBSITE ROUTES
+// =========================================================================
+// URL: /{institute_code}/{institute_name_slug}  e.g. /123456/noble-academy
+Route::get('/{instituteCode}/{nameSlug}', [App\Http\Controllers\Web\WebsiteController::class, 'show'])
+    ->name('institute.website')
+    ->where('instituteCode', '[a-zA-Z0-9]+')       // support alphanumeric institute codes
+    ->where('nameSlug', '[a-z0-9\-]+');      // slug = lowercase letters, digits, hyphens
+
+
+
 

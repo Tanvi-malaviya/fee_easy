@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        if (!Schema::hasTable('subscriptions')) {
+            Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained()->onDelete('cascade');
             $table->string('plan_name')->nullable();
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void

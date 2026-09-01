@@ -48,13 +48,13 @@
     <div id="upload-modal" class="fixed inset-0 z-[150] bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white w-full max-w-[600px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col">
             <!-- Modal Header -->
-            <div class="px-6 py-3.5 flex items-start justify-between border-b border-slate-50">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900">Upload New Content</h2>
-                    <p class="text-[10px] font-semibold text-slate-400">Distribute learning materials across batch courses</p>
+                    <h2 class="text-base font-bold text-white tracking-tight">Upload New Content</h2>
+                    <p class="text-white/80 text-[10px] mt-0.5">Distribute learning materials across batch courses</p>
                 </div>
-                <button onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="button" onclick="closeUploadModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
@@ -118,48 +118,26 @@
                 <div class="pt-4 flex items-center justify-end gap-4 border-t border-slate-100">
                     <button type="button" onclick="closeUploadModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
                     <button type="submit" id="upload-submit-btn" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white text-xs font-black rounded-xl transition-all shadow-md shadow-primary/10">
-                        Initialize Batch Upload
+                        Upload
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- DELETE CONFIRMATION MODAL -->
-    <div id="delete-modal" class="fixed inset-0 z-[150] hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[450px]">
-            <div class="bg-white rounded-[1.5rem] shadow-2xl border-t-4 border-primary overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-                <div class="p-8">
-                    <div class="flex gap-4">
-                        <div class="h-12 w-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Resource?</h3>
-                            <p class="text-[12px] text-slate-500 font-medium leading-relaxed mb-6">Are you sure you want to permanently remove this resource? This action cannot be undone.</p>
-                            <div class="flex items-center gap-3">
-                                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-all">Cancel</button>
-                                <button type="button" id="confirm-delete-btn" class="flex-[1.5] py-2.5 bg-primary text-white rounded-xl font-bold text-[12px] shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">Yes, Delete Resource</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- VIEW MODAL -->
     <div id="view-modal" class="fixed inset-0 z-[150] bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white w-full max-w-[850px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             <!-- Modal Header -->
-            <div class="px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                <div class="flex items-center gap-2 text-xs font-bold text-white">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     <span>Resource Details</span>
                 </div>
-                <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="button" onclick="closeViewModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
@@ -450,55 +428,44 @@
                 showToast('Upload failed', 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Initialize Batch Upload';
+                submitBtn.innerText = 'Add Batch';
             }
         }
-
-        let pendingDeleteId = null;
 
         function deleteResource(id) {
-            pendingDeleteId = id;
-            document.getElementById('delete-modal').classList.replace('hidden', 'flex');
+            showConfirmModal(
+                'Delete Resource?',
+                'Are you sure you want to permanently remove this resource? This action cannot be undone.',
+                async function () {
+                    toggleLoader(true);
+                    try {
+                        const response = await fetch(`${API_RESOURCES_URL}/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        });
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            showToast('Material deleted successfully');
+                            fetchResources();
+                        } else {
+                            showToast('Failed to delete resource', 'error');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Failed to delete resource', 'error');
+                    } finally {
+                        toggleLoader(false);
+                    }
+                },
+                'Yes, Delete Resource',
+                'bg-primary shadow-orange-950/10'
+            );
         }
-
-        function closeDeleteModal() {
-            pendingDeleteId = null;
-            document.getElementById('delete-modal').classList.replace('flex', 'hidden');
-        }
-
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            if (!pendingDeleteId) return;
-
-            const btn = document.getElementById('confirm-delete-btn');
-            btn.disabled = true;
-            btn.innerText = 'Deleting...';
-
-            try {
-                const response = await fetch(`${API_RESOURCES_URL}/${pendingDeleteId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    showToast('Material deleted successfully');
-                    closeDeleteModal();
-                    fetchResources();
-                } else {
-                    showToast('Failed to delete resource', 'error');
-                }
-            } catch (error) {
-                console.error(error);
-                showToast('Failed to delete resource', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Delete';
-            }
-        });
 
         function openViewModal(id) {
             const res = resources.find(r => r.id === id);

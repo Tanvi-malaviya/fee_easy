@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \DB::statement('ALTER TABLE students CHANGE fees monthly_fee DECIMAL(10, 2) NULL');
+        if (Schema::hasColumn('students', 'fees') && !Schema::hasColumn('students', 'monthly_fee')) {
+            \DB::statement('ALTER TABLE students CHANGE fees monthly_fee DECIMAL(10, 2) NULL');
+        }
     }
 
     public function down(): void
