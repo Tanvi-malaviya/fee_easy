@@ -102,6 +102,7 @@ class InstituteExamController extends Controller
             'batch_id'      => 'required|integer|exists:batches,id',
             'title'         => 'required|string|max:255',
             'subject'       => 'nullable|string|max:255',
+            'exam_type'     => 'nullable|string|in:unit_test,mid_term,final,quiz,assignment,other',
             'exam_date'     => 'required|date',
             'start_time'    => 'nullable|string',
             'end_time'      => 'nullable|string',
@@ -136,6 +137,7 @@ class InstituteExamController extends Controller
             'batch_id'      => $batch->id,
             'title'         => $request->title,
             'subject'       => $request->subject ?: $batch->subject,
+            'exam_type'     => $request->exam_type ?: 'other',
             'exam_date'     => $request->exam_date,
             'start_time'    => $request->start_time,
             'end_time'      => $request->end_time,
@@ -203,6 +205,7 @@ class InstituteExamController extends Controller
         $validator = Validator::make($request->all(), [
             'title'         => 'sometimes|required|string|max:255',
             'subject'       => 'nullable|string|max:255',
+            'exam_type'     => 'nullable|string|in:unit_test,mid_term,final,quiz,assignment,other',
             'exam_date'     => 'sometimes|required|date',
             'start_time'    => 'nullable|string',
             'end_time'      => 'nullable|string',
@@ -233,6 +236,7 @@ class InstituteExamController extends Controller
         $exam->update($request->only([
             'title',
             'subject',
+            'exam_type',
             'exam_date',
             'start_time',
             'end_time',

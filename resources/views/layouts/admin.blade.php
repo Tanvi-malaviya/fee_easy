@@ -309,6 +309,13 @@
                     <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Manage Plans</span>
                 </a>
 
+                <a href="{{ route('whitelabel.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('whitelabel.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h9a2 2 0 012 2v4m-4 12l3-3m0 0l3-3m-3 3H10m9-3a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">White Label</span>
+                </a>
+
                 <div x-show="!sidebarCollapsed" class="sidebar-text px-4 mt-8 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     Engagement
                 </div>

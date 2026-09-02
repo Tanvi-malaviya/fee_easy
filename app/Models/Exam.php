@@ -15,6 +15,7 @@ class Exam extends Model
         'batch_id',
         'title',
         'subject',
+        'exam_type',
         'exam_date',
         'start_time',
         'end_time',
@@ -25,7 +26,10 @@ class Exam extends Model
     ];
 
     protected $casts = [
-        'exam_date' => 'date',
+        // Plain Y-m-d serialization — the default 'date' cast round-trips
+        // through UTC on JSON encode, which shifts the calendar day back
+        // one for any app timezone ahead of UTC (e.g. Asia/Kolkata).
+        'exam_date' => 'date:Y-m-d',
         'total_marks' => 'decimal:2',
         'passing_marks' => 'decimal:2',
     ];

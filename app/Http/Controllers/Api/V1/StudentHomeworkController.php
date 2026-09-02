@@ -108,12 +108,14 @@ class StudentHomeworkController extends Controller
                 'batch_name'      => $homework->batch->name ?? null,
                 'due_date'        => $homework->due_date,
                 'is_overdue'      => $isOverdue,
-                'attachment_url'  => $homework->attachment ?? null,
+                'attachment_url'  => $homework->attachment ? asset('storage/' . $homework->attachment) : null,
                 'submission'      => $submission ? [
-                    'id'           => $submission->id,
-                    'status'       => $submission->status,
-                    'score'        => $submission->score,
-                    'submitted_at' => $submission->created_at?->toISOString(),
+                    'id'              => $submission->id,
+                    'status'          => $submission->status,
+                    'score'           => $submission->score,
+                    'note'            => $submission->note,
+                    'attachment_url'  => $submission->attachment_url,
+                    'submitted_at'    => $submission->created_at?->toISOString(),
                 ] : null,
             ];
 
@@ -222,11 +224,13 @@ class StudentHomeworkController extends Controller
                 'batch_name'     => $homework->batch->name ?? null,
                 'due_date'       => $homework->due_date,
                 'is_overdue'     => $isOverdue,
-                'attachment_url' => $homework->attachment ?? null,
+                'attachment_url' => $homework->attachment ? asset('storage/' . $homework->attachment) : null,
                 'submission'     => $submission ? [
                     'id'           => $submission->id,
                     'status'       => $submission->status,
                     'score'        => $submission->score,
+                    'note'         => $submission->note,
+                    'attachment_url' => $submission->attachment_url,
                     'submitted_at' => $submission->created_at?->toISOString(),
                     'submitted_at_label' => $submission->created_at?->format('d M Y, g:i A'),
                 ] : null,
@@ -238,8 +242,13 @@ class StudentHomeworkController extends Controller
     /**
      * POST /api/v1/student/homeworks/{id}/submit
      *
-     * Mark an assignment as submitted by the student.
-     * Body: { "note": "optional note" }
+     * Submit (or resubmit) a text note and/or file attachment for an
+     * assignment. Resubmission is allowed any number of times up until the
+     * due date — the only gate is the overdue check below, which applies
+     * equally to a first submission and a resubmission.
+     *
+     * Body: { "note": "optional note", "attachment": <file, optional> }
+     * (at least one of the two is required)
      */
     public function submit(Request $request, int $id)
     {
@@ -255,17 +264,6 @@ class StudentHomeworkController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Assignment not found'], 404);
         }
 
-        $existing = HomeworkSubmission::where('homework_id', $homework->id)
-            ->where('student_id', $student->id)
-            ->first();
-
-        if ($existing) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'You have already submitted this assignment.',
-            ], 409);
-        }
-
         $dueDate  = Carbon::parse($homework->due_date)->endOfDay();
         $isOverdue = Carbon::now()->isAfter($dueDate);
 
@@ -276,17 +274,53 @@ class StudentHomeworkController extends Controller
             ], 403);
         }
 
-        $submission = HomeworkSubmission::create([
-            'homework_id'  => $homework->id,
-            'student_id'   => $student->id,
+        $request->validate([
+            'note'       => 'nullable|string|max:5000',
+            'attachment' => 'nullable|file|max:10240',
+        ]);
+
+        if (!$request->filled('note') && !$request->hasFile('attachment')) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Add a note or attach a file before submitting.',
+            ], 422);
+        }
+
+        $existing = HomeworkSubmission::where('homework_id', $homework->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $data = [
             'status'       => 'submitted',
             'submitted_at' => now(),
-        ]);
+        ];
+        if ($request->filled('note')) {
+            $data['note'] = $request->input('note');
+        }
+
+        if ($request->hasFile('attachment')) {
+            if ($existing && $existing->attachment) {
+                Storage::disk('public')->delete($existing->attachment);
+            }
+            $data['attachment'] = $request->file('attachment')->store('homework_submissions', 'public');
+        }
+
+        $submission = HomeworkSubmission::updateOrCreate(
+            ['homework_id' => $homework->id, 'student_id' => $student->id],
+            $data
+        );
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'Assignment submitted successfully.',
-        ], 201);
+            'message' => $existing ? 'Assignment resubmitted successfully.' : 'Assignment submitted successfully.',
+            'data'    => [
+                'id'           => $submission->id,
+                'status'       => $submission->status,
+                'note'         => $submission->note,
+                'attachment_url' => $submission->attachment_url,
+                'submitted_at' => $submission->submitted_at?->toISOString(),
+            ],
+        ], $existing ? 200 : 201);
     }
 
     // ── Private Helpers ──────────────────────────────────────────────────────

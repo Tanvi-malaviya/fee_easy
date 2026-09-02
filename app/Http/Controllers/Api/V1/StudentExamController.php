@@ -52,6 +52,7 @@ class StudentExamController extends Controller
                 'id'             => $exam->id,
                 'title'          => $exam->title,
                 'subject'        => $exam->subject,
+                'exam_type'      => $exam->exam_type,
                 'exam_date'      => $exam->exam_date ? $exam->exam_date->format('Y-m-d') : null,
                 'formatted_date' => $exam->formatted_date,
                 'total_marks'    => (float) $exam->total_marks,

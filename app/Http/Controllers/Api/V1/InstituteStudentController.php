@@ -441,6 +441,7 @@ class InstituteStudentController extends Controller
         // Find students whose birthday (month and day) is after today or in the current month
         $students = Student::where('institute_id', $institute->id)
             ->whereNotNull('dob')
+            ->with('batch:id,name')
             ->get()
             ->filter(function ($student) use ($today) {
                 $dob = Carbon::parse($student->dob);
@@ -462,7 +463,16 @@ class InstituteStudentController extends Controller
                 }
                 return $birthdayThisYear->timestamp;
             })
-            ->values();
+            ->values()
+            ->map(fn ($student) => [
+                'id' => $student->id,
+                'name' => $student->name,
+                'profile_image_url' => $student->profile_image_url,
+                'dob' => $student->dob,
+                'is_birthday_today' => $student->is_birthday_today,
+                'batch_id' => $student->batch_id,
+                'batch_name' => $student->batch->name ?? null,
+            ]);
 
         return response()->json([
             'status' => 'success',

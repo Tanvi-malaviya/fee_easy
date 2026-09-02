@@ -64,6 +64,10 @@ Route::middleware(array_filter([
         Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
         Route::post('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
 
+        // White Label Add-on Review
+        Route::get('whitelabel', [App\Http\Controllers\Web\WhiteLabelController::class, 'index'])->name('whitelabel.index');
+        Route::post('whitelabel/{whiteLabel}/confirm', [App\Http\Controllers\Web\WhiteLabelController::class, 'confirm'])->name('whitelabel.confirm');
+
         // Revenue Analysis
         Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
 

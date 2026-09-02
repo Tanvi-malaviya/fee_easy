@@ -108,6 +108,11 @@ class Institute extends Authenticatable
         return $this->hasMany(SubscriptionRenewal::class);
     }
 
+    public function whiteLabel()
+    {
+        return $this->hasOne(InstituteWhiteLabel::class);
+    }
+
     public function activeSubscription()
     {
         return $this->subscriptions()

@@ -75,6 +75,10 @@ Route::prefix('v1')->group(function () {
     // System Versions
     Route::get('/app-versions', [App\Http\Controllers\Api\V1\SystemVersionController::class, 'index']);
 
+    // Public, unauthenticated branding lookup — the app calls this at launch
+    // with its baked-in institute_id, before any user is logged in.
+    Route::get('/app-branding', [App\Http\Controllers\Api\V1\AppBrandingController::class, 'show']);
+
     // Mobile App FCM Device Registration
     Route::middleware('auth:sanctum')->post('/fcm-token', [FCMTokenController::class, 'updateToken']);
 
@@ -145,6 +149,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/subscription/create-order', [InstituteSubscriptionController::class, 'createOrder']);
             Route::post('/subscription/verify-payment', [InstituteSubscriptionController::class, 'verifyPaymentAndroid']);
             Route::get('/subscriptions/history', [InstituteSubscriptionController::class, 'history']);
+
+            // White Label add-on
+            Route::prefix('whitelabel')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\V1\InstituteWhiteLabelController::class, 'show']);
+                Route::post('/create-order', [\App\Http\Controllers\Api\V1\InstituteWhiteLabelController::class, 'createOrder']);
+                Route::post('/verify-payment', [\App\Http\Controllers\Api\V1\InstituteWhiteLabelController::class, 'verifyPayment']);
+                Route::post('/branding', [\App\Http\Controllers\Api\V1\InstituteWhiteLabelController::class, 'updateBranding']);
+            });
 
             // Clean Rich Notes Module
             Route::prefix('notes')->group(function () {
@@ -318,6 +330,9 @@ Route::prefix('v1')->group(function () {
             Route::prefix('timetable')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'index']);
                 Route::post('/', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'store']);
+                Route::put('/{id}', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'update']);
+                Route::post('/{id}/update', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'update']);
+                Route::delete('/{id}', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'destroy']);
             });
 
             Route::prefix('leads')->group(function () {
@@ -369,6 +384,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/resources', [StudentResourceController::class, 'index']);
             Route::get('/resources/{id}/download', [StudentResourceController::class, 'download']);
             Route::get('/timetable', [\App\Http\Controllers\Api\V1\InstituteTimetableController::class, 'studentSchedule']);
+            Route::get('/birthdays', [\App\Http\Controllers\Api\V1\StudentBirthdayController::class, 'index']);
+            Route::get('/id-card', [\App\Http\Controllers\Api\V1\StudentIdCardController::class, 'show']);
             Route::get('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'getSettings']);
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
         });
