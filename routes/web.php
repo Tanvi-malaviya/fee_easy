@@ -60,9 +60,12 @@ Route::middleware(array_filter([
         Route::patch('subscriptions/renewals/{renewal}/reject', [App\Http\Controllers\Web\SubscriptionController::class, 'rejectRenewal'])->name('subscriptions.renewals.reject');
 
         // Plan Management
-        Route::post('plans/addon/update', [App\Http\Controllers\Web\PlanController::class, 'updateAddon'])->name('plans.addon.update');
         Route::resource('plans', App\Http\Controllers\Web\PlanController::class);
         Route::post('plans/{plan}/status', [App\Http\Controllers\Web\PlanController::class, 'updateStatus'])->name('plans.status');
+
+        // Add-ons Catalog (pricing/listing for White Label + future add-ons)
+        Route::resource('addons', App\Http\Controllers\Web\AddOnController::class)->except(['show', 'create', 'edit']);
+        Route::post('addons/{addOn}/status', [App\Http\Controllers\Web\AddOnController::class, 'updateStatus'])->name('addons.status');
 
         // White Label Add-on Review
         Route::get('whitelabel', [App\Http\Controllers\Web\WhiteLabelController::class, 'index'])->name('whitelabel.index');
@@ -182,6 +185,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::post('/students/{student}/fee-reminder', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendFeeReminder'])->name('students.fee_reminder');
                 Route::post('/students/{student}/send-password', [App\Http\Controllers\Web\Institute\StudentController::class, 'sendPasswordEmail'])->name('students.send_password');
                 Route::post('/students/{student}/reset-password-direct', [App\Http\Controllers\Web\Institute\StudentController::class, 'resetPasswordDirect'])->name('students.reset_password_direct');
+                Route::post('/students/{student}/toggle-block', [App\Http\Controllers\Web\Institute\StudentController::class, 'toggleBlock'])->name('students.toggle_block');
 
                 // Batch Management
                 Route::get('/batches/create', [App\Http\Controllers\Web\Institute\BatchController::class, 'create'])->name('batches.create');
@@ -223,6 +227,7 @@ Route::prefix('institute')->name('institute.')->group(function () {
 
                 // Reports
                 Route::get('/reports', [App\Http\Controllers\Web\Institute\ReportController::class, 'index'])->name('reports.index');
+                Route::get('/reports/analytics', [App\Http\Controllers\Web\Institute\ReportController::class, 'analytics'])->name('reports.analytics');
                 Route::get('/reports/student', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'studentReport'])->name('reports.student');
                 Route::get('/reports/student/export', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'exportStudentReport'])->name('reports.student.export');
                 Route::post('/reports/student/email', [App\Http\Controllers\Api\V1\InstituteReportController::class, 'emailStudentReport'])->name('reports.student.email');
@@ -247,6 +252,10 @@ Route::prefix('institute')->name('institute.')->group(function () {
                 Route::get('/staff/{staff}/edit', [App\Http\Controllers\Web\Institute\StaffController::class, 'edit'])->name('staff.edit');
                 Route::put('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'update'])->name('staff.update');
                 Route::delete('/staff/{staff}', [App\Http\Controllers\Web\Institute\StaffController::class, 'destroy'])->name('staff.destroy');
+                Route::post('/staff/{staff}/send-password', [App\Http\Controllers\Web\Institute\StaffController::class, 'sendPasswordEmail'])->name('staff.send_password');
+                Route::post('/staff/{staff}/reset-password-direct', [App\Http\Controllers\Web\Institute\StaffController::class, 'resetPasswordDirect'])->name('staff.reset_password_direct');
+                Route::post('/staff/{staff}/change-email', [App\Http\Controllers\Web\Institute\StaffController::class, 'changeEmail'])->name('staff.change_email');
+                Route::post('/staff/{staff}/toggle-block', [App\Http\Controllers\Web\Institute\StaffController::class, 'toggleBlock'])->name('staff.toggle_block');
 
                 Route::get('/leads', function () {
                     return view('institute.leads.index');
@@ -274,6 +283,39 @@ Route::prefix('institute')->name('institute.')->group(function () {
         ->name('website.subdomain')
         ->where('instituteCode', '[a-zA-Z0-9]+')
         ->where('nameSlug', '[a-z0-9\-]+');
+});
+
+// Teacher Web Panel Routes
+Route::prefix('teacher')->name('teacher.')->group(function () {
+    Route::middleware('guest:teacher')->group(function () {
+        Route::get('/login', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'login']);
+    });
+
+    Route::match(['get', 'post'], '/logout', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'logout'])->name('logout');
+
+    // Password Reset Routes (OTP-based, mirrors the institute flow)
+    Route::get('/forgot-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'resetPassword'])->name('password.update');
+
+    Route::middleware(['auth:teacher', 'active_teacher'])->group(function () {
+        // Forced first-login password change — reachable even while must_change_password is true.
+        Route::get('/change-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'showChangePassword'])->name('password.change');
+        Route::post('/change-password', [App\Http\Controllers\Web\Teacher\TeacherAuthController::class, 'updatePassword'])->name('password.change.update');
+
+        Route::middleware('teacher_password_ok')->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\Web\Teacher\DashboardController::class, 'index'])->name('dashboard');
+
+            Route::get('/batches/{id}', [App\Http\Controllers\Web\Teacher\BatchController::class, 'show'])->name('batches.show');
+
+            Route::get('/salary', [App\Http\Controllers\Web\Teacher\SalaryController::class, 'index'])->name('salary.index');
+
+            Route::get('/profile', [App\Http\Controllers\Web\Teacher\ProfileController::class, 'index'])->name('profile.index');
+            Route::post('/profile/avatar', [App\Http\Controllers\Web\Teacher\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+        });
+    });
 });
 
 Route::prefix('admin')->group(function () {

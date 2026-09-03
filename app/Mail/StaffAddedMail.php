@@ -23,6 +23,7 @@ class StaffAddedMail extends Mailable
     public $instituteLogoUrl;
     public $instituteLogoPath;
     public $password;
+    public $portalLoginUrl;
 
     /**
      * Create a new message instance.
@@ -35,7 +36,8 @@ class StaffAddedMail extends Mailable
         $departmentName,
         $instituteName,
         $instituteLogoUrl = null,
-        $password = null
+        $password = null,
+        $portalLoginUrl = null
     ) {
         $this->staffName = $staffName;
         $this->staffEmail = $staffEmail;
@@ -46,6 +48,7 @@ class StaffAddedMail extends Mailable
         $this->instituteLogoPath = $instituteLogoUrl; // Raw path
         $this->instituteLogoUrl = $instituteLogoUrl ? asset('storage/' . $instituteLogoUrl) : null;
         $this->password = $password;
+        $this->portalLoginUrl = $portalLoginUrl;
     }
 
     /**
@@ -75,6 +78,7 @@ class StaffAddedMail extends Mailable
                 'instituteLogoUrl' => $this->instituteLogoUrl,
                 'instituteLogoPath' => $this->instituteLogoPath,
                 'password' => $this->password,
+                'portalLoginUrl' => $this->portalLoginUrl,
             ],
         );
     }

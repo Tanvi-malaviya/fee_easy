@@ -655,29 +655,25 @@ class InstituteSubscriptionController extends Controller
         ];
 
         $currency = \App\Models\SystemSetting::get('currency_symbol', '₹');
-        $whiteLabelPrice = (float) \App\Models\SystemSetting::get('mobile_app_whitelabel_price', 5000);
-        $whiteLabelTitle = \App\Models\SystemSetting::get('mobile_app_whitelabel_title', 'Mobile App White Label');
-        $whiteLabelBillingType = \App\Models\SystemSetting::get('mobile_app_whitelabel_billing_type', 'One Time');
-        $whiteLabelEnabled = (bool) \App\Models\SystemSetting::get('mobile_app_whitelabel_enabled', true);
-        $whiteLabelDesc = \App\Models\SystemSetting::get('mobile_app_whitelabel_description', 'Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.');
+        $whiteLabel = \App\Models\AddOn::whiteLabel();
 
         $whiteLabelAddon = [
-            'id' => 'mobile_app_whitelabel',
-            'name' => $whiteLabelTitle,
-            'title' => $whiteLabelTitle,
-            'price' => $whiteLabelPrice,
-            'billing_type' => $whiteLabelBillingType,
+            'id' => \App\Models\AddOn::SLUG_WHITE_LABEL,
+            'name' => $whiteLabel?->name ?? 'Mobile App White Label',
+            'title' => $whiteLabel?->name ?? 'Mobile App White Label',
+            'price' => $whiteLabel?->price ?? 5000,
+            'billing_type' => $whiteLabel?->billing_type ?? 'One Time',
             'type' => 'one_time',
             'currency' => $currency,
-            'formatted_price' => $currency . number_format($whiteLabelPrice),
-            'description' => $whiteLabelDesc,
-            'features' => [
+            'formatted_price' => $whiteLabel?->formatted_price ?? ($currency . '5,000'),
+            'description' => $whiteLabel?->description ?? '',
+            'features' => $whiteLabel?->features ?: [
                 'Institute Name & Logo on Google Play Store & Apple App Store',
                 'Direct Store Download Links & Shareable Marketing QR',
                 'Push Notifications with Institute Branding',
-                'Continuous App Store Maintenance & Support'
+                'Continuous App Store Maintenance & Support',
             ],
-            'is_active' => $whiteLabelEnabled,
+            'is_active' => $whiteLabel?->enabled ?? false,
         ];
 
         $currentSub = $institute->currentSubscription();

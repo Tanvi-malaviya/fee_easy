@@ -120,6 +120,14 @@
                         </svg>
                         Reset Password
                     </button>
+                    <button onclick="toggleBlockLogin({{ $student->id }}, {{ $student->is_login_blocked ? 'false' : 'true' }})"
+                        id="btn-toggle-block"
+                        class="px-4 py-1.5 bg-white border-2 {{ $student->is_login_blocked ? 'border-emerald-500 text-emerald-600 hover:bg-emerald-50/50' : 'border-rose-500 text-rose-500 hover:bg-rose-50/50' }} rounded-xl font-bold text-xs transition-all flex items-center justify-center group shadow-sm">
+                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        {{ $student->is_login_blocked ? 'Unblock Login' : 'Block Login' }}
+                    </button>
                 </div>
             </div>
 
@@ -458,6 +466,38 @@
                     if (typeof showToast === 'function') showToast(data.message, 'success');
                 } else {
                     if (typeof showToast === 'function') showToast(data.message || 'Failed to send password.', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                if (typeof toggleLoader === 'function') toggleLoader(false);
+            }
+        }
+
+        // --- Block / Unblock Login ---
+        async function toggleBlockLogin(studentId, nextBlocked) {
+            const btn = document.getElementById('btn-toggle-block');
+            if (typeof toggleLoader === 'function') toggleLoader(true);
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/institute/students/${studentId}/toggle-block`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ blocked: nextBlocked })
+                });
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    if (typeof showToast === 'function') showToast(data.message || 'Failed to update login status.', 'error');
                 }
             } catch (error) {
                 console.error(error);

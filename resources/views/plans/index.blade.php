@@ -29,11 +29,11 @@
                 </div>
 
                 <div class="flex items-center gap-2 self-end md:self-auto flex-shrink-0">
-                    <button type="button" onclick="openEditAddonModal()"
+                    <a href="{{ route('addons.index') }}"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-orange-50 border border-orange-200 text-[#ff6c00] text-xs font-bold rounded-xl shadow-xs hover:border-orange-300 transition-all cursor-pointer">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                        Edit Add-On Price
-                    </button>
+                        Manage in Add-ons
+                    </a>
                 </div>
             </div>
 
@@ -278,71 +278,6 @@
         </form>
     </x-modal>
 
-    <!-- Edit White Label Add-On Modal -->
-    <x-modal name="edit-whitelabel-addon" maxWidth="lg" focusable>
-        <form method="POST" action="{{ route('plans.addon.update') }}" class="p-6">
-            @csrf
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="h-8 w-8 rounded-xl bg-orange-100 text-primary flex items-center justify-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    </div>
-                    <div>
-                        <h2 class="text-base font-bold text-gray-900 leading-tight">Edit Mobile App White Label Add-On</h2>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Global Add-On Configuration</p>
-                    </div>
-                </div>
-                <button type="button" x-on:click="$dispatch('close')" class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <x-input-label for="addon_title" value="Add-on Display Title" class="text-xs font-semibold" />
-                    <x-text-input id="addon_title" name="title" type="text"
-                        value="{{ $whiteLabelAddon['title'] ?? 'Mobile App White Label' }}"
-                        class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm" required />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <x-input-label for="addon_price" value="Price ({{ $currency }})" class="text-xs font-semibold" />
-                        <x-text-input id="addon_price" name="price" type="number" step="1" min="0" max="999999"
-                            value="{{ $whiteLabelAddon['price'] ?? 5000 }}"
-                            class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm font-bold text-gray-800" required />
-                    </div>
-                    <div>
-                        <x-input-label for="addon_billing_type" value="Billing Frequency" class="text-xs font-semibold" />
-                        <x-text-input id="addon_billing_type" name="billing_type" type="text"
-                            value="{{ $whiteLabelAddon['billing_type'] ?? 'One Time' }}"
-                            class="mt-1 block w-full bg-gray-50 focus:bg-white text-sm" required />
-                    </div>
-                </div>
-
-                <div>
-                    <x-input-label for="addon_status" value="Status" class="text-xs font-semibold" />
-                    <select name="enabled" id="addon_status"
-                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition px-3 py-2 border text-sm text-gray-900 bg-gray-50 focus:bg-white cursor-pointer outline-none">
-                        <option value="1" {{ ($whiteLabelAddon['enabled'] ?? true) ? 'selected' : '' }}>Active (Visible on Web & Mobile)</option>
-                        <option value="0" {{ !($whiteLabelAddon['enabled'] ?? true) ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-
-                <div>
-                    <x-input-label for="addon_description" value="Description" class="text-xs font-semibold" />
-                    <textarea id="addon_description" name="description" rows="3"
-                        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring-primary transition p-3 border text-xs text-gray-900 bg-gray-50 focus:bg-white outline-none">{{ $whiteLabelAddon['description'] ?? '' }}</textarea>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-4">
-                <x-secondary-button x-on:click="$dispatch('close')" class="text-xs">Cancel</x-secondary-button>
-                <x-primary-button class="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 text-xs">Update Add-On</x-primary-button>
-            </div>
-        </form>
-    </x-modal>
-
     <!-- Edit Plan Modal -->
     <x-modal name="edit-plan" focusable>
         <form id="edit-plan-form" method="post" action="" class="p-6">
@@ -502,10 +437,6 @@
             menu.style.top = (spaceBelow < menuHeight ? (rect.top + window.scrollY - menuHeight - 8) : (rect.bottom + window.scrollY + 8)) + 'px';
             menu.style.left = (rect.left + window.scrollX) + 'px';
             menu.classList.remove('hidden');
-        }
-
-        function openEditAddonModal() {
-            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-whitelabel-addon' }));
         }
 
         function openEditPlanModal(plan) {

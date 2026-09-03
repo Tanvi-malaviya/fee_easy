@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\AddOn;
 use App\Models\InstituteWhiteLabel;
-use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -36,7 +36,9 @@ class InstituteWhiteLabelController extends Controller
     {
         $institute = $request->user();
 
-        if (!(bool) SystemSetting::get('mobile_app_whitelabel_enabled', true)) {
+        $addOn = AddOn::whiteLabel();
+
+        if (!$addOn || !$addOn->enabled) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'White Label add-on is not currently available.',
@@ -51,7 +53,7 @@ class InstituteWhiteLabelController extends Controller
             ], 422);
         }
 
-        $price = (float) SystemSetting::get('mobile_app_whitelabel_price', 5000);
+        $price = $addOn->price;
 
         try {
             $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
@@ -67,7 +69,7 @@ class InstituteWhiteLabelController extends Controller
                 ],
                 'line_items' => [
                     [
-                        'name' => SystemSetting::get('mobile_app_whitelabel_title', 'Mobile App White Label'),
+                        'name' => $addOn->name,
                         'amount' => $price * 100,
                         'currency' => 'INR',
                         'quantity' => 1,
@@ -212,15 +214,15 @@ class InstituteWhiteLabelController extends Controller
 
     private function addonConfig(): array
     {
-        $price = (float) SystemSetting::get('mobile_app_whitelabel_price', 5000);
-        return [
-            'id' => 'mobile_app_whitelabel',
-            'title' => SystemSetting::get('mobile_app_whitelabel_title', 'Mobile App White Label'),
-            'description' => SystemSetting::get('mobile_app_whitelabel_description', ''),
-            'price' => $price,
-            'formatted_price' => '₹' . number_format($price),
-            'billing_type' => SystemSetting::get('mobile_app_whitelabel_billing_type', 'One Time'),
-            'enabled' => (bool) SystemSetting::get('mobile_app_whitelabel_enabled', true),
+        return AddOn::whiteLabel()?->toApiArray() ?? [
+            'id' => AddOn::SLUG_WHITE_LABEL,
+            'title' => 'Mobile App White Label',
+            'description' => '',
+            'price' => 5000,
+            'formatted_price' => '₹5,000',
+            'billing_type' => 'One Time',
+            'enabled' => false,
+            'features' => [],
         ];
     }
 }

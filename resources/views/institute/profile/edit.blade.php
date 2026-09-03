@@ -171,14 +171,97 @@
             </div>
 
             <!-- Hidden save loader overlay -->
-                <div id="save-loader"
-                    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center">
-                    <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
-                        <div class="h-5 w-5 border-2 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
-                        <span class="text-xs font-bold text-slate-700">Saving changes...</span>
-                    </div>
+            <div id="save-loader"
+                class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden items-center justify-center">
+                <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
+                    <div class="h-5 w-5 border-2 border-slate-200 border-t-[#ff6c00] rounded-full animate-spin"></div>
+                    <span class="text-xs font-bold text-slate-700">Saving changes...</span>
                 </div>
-            </form>
+            </div>
+        </form>
+
+        <!-- Automation Email Settings (Custom SMTP) — separate from the main
+             profile form above; it saves independently to institute.profile.smtp. -->
+            @php($__institute = auth()->guard('institute')->user())
+            <div class="bg-white rounded-[1rem] shadow-xl border border-slate-100/50 p-5">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-[#ff6c00] rounded-full"></div>
+                    <h2 class="text-base font-[550] text-slate-800 tracking-tight">Automation Email Settings</h2>
+                </div>
+
+                @if($__institute->hasAddOn(\App\Models\AddOn::SLUG_WHITE_LABEL))
+                    <p class="text-[11px] text-slate-400 font-medium mb-4 leading-relaxed">
+                        Send fee reminders, attendance alerts, and progress digests to your students & parents from your own email address instead of Tuoora's.
+                    </p>
+
+                    <div id="smtp-alert" class="hidden mb-4 p-3 rounded-lg text-[11px] font-semibold"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">SMTP Host</label>
+                            <input type="text" name="mail_host" id="smtp-host" value="{{ $__institute->mail_host }}" placeholder="smtp.yourdomain.com" class="input">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">SMTP Port</label>
+                            <input type="text" name="mail_port" id="smtp-port" value="{{ $__institute->mail_port }}" placeholder="587" class="input">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Encryption</label>
+                            <select name="mail_encryption" id="smtp-encryption" class="input">
+                                <option value="tls" {{ $__institute->mail_encryption == 'tls' ? 'selected' : '' }}>TLS / STARTTLS (Port 587)</option>
+                                <option value="ssl" {{ $__institute->mail_encryption == 'ssl' ? 'selected' : '' }}>SSL (Port 465)</option>
+                                <option value="null" {{ $__institute->mail_encryption == 'null' ? 'selected' : '' }}>None (Port 25)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">SMTP Username</label>
+                            <input type="text" name="mail_username" id="smtp-username" value="{{ $__institute->mail_username }}" placeholder="you@yourdomain.com" class="input">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">SMTP Password</label>
+                            <input type="password" name="mail_password" id="smtp-password"
+                                placeholder="{{ $__institute->mail_password ? '•••••••• (leave blank to keep current)' : 'Enter SMTP password' }}" class="input">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">From Email Address</label>
+                            <input type="email" name="mail_from_address" id="smtp-from-address" value="{{ $__institute->mail_from_address }}" placeholder="noreply@yourdomain.com" class="input">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Sender Name</label>
+                            <input type="text" name="mail_from_name" id="smtp-from-name" value="{{ $__institute->mail_from_name }}" placeholder="Your Institute Name" class="input">
+                        </div>
+                        <div class="space-y-1 flex items-end pb-1.5">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="smtp-enabled" {{ $__institute->is_custom_smtp_enabled ? 'checked' : '' }} class="h-4 w-4 accent-[#ff6c00]">
+                                <span class="text-[11px] font-bold text-slate-600">Use this email for automation emails</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 mt-5 pt-4 border-t border-slate-50">
+                        <button type="button" onclick="saveSmtpSettings()" id="smtp-save-btn"
+                            class="px-4 py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
+                            Save Email Settings
+                        </button>
+                        <button type="button" onclick="testSmtpSettings()" id="smtp-test-btn"
+                            class="px-4 py-2.5 bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
+                            Send Test Email
+                        </button>
+                    </div>
+                @else
+                    <div class="flex items-start gap-3 p-4 bg-orange-50/60 border border-orange-100 rounded-xl">
+                        <svg class="w-5 h-5 text-[#ff6c00] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <div>
+                            <p class="text-xs font-bold text-slate-700">Available with White Label</p>
+                            <p class="text-[11px] text-slate-500 font-medium mt-1 leading-relaxed">
+                                Sending automation emails (fee reminders, attendance alerts, progress digests) from your own email address is a White Label add-on feature. Purchase White Label from the Tuoora mobile app to unlock it.
+                            </p>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
 
         <style>
@@ -282,6 +365,76 @@
                 } catch (error) { showToast('Something went wrong.', 'error'); }
                 finally { loader.classList.replace('flex', 'hidden'); }
             });
+
+            function smtpAlert(message, type = 'success') {
+                const box = document.getElementById('smtp-alert');
+                if (!box) return;
+                box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-rose-50', 'text-rose-700');
+                box.classList.add(type === 'success' ? 'bg-emerald-50' : 'bg-rose-50', type === 'success' ? 'text-emerald-700' : 'text-rose-700');
+                box.innerText = message;
+            }
+
+            function smtpPayload() {
+                return {
+                    is_custom_smtp_enabled: document.getElementById('smtp-enabled').checked,
+                    mail_host: document.getElementById('smtp-host').value,
+                    mail_port: document.getElementById('smtp-port').value,
+                    mail_encryption: document.getElementById('smtp-encryption').value,
+                    mail_username: document.getElementById('smtp-username').value,
+                    mail_password: document.getElementById('smtp-password').value,
+                    mail_from_address: document.getElementById('smtp-from-address').value,
+                    mail_from_name: document.getElementById('smtp-from-name').value,
+                };
+            }
+
+            async function saveSmtpSettings() {
+                const btn = document.getElementById('smtp-save-btn');
+                btn.disabled = true;
+                try {
+                    const response = await fetch('{{ route('institute.profile.smtp') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify(smtpPayload()),
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.status === 'success') {
+                        smtpAlert(data.message || 'Email settings saved successfully.', 'success');
+                        document.getElementById('smtp-password').value = '';
+                        document.getElementById('smtp-password').placeholder = '•••••••• (leave blank to keep current)';
+                    } else {
+                        smtpAlert(data.message || 'Failed to save email settings.', 'error');
+                    }
+                } catch (error) {
+                    smtpAlert('Something went wrong. Please try again.', 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+
+            async function testSmtpSettings() {
+                const testEmail = prompt('Send a test email to which address?', document.getElementById('smtp-from-address').value || '');
+                if (!testEmail) return;
+
+                const btn = document.getElementById('smtp-test-btn');
+                btn.disabled = true;
+                try {
+                    const response = await fetch('{{ route('institute.profile.smtp.test') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ ...smtpPayload(), test_email: testEmail }),
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.status === 'success') {
+                        smtpAlert(data.message || 'Test email sent successfully.', 'success');
+                    } else {
+                        smtpAlert(data.message || 'Failed to send test email.', 'error');
+                    }
+                } catch (error) {
+                    smtpAlert('Something went wrong. Please try again.', 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            }
 
             function previewLogo(input) {
                 if (input.files && input.files[0]) {

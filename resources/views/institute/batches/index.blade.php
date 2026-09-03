@@ -122,6 +122,13 @@
                                 </div>
 
                                 <div class="space-y-1">
+                                    <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fees Last Date <span class="text-rose-500">*</span></label>
+                                    <input type="date" name="fees_last_date" id="field-fees-last-date" required
+                                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all">
+                                    <p class="text-[9px] text-slate-400 ml-1">The due date used to identify students for fee reminder emails.</p>
+                                </div>
+
+                                <div class="space-y-1">
                                     <label class="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Batch Running Days <span class="text-rose-500">*</span></label>
                                     <div class="flex flex-wrap gap-1.5">
                                         @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
@@ -430,6 +437,7 @@
                         document.getElementById('batch-form').reset();
                         document.getElementById('batch-id').value = '';
                         document.getElementById('field-fees').value = '';
+                        document.getElementById('field-fees-last-date').value = '';
                         document.getElementById('field-description').value = '';
                         document.getElementById('form-title').innerText = 'Manage Batch';
                         document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
@@ -484,6 +492,7 @@
                 document.getElementById('batch-id').value = batch.id;
                 document.getElementById('field-name').value = batch.name;
                 document.getElementById('field-fees').value = batch.fees || '';
+                document.getElementById('field-fees-last-date').value = batch.fees_last_date || '';
                 document.getElementById('field-description').value = batch.description || '';
 
                 const days = batch.days || [];

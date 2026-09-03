@@ -401,13 +401,20 @@ class InstituteExamController extends Controller
             }
 
             // Automatically transition status to completed if requested or if marks are submitted
+            $justPublished = false;
             if ($request->boolean('mark_status_as_completed', true) && $exam->status === 'scheduled') {
                 $exam->update(['status' => 'completed']);
+                $justPublished = true;
             }
 
             DB::commit();
 
             $exam->refresh();
+
+            // Auto-email the report card PDF to every student with marks the moment results are published.
+            if ($justPublished) {
+                \App\Services\ExamReportNotifier::sendForExam($exam);
+            }
 
             return response()->json([
                 'status' => 'success',

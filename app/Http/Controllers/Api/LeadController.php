@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadNote;
+use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class LeadController extends Controller
 {
@@ -240,6 +243,100 @@ class LeadController extends Controller
 
         return response()->json([
             'message' => 'Lead deleted successfully'
+        ]);
+    }
+
+    /**
+     * Convert a lead into an enrolled student.
+     * Reuses the lead's contact details so staff never re-type them; only
+     * fields a lead doesn't capture (batch, standard, DOB, guardian) are asked for.
+     */
+    public function convert(Request $request, $id)
+    {
+        $institute = $request->user();
+        $instituteId = $institute->id;
+        $lead = Lead::where('institute_id', $instituteId)->find($id);
+
+        if (!$lead) {
+            return response()->json(['message' => 'Lead not found'], 404);
+        }
+
+        if ($lead->converted_student_id) {
+            return response()->json(['message' => 'This lead has already been converted to a student.'], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email:rfc|max:255|unique:students,email',
+            'phone' => 'nullable|numeric|digits:10',
+            'batch_id' => 'nullable|integer|exists:batches,id,institute_id,' . $instituteId,
+            'standard' => 'required|string',
+            'dob' => 'required|date|before_or_equal:today',
+            'guardian_name' => 'required|string|max:255',
+            'monthly_fee' => 'nullable|numeric|min:0|max:999999',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $email = $request->filled('email') ? $request->email : $lead->email;
+        if (Student::where('email', $email)->exists()) {
+            return response()->json(['errors' => ['email' => ['This email is already used by another student.']]], 422);
+        }
+
+        $password = Str::random(10);
+
+        $student = Student::create([
+            'name' => $request->filled('name') ? $request->name : $lead->full_name,
+            'email' => $email,
+            'phone' => $request->filled('phone') ? $request->phone : $lead->phone,
+            'password' => Hash::make($password),
+            'institute_id' => $instituteId,
+            'batch_id' => $request->batch_id,
+            'standard' => $request->standard,
+            'dob' => $request->dob,
+            'guardian_name' => $request->guardian_name,
+            'monthly_fee' => $request->monthly_fee,
+            'status' => 1,
+            'id_hash' => Str::random(32),
+            'address_line_1' => $lead->address,
+        ]);
+
+        $lead->status = 'Converted';
+        $lead->converted_student_id = $student->id;
+        $lead->converted_at = now();
+        $lead->save();
+
+        LeadNote::create([
+            'lead_id' => $lead->id,
+            'institute_id' => $instituteId,
+            'title' => 'Converted to Student',
+            'note' => "Lead was converted into an enrolled student ({$student->name})."
+        ]);
+
+        try {
+            \App\Services\InstituteMailService::send(
+                $institute,
+                $student->email,
+                new \App\Mail\StudentAddedMail(
+                    $student->name,
+                    $student->email,
+                    $password,
+                    $institute->institute_name,
+                    $institute->logo
+                )
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to send welcome email to converted student: " . $e->getMessage());
+        }
+
+        return response()->json([
+            'message' => 'Lead converted to student successfully.',
+            'data' => [
+                'lead' => $lead->load('notes'),
+                'student' => $student,
+            ]
         ]);
     }
 }

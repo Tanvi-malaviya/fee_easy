@@ -20,21 +20,27 @@ class InstituteMailService
      * @param \Illuminate\Mail\Mailable $mailable
      * @return mixed
      */
-    public static function send(?Institute $institute, $to, $mailable)
+    public static function send(?Institute $institute, $to, $mailable, $cc = null)
     {
         if ($institute && $institute->hasCustomSmtp()) {
             try {
                 $mailer = static::createInstituteMailer($institute);
-                return $mailer->to($to)->send($mailable);
+                $pending = $mailer->to($to);
+                if ($cc) {
+                    $pending = $pending->cc($cc);
+                }
+                return $pending->send($mailable);
             } catch (\Throwable $e) {
                 Log::warning("Institute [ID: {$institute->id} - {$institute->name}] custom SMTP failed: " . $e->getMessage() . ". Falling back to default system SMTP.");
                 // Automatic fallback to system default SMTP
-                return Mail::to($to)->send($mailable);
+                $pending = Mail::to($to);
+                return $cc ? $pending->cc($cc)->send($mailable) : $pending->send($mailable);
             }
         }
 
         // Default system SMTP
-        return Mail::to($to)->send($mailable);
+        $pending = Mail::to($to);
+        return $cc ? $pending->cc($cc)->send($mailable) : $pending->send($mailable);
     }
 
     /**

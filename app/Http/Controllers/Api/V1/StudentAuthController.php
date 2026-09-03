@@ -28,6 +28,21 @@ class StudentAuthController extends Controller
             ], 401);
         }
 
+        if ($student->is_login_blocked) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your account login has been blocked. Please contact your institute.',
+            ], 403);
+        }
+
+        $inactiveValues = ['inactive', '0', 0, 'blocked', 'suspended'];
+        if (in_array($student->status, $inactiveValues, true)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your account is currently inactive. Please contact your institute.',
+            ], 403);
+        }
+
         $accessToken = $student->createToken('access_token', ['access-api'], now()->addHour())->plainTextToken;
         $refreshToken = $student->createToken('refresh_token', ['refresh-token'], now()->addHours(24))->plainTextToken;
 

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Staff extends Model
+class Staff extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'staff';
 
@@ -26,6 +28,8 @@ class Staff extends Model
         'password',
         'institute_id',
         'fcm_token',
+        'must_change_password',
+        'is_login_blocked',
     ];
 
     protected $appends = ['profile_url'];
@@ -33,6 +37,13 @@ class Staff extends Model
     protected $hidden = [
         'profile_image',
         'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'password' => 'hashed',
+        'must_change_password' => 'boolean',
+        'is_login_blocked' => 'boolean',
     ];
 
     public function getProfileUrlAttribute()
@@ -75,6 +86,21 @@ class Staff extends Model
     public function salaries()
     {
         return $this->hasMany(StaffSalary::class);
+    }
+
+    public function batches()
+    {
+        return $this->hasMany(Batch::class);
+    }
+
+    public function homeworks()
+    {
+        return $this->hasMany(Homework::class);
+    }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
     }
 
     /**

@@ -640,6 +640,32 @@ class StudentController extends Controller
     }
 
     /**
+     * Block or unblock a student's portal/app login. Blocking also revokes
+     * any active Sanctum tokens so an already-logged-in session is cut off
+     * on its next request instead of waiting for the token to expire.
+     */
+    public function toggleBlock(Request $request, Student $student)
+    {
+        $institute = Auth::guard('institute')->user();
+        if ($student->institute_id !== $institute->id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $blocked = $request->boolean('blocked');
+        $student->update(['is_login_blocked' => $blocked]);
+
+        if ($blocked) {
+            $student->tokens()->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $blocked ? 'Student login has been blocked.' : 'Student login has been unblocked.',
+            'data' => $student->fresh(),
+        ]);
+    }
+
+    /**
      * Download a sample CSV template for student import.
      */
     public function importSample()

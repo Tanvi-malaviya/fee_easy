@@ -74,6 +74,21 @@ class CheckSubscriptionExpiry extends Command
                     'days_remaining' => (string) $days,
                 ]);
             }
+
+            // Email a renewal reminder at a few key milestones rather than every day, to avoid inbox spam.
+            if (!empty($institute->email) && in_array($days, [7, 3, 1, 0], true)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($institute->email)->send(new \App\Mail\SubscriptionRenewalReminderMail(
+                        $institute->institute_name ?? $institute->name ?? 'Institute',
+                        $planName,
+                        $formattedDate,
+                        $days,
+                        route('institute.plans.index')
+                    ));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to send renewal reminder email to institute #{$institute->id}: " . $e->getMessage());
+                }
+            }
         }
 
         // 2. Find all active subscriptions that should have expired by now

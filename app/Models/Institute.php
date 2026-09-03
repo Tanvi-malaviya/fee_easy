@@ -113,6 +113,30 @@ class Institute extends Authenticatable
         return $this->hasOne(InstituteWhiteLabel::class);
     }
 
+    public function addOnPurchases()
+    {
+        return $this->hasMany(InstituteAddOnPurchase::class);
+    }
+
+    public function hasAddOn(string $slug): bool
+    {
+        return $this->addOnPurchases()
+            ->where('status', InstituteAddOnPurchase::STATUS_ACTIVE)
+            ->whereHas('addOn', fn ($q) => $q->where('slug', $slug))
+            ->exists();
+    }
+
+    public function addOnQuota(string $slug): ?float
+    {
+        $purchase = $this->addOnPurchases()
+            ->where('status', InstituteAddOnPurchase::STATUS_ACTIVE)
+            ->whereHas('addOn', fn ($q) => $q->where('slug', $slug))
+            ->with('addOn')
+            ->first();
+
+        return $purchase?->addOn?->quota_value;
+    }
+
     public function activeSubscription()
     {
         return $this->subscriptions()

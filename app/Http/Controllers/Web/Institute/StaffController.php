@@ -83,7 +83,8 @@ class StaffController extends Controller
                     $departmentNames,
                     $institute->institute_name,
                     $institute->logo,
-                    $plainPassword
+                    $plainPassword,
+                    route('teacher.login')
                 )
             );
         } catch (\Exception $e) {
@@ -196,5 +197,134 @@ class StaffController extends Controller
         }
 
         return redirect()->route('institute.staff.show', $staff->id)->with('success', 'Staff updated successfully');
+    }
+
+    /**
+     * Generate a new random password for the staff member and email it to them.
+     */
+    public function sendPasswordEmail($id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+
+        $password = \Illuminate\Support\Str::random(8);
+        $staff->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($password),
+            'must_change_password' => true,
+        ]);
+
+        try {
+            $roleName = $staff->role ? $staff->role->name : 'Staff';
+            $departmentNames = $staff->departments->pluck('name')->implode(', ') ?: ($staff->department ? $staff->department->name : 'N/A');
+
+            \App\Services\InstituteMailService::send(
+                $institute,
+                $staff->email,
+                new \App\Mail\StaffAddedMail(
+                    $staff->full_name,
+                    $staff->email,
+                    $staff->employee_id,
+                    $roleName,
+                    $departmentNames,
+                    $institute->institute_name,
+                    $institute->logo,
+                    $password,
+                    route('teacher.login')
+                )
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send staff password email: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password was updated, but failed to send the email. Please check mail settings.'
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'A new password has been generated and emailed to the staff member.'
+        ]);
+    }
+
+    /**
+     * Directly reset the staff member's password from the admin panel.
+     */
+    public function resetPasswordDirect(Request $request, $id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+
+        $request->validate([
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[\W_]/',
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 15 characters.',
+            'password.regex' => 'Password must include an uppercase letter, a lowercase letter, a number, and a special character.',
+        ]);
+
+        $staff->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'must_change_password' => true,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Staff password has been reset successfully!'
+        ]);
+    }
+
+    /**
+     * Change the staff member's login email from the admin panel.
+     */
+    public function changeEmail(Request $request, $id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+
+        $request->validate([
+            'email' => 'required|email:rfc|unique:staff,email,' . $staff->id,
+        ]);
+
+        $staff->update(['email' => $request->email]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Staff login email updated successfully!',
+            'data' => $staff->fresh(),
+        ]);
+    }
+
+    /**
+     * Block or unblock the staff member's portal login. Blocking also
+     * revokes any active Sanctum tokens so an already-logged-in mobile
+     * session is cut off immediately (the web session is caught by the
+     * active_teacher middleware on the staff member's next request).
+     */
+    public function toggleBlock(Request $request, $id)
+    {
+        $institute = Auth::guard('institute')->user();
+        $staff = Staff::where('institute_id', $institute->id)->findOrFail($id);
+
+        $blocked = $request->boolean('blocked');
+        $staff->update(['is_login_blocked' => $blocked]);
+
+        if ($blocked) {
+            $staff->tokens()->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $blocked ? 'Staff login has been blocked.' : 'Staff login has been unblocked.',
+            'data' => $staff->fresh(),
+        ]);
     }
 }

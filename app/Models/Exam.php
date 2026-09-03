@@ -13,6 +13,7 @@ class Exam extends Model
     protected $fillable = [
         'institute_id',
         'batch_id',
+        'staff_id',
         'title',
         'subject',
         'exam_type',
@@ -47,6 +48,11 @@ class Exam extends Model
     public function batch()
     {
         return $this->belongsTo(Batch::class);
+    }
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
     }
 
     public function marks()

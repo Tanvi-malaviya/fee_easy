@@ -116,6 +116,46 @@ roadmap). See each section below for exactly what was and wasn't verified.
 - [ ] Web: give the institute-facing `institute/plans` page (or a dedicated page) a real self-serve purchase button — today it only *displays* the add-on (pricing/description), matching the mobile app's now-built purchase flow requires the same on web for iOS users and for institutes who'd rather buy from the panel directly
 - Not on-device tested this session (standing instruction to skip device testing for the remainder of this roadmap)
 
+**Follow-up: generic Add-ons catalog** — done 2026-09-02, requested after White-Label shipped, so
+future paid add-ons don't each need a hand-rolled settings block. Full plan at
+`~/.claude/plans/scalable-leaping-sunset.md`. Institute-facing UX is deliberately simple per
+explicit confirmation: institutes only ever see a browsable list and can purchase — enabling or
+disabling an add-on catalog-wide is admin-only, there is no institute-facing toggle. White Label
+is the only real entry for now; more can be added later without new code for the common cases.
+- [x] New `AddOn` catalog model/table (admin-manageable at `/admin/addons`, own CRUD page —
+  create/edit/delete/status-toggle, mirrors the existing `PlanController` pattern) — `kind` is
+  `flag` (purchase = yes/no entitlement), `quota` (purchase sets a numeric limit), or `custom`
+  (needs its own backend code, e.g. White Label's branding-review flow — the catalog only
+  manages its pricing/listing, kind is immutable once created).
+- [x] Consolidated four places that had each independently rebuilt the White Label pricing JSON
+  with slightly different shapes/hardcoded feature lists (`InstituteWhiteLabelController`,
+  `Api/V1/PlanController`, `InstituteSubscriptionController`, `Web/PlanController`) onto one
+  `AddOn::toApiArray()`. Removed the second of two independent admin write paths for the same
+  settings (`PlanController::updateAddon()` + its form on the Plans page, and the five
+  `mobile_app_whitelabel_*` fields on the general Settings page) — pricing now has exactly one
+  edit surface. White Label's purchase/verify/branding endpoints are untouched; only where their
+  pricing config comes from changed. A migration seeds the catalog from whatever was already
+  configured, so nothing reset.
+- [x] Generic institute-facing API (`GET /institute/addons`, `POST /institute/addons/{id}/
+  create-order`, `.../verify-payment`) for `flag`/`quota` kind add-ons — reuses the same
+  Razorpay-invoice + HMAC-verify pattern as White Label's own endpoints (not extracted into a
+  shared helper, only two call sites). `custom`-kind add-ons 422 here; the app deep-links those
+  straight to their own dedicated screen instead.
+- [x] `Institute::hasAddOn(slug)` / `addOnQuota(slug)` helpers — the "zero new backend code"
+  payoff for a future `flag`/`quota` add-on: check `hasAddOn('some_slug')` at the one point that
+  needs to gate on it, nothing else to build.
+- [x] App: new `AddOnsScreen` (institute) lists all enabled add-ons; a `custom`-kind card (White
+  Label) deep-links to the existing untouched `WhiteLabelScreen`, `flag`/`quota` cards get a
+  small generic Razorpay "Buy Now" flow. Profile's "White Label" nav card is now "Add-ons" and
+  points here; White Label's own app code was not touched.
+- **Verified live** (temp server + real seeded institute, cleaned up after): regression-checked
+  all three swapped read-sites return byte-identical JSON to pre-swap; admin CRUD incl. both
+  delete guards (blocks deleting a `custom`-kind row, blocks deleting a row with purchases);
+  full generic purchase flow end-to-end via a manually-computed valid HMAC signature (Razorpay
+  itself isn't reachable from this local `.env` — same pre-existing limitation White Label's own
+  `createOrder()` already had, not a regression); confirmed `hasAddOn()` flips true post-verify.
+  Not on-device tested (same standing instruction).
+
   **Note — a mistake made and fully reverted along the way:** first attempt made `primaryBrand`/`primaryBrandLight` non-`const` for runtime mutation. A single-line grep for `const.*AppColors\.(primaryBrand|primaryBrandLight)` missed 113 compile errors caused by multi-line/nested `const` contexts `flutter analyze` caught. Fully reverted (colors back to `static const`, all 15+ call sites' `const` restored) and verified clean via `git diff` + `flutter analyze` before switching to the `int.fromEnvironment` approach actually used above.
 
 **Birthdays** — done 2026-09-02 (endpoints verified live via curl against a local server + real seeded

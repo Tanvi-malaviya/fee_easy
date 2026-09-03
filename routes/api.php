@@ -53,9 +53,19 @@ use App\Http\Controllers\Api\V1\NoteChecklistController;
 use App\Http\Controllers\Api\V1\NoteImageController;
 use App\Http\Controllers\Api\V1\InstituteTeacherController;
 use App\Http\Controllers\Api\V1\InstituteExpenseController;
-use App\Http\Controllers\Api\V1\InstituteLeadController;
 use App\Http\Controllers\Api\V1\InstituteProfileController;
 use App\Http\Controllers\Api\V1\PublicVerificationController;
+use App\Http\Controllers\Api\V1\TeacherAuthController;
+use App\Http\Controllers\Api\V1\TeacherProfileController;
+use App\Http\Controllers\Api\V1\TeacherBatchController;
+use App\Http\Controllers\Api\V1\TeacherStudentController;
+use App\Http\Controllers\Api\V1\TeacherAttendanceController;
+use App\Http\Controllers\Api\V1\TeacherSelfAttendanceController;
+use App\Http\Controllers\Api\V1\TeacherHomeworkController;
+use App\Http\Controllers\Api\V1\TeacherExamController;
+use App\Http\Controllers\Api\V1\TeacherTimetableController;
+use App\Http\Controllers\Api\V1\TeacherFeesController;
+use App\Http\Controllers\Api\V1\TeacherSalaryController;
 
 use App\Http\Controllers\Api\DemoRequestController;
 use App\Http\Controllers\Api\StaffController;
@@ -158,6 +168,14 @@ Route::prefix('v1')->group(function () {
                 Route::post('/branding', [\App\Http\Controllers\Api\V1\InstituteWhiteLabelController::class, 'updateBranding']);
             });
 
+            // Generic add-ons catalog (flag/quota kind add-ons — custom-kind
+            // ones like White Label keep using their own dedicated endpoints above)
+            Route::prefix('addons')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Api\V1\InstituteAddOnController::class, 'index']);
+                Route::post('/{addOn}/create-order', [\App\Http\Controllers\Api\V1\InstituteAddOnController::class, 'createOrder']);
+                Route::post('/{addOn}/verify-payment', [\App\Http\Controllers\Api\V1\InstituteAddOnController::class, 'verifyPayment']);
+            });
+
             // Clean Rich Notes Module
             Route::prefix('notes')->group(function () {
                 Route::get('/', [NoteController::class, 'index']);
@@ -175,16 +193,15 @@ Route::prefix('v1')->group(function () {
             Route::get('/note-categories', [NoteCategoryController::class, 'index']);
             Route::post('/note-categories', [NoteCategoryController::class, 'store']);
 
-            // Teacher Management & Attendance
+            // Legacy Teacher roster — read-only archive. Teacher management now
+            // happens entirely through the Staff CRUD (see the /teacher/* group
+            // below and the Staff web screens); create/update/delete/mark-attendance
+            // on the old `teachers` table were retired once legacy rows were
+            // migrated into `staff` / `staff_attendances`.
             Route::prefix('teachers')->group(function () {
                 Route::get('/', [InstituteTeacherController::class, 'index']);
-                Route::post('/', [InstituteTeacherController::class, 'store']);
-                Route::put('/{id}', [InstituteTeacherController::class, 'update']);
-                Route::delete('/{id}', [InstituteTeacherController::class, 'destroy']);
-
                 Route::get('/attendance/report', [InstituteTeacherController::class, 'attendanceReport']);
                 Route::get('/attendance', [InstituteTeacherController::class, 'getAttendance']);
-                Route::post('/attendance', [InstituteTeacherController::class, 'markAttendance']);
             });
 
             Route::prefix('expenses')->group(function () {
@@ -201,14 +218,6 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [InstituteExpenseController::class, 'destroy']);
             });
 
-            // Leads Management
-            Route::prefix('leads')->group(function () {
-                Route::get('/', [InstituteLeadController::class, 'index']);
-                Route::post('/', [InstituteLeadController::class, 'store']);
-                Route::put('/{id}', [InstituteLeadController::class, 'update']);
-                Route::delete('/{id}', [InstituteLeadController::class, 'destroy']);
-            });
-
             // Birthdays
             Route::get('/birthdays', [InstituteStudentController::class, 'birthdays']);
 
@@ -217,6 +226,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/whatsapp-settings', [InstituteWhatsappSettingController::class, 'update']);
 
             Route::get('/reports/dashboard', [InstituteReportController::class, 'dashboard']);
+            Route::get('/reports/analytics', [InstituteReportController::class, 'analytics']);
             Route::get('/reports/fee', [InstituteReportController::class, 'feeReport']);
             Route::get('/reports/fee/export', [InstituteReportController::class, 'exportFeeReport']);
             Route::get('/reports/attendance', [InstituteReportController::class, 'attendanceReport']);
@@ -342,6 +352,7 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'update']);
                 Route::put('/{id}/status', [\App\Http\Controllers\Api\LeadController::class, 'updateStatus']);
                 Route::post('/{id}/notes', [\App\Http\Controllers\Api\LeadController::class, 'addNote']);
+                Route::post('/{id}/convert', [\App\Http\Controllers\Api\LeadController::class, 'convert']);
                 Route::delete('/{id}', [\App\Http\Controllers\Api\LeadController::class, 'destroy']);
             });
         });
@@ -409,6 +420,62 @@ Route::prefix('v1')->group(function () {
             Route::post('/notification-settings', [\App\Http\Controllers\Api\V1\NotificationSettingController::class, 'updateSettings']);
             Route::get('/institute', [ParentInstituteController::class, 'show']);
             Route::get('/payment-info', [ParentInstituteController::class, 'paymentInfo']);
+        });
+    });
+
+    // Teacher Auth & Self-Service Routes
+    Route::prefix('teacher')->group(function () {
+        Route::post('/login', [TeacherAuthController::class, 'login']);
+        Route::post('/forgot-password', [TeacherAuthController::class, 'sendResetPasswordEmail']);
+        Route::post('/reset-password', [TeacherAuthController::class, 'resetPassword']);
+
+        Route::middleware(['auth:sanctum,teacher', 'active_teacher'])->group(function () {
+            Route::post('/logout', [TeacherAuthController::class, 'logout']);
+            Route::post('/change-password', [TeacherAuthController::class, 'changePassword']);
+
+            Route::get('/profile', [TeacherProfileController::class, 'show']);
+            Route::post('/profile/avatar', [TeacherProfileController::class, 'updateAvatar']);
+
+            // Batches assigned to this teacher — no create/delete, ever.
+            Route::get('/batches', [TeacherBatchController::class, 'index']);
+            Route::get('/batches/{id}', [TeacherBatchController::class, 'show']);
+
+            Route::get('/batches/{batch}/students', [TeacherStudentController::class, 'index']);
+            Route::post('/batches/{batch}/students', [TeacherStudentController::class, 'store']);
+            Route::post('/batches/{batch}/students/{student}/remove', [TeacherStudentController::class, 'removeStudent']);
+
+            Route::get('/attendance', [TeacherAttendanceController::class, 'index']);
+            Route::post('/attendance', [TeacherAttendanceController::class, 'store']);
+
+            Route::get('/self-attendance/today', [TeacherSelfAttendanceController::class, 'today']);
+            Route::get('/self-attendance', [TeacherSelfAttendanceController::class, 'index']);
+            Route::post('/self-attendance', [TeacherSelfAttendanceController::class, 'store']);
+
+            Route::get('/homeworks', [TeacherHomeworkController::class, 'index']);
+            Route::post('/homeworks', [TeacherHomeworkController::class, 'store']);
+            Route::get('/homeworks/{id}', [TeacherHomeworkController::class, 'show']);
+            Route::put('/homeworks/{id}', [TeacherHomeworkController::class, 'update']);
+            Route::post('/homeworks/{id}/grades', [TeacherHomeworkController::class, 'updateGrades']);
+            Route::delete('/homeworks/{id}', [TeacherHomeworkController::class, 'destroy']);
+
+            Route::get('/exams', [TeacherExamController::class, 'index']);
+            Route::post('/exams', [TeacherExamController::class, 'store']);
+            Route::get('/exams/{id}', [TeacherExamController::class, 'show']);
+            Route::put('/exams/{id}', [TeacherExamController::class, 'update']);
+            Route::delete('/exams/{id}', [TeacherExamController::class, 'destroy']);
+            Route::get('/exams/{id}/marks', [TeacherExamController::class, 'getMarks']);
+            Route::post('/exams/{id}/marks', [TeacherExamController::class, 'saveMarks']);
+
+            Route::get('/timetable', [TeacherTimetableController::class, 'index']);
+            Route::post('/timetable', [TeacherTimetableController::class, 'store']);
+            Route::put('/timetable/{id}', [TeacherTimetableController::class, 'update']);
+            Route::delete('/timetable/{id}', [TeacherTimetableController::class, 'destroy']);
+
+            // Read-only, gated per-batch by the institute's teacher_can_view_fees toggle.
+            Route::get('/fees', [TeacherFeesController::class, 'index']);
+
+            Route::get('/salaries', [TeacherSalaryController::class, 'index']);
+            Route::get('/salaries/{id}/download', [TeacherSalaryController::class, 'download']);
         });
     });
 

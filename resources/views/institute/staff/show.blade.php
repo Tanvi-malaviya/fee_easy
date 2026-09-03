@@ -58,8 +58,30 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center sm:justify-end gap-3 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0 w-full sm:w-auto">
-                <button onclick="openEditModal()" 
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center sm:justify-end gap-3 border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0 w-full sm:w-auto flex-wrap">
+                <button onclick="sendStaffPasswordEmail({{ $staff->id }})" id="btn-staff-send-pass"
+                    class="flex items-center justify-center gap-2 px-5 py-2 border-2 border-amber-500 text-amber-500 rounded-xl hover:bg-amber-50 transition-all text-xs font-bold w-full sm:w-auto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Reset & Email Password
+                </button>
+                <button onclick="changeStaffEmail({{ $staff->id }})"
+                    class="flex items-center justify-center gap-2 px-5 py-2 border-2 border-indigo-600 text-indigo-600 rounded-xl hover:bg-indigo-50 transition-all text-xs font-bold w-full sm:w-auto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9" />
+                    </svg>
+                    Change Email
+                </button>
+                <button onclick="toggleStaffBlock({{ $staff->id }}, {{ $staff->is_login_blocked ? 'false' : 'true' }})"
+                    id="btn-staff-toggle-block"
+                    class="flex items-center justify-center gap-2 px-5 py-2 border-2 {{ $staff->is_login_blocked ? 'border-emerald-500 text-emerald-600 hover:bg-emerald-50' : 'border-rose-500 text-rose-500 hover:bg-rose-50' }} rounded-xl transition-all text-xs font-bold w-full sm:w-auto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    {{ $staff->is_login_blocked ? 'Unblock Login' : 'Block Login' }}
+                </button>
+                <button onclick="openEditModal()"
                     class="flex items-center justify-center gap-2 px-5 py-2 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition-all text-xs font-bold w-full sm:w-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -351,6 +373,83 @@
         const API_URL = "{{ url('api/v1/institute/staff') }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
         const currentStaff = @json($staff);
+
+        async function sendStaffPasswordEmail(staffId) {
+            const btn = document.getElementById('btn-staff-send-pass');
+            if (typeof toggleLoader === 'function') toggleLoader(true);
+            btn.disabled = true;
+            try {
+                const response = await fetch(`/institute/staff/${staffId}/send-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN }
+                });
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') showToast(data.message, 'success');
+                } else {
+                    if (typeof showToast === 'function') showToast(data.message || 'Failed to send password.', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                if (typeof toggleLoader === 'function') toggleLoader(false);
+            }
+        }
+
+        async function changeStaffEmail(staffId) {
+            const newEmail = prompt('Enter the new login email for this staff member:', currentStaff.email);
+            if (!newEmail) return;
+
+            if (typeof toggleLoader === 'function') toggleLoader(true);
+            try {
+                const response = await fetch(`/institute/staff/${staffId}/change-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    body: JSON.stringify({ email: newEmail })
+                });
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    const msg = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'Failed to update email.');
+                    if (typeof showToast === 'function') showToast(msg, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                if (typeof toggleLoader === 'function') toggleLoader(false);
+            }
+        }
+
+        async function toggleStaffBlock(staffId, nextBlocked) {
+            const btn = document.getElementById('btn-staff-toggle-block');
+            if (typeof toggleLoader === 'function') toggleLoader(true);
+            btn.disabled = true;
+            try {
+                const response = await fetch(`/institute/staff/${staffId}/toggle-block`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    body: JSON.stringify({ blocked: nextBlocked })
+                });
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    if (typeof showToast === 'function') showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    if (typeof showToast === 'function') showToast(data.message || 'Failed to update login status.', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                if (typeof toggleLoader === 'function') toggleLoader(false);
+            }
+        }
 
         function openDeleteModal() {
             showConfirmModal(

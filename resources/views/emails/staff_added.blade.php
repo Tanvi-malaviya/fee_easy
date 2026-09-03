@@ -44,6 +44,14 @@
         </p>
       @endif
 
+      @if(!empty($portalLoginUrl))
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
+          <tr><td align="center">
+            <a href="{{ $portalLoginUrl }}" style="display:inline-block;background:#0284c7;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">Log in to Staff Portal</a>
+          </td></tr>
+        </table>
+      @endif
+
       <p style="margin-top: 20px; color: #64748b; font-size: 13px; line-height: 1.6;">
         If you have any questions or require modifications to your profile details, please get in touch with the administration department.
       </p>

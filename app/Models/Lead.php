@@ -20,7 +20,13 @@ class Lead extends Model
         'reference',
         'referer',
         'notes',
-        'status'
+        'status',
+        'converted_student_id',
+        'converted_at',
+    ];
+
+    protected $casts = [
+        'converted_at' => 'datetime',
     ];
 
     public function notes()
@@ -31,5 +37,10 @@ class Lead extends Model
     public function institute()
     {
         return $this->belongsTo(Institute::class);
+    }
+
+    public function convertedStudent()
+    {
+        return $this->belongsTo(Student::class, 'converted_student_id');
     }
 }

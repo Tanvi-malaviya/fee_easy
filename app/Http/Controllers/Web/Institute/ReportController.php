@@ -15,4 +15,9 @@ class ReportController extends Controller
         }])->where('institute_id', $institute->id)->get();
         return view('institute.reports.index', compact('batches'));
     }
+
+    public function analytics()
+    {
+        return view('institute.reports.analytics');
+    }
 }

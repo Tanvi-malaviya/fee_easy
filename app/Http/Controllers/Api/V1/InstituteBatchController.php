@@ -128,6 +128,7 @@ class InstituteBatchController extends Controller
             'subject' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'fees' => 'required|numeric|min:0',
+            'fees_last_date' => 'required|date',
             'start_time' => 'nullable|string',
             'end_time' => 'nullable|string',
             'days' => 'required|array|min:1',
@@ -150,6 +151,7 @@ class InstituteBatchController extends Controller
             'subject' => $request->subject,
             'description' => $request->description,
             'fees' => $request->fees,
+            'fees_last_date' => $request->fees_last_date,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'days' => $request->days,
@@ -188,6 +190,7 @@ class InstituteBatchController extends Controller
             'subject' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'fees' => 'sometimes|required|numeric|min:0',
+            'fees_last_date' => 'required|date',
             'start_time' => 'nullable|string',
             'end_time' => 'nullable|string',
             'days' => 'sometimes|required|array|min:1',
@@ -195,7 +198,7 @@ class InstituteBatchController extends Controller
             'staff_id' => 'nullable|exists:staff,id,institute_id,' . $institute->id,
         ]);
 
-        $data = $request->only(['name', 'subject', 'description', 'fees', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
+        $data = $request->only(['name', 'subject', 'description', 'fees', 'fees_last_date', 'start_time', 'end_time', 'days', 'classroom', 'staff_id']);
         
         if (isset($data['days']) && is_array($data['days'])) {
             if (count($data['days']) !== count(array_unique($data['days']))) {

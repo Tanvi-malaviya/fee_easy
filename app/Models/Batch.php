@@ -16,16 +16,20 @@ class Batch extends Model
         'subject',
         'description',
         'fees',
+        'fees_last_date',
         'start_time',
         'end_time',
         'days',
         'classroom',
         'staff_id',
         'status',
+        'teacher_can_view_fees',
     ];
 
     protected $casts = [
         'days' => 'array',
+        'teacher_can_view_fees' => 'boolean',
+        'fees_last_date' => 'date:Y-m-d',
     ];
 
     protected $hidden = [
