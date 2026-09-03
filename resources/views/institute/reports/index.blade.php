@@ -129,6 +129,28 @@
                             View Report
                         </button>
                     </div>
+
+                    <!-- Business Analytics Card -->
+                    <div
+                        class="bg-white p-6 md:p-7 rounded-xl border border-slate-100/50 shadow-xl shadow-slate-200/40 flex flex-col justify-between hover:shadow-2xl hover:border-slate-200/80 transition-all duration-300">
+                        <div>
+                            <div
+                                class="h-12 w-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 mb-3 shadow-sm">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight mb-2">Business
+                                Analytics</h3>
+                            <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed mb-4">Revenue trends,
+                                fee collection rate, and batch-wise attendance & dropout at a glance.</p>
+                        </div>
+                        <a href="{{ route('institute.reports.analytics') }}"
+                            class="block w-full py-2.5 bg-[#ff6c00] hover:bg-[#e05f00] text-white text-xs md:text-sm font-extrabold rounded-xl shadow-md shadow-orange-500/20 transition-all text-center tracking-wider">
+                            View Analytics
+                        </a>
+                    </div>
                 </div>
             </div>
 

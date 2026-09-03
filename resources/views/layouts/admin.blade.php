@@ -281,7 +281,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                     </svg>
-                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">All Subscriptions</span>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Renewals & Expiry</span>
                 </a>
 
                 <a href="{{ route('departments.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('departments.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
@@ -307,6 +307,21 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Manage Plans</span>
+                </a>
+
+                <a href="{{ route('addons.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('addons.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">Add-ons</span>
+                </a>
+
+                <a href="{{ route('whitelabel.index') }}" class="flex items-center px-4 py-2.5 {{ request()->routeIs('whitelabel.*') ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-600' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 flex-shrink-0" :class="{'mr-3': !sidebarCollapsed}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h9a2 2 0 012 2v4m-4 12l3-3m0 0l3-3m-3 3H10m9-3a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="sidebar-text text-[13px] font-medium whitespace-nowrap">White Label</span>
                 </a>
 
                 <div x-show="!sidebarCollapsed" class="sidebar-text px-4 mt-8 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">

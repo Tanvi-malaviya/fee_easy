@@ -15,6 +15,7 @@ class Homework extends Model
     protected $fillable = [
         'batch_id',
         'institute_id',
+        'staff_id',
         'title',
         'description',
         'due_date',
@@ -37,6 +38,11 @@ class Homework extends Model
     public function institute()
     {
         return $this->belongsTo(Institute::class);
+    }
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
     }
 
     public function submissions()

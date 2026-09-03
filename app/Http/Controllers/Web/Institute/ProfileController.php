@@ -109,6 +109,13 @@ class ProfileController extends Controller
     {
         $institute = Auth::guard('institute')->user();
 
+        if (!$institute->hasAddOn(\App\Models\AddOn::SLUG_WHITE_LABEL)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Custom email sending is available with the White Label add-on. Please purchase it to configure your own email credentials.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'is_custom_smtp_enabled' => ['nullable', 'boolean'],
             'mail_host' => ['nullable', 'string', 'max:255'],
@@ -140,6 +147,13 @@ class ProfileController extends Controller
     public function testSmtp(Request $request)
     {
         $institute = Auth::guard('institute')->user();
+
+        if (!$institute->hasAddOn(\App\Models\AddOn::SLUG_WHITE_LABEL)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Custom email sending is available with the White Label add-on. Please purchase it to configure your own email credentials.',
+            ], 403);
+        }
 
         $request->validate([
             'test_email' => ['required', 'email'],

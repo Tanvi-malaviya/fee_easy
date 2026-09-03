@@ -17,5 +17,11 @@ class DemoRequest extends Model
         'email',
         'designation',
         'status',
+        'nurture_stage',
+        'nurture_last_sent_at',
+    ];
+
+    protected $casts = [
+        'nurture_last_sent_at' => 'datetime',
     ];
 }

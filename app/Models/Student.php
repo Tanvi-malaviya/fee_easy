@@ -40,6 +40,8 @@ class Student extends Authenticatable
         'notification_settings',
         'otp',
         'otp_expires_at',
+        'is_login_blocked',
+        'last_low_attendance_alert_at',
     ];
 
     protected $hidden = [
@@ -52,6 +54,8 @@ class Student extends Authenticatable
         'password' => 'hashed',
         'notification_settings' => 'array',
         'otp_expires_at' => 'datetime',
+        'is_login_blocked' => 'boolean',
+        'last_low_attendance_alert_at' => 'datetime',
     ];
 
     public function institute()

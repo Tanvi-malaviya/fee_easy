@@ -106,4 +106,67 @@ class InstituteTimetableController extends Controller
             'data' => $timetable->load(['batch', 'staff'])
         ], 201);
     }
+
+    /**
+     * Update a schedule slot via API.
+     */
+    public function update(Request $request, $id)
+    {
+        $institute = $request->user();
+
+        $timetable = Timetable::where('id', $id)
+            ->where('institute_id', $institute->id)
+            ->first();
+
+        if (!$timetable) {
+            return response()->json(['status' => 'error', 'message' => 'Schedule not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'batch_id' => 'required|exists:batches,id',
+            'staff_id' => 'nullable|exists:staff,id',
+            'subject' => 'required|string|max:150',
+            'day_of_week' => 'required|string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'room_no' => 'nullable|string|max:100',
+            'description' => 'nullable|string|max:500',
+            'status' => 'nullable|string|in:active,cancelled',
+        ]);
+
+        $validated['start_time'] = Carbon::parse($validated['start_time'])->format('H:i:s');
+        $validated['end_time'] = Carbon::parse($validated['end_time'])->format('H:i:s');
+        $validated['day_of_week'] = strtolower($validated['day_of_week']);
+
+        $timetable->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Schedule updated successfully.',
+            'data' => $timetable->fresh(['batch', 'staff'])
+        ]);
+    }
+
+    /**
+     * Delete a schedule slot via API.
+     */
+    public function destroy(Request $request, $id)
+    {
+        $institute = $request->user();
+
+        $timetable = Timetable::where('id', $id)
+            ->where('institute_id', $institute->id)
+            ->first();
+
+        if (!$timetable) {
+            return response()->json(['status' => 'error', 'message' => 'Schedule not found.'], 404);
+        }
+
+        $timetable->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Lecture slot deleted successfully.'
+        ]);
+    }
 }

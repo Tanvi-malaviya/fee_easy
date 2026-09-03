@@ -1,4 +1,4 @@
-<x-admin-layout title="Subscription Management">
+<x-admin-layout title="Renewals & Expiry">
     <style>
         /* Hide number input spinners */
         input::-webkit-outer-spin-button,
@@ -18,7 +18,7 @@
             <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-fit mb-6 border border-slate-200/50 shadow-inner">
                 <button onclick="switchTab('all')" id="tab-all" class="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 bg-white text-slate-800 shadow-sm border border-slate-200/40">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-                    All Subscriptions
+                    Plan &amp; Expiry
                 </button>
                 <button onclick="switchTab('requests')" id="tab-requests" class="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 text-slate-500 hover:text-slate-700">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
@@ -199,6 +199,13 @@
                     </div>
 
                     <div class="flex items-center gap-2">
+                        <a href="{{ route('subscriptions.export', request()->query()) }}"
+                            class="no-loader inline-flex items-center px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 bg-white hover:bg-gray-50 focus:outline-none transition whitespace-nowrap">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Export CSV
+                        </a>
                         <button type="button" @click="$dispatch('open-modal', 'assign-plan')"
                             class="inline-flex items-center px-6 py-2.5 border border-transparent rounded-xl shadow-lg shadow-primary/20 text-sm font-bold text-white bg-primary hover:opacity-90 focus:outline-none transition transform active:scale-95 whitespace-nowrap">
                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,11 +213,6 @@
                             </svg>
                             Assign New Plan
                         </button>
-                        <!-- @if(request()->has('search') || request()->has('status'))
-                            <a href="{{ route('subscriptions.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition">
-                                Clear
-                            </a>
-                        @endif -->
                     </div>
                 </form>
             </div>
@@ -326,7 +328,7 @@
                                                      
                                                      <form id="cancelSubscriptionForm-{{ $subscription->id }}" action="{{ route('subscriptions.cancel', $subscription) }}" method="POST" class="inline">
                                                          @csrf @method('PATCH')
-                                                         <button type="button" title="Cancel Subscription"
+                                                         <button type="button" title="Suspend Access"
                                                              onclick="confirmCancelSubscription('{{ route('subscriptions.cancel', $subscription) }}')"
                                                              class="no-loader inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition transform active:scale-95">
                                                              <!-- X / Cancel icon -->
@@ -538,14 +540,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-1">Cancel Subscription?</h3>
-                    <p class="text-[10px] text-gray-500 font-medium px-4">This institute will lose all access at the end of their current billing cycle. Are you sure you want to proceed?</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Suspend Access?</h3>
+                    <p class="text-[10px] text-gray-500 font-medium px-4">This institute will lose access immediately, regardless of days remaining on their current plan. This doesn't stop any billing — there is none — it only blocks access early. Are you sure you want to proceed?</p>
                 </div>
                 <div class="mt-6 flex items-center gap-3">
                     <button type="button" onclick="closeCancelModal()" class="flex-1 py-2.5 text-[10px] font-bold text-gray-400 hover:text-gray-600 transition uppercase tracking-widest border border-gray-100 rounded-xl">Cancel</button>
                     <form id="cancelSubForm" method="POST" action="" class="flex-1">
                         @csrf @method('PATCH')
-                        <button type="submit" class="w-full py-2.5 text-[10px] font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition uppercase tracking-widest">Yes, Cancel</button>
+                        <button type="submit" class="w-full py-2.5 text-[10px] font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition uppercase tracking-widest">Yes, Suspend</button>
                     </form>
                 </div>
             </div>

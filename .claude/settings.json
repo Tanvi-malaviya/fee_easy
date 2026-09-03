@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -A3 'Blueprint $table')",
+      "Bash(php -l app/Console/Commands/SendFeeReminders.php)",
+      "Bash(php -l app/Http/Controllers/Api/V1/InstituteBatchController.php)",
+      "Bash(php -l app/Models/Batch.php)",
+      "Bash(pkill -f \"artisan serve --port=8124\")",
+      "Bash(php -l app/Http/Controllers/Web/Institute/ProfileController.php)",
+      "Bash(pkill -f \"artisan serve --port=8125\")",
+      "Bash(php -l app/Models/Institute.php)",
+      "Bash(grep -v \"^\\\\s*$\")"
+    ]
+  }
+}

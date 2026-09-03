@@ -153,6 +153,20 @@
                                 </div>
 
                                 <div class="flex items-center gap-2 shrink-0">
+                                    <button id="convert-lead-btn" onclick="openConvertModal()"
+                                        class="px-4 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7zM19 8v4m2-2h-4" />
+                                        </svg>
+                                        Convert to Student
+                                    </button>
+                                    <a id="converted-student-link" href="#" target="_blank"
+                                        class="hidden px-4 py-1.5 bg-emerald-50 border-2 border-emerald-600 text-emerald-700 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all items-center gap-2">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        View Student
+                                    </a>
                                     <button onclick="editLead()"
                                         class="px-4 py-1.5 bg-white border-2 border-[#007B8A] text-[#007B8A] rounded-xl text-xs font-bold hover:bg-[#007B8A]/5 transition-all flex items-center gap-2">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -452,8 +466,120 @@
                             document.getElementById('detail-date').textContent = lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
                             document.getElementById('lead-avatar').textContent = lead.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                             renderTimeline(lead.notes);
+                            updateConvertUI(lead);
                         }
                     } catch (error) { console.error(error); }
+                }
+
+                function updateConvertUI(lead) {
+                    const convertBtn = document.getElementById('convert-lead-btn');
+                    const viewStudentLink = document.getElementById('converted-student-link');
+                    if (!convertBtn || !viewStudentLink) return;
+
+                    if (lead.converted_student_id) {
+                        convertBtn.classList.add('hidden');
+                        viewStudentLink.classList.remove('hidden');
+                        viewStudentLink.classList.add('inline-flex');
+                        viewStudentLink.href = `/institute/students/${lead.converted_student_id}`;
+                    } else {
+                        convertBtn.classList.remove('hidden');
+                        viewStudentLink.classList.add('hidden');
+                        viewStudentLink.classList.remove('inline-flex');
+                    }
+                }
+
+                let convertBatchesLoaded = false;
+                async function loadConvertBatches() {
+                    if (convertBatchesLoaded) return;
+                    const select = document.getElementById('convert-batch-select');
+                    try {
+                        const response = await fetch('/api/v1/institute/batches', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN } });
+                        const result = await response.json();
+                        const batches = Array.isArray(result.data) ? result.data : (result.data?.items || []);
+                        batches.forEach(batch => {
+                            const opt = document.createElement('option');
+                            opt.value = batch.id;
+                            opt.textContent = batch.name || batch.batch_name || `Batch #${batch.id}`;
+                            select.appendChild(opt);
+                        });
+                        convertBatchesLoaded = true;
+                    } catch (error) { console.error('Failed to load batches:', error); }
+                }
+
+                function openConvertModal() {
+                    if (!selectedLeadId) return;
+                    const lead = selectedLeadData || currentLeads.find(l => l.id == selectedLeadId);
+                    if (!lead) return;
+
+                    loadConvertBatches();
+
+                    document.getElementById('convert-lead-name-value').textContent = lead.full_name;
+                    document.getElementById('convert-form').reset();
+                    document.getElementById('convert-error').classList.add('hidden');
+
+                    const modal = document.getElementById('convert-modal');
+                    const content = document.getElementById('convert-modal-content');
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+
+                function closeConvertModal() {
+                    const modal = document.getElementById('convert-modal');
+                    const content = document.getElementById('convert-modal-content');
+                    content.classList.add('scale-95', 'opacity-0');
+                    content.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                }
+
+                async function saveConvert(event) {
+                    event.preventDefault();
+                    if (!selectedLeadId) return;
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+                    const saveBtn = document.getElementById('save-convert-btn');
+                    const originalContent = saveBtn.innerHTML;
+                    const errorDiv = document.getElementById('convert-error');
+
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<div class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>';
+                    if (errorDiv) errorDiv.classList.add('hidden');
+
+                    try {
+                        const response = await fetch(`/api/v1/institute/leads/${selectedLeadId}/convert`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': CSRF_TOKEN
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        const result = await response.json().catch(() => ({ message: 'Server error. Please try again.' }));
+
+                        if (response.ok) {
+                            closeConvertModal();
+                            await fetchLeads(selectedLeadId);
+                        } else {
+                            if (errorDiv) {
+                                errorDiv.textContent = result.message || (result.errors ? Object.values(result.errors)[0][0] : 'Error converting lead');
+                                errorDiv.classList.remove('hidden');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Convert Error:', error);
+                        if (errorDiv) {
+                            errorDiv.textContent = 'Connection failed. Please check your internet.';
+                            errorDiv.classList.remove('hidden');
+                        }
+                    } finally {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalContent;
+                    }
                 }
 
                 function renderTimeline(notes) {

@@ -52,14 +52,66 @@ class RevenueController extends Controller
             ->orderBy('institute_name')
             ->get();
 
+        $currency = \App\Models\SystemSetting::get('currency_symbol', '₹');
+
         return view('revenue.index', compact(
             'dailyRevenue',
             'thisMonthRevenue',
             'thisYearRevenue',
-            'totalRevenue', 
+            'totalRevenue',
             'transactions',
-            'institutes'
+            'institutes',
+            'currency'
         ));
+    }
+
+    /**
+     * Export the (filtered) revenue transactions list as CSV.
+     */
+    public function export(Request $request)
+    {
+        $query = SubscriptionPayment::with('subscription.institute');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('subscription.institute', function ($q) use ($search) {
+                $q->where('institute_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('source') && $request->source !== 'all') {
+            $query->where('payment_source', $request->source);
+        }
+
+        $transactions = $query->orderBy('paid_at', 'desc')->get();
+
+        $filename = 'revenue-transactions-' . now()->format('Y-m-d') . '.csv';
+
+        $callback = function () use ($transactions) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Date', 'Institute', 'Owner', 'Plan', 'Amount', 'Source', 'Gateway', 'Transaction ID']);
+
+            foreach ($transactions as $payment) {
+                fputcsv($handle, [
+                    optional($payment->paid_at)->toDateTimeString(),
+                    $payment->subscription?->institute?->institute_name ?? 'N/A',
+                    $payment->subscription?->institute?->name ?? '',
+                    $payment->subscription?->plan_name ?? 'N/A',
+                    $payment->amount,
+                    $payment->payment_source,
+                    $payment->payment_gateway,
+                    $payment->transaction_id,
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 
     /**

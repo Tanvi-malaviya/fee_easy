@@ -158,6 +158,86 @@
     </div>
 </div>
 
+<!-- Convert Lead to Student Modal -->
+<div id="convert-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
+    <div class="flex min-h-screen items-center justify-center p-4">
+        <div onclick="closeConvertModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+        <div id="convert-modal-content"
+            class="relative w-full max-w-xl scale-95 opacity-0 bg-white rounded-xl shadow-2xl transition-all duration-300 overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-[#e05f00] via-[#ff6c00] to-[#ff9f43] flex items-center justify-between shrink-0 z-10">
+                <div>
+                    <h3 class="text-base font-bold text-white tracking-tight">Convert Lead to Student</h3>
+                    <p class="text-[11px] text-white/80 font-semibold mt-0.5" id="convert-lead-name">Enrolling <span id="convert-lead-name-value"></span></p>
+                </div>
+                <button type="button" onclick="closeConvertModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="convert-form" onsubmit="saveConvert(event)" class="p-6 pt-4 pb-1 space-y-4">
+                <div class="px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-semibold text-slate-500">
+                    Name, phone, email &amp; address are carried over from the lead automatically. Just fill in the enrollment details below.
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Standard / Grade</label>
+                        <input type="text" name="standard" required placeholder="e.g. Grade 10"
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Date of Birth</label>
+                        <input type="date" name="dob" required
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Guardian Name</label>
+                        <input type="text" name="guardian_name" required placeholder="Parent / Guardian full name"
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Batch (optional)</label>
+                        <select name="batch_id" id="convert-batch-select"
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
+                            <option value="">Assign later</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Monthly Fee (optional)</label>
+                        <input type="number" name="monthly_fee" min="0" step="0.01" placeholder="0.00"
+                            class="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-[#ff6c00] transition-all outline-none">
+                    </div>
+                </div>
+
+                <div id="convert-error"
+                    class="hidden px-4 py-2 bg-rose-50 border border-rose-100 rounded-xl text-[11px] font-bold text-rose-500 mb-2">
+                </div>
+
+                <div class="pb-2 flex items-center justify-end gap-10">
+                    <button type="button" onclick="closeConvertModal()"
+                        class="text-sm font-bold text-slate-400 hover:text-slate-600 transition-all">Cancel</button>
+                    <button type="submit" id="save-convert-btn"
+                        class="px-8 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg hover:translate-y-[-1px] active:scale-95 transition-all flex items-center justify-center gap-2 min-w-[180px]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                        Confirm &amp; Enroll
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Generic Confirmation Modal -->
 <div id="confirm-modal" class="fixed inset-0 z-[150] hidden overflow-y-auto">
     <div class="flex min-h-screen items-center justify-center p-4">

@@ -10,6 +10,46 @@
                     <div class="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg uppercase tracking-wider">Sync Active</div>
                 </div>
 
+                <div class="px-8 py-5 border-b border-gray-50">
+                    <form method="GET" action="{{ route('activity.index') }}" class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Search activity text (e.g. an institute name)..."
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition">
+                        </div>
+                        <div class="w-full md:w-48">
+                            <select name="user_id" onchange="this.form.submit()"
+                                class="block w-full pl-3 pr-10 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-white transition font-medium text-gray-700 cursor-pointer">
+                                <option value="">All Admins</option>
+                                @foreach($actors as $actor)
+                                    <option value="{{ $actor->id }}" {{ request('user_id') == $actor->id ? 'selected' : '' }}>{{ $actor->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="w-full md:w-40">
+                            <input type="date" name="date_from" value="{{ request('date_from') }}" onchange="this.form.submit()"
+                                class="block w-full pl-3 pr-2 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-white transition font-medium text-gray-700">
+                        </div>
+                        <div class="w-full md:w-40">
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" onchange="this.form.submit()"
+                                class="block w-full pl-3 pr-2 py-2.5 text-sm border border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-xl bg-white transition font-medium text-gray-700">
+                        </div>
+                        <button type="submit" class="no-loader inline-flex items-center justify-center px-5 py-2.5 bg-primary hover:opacity-90 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition whitespace-nowrap">
+                            Filter
+                        </button>
+                        @if(request()->anyFilled(['search', 'user_id', 'date_from', 'date_to']))
+                            <a href="{{ route('activity.index') }}" class="no-loader inline-flex items-center justify-center px-4 py-2.5 text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider transition whitespace-nowrap">
+                                Clear
+                            </a>
+                        @endif
+                    </form>
+                </div>
+
                 <div class="p-8">
                     <div class="relative">
                         <!-- Vertical Line -->

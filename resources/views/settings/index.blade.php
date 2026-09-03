@@ -51,49 +51,6 @@
 
                         <div class="lg:col-span-3 border-t border-gray-50 my-2"></div>
 
-                        <!-- Add-Ons: Mobile App White Label Section -->
-                        <div class="lg:col-span-1">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 rounded-md bg-orange-100 text-primary text-[10px] font-black uppercase tracking-wider">Add-On</span>
-                                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Mobile App White Label</h3>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2 leading-relaxed font-medium">Configure the one-time add-on fee for custom-branded mobile applications on Play Store & App Store. Synchronized across web and mobile apps.</p>
-                        </div>
-                        <div class="lg:col-span-2 space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <x-input-label for="mobile_app_whitelabel_price" value="White Label Price ({{ $settings['currency_symbol'] ?? '₹' }})"
-                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                    <x-text-input id="mobile_app_whitelabel_price" name="settings[mobile_app_whitelabel_price]" type="number" step="1" min="0" max="999999"
-                                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm font-bold"
-                                        value="{{ $settings['mobile_app_whitelabel_price'] ?? '5000' }}" placeholder="5000" />
-                                </div>
-                                <div>
-                                    <x-input-label for="mobile_app_whitelabel_billing_type" value="Billing Type / Frequency"
-                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                    <x-text-input id="mobile_app_whitelabel_billing_type" name="settings[mobile_app_whitelabel_billing_type]" type="text"
-                                        class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
-                                        value="{{ $settings['mobile_app_whitelabel_billing_type'] ?? 'One Time' }}" placeholder="One Time" />
-                                </div>
-                            </div>
-                            <div>
-                                <x-input-label for="mobile_app_whitelabel_title" value="Add-On Display Title"
-                                    class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                <x-text-input id="mobile_app_whitelabel_title" name="settings[mobile_app_whitelabel_title]" type="text"
-                                    class="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 px-4 text-sm"
-                                    value="{{ $settings['mobile_app_whitelabel_title'] ?? 'Mobile App White Label' }}" placeholder="Mobile App White Label" />
-                            </div>
-                            <div>
-                                <x-input-label for="mobile_app_whitelabel_description" value="Add-On Description"
-                                    class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" />
-                                <textarea id="mobile_app_whitelabel_description" name="settings[mobile_app_whitelabel_description]" rows="2"
-                                    class="w-full bg-gray-50 border-gray-100 rounded-xl p-3 text-xs text-gray-700 outline-none focus:bg-white focus:border-primary transition"
-                                    placeholder="Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.">{{ $settings['mobile_app_whitelabel_description'] ?? 'Custom branded Android & iOS Mobile Application with your institute logo, colors, and name published on Google Play Store & Apple App Store.' }}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-3 border-t border-gray-50 my-2"></div>
-
                         <!-- Version Control Section -->
                         <div class="lg:col-span-1">
                             <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Application Versions
