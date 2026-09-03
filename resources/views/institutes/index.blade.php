@@ -94,6 +94,9 @@
                             class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Status</th>
                         <th scope="col"
+                            class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Plan &amp; Health</th>
+                        <th scope="col"
                             class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             Actions</th>
                     </tr>
@@ -150,6 +153,26 @@
                                     </svg>
                                 </button>
                             </td>
+                            <td class="px-6 py-3 whitespace-nowrap">
+                                @php $sub = $institute->subscriptions->first(); @endphp
+                                @if($sub)
+                                    @php $effStatus = $sub->effective_status; @endphp
+                                    <span class="px-2 py-0.5 inline-flex text-[9px] font-bold uppercase tracking-wider rounded-md border
+                                        @if($effStatus === 'active') bg-emerald-50 text-emerald-700 border-emerald-100
+                                        @elseif($effStatus === 'expire_soon') bg-amber-50 text-amber-700 border-amber-100
+                                        @else bg-red-50 text-red-700 border-red-100 @endif">
+                                        {{ $sub->status_label }}{{ $sub->days_left !== null && $effStatus !== 'expired' ? ' · ' . $sub->days_left . 'd left' : '' }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 inline-flex text-[9px] font-bold uppercase tracking-wider rounded-md border bg-gray-50 text-gray-500 border-gray-100">No Plan</span>
+                                @endif
+                                <div class="mt-1.5">
+                                    <span class="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-{{ $institute->health['color'] }}-600">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-{{ $institute->health['color'] }}-500"></span>
+                                        {{ $institute->health['label'] }} ({{ $institute->health['score'] }})
+                                    </span>
+                                </div>
+                            </td>
                             <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-3">
                                     <a href="{{ route('institutes.show', $institute) }}"
@@ -186,7 +209,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-0">
+                            <td colspan="7" class="p-0">
                                 <x-empty-state title="No institutes found"
                                     subtitle="No institutes found matching your criteria. Try adjusting your search query or filters."
                                     icon="users" plain="true" class="py-12" />

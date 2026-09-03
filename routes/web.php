@@ -51,6 +51,7 @@ Route::middleware(array_filter([
         Route::post('institutes/{institute}/test-smtp', [App\Http\Controllers\Web\InstituteController::class, 'testSmtp'])->name('institutes.test_smtp');
 
         // Subscription Management
+        Route::get('subscriptions/export', [App\Http\Controllers\Web\SubscriptionController::class, 'export'])->name('subscriptions.export');
         Route::resource('subscriptions', App\Http\Controllers\Web\SubscriptionController::class);
         Route::patch('subscriptions/{subscription}/extend', [App\Http\Controllers\Web\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
         Route::patch('subscriptions/{subscription}/activate', [App\Http\Controllers\Web\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
@@ -73,6 +74,7 @@ Route::middleware(array_filter([
 
         // Revenue Analysis
         Route::get('revenue', [App\Http\Controllers\Web\RevenueController::class, 'index'])->name('revenue.index');
+        Route::get('revenue/export', [App\Http\Controllers\Web\RevenueController::class, 'export'])->name('revenue.export');
 
         // QR Analytics
         Route::get('qr-analytics', [App\Http\Controllers\Web\QrController::class, 'adminIndex'])->name('qr.analytics');

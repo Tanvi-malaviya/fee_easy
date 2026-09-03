@@ -37,7 +37,30 @@ class InstituteController extends Controller
             $query->where('status', $request->status);
         }
 
-        $institutes = $query->latest()->paginate(10);
+        $institutes = $query->latest()
+            ->withCount('students')
+            ->with(['subscriptions' => function ($q) {
+                $q->latest()->limit(1);
+            }])
+            ->paginate(10);
+
+        // One grouped query for 30-day fee activity across this page, instead of N+1 per row.
+        $instituteIds = $institutes->pluck('id');
+        $recentFees = \App\Models\Fee::whereIn('institute_id', $instituteIds)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->selectRaw('institute_id, SUM(paid_amount) as total')
+            ->groupBy('institute_id')
+            ->pluck('total', 'institute_id');
+
+        $institutes->getCollection()->transform(function ($institute) use ($recentFees) {
+            $institute->health = $institute->computeHealthScore(
+                $institute->students_count,
+                (float) ($recentFees[$institute->id] ?? 0),
+                $institute->subscriptions->first()
+            );
+            return $institute;
+        });
+
         return view('institutes.index', compact('institutes'));
     }
 
@@ -148,6 +171,10 @@ class InstituteController extends Controller
             'notes_count' => $institute->notes()->count(),
             'active_subscription' => $institute->subscriptions()->where('status', 'active')->first(),
         ];
+
+        $latestSubscription = $institute->subscriptions->first();
+        $recentFees = $institute->fees()->where('created_at', '>=', now()->subDays(30))->sum('paid_amount');
+        $stats['health'] = $institute->computeHealthScore($stats['students_count'], (float) $recentFees, $latestSubscription);
 
         return view('institutes.show', compact('institute', 'stats'));
     }

@@ -46,6 +46,11 @@
                                     class="w-1 h-1 rounded-full @if($institute->status == 'active') bg-emerald-500 @elseif($institute->status == 'suspended') bg-amber-500 @else bg-red-500 @endif"></span>
                                 {{ $institute->status }}
                             </span>
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider whitespace-nowrap bg-{{ $stats['health']['color'] }}-50 text-{{ $stats['health']['color'] }}-600 border border-{{ $stats['health']['color'] }}-100"
+                                title="Health score {{ $stats['health']['score'] }}/100">
+                                <span class="w-1 h-1 rounded-full bg-{{ $stats['health']['color'] }}-500"></span>
+                                {{ $stats['health']['label'] }} · {{ $stats['health']['score'] }}
+                            </span>
                         </div>
                     </div>
                     <div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</span>
@@ -96,7 +101,7 @@
         {{-- Tab Nav --}}
         <div class="bg-white border border-gray-100 rounded-xl shadow-sm mb-1.5 p-1">
             <div class="flex overflow-x-auto no-scrollbar gap-1 px-1">
-                @foreach(['subscriptions' => 'Subscriptions', 'students' => 'Students', 'staff' => 'Staff', 'batches' => 'Batches', 'financials' => 'Financials', 'leads' => 'Leads', 'updates' => 'Updates', 'notes' => 'Notes'] as $tab => $label)
+                @foreach(['subscriptions' => 'Plan & Access', 'students' => 'Students', 'staff' => 'Staff', 'batches' => 'Batches', 'financials' => 'Financials', 'leads' => 'Leads', 'updates' => 'Updates', 'notes' => 'Notes'] as $tab => $label)
                     <button @click="activeTab = '{{ $tab }}'"
                         :class="activeTab === '{{ $tab }}' ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50/50'"
                         class="px-5 py-2 border-0 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all whitespace-nowrap focus:outline-none">{{ $label }}</button>
@@ -111,7 +116,7 @@
             <div x-show="activeTab === 'subscriptions'" style="display:none">
                 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="p-4 border-b border-gray-50 flex items-center justify-between">
-                        <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Subscription History</h4>
+                        <h4 class="text-sm font-black text-gray-900 uppercase tracking-widest">Plan Purchase History</h4>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">

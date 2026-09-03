@@ -198,6 +198,48 @@ class Institute extends Authenticatable
         ];
     }
 
+    /**
+     * Simple 0-100 health score used to flag at-risk institutes on the admin
+     * Institutes list/detail pages. Weighted: 40% plan validity remaining,
+     * 30% recent (30-day) fee-collection activity, 30% student base size.
+     * Capped at 25 once access has lapsed (expired/cancelled/no plan), since
+     * a lapsed institute is "at risk" regardless of its other signals.
+     *
+     * @param int $studentsCount total students on this institute
+     * @param float $recentFeeAmount fee amount collected in the last 30 days
+     * @param Subscription|null $subscription the institute's latest subscription
+     */
+    public function computeHealthScore(int $studentsCount, float $recentFeeAmount, ?Subscription $subscription): array
+    {
+        $effectiveStatus = $subscription?->effective_status;
+
+        $expiryScore = 0;
+        if ($subscription && in_array($effectiveStatus, [Subscription::STATUS_ACTIVE, Subscription::STATUS_EXPIRE_SOON], true)) {
+            $expiryScore = min(1, max(0, ($subscription->days_left ?? 0) / 60)) * 40;
+        }
+
+        $activityScore = $recentFeeAmount > 0 ? 30 : 0;
+        $sizeScore = min(1, $studentsCount / 50) * 30;
+
+        $score = (int) round($expiryScore + $activityScore + $sizeScore);
+
+        $lapsed = !$subscription || in_array($effectiveStatus, [Subscription::STATUS_EXPIRED, Subscription::STATUS_CANCELLED], true);
+        if ($lapsed) {
+            $score = min($score, 25);
+        }
+
+        $band = $score >= 70 ? 'healthy' : ($score >= 40 ? 'watch' : 'at_risk');
+        $labels = ['healthy' => 'Healthy', 'watch' => 'Watch', 'at_risk' => 'At Risk'];
+        $colors = ['healthy' => 'emerald', 'watch' => 'amber', 'at_risk' => 'red'];
+
+        return [
+            'score' => $score,
+            'band' => $band,
+            'label' => $labels[$band],
+            'color' => $colors[$band],
+        ];
+    }
+
     public function students()
     {
         return $this->hasMany(Student::class);

@@ -70,6 +70,62 @@ class SubscriptionController extends Controller
     }
 
     /**
+     * Export the (filtered) subscriptions list as CSV.
+     */
+    public function export(Request $request)
+    {
+        $query = Subscription::with('institute');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('institute', function ($q) use ($search) {
+                $q->where('institute_name', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $status = $request->status;
+            if ($status === 'expired') {
+                $query->where('end_date', '<', now());
+            } else if ($status === 'active') {
+                $query->where('status', 'active')->where('end_date', '>=', now());
+            } else {
+                $query->where('status', '=', $status);
+            }
+        }
+
+        $subscriptions = $query->orderBy('end_date', 'asc')->get();
+
+        $filename = 'renewals-expiry-' . now()->format('Y-m-d') . '.csv';
+
+        $callback = function () use ($subscriptions) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Institute', 'Owner', 'Plan', 'Amount', 'Start Date', 'End Date', 'Days Left', 'Status']);
+
+            foreach ($subscriptions as $sub) {
+                fputcsv($handle, [
+                    $sub->institute?->institute_name ?? 'Deleted Institute',
+                    $sub->institute?->name ?? '',
+                    $sub->plan_name,
+                    $sub->amount,
+                    optional($sub->start_date)->toDateString(),
+                    optional($sub->end_date)->toDateString(),
+                    $sub->days_left,
+                    $sub->status_label,
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
