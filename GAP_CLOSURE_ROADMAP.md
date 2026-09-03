@@ -11,6 +11,29 @@ live backend curl tests against real seeded data, not an on-device UI pass (stan
 instruction partway through the session to hold off on device testing for the rest of the
 roadmap). See each section below for exactly what was and wasn't verified.
 
+**2026-09-03 update — Teacher Module (app-side) + White-Label web checkout, both code-complete:**
+- **Teacher role in the app** (separate effort from this roadmap's original 7 tasks — the backend
+  Teacher API/portal was built in a prior session, `tuoora`'s app side had nothing at all until now):
+  full Teacher role added to `tuoora` — login/forgot/reset/change-password, profile + avatar,
+  My Batches → batch detail with feature tiles, batch attendance + self-attendance, homework
+  (CRUD + grading), exams (CRUD + marks entry, `Obx`-on-plain-field bug from the Exams work above
+  deliberately avoided this time — see code comments in `teacher_add_exam_screen.dart` /
+  `teacher_exam_marks_screen.dart`), timetable (CRUD), fees (read-only, gated per-batch on
+  `teacher_can_view_fees`), and salary slips (list + PDF view via the existing `DownloadService`/
+  `PdfViewerPopup`). New module at `lib/presentation/teacher/`, one repository per feature under
+  `lib/data/repositories/teacher_*` mirroring the Student module's split (not Institute's
+  monolith). `flutter analyze` clean, zero errors. **Not on-device tested** — same standing
+  instruction as the rest of this roadmap. Full plan at `~/.claude/plans/tidy-wondering-mitten.md`.
+- **White-Label web checkout**: `institute/plans` had only a "Request via WhatsApp" link for
+  White-Label even though the mobile app already had a full Razorpay purchase flow (see App
+  section below) — closed that gap. Web now has a real self-serve Buy Now → Razorpay checkout →
+  branding form (app name, logo, colors) → status banner, same session-cookie-authenticated
+  pattern as the page's existing subscription purchase flow. `InstituteWhiteLabelController::
+  createOrder()` gained a `razorpay_key` response field (matching `InstituteSubscriptionController`'s
+  existing convention). Verified live via curl (session login + manually-computed HMAC + real
+  file upload) — `create-order` itself untestable locally (needs live Razorpay API access, same
+  pre-existing limitation as the Add-ons catalog work).
+
 ---
 
 ## Decisions (defaults applied)
@@ -113,7 +136,7 @@ roadmap). See each section below for exactly what was and wasn't verified.
     with whatever `android/keystore.properties` currently points at.
   - Recommends running on a throwaway `whitelabel/<institute-slug>` branch (never merged) so the
     regenerated icon files have a place to live without dirtying `main`.
-- [ ] Web: give the institute-facing `institute/plans` page (or a dedicated page) a real self-serve purchase button — today it only *displays* the add-on (pricing/description), matching the mobile app's now-built purchase flow requires the same on web for iOS users and for institutes who'd rather buy from the panel directly
+- [x] Web: `institute/plans` now has a real self-serve purchase button for White Label (Razorpay checkout, same session-cookie-authenticated pattern as the existing subscription purchase flow) plus a branding submission form (app name, logo upload, primary/secondary color) and a status banner (active / branding submitted / confirmed) — done 2026-09-03. `InstituteWhiteLabelController::createOrder()` gained a `razorpay_key` field on its response (matching the convention `InstituteSubscriptionController` already used) so the Blade page's JS doesn't need to hardcode it. Verified live via curl against the demo institute + a seeded pending record: `verify-payment` with a manually-computed HMAC activates the record, `branding` with a real uploaded logo flips `branding_complete` to true and returns a working `app_logo_url`. `create-order` itself couldn't be curl-tested end-to-end (needs live Razorpay API access, unavailable locally) — same pre-existing limitation the Add-ons catalog work already had.
 - Not on-device tested this session (standing instruction to skip device testing for the remainder of this roadmap)
 
 **Follow-up: generic Add-ons catalog** — done 2026-09-02, requested after White-Label shipped, so

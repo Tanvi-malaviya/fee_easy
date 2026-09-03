@@ -101,6 +101,7 @@ class InstituteWhiteLabelController extends Controller
                     'order_id' => $orderId,
                     'amount' => $price * 100,
                     'currency' => 'INR',
+                    'razorpay_key' => config('services.razorpay.key_id'),
                 ],
             ]);
         } catch (\Exception $e) {

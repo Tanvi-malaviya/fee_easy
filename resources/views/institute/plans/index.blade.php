@@ -102,19 +102,60 @@
 
                     @php
                         $instName = auth('institute')->user()->institute_name ?? 'our Institute';
-                        $waMsg = urlencode("Hi Tuoora Support, I would like to request the Mobile App White Label Add-On for {$instName}. Please share the onboarding process.");
+                        $waMsg = urlencode("Hi Tuoora Support, I would like to know more about the Mobile App White Label Add-On for {$instName}.");
                     @endphp
 
-                    <div class="w-full flex">
-                        <a href="https://wa.me/919104081291?text={{ $waMsg }}" target="_blank"
+                    <div class="w-full flex flex-col gap-2">
+                        <button id="wl-buy-btn" onclick="buyWhiteLabel()"
                             class="w-full py-2.5 px-4 bg-gradient-to-r from-[#ff6c00] to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white rounded-xl font-bold text-xs uppercase tracking-wider text-center shadow-md shadow-orange-500/20 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                            Request White Label
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            <span id="wl-buy-btn-label">Buy Now</span>
+                        </button>
+                        <a href="https://wa.me/919104081291?text={{ $waMsg }}" target="_blank"
+                            class="w-full py-1.5 text-center text-white/60 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors">
+                            Have questions? Chat with us
                         </a>
                     </div>
                 </div>
             </div>
+
+            <!-- White Label status banner (purchased, awaiting/confirmed review) -->
+            <div id="wl-status-banner" class="hidden relative z-10 mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-semibold"></div>
         </div>
+    </div>
+
+    <!-- White Label branding form (shown once purchase is active) -->
+    <div id="wl-branding-panel" class="hidden mb-6 bg-white rounded-2xl border border-slate-100/50 shadow-xl p-5">
+        <h3 class="text-sm font-bold text-slate-800 mb-1">Submit your app branding</h3>
+        <p class="text-[11px] text-slate-400 mb-4">Our team will confirm your logo and app name before publishing your app to the stores.</p>
+        <form id="wl-branding-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="submitWhiteLabelBranding(event)">
+            <div class="md:col-span-2">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">App Display Name</label>
+                <input type="text" id="wl-app-name" required maxlength="100"
+                    class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400"
+                    placeholder="e.g. Apex Academy">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Primary Color</label>
+                <input type="color" id="wl-primary-color" value="#ff6c00" class="w-full h-10 rounded-xl border border-slate-200 cursor-pointer">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Secondary Color</label>
+                <input type="color" id="wl-secondary-color" value="#1e293b" class="w-full h-10 rounded-xl border border-slate-200 cursor-pointer">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">App Logo</label>
+                <input type="file" id="wl-app-logo" accept="image/*"
+                    class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-orange-50 file:text-[#ff6c00] hover:file:bg-orange-100">
+                <img id="wl-logo-preview" class="hidden mt-2 h-16 w-16 object-contain rounded-lg border border-slate-100" />
+            </div>
+            <div class="md:col-span-2 flex justify-end">
+                <button type="submit" id="wl-branding-submit-btn"
+                    class="py-2.5 px-6 bg-slate-900 hover:bg-[#ff6c00] text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg transition-all">
+                    Submit Branding
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- Bottom Features Section -->
@@ -213,6 +254,7 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', fetchAllData);
+    document.addEventListener('DOMContentLoaded', fetchWhiteLabelStatus);
     
     async function fetchAllData() {
         try {
@@ -458,10 +500,160 @@
             const rzp = new Razorpay(options);
             rzp.open();
 
-        } catch (error) { 
-            showModal('error', 'Payment Error', error.message || 'Something went wrong.'); 
-        } finally { 
-            btn.disabled = false; btn.innerText = originalText; 
+        } catch (error) {
+            showModal('error', 'Payment Error', error.message || 'Something went wrong.');
+        } finally {
+            btn.disabled = false; btn.innerText = originalText;
+        }
+    }
+
+    // ── White Label: self-serve purchase + branding ────────────────────────
+    let wlLatestRecord = null;
+
+    function wlHeaders(extra = {}) {
+        return Object.assign({ 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, extra);
+    }
+
+    async function fetchWhiteLabelStatus() {
+        try {
+            const response = await fetch('/api/v1/institute/whitelabel', { headers: wlHeaders() });
+            const result = await response.json();
+            if (result.status === 'success') {
+                renderWhiteLabelStatus(result.data);
+            }
+        } catch (e) { console.error('White Label status fetch error:', e); }
+    }
+
+    function renderWhiteLabelStatus(data) {
+        wlLatestRecord = data.record || null;
+        const buyBtn = document.getElementById('wl-buy-btn');
+        const brandingPanel = document.getElementById('wl-branding-panel');
+        const banner = document.getElementById('wl-status-banner');
+
+        if (!data.purchased || !wlLatestRecord) {
+            buyBtn.classList.remove('hidden');
+            brandingPanel.classList.add('hidden');
+            banner.classList.add('hidden');
+            return;
+        }
+
+        const record = wlLatestRecord;
+
+        if (record.status !== 'active') {
+            // Payment recorded but not yet verified/active — allow retrying purchase.
+            buyBtn.classList.remove('hidden');
+            brandingPanel.classList.add('hidden');
+            banner.classList.add('hidden');
+            return;
+        }
+
+        buyBtn.classList.add('hidden');
+        brandingPanel.classList.remove('hidden');
+
+        document.getElementById('wl-app-name').value = record.app_name || '';
+        if (record.primary_color) document.getElementById('wl-primary-color').value = record.primary_color;
+        if (record.secondary_color) document.getElementById('wl-secondary-color').value = record.secondary_color;
+        const preview = document.getElementById('wl-logo-preview');
+        if (record.app_logo_url) {
+            preview.src = record.app_logo_url;
+            preview.classList.remove('hidden');
+        }
+
+        banner.classList.remove('hidden');
+        if (record.admin_confirmed_at) {
+            banner.className = 'relative z-10 mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-semibold text-emerald-400';
+            banner.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Branding confirmed by our team.';
+        } else if (record.branding_complete) {
+            banner.className = 'relative z-10 mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-semibold text-amber-400';
+            banner.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Branding submitted — our team will confirm before publishing.';
+        } else {
+            banner.className = 'relative z-10 mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-semibold text-slate-300';
+            banner.innerHTML = 'White Label is active — submit your branding below to get started.';
+        }
+    }
+
+    async function buyWhiteLabel() {
+        const btn = document.getElementById('wl-buy-btn');
+        const label = document.getElementById('wl-buy-btn-label');
+        const originalLabel = label.innerText;
+        btn.disabled = true; label.innerText = 'WAIT...';
+
+        try {
+            const response = await fetch('/api/v1/institute/whitelabel/create-order', {
+                method: 'POST',
+                headers: wlHeaders({ 'Content-Type': 'application/json' }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to start purchase');
+
+            const order = result.data;
+            const options = {
+                "key": order.razorpay_key,
+                "amount": order.amount,
+                "currency": order.currency || 'INR',
+                "order_id": order.order_id,
+                "name": "Tuoora",
+                "description": "Mobile App White Label",
+                "handler": async function (resp) {
+                    label.innerText = 'VERIFY...';
+                    const verifyResponse = await fetch('/api/v1/institute/whitelabel/verify-payment', {
+                        method: 'POST',
+                        headers: wlHeaders({ 'Content-Type': 'application/json' }),
+                        body: JSON.stringify({
+                            razorpay_order_id: resp.razorpay_order_id || order.order_id,
+                            razorpay_payment_id: resp.razorpay_payment_id,
+                            razorpay_signature: resp.razorpay_signature,
+                        })
+                    });
+                    if (verifyResponse.ok) {
+                        showModal('success', 'White Label Activated!', 'Submit your branding below to get started.', () => {
+                            fetchWhiteLabelStatus();
+                        });
+                    } else {
+                        const errResult = await verifyResponse.json();
+                        showModal('error', 'Verification Failed', errResult.message || 'Unknown error occurred.');
+                    }
+                },
+                "theme": { "color": "#ff6c00" }
+            };
+            const rzp = new Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            showModal('error', 'Purchase Error', error.message || 'Something went wrong.');
+        } finally {
+            btn.disabled = false; label.innerText = originalLabel;
+        }
+    }
+
+    async function submitWhiteLabelBranding(event) {
+        event.preventDefault();
+        const submitBtn = document.getElementById('wl-branding-submit-btn');
+        const originalText = submitBtn.innerText;
+        submitBtn.disabled = true; submitBtn.innerText = 'SUBMITTING...';
+
+        try {
+            const formData = new FormData();
+            formData.append('app_name', document.getElementById('wl-app-name').value.trim());
+            formData.append('primary_color', document.getElementById('wl-primary-color').value);
+            formData.append('secondary_color', document.getElementById('wl-secondary-color').value);
+            const logoFile = document.getElementById('wl-app-logo').files[0];
+            if (logoFile) formData.append('app_logo', logoFile);
+
+            const response = await fetch('/api/v1/institute/whitelabel/branding', {
+                method: 'POST',
+                headers: wlHeaders(),
+                body: formData,
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to submit branding');
+
+            showModal('success', 'Branding Submitted', result.message || 'Our team will confirm before publishing your app.', () => {
+                fetchWhiteLabelStatus();
+            });
+        } catch (error) {
+            showModal('error', 'Submission Error', error.message || 'Something went wrong.');
+        } finally {
+            submitBtn.disabled = false; submitBtn.innerText = originalText;
         }
     }
 </script>
